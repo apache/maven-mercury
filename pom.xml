@@ -12,7 +12,7 @@
   <artifactId>mercury</artifactId>
   <packaging>pom</packaging>
   <name>Mercury</name>
-  <version>1.0.0-alpha-2-SNAPSHOT</version>
+  <version>1.0.0-alpha-2-722647</version>
   <description>Maven Mercury is a replacement for the Maven Artifact subsystem, and a complete replacement for the HTTP/HTTPS/DAV/DAVS portions of the existing transport.</description>
 
   <developers>
@@ -46,8 +46,6 @@
   <properties>
 
     <mercury.version>${project.version}</mercury.version>
-    
-    <maven.version>3.0-SNAPSHOT</maven.version>
     
     <plexus.appbooter.version>1.4</plexus.appbooter.version>
     <plexus.container.version>1.0-beta-3.0.1</plexus.container.version>
@@ -222,88 +220,12 @@
         <artifactId>mercury-crypto-basic</artifactId>
         <version>${mercury.version}</version>
       </dependency>
-  
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-api</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
-  
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-m2</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-m2</artifactId>
-        <classifier>tests</classifier>
-        <version>${mercury.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-remote-m2</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-virtual</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-cache-fs</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
       
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-md-sat</artifactId>
         <version>${mercury.version}</version>
       </dependency>
-  
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-api</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
-  
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-http</artifactId>
-        <version>${mercury.version}</version>
-      </dependency>
-  
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-http</artifactId>
-        <classifier>tests</classifier>
-        <version>${mercury.version}</version>
-      </dependency>
-
-      <!-- Maven dependencies -->
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-mercury</artifactId>
-        <version>${maven.version}</version>
-      </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-api</artifactId>
-      <version>${wagon.provider.api.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-test</artifactId>
-      <version>${wagon.provider.api.version}</version>
-      <scope>test</scope>
-    </dependency>
 
       <!-- Test Dependencies -->
       <dependency>
