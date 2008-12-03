@@ -42,6 +42,16 @@
     <module>mercury-event</module>
     <module>mercury-logging</module>
   </modules>
+  
+  <repositories>
+    <repository>
+      <id>sona.plexus.releases</id>
+      <url>http://repository.sonatype.org/content/repositories/plexus-releases-oss</url>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
+  </repositories>
+  
 
   <properties>
 
@@ -515,14 +525,5 @@
     <url>http://svn.apache.org/viewvc/maven/mercury/trunk/</url>
   </scm>
 
-  <repositories>
-    <repository>
-      <id>sona.plexus.releases</id>
-      <url>http://repository.sonatype.org/content/repositories/plexus-releases-oss</url>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-    </repository>
-  </repositories>
-  
 
 </project>
