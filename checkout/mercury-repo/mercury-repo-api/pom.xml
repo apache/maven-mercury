@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.mercury</groupId>
+  <artifactId>mercury-repo-api</artifactId>
+  <name>Mercury Repository APIs</name>
+  <description>Repository APIs</description>
+
+  <parent>
+    <groupId>org.apache.maven.mercury</groupId>
+    <artifactId>mercury-repo</artifactId>
+    <version>1.0.0-alpha-2</version>
+  </parent>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-artifact</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-transport-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-external</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-event</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-md-shared</artifactId>
+    </dependency>
+
+  </dependencies>
+</project>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.apache.maven.mercury</groupId>
+    <artifactId>mercury</artifactId>
+    <version>1.0.0-alpha-2-SNAPSHOT</version>
+  </parent>
+  
+  <groupId>org.sonatype.maven.plugins</groupId>
+  <artifactId>mercury-compare-mercury</artifactId>
+  
+  <packaging>maven-plugin</packaging>
+  <name>Mercury Maven resolusion comparisson</name>
+  <description>Mercury Maven resolusion comparisson</description>
+  <prerequisites />
+  
+
+  <properties>
+    <maven.version>3.0-SNAPSHOT</maven.version>
+  </properties>
+
+	<build>
+		<plugins>
+			<plugin>
+			   <groupId>org.apache.maven.plugins</groupId>
+			   <artifactId>maven-compiler-plugin</artifactId>
+			     <configuration>
+			       <source>1.5</source>
+			       <target>1.5</target>
+			    </configuration>
+			</plugin>
+		</plugins>
+	</build>
+  
+  <developers>
+    <developer>
+      <name>Oleg Gusakov</name>
+      <email>ogusakov@apache.org</email>
+      <roles>
+        <role>jack-of-all-trades</role>
+      </roles>
+      <timezone>-8</timezone>
+    </developer>
+  </developers>
+  
+  <dependencies>
+  
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-mercury</artifactId>
+      <version>${maven.version}</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-md-sat</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-compare-mdo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-remote-m2</artifactId>
+    </dependency>
+
+  </dependencies>
+</project>
+

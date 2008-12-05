@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>mercury-md-sat</artifactId>
+  <name>Mercury Dependency Builder</name>
+  <description />
+  <parent>
+    <groupId>org.apache.maven.mercury</groupId>
+    <artifactId>mercury-md</artifactId>
+    <version>1.0.0-alpha-2</version>
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>package-tests</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <dependencies>
+    <!-- SAT solver used to calculate viable ranges when dependencies are expressed pseudo boolean form -->
+    <dependency>
+      <groupId>org.sat4j</groupId>
+      <artifactId>org.sat4j.core</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.sat4j</groupId>
+      <artifactId>org.sat4j.pb</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-md-shared</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-virtual</artifactId>
+    </dependency>
+
+  <!--  test deps -->
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-local-m2</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-local-m2</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-remote-m2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+  </dependencies>
+</project>
