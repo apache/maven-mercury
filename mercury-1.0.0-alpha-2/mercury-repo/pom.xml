@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.maven.mercury</groupId>
+    <artifactId>mercury</artifactId>
+    <version>1.0.0-alpha-2</version>
+  </parent>
+  <artifactId>mercury-repo</artifactId>
+  <packaging>pom</packaging>
+  <name>Mercury Repository</name>
+
+  <modules>
+    <module>mercury-repo-api</module>
+    <module>mercury-repo-local-m2</module>
+    <module>mercury-repo-local-flat</module>
+    <module>mercury-repo-remote-m2</module>
+    <module>mercury-repo-cache-fs</module>
+    <module>mercury-repo-virtual</module>
+  </modules>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-logging</artifactId>
+    </dependency>
+
+  </dependencies>
+
+</project>
