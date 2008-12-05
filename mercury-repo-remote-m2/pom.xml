@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>mercury-repo-remote-m2</artifactId>
+  <name>Mercury Remote M2 Repository</name>
+  <description />
+
+  <parent>
+    <groupId>org.apache.maven.mercury</groupId>
+    <artifactId>mercury-repo</artifactId>
+    <version>1.0.0-alpha-2</version>
+  </parent>
+
+  <dependencies>
+  
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-api</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-transport-http</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-md-shared</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-local-m2</artifactId>
+    </dependency>
+
+  </dependencies>
+
+</project>
