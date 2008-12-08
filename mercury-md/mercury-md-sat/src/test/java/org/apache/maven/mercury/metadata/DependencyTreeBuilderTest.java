@@ -76,6 +76,17 @@ extends TestCase
     super.tearDown();
   }
   //----------------------------------------------------------------------------------------------
+  private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )
+  {
+    ArtifactMetadata gavMd = new ArtifactMetadata(gav);
+    
+    for( ArtifactMetadata md : res )
+      if( md.sameGAV( gavMd ) )
+        return true;
+    
+    return false;
+  }
+  //----------------------------------------------------------------------------------------------
   public void testCircularDependency()
   {
     ArtifactMetadata circularMd = new ArtifactMetadata( "a:a:1" );
@@ -272,15 +283,26 @@ System.out.println("BigRes: "+res);
 //    assertTrue( "no c:c:2 in the result", assertHasArtifact( res, "c:c:2" ) );
   }
   //----------------------------------------------------------------------------------------------
-  private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )
+  public void testResolveMultiple()
+  throws MetadataTreeException
   {
-    ArtifactMetadata gavMd = new ArtifactMetadata(gav);
+    ArtifactMetadata md1 = new ArtifactMetadata( "a:a:3" );
+    ArtifactMetadata md2 = new ArtifactMetadata( "a:a:4" );
     
-    for( ArtifactMetadata md : res )
-      if( md.sameGAV( gavMd ) )
-        return true;
+    MetadataTreeNode root = mt.buildTree( md1, ArtifactScopeEnum.compile );
+    assertNotNull( "null tree built", root );
+    assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
+
+    List<ArtifactMetadata> res = mt.resolveConflicts( root );
+    assertNotNull( "null resolution", res );
+
+    System.out.println("BigRes: "+res);    
     
-    return false;
+    assertEquals( "wrong tree size", 3, res.size() );
+    
+//    assertTrue( "no a:a:2 in the result", assertHasArtifact( res, "a:a:2" ) );
+//    assertTrue( "no b:b:1 in the result", assertHasArtifact( res, "b:b:1" ) );
+//    assertTrue( "no c:c:2 in the result", assertHasArtifact( res, "c:c:2" ) );
   }
   //----------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------

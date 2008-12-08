@@ -375,6 +375,14 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0-beta-7</version>
+          <configuration>
+            <tagBase>https://svn.apache.org/repos/asf/maven/mercury/tags</tagBase>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.plexus</groupId>
           <artifactId>plexus-component-metadata</artifactId>
           <version>${plexus.component.metadata.version}</version>
@@ -606,9 +614,9 @@
   </ciManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/tags/mercury-1.0.0-alpha-2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/tags/mercury-1.0.0-alpha-2</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/pom/tags/mercury-1.0.0-alpha-2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0.0-alpha-2</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0.0-alpha-2</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/mercury/tags/mercury-1.0.0-alpha-2</url>
   </scm>
 
 </project>
