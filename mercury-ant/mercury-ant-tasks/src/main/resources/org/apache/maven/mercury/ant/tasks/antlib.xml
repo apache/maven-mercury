@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<antlib>
+
+  <taskdef name="dependencies" classname="org.apache.maven.mercury.ant.tasks.DependenciesTask"/>
+
+  <typedef name="settings" classname="org.apache.maven.mercury.ant.tasks.Settings"/>
+  
+</antlib>

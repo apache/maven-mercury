@@ -1,0 +1,13 @@
+<project name="test" xmlns:mvn="antlib:org.apache.maven.mercury.ant.tasks" >
+
+	<mvn:settings>
+	      <mvn:localRepositoryM2  id="localRepo" path="/app/maven.repo"/>
+	      <mvn:remoteRepositoryM2 id="central"   url="/app/maven.repo"/>
+  </mvn:settings>
+	
+  <mvn:dependencies name="all-deps" pathid="myLibs">
+    <mvn:dependency name="ant:ant:1.6.5"/>
+    <mvn:dependency name="asm:asm-xml:3.0"/>
+  </mvn:dependencies>
+
+</project>
