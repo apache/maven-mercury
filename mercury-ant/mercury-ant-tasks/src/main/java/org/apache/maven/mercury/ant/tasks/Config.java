@@ -20,7 +20,7 @@ import org.apache.maven.mercury.util.Util;
  * @version $Id$
  *
  */
-public class Settings
+public class Config
 extends AbstractDataType
 {
   Collection<AbstractRepository> _repositories;

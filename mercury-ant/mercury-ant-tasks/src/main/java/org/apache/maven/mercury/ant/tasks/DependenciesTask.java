@@ -72,13 +72,13 @@ extends AbstractAntTask
       else 
         return;
     
-    if( ! Settings.class.isAssignableFrom( so.getClass() ) )
+    if( ! Config.class.isAssignableFrom( so.getClass() ) )
       if( _failonerror )
         throw new BuildException( _lang.getMessage( "settings.id.object.wrong", _settingsid, so.getClass().getName() ));
       else 
         return;
     
-    Settings settings = (Settings)so;
+    Config settings = (Config)so;
     
     try
     {
