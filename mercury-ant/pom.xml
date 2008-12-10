@@ -28,7 +28,7 @@
   <properties>
 
     <ant.version>1.6.5</ant.version>
-    <mercury.version>1.0.0-alpha-2</mercury.version>
+    <mercury.version>1.0.0-alpha-3-SNAPSHOT</mercury.version>
     <maven.version>3.0-SNAPSHOT</maven.version>
 
     <junit.version>3.8.2</junit.version>
@@ -94,6 +94,14 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.maven.mercury</groupId>
+        <artifactId>mercury-transport-http</artifactId>
+        <classifier>tests</classifier>
+        <version>${mercury.version}</version>
         <scope>test</scope>
       </dependency>
       

@@ -1,14 +1,14 @@
-<project name="test" default="compile-tests" xmlns:mvn="antlib:org.apache.maven.mercury.ant.tasks" >
+<project name="test" default="compile-tests" xmlns:merc="antlib:org.apache.maven.mercury.ant.tasks" >
 	
 	<!--
-	    this example does not include <mvn:write .../> task, which 
+	    this example does not include <merc:write .../> task, which 
 	    will be used to install / deploy artifacts into repositories
 	    nor this example show how to configure artifact 
 	     validation - for the sake of simplicity
 	-->
 
   <target name="init">
-    <property name="settings.name" value="home-settings"/>
+    <property name="config.name" value="home-config"/>
     <property name="java.version" value="1.5"/>
     
     <property name="src" value="${basedir}/src/main/java"/>
@@ -20,33 +20,50 @@
     <!--
      | configration: repositories, ?possibly profiles 
      -->
-    <mvn:settings id="work-settings">
-          <mvn:localRepositoryM2  id="localRepo" path="/app/maven.repo"/>
-          <mvn:remoteRepositoryM2 id="central"   url="http://repo1.maven.org/maven2"/>
-    </mvn:settings>
-  
-    <mvn:settings id="home-settings">
-          <mvn:localRepositoryM2  id="localRepo" path="/app/maven.repo"/>
-          <mvn:remoteRepositoryM2 id="central"   url="http://localhost:8081/nexus/contents/groups/public"/>
-    </mvn:settings>
+    <merc:config id="work-config">
+
+    	<!-- local repo (indicated by dir) of default type -->   
+      <merc:repo id="localRepo" dir="/app/maven.repo"/>
+
+      <!-- remote repo (indicated by url) of explicit m2 type -->   
+      <merc:repo type="m2" id="central" url="http://repo1.maven.org/maven2"/>
+    	
+    </merc:config>
+
+    <merc:config id="home-config">
+
+      <!-- local repo (indicated by dir) of default type -->   
+      <merc:repo id="localRepo" dir="/app/maven.repo"/>
+
+      <!-- remote repo (indicated by url) of default type (m2) -->   
+      <merc:repo id="central" url="http://localhost:8081/nexus/contents/groups/public"/>
+
+    </merc:config>
+
+  	<!--
+  	 | another way to get configuration
+  	 |   to be implemented later on
+  	 --> 
+    <merc:config id="demo-config" file="~/.m2/settings.xml"/>
   	
   
     <!--
      | dependency sets, identified and referred to by id - path-like structure declarations
      -->
-    <mvn:dependencies id="my-libs">
-      <!-- coordinates as string  -->
-      <mvn:dependency name="ant:ant:1.6.5"/>
-      <!-- coordinates as named attributes  -->
-      <mvn:dependency groupid="asm" artifactid="asm-xml" version="[3.0,4.0)"/>
+    <merc:dep id="my-libs">
+    	
+      <!-- coordinates as string, explicit default namespace  -->
+      <merc:dependency name="ant:ant:1.6.5" xmlns="http://maven.apache.org/mercury/1"/>
+    	
       <!-- 
        | a set of dependencies from a pom
        |  
        |    will be implemented last as mercury does not know
        |    about POMs - this will be a special read-only repository type   
       -->
-      <mvn:dependency groupid="org.apache.maven" artifactid="maven" version="3.0-SNAPSHOT" pom="${basedir}/pom.xml"/>
-    </mvn:dependencies>
+      <merc:dependency name="org.apache.maven:maven:3.0-SNAPSHOT" pom="${basedir}/pom.xml"/>
+    	
+    </merc:dep>
 
   </target>
 
@@ -55,10 +72,9 @@
   	 | this is the workhorse task - creates a classpath named "compile-path"
   	 |  and adds all the transitive dependencies from "my-libs" in compile scope 
   	-->
-    <mvn:resolve name="resolve-compile-deps"
-                 pathid="compile-path"
-                 depref="my-libs"
-                 settingsref="${settings.name}"
+    <merc:resolve pathid="compile-path"
+                 depid="my-libs"
+                 configid="${config.name}"
                  />
     
     <javac srcdir="${src}"
@@ -74,10 +90,9 @@
      | this is the workhorse task - creates a classpath named "test-path"
      |  and adds all the transitive dependencies from "my-libs" in test scope 
     -->
-    <mvn:resolve name="resolve-test-deps"
-                 pathid="test-path"
-                 depref="my-libs"
-                 settingsref="${settings.name}"
+    <merc:resolve pathid="test-path"
+                 depid="my-libs"
+                 configid="${config.name}"
                  scope="test"
                  />
     

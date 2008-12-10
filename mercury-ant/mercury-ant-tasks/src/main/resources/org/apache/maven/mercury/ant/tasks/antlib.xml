@@ -2,8 +2,9 @@
 
 <antlib>
 
-  <taskdef name="dependencies" classname="org.apache.maven.mercury.ant.tasks.DependenciesTask"/>
+  <taskdef name="resolve" classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
 
-  <typedef name="settings" classname="org.apache.maven.mercury.ant.tasks.Settings"/>
+  <typedef name="dep"    classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="config" classname="org.apache.maven.mercury.ant.tasks.Config"/>
   
 </antlib>

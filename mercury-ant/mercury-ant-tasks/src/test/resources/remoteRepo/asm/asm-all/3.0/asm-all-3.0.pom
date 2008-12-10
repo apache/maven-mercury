@@ -1,0 +1,15 @@
+<?xml version="1.0"?><project>
+  <parent>
+    <artifactId>asm-parent</artifactId>
+    <groupId>asm</groupId>
+    <version>3.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>asm</groupId>
+  <artifactId>asm-all</artifactId>
+  <name>ASM All</name>
+  <version>3.0</version>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>

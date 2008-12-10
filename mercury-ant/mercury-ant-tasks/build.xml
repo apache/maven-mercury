@@ -1,13 +1,42 @@
-<project name="test" xmlns:mvn="antlib:org.apache.maven.mercury.ant.tasks" >
+<project name="test" default="compile" xmlns:merc="antlib:org.apache.maven.mercury.ant.tasks" >
+  
+  <target name="init">
+    <property name="config.name" value="conf"/>
+    <property name="compiler.version" value="1.5"/>
+    
+    <property name="src" value="${basedir}/src/test/compile"/>
+    <property name="target" value="${basedir}/target/compile-classes"/>
 
-	<mvn:settings>
-	      <mvn:localRepositoryM2  id="localRepo" path="/app/maven.repo"/>
-	      <mvn:remoteRepositoryM2 id="central"   url="/app/maven.repo"/>
-  </mvn:settings>
-	
-  <mvn:dependencies name="all-deps" pathid="myLibs">
-    <mvn:dependency name="ant:ant:1.6.5"/>
-    <mvn:dependency name="asm:asm-xml:3.0"/>
-  </mvn:dependencies>
+  	<merc:config id="conf">
+      <merc:repo id="localRepo" dir="${basedir}/target/test-repo"/>
+      <merc:repo type="m2" id="central" url="http://repo1.maven.org/maven2"/>
+    </merc:config>
 
+    <merc:dep id="my-libs">
+      <merc:dependency name="asm:asm:3.0"/>
+    </merc:dep>
+
+  </target>
+
+  <target name="compile" depends="init">
+    <merc:resolve pathid="compile-path"
+                 depid="my-libs"
+                 configid="${config.name}"
+                 />
+
+  	<property name="cp" refid="compile-path"/>
+  	<echo>path is ${cp}</echo>
+
+  	<delete dir="${target}"/>
+  	<mkdir dir="${target}"/>
+
+    <javac srcdir="${src}"
+           destdir="${target}"
+           classpathref="compile-path"
+           debug="on"
+           source="${compiler.version}"
+           target="${compiler.version}"
+    />
+  </target>
+  
 </project>
