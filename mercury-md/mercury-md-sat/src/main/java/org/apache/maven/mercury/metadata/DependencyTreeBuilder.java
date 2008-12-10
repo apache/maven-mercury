@@ -60,6 +60,8 @@ import org.codehaus.plexus.lang.Language;
 class DependencyTreeBuilder
 implements DependencyBuilder, EventGenerator
 {
+  public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata("__fake:__fake:1.0");
+  
   private static final Language _lang = new DefaultLanguage(DependencyTreeBuilder.class);
   private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class ); 
   
@@ -132,11 +134,14 @@ implements DependencyBuilder, EventGenerator
     
     _existingNodes = new HashMap<String, MetadataTreeNode>(256);
     
-    GenericEvent treeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_BUILD_EVENT, startMD.getGAV() );
+    GenericEvent treeBuildEvent = null;
+    if( _eventManager != null )
+      treeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_BUILD_EVENT, startMD.getGAV() );
     
     MetadataTreeNode root = createNode( startMD, null, startMD, treeScope );
     
-    treeBuildEvent.stop();
+    if( _eventManager != null )
+      treeBuildEvent.stop();
     
     if( _eventManager != null )
       _eventManager.fireEvent( treeBuildEvent );
@@ -146,41 +151,37 @@ implements DependencyBuilder, EventGenerator
     return root;
   }
   //------------------------------------------------------------------------
-  private MetadataTreeNode buildTree( Collection<ArtifactBasicMetadata> startMDs, ArtifactScopeEnum treeScope )
+  public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactBasicMetadata... startMDs )
   throws MetadataTreeException
   {
-//    if( Util.isEmpty( startMDs ) )
-//      throw new MetadataTreeException( _lang.getMessage( "empty.md.collection") );
-//    
-//    List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( startMDs.size() );
-//    for()
+    return resolveConflicts( scope, Arrays.asList( startMDs ) );
+  }
+  //------------------------------------------------------------------------
+  public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, List<ArtifactBasicMetadata> startMDs )
+  throws MetadataTreeException
+  {
+    if( Util.isEmpty( startMDs ) )
+      throw new MetadataTreeException( _lang.getMessage( "empty.md.collection") );
+
+    List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( startMDs.size() );
+
+    // build all trees
+    for( ArtifactBasicMetadata bmd : startMDs )
+    {
+      MetadataTreeNode rooty = buildTree( bmd, scope ); 
+      
+      deps.add( rooty );
+    }
     
-//    try
-//    {
-//      _reader.setEventManager( _eventManager );
-//      _reader.setProcessors( _processors );
-//      _reader.init();
-//    }
-//    catch( RepositoryException e )
-//    {
-//      throw new MetadataTreeException(e);
-//    }
-//    
-//    _existingNodes = new HashMap<String, MetadataTreeNode>(256);
+    DUMMY_ROOT.setDependencies( startMDs );
     
-////    GenericEvent treeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_BUILD_EVENT, startMD.getGAV() );
-////    
-////    MetadataTreeNode root = createNode( startMD, null, startMD, treeScope );
-//    
-//    treeBuildEvent.stop();
-//    
-//    if( _eventManager != null )
-//      _eventManager.fireEvent( treeBuildEvent );
-//    
-//    MetadataTreeNode.reNumber( root, 1 );
+    // combine into one tree
+    MetadataTreeNode root = new MetadataTreeNode( DUMMY_ROOT, null, null );
     
-//    return root;
-    return null;
+    for( MetadataTreeNode kid : deps )
+      root.addChild( kid );
+    
+    return resolveConflicts( root );
   }
   //-----------------------------------------------------
   private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent, ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope )
@@ -426,49 +427,6 @@ if( _log.isDebugEnabled() )
     }
     
     return _comparators;
-  }
-  //-----------------------------------------------------
-  protected List<ArtifactMetadata> resolveConflicts( List<ArtifactBasicMetadata> bmds )
-  throws MetadataTreeException
-  {
-    if( Util.isEmpty( bmds ) )
-      throw new MetadataTreeException(_lang.getMessage( "empty.tree.collection" ));
-    
-    String dummyGAV = "__fake:__fake:0.0.0";
-    
-    ArtifactBasicMetadata query = new ArtifactBasicMetadata( dummyGAV );
-    
-    ArtifactMetadata dummyMd = new ArtifactMetadata( query );
-    dummyMd.setDependencies( bmds );
-    
-    MetadataTreeNode root = new MetadataTreeNode( dummyMd, null, query );
-    
-    try
-    {
-      DefaultSatSolver solver = new DefaultSatSolver( root, _eventManager );
-      
-      solver.applyPolicies( getComparators() );
-
-      List<ArtifactMetadata> res = solver.solve();
-      
-      res.remove( dummyMd );
-      
-      return res;
-    }
-    catch (SatException e)
-    {
-      throw new MetadataTreeException(e);
-    }
-    
-  }
-  //-----------------------------------------------------
-  protected List<ArtifactMetadata> resolveConflicts( ArtifactBasicMetadata... bmds )
-  throws MetadataTreeException
-  {
-    if( Util.isEmpty( bmds ) )
-      return null;
-    
-    return resolveConflicts( Arrays.asList( bmds ) );
   }
   //-----------------------------------------------------
   private String showPath( MetadataTreeNode node )

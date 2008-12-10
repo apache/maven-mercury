@@ -75,6 +75,21 @@ public class SimpleTestServer
         context.setResourceBase( base.getCanonicalPath() );
     }
 
+    public SimpleTestServer( File localBase, String remotePathFragment )
+        throws Exception
+    {
+        super( 0 );
+
+        HandlerCollection handlers = new HandlerCollection();
+        setHandler( handlers );
+
+        context = new Context( handlers, remotePathFragment );
+        handlers.addHandler( new DefaultHandler() );
+
+        context.addServlet( DefaultServlet.class, "/" );
+        context.setResourceBase( localBase.getCanonicalPath() );
+    }
+
     public int getPort()
     {
         return getConnectors()[0].getLocalPort();

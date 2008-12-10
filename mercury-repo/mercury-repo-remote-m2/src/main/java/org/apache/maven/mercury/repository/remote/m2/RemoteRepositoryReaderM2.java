@@ -461,10 +461,11 @@ implements RepositoryReader, MetadataReader
       _log.debug( _repo.getId()+": did not find in the cache - go out for "+bmd );
 
     // no cached data, or it has expired - read from repository
-    byte[] mavenMetadata = readRawData( loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName() );
+    String mdPath = loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName();
+    byte[] mavenMetadata = readRawData( mdPath );
     
     if( mavenMetadata == null )
-      throw new MetadataReaderException();
+      throw new MetadataReaderException( _lang.getMessage( "no.group.md", _repo.getServer().getURL().toString(), mdPath ) );
     
     Metadata mmd = MetadataBuilder.getMetadata( mavenMetadata );
 

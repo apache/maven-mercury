@@ -60,6 +60,19 @@ public interface DependencyBuilder
   throws MetadataTreeException;
 
   /**
+   * consolidated entry point: give it a collection of GAVs, it 
+   * will create a classpath out of it
+   * 
+   * @param root the tree to resolve conflicts on
+   * @return list of resolved GAVs
+   * @throws MetadataTreeException
+   */
+  public abstract List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactBasicMetadata... startMDs )
+  throws MetadataTreeException;
+  public abstract List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, List<ArtifactBasicMetadata> startMDs )
+  throws MetadataTreeException;
+
+  /**
    *  this one resolves the conflicts, removing all duplicate GAVs from the tree and
    *  returning a copy of the resulting subtree - original tree should be intact
    * 
