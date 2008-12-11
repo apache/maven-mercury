@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -423,6 +422,7 @@ if( _log.isDebugEnabled() )
     
     // TODO og: MERCURY-40
     Map<ArtifactBasicMetadata, List<MetadataTreeNode>> res = new LinkedHashMap<ArtifactBasicMetadata, List<MetadataTreeNode>>( queries.size() );
+
     for( ArtifactBasicMetadata q : queries )
     {
       List<MetadataTreeNode> bucket = new ArrayList<MetadataTreeNode>(4);
