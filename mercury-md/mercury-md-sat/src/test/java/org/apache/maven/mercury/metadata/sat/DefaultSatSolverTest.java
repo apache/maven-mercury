@@ -342,8 +342,8 @@ public class DefaultSatSolverTest
     assertEquals( 3, res.size() );
     
     assertTrue( res.contains( a1 ) );
-    assertTrue( res.contains( b2 ) );
-    assertTrue( res.contains( c1 ) );
+    assertTrue( res.contains( b1 ) );
+    assertTrue( res.contains( c2 ) );
   }
   //----------------------------------------------------------------------
   //       b:b:1 - c:c:[2,4)
@@ -419,8 +419,8 @@ public class DefaultSatSolverTest
     assertEquals( 3, res.size() );
     
     assertTrue( res.contains( a1 ) );
-    assertTrue( res.contains( b2 ) );
-    assertTrue( res.contains( c1 ) );
+    assertTrue( res.contains( b1 ) );
+    assertTrue( res.contains( c2 ) );
   }
   //----------------------------------------------------------------------
   //       d:d:1 - c:c:[2,4)
