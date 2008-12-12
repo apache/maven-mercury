@@ -1,15 +1,27 @@
 <project name="test" default="compile" xmlns:merc="antlib:org.apache.maven.mercury.ant.tasks" >
   
   <target name="init">
+
     <property name="config.name" value="conf"/>
     <property name="compiler.version" value="1.5"/>
     
     <property name="src" value="${basedir}/src/test/compile"/>
-    <property name="target" value="${basedir}/target/compile-classes"/>
+
+  	<property name="target" value="${basedir}/target/compile-classes"/>
+    <delete dir="${target}"/>
+    <mkdir dir="${target}"/>
+
+    <property name="jar.target" value="${basedir}/target/compile-target"/>
+    <delete dir="${jar.target}"/>
+    <mkdir dir="${jar.target}"/>
+
+    <property name="local.repo.dir" value="${basedir}/target/test-repo"/>
+    <delete dir="${local.repo.dir}"/>
+    <mkdir dir="${local.repo.dir}"/>
 
   	<merc:config id="conf">
-      <merc:repo id="localRepo" dir="${basedir}/target/test-repo"/>
-      <merc:repo type="m2" id="central" url="http://repo1.maven.org/maven2"/>
+      <merc:repo id="localRepo" dir="${local.repo.dir}"/>
+      <merc:repo id="central"   url="http://repo1.maven.org/maven2"/>
     </merc:config>
 
     <merc:dep id="my-libs">
@@ -24,11 +36,8 @@
                  configid="${config.name}"
                  />
 
-  	<property name="cp" refid="compile-path"/>
-  	<echo>path is ${cp}</echo>
-
-  	<delete dir="${target}"/>
-  	<mkdir dir="${target}"/>
+    <property name="cp" refid="compile-path"/>
+    <echo>path is ${cp}</echo>
 
     <javac srcdir="${src}"
            destdir="${target}"
@@ -37,6 +46,20 @@
            source="${compiler.version}"
            target="${compiler.version}"
     />
+    
+    
+    <jar destfile="${jar.target}/t.jar"
+         basedir="${target}"
+    />
+
+  </target>
+
+  <target name="deploy" depends="compile">
+    <merc:write repoid="localRepo"
+                name="t:t:1.0"
+                file="${jar.target}/t.jar"
+      />
+
   </target>
   
 </project>

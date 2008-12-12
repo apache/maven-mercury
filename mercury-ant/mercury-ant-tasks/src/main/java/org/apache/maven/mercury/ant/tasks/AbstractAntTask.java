@@ -1,5 +1,6 @@
 package org.apache.maven.mercury.ant.tasks;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
 /**
@@ -12,18 +13,19 @@ import org.apache.tools.ant.Task;
 public class AbstractAntTask
 extends Task
 {
-  private String name;
-  
-  public String getName()
+  protected boolean _failOnError = true;
+  //----------------------------------------------------------------------------------------
+  public void setFailonerror( boolean failonerror )
   {
-    return name;
+    this._failOnError = failonerror;
   }
-
-  public void setName( String name )
+  //----------------------------------------------------------------------------------------
+  protected void throwIfEnabled( String msg )
+  throws BuildException
   {
-    this.name = name;
+    if( _failOnError )
+      throw new BuildException( msg );
   }
-  
-  
-
+  //----------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------
 }

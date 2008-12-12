@@ -24,17 +24,22 @@ import org.apache.maven.mercury.util.Util;
 public class Config
 extends AbstractDataType
 {
-  Collection<Repo> _repositories;
+  Collection<Repo> _repos;
+  
+  Collection<Repository> _repositories;
   
   public Collection<Repository> getRepositories()
   throws MalformedURLException
   {
-    if( Util.isEmpty( _repositories ) )
+    if( Util.isEmpty( _repos ) )
       return null;
     
-    Collection<Repository> repos = new ArrayList<Repository>( _repositories.size() );
+    if( _repositories != null )
+      return _repositories;
     
-    for( Repo repo : _repositories )
+    _repositories = new ArrayList<Repository>( _repos.size() );
+    
+    for( Repo repo : _repos )
     {
       if( repo.isLocal() )
       {
@@ -42,7 +47,7 @@ extends AbstractDataType
         
         LocalRepositoryM2 r = new LocalRepositoryM2( repo.getId(), new File( repo._dir ), dp  );
         
-        repos.add( r );
+        _repositories.add( r );
       }
       else
       {
@@ -52,21 +57,21 @@ extends AbstractDataType
         
         RemoteRepositoryM2 r  = new RemoteRepositoryM2( server, dp  );
         
-        repos.add( r );
+        _repositories.add( r );
       }
     }
-    
-    return repos;
+
+    return _repositories;
   }
   
   public Repo createRepo()
   {
-    if( _repositories == null )
-    _repositories = new ArrayList<Repo>(4);
+    if( _repos == null )
+    _repos = new ArrayList<Repo>(4);
     
     Repo r = new Repo();
     
-    _repositories.add( r );
+    _repos.add( r );
     
     return r;
   }

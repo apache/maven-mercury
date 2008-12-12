@@ -22,6 +22,16 @@
       </dependency>
     
       <!-- Mercury deps -->
+
+      <dependency>
+        <groupId>org.apache.maven.mercury</groupId>
+        <artifactId>mercury-artifact</artifactId>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.maven.mercury</groupId>
+        <artifactId>mercury-external</artifactId>
+      </dependency>
       
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
@@ -49,11 +59,17 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-mercury</artifactId>
       </dependency>
-       
+
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-transport-http</artifactId>
         <classifier>tests</classifier>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-testutil</artifactId>
         <scope>test</scope>
       </dependency>
   

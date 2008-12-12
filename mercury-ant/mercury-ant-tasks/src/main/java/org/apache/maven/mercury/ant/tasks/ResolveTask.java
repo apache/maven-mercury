@@ -1,11 +1,7 @@
 package org.apache.maven.mercury.ant.tasks;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,14 +12,11 @@ import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
-import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.Repository;
-import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileList;
-import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -68,12 +61,6 @@ extends AbstractAntTask
   public String getTaskName()
   {
     return TASK_NAME;
-  }
-  //----------------------------------------------------------------------------------------
-  private void throwIfEnabled( String msg )
-  {
-    if( _failOnError )
-      throw new BuildException( msg );
   }
   //----------------------------------------------------------------------------------------
   @Override
@@ -237,11 +224,6 @@ extends AbstractAntTask
       else 
         return;
     }
-  }
-  
-  public void setFailonerror( boolean failonerror )
-  {
-    this._failOnError = failonerror;
   }
 
   public void setConfigid( String configid )
