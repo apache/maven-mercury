@@ -80,15 +80,7 @@ extends AbstractAntTask
       
       Config conf = (Config)o;
       
-      Collection<Repository> repos;
-      try
-      {
-        repos = conf.getRepositories();
-      }
-      catch( MalformedURLException e )
-      {
-        throw new BuildException( e );
-      }
+      Collection<Repository> repos = conf.getRepositories();
       
       if( Util.isEmpty( repos ) )
         continue;

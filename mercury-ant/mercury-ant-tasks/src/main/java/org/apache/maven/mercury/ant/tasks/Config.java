@@ -1,18 +1,25 @@
 package org.apache.maven.mercury.ant.tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
+import org.apache.maven.mercury.transport.api.Credentials;
 import org.apache.maven.mercury.transport.api.Server;
+import org.apache.maven.mercury.util.FileUtil;
 import org.apache.maven.mercury.util.Util;
+import org.apache.tools.ant.BuildException;
+import org.codehaus.plexus.lang.DefaultLanguage;
+import org.codehaus.plexus.lang.Language;
 
 /**
  *
@@ -24,12 +31,16 @@ import org.apache.maven.mercury.util.Util;
 public class Config
 extends AbstractDataType
 {
+  private static final Language _lang = new DefaultLanguage( Config.class );
+  
   Collection<Repo> _repos;
+  
+  Collection<Auth> _auths;
   
   Collection<Repository> _repositories;
   
   public Collection<Repository> getRepositories()
-  throws MalformedURLException
+  throws BuildException
   {
     if( Util.isEmpty( _repos ) )
       return null;
@@ -53,7 +64,53 @@ extends AbstractDataType
       {
         DependencyProcessor dp = new MavenDependencyProcessor();
         
-        Server server = new Server( repo.getId(), new URL( repo._url ) );
+        Server server;
+        try
+        {
+          server = new Server( repo.getId(), new URL( repo._url ) );
+        }
+        catch( MalformedURLException e )
+        {
+          throw new BuildException(e);
+        }
+        
+        if( repo._authid != null )
+        {
+          Auth au = null;
+          
+          if( _auths == null )
+            throw new BuildException( _lang.getMessage( "config.no.auths", repo._authid ) );
+          
+          for( Auth a : _auths )
+            if( repo._authid.equals( a.getId() ) )
+              au = a;
+          
+          if( au == null )
+            throw new BuildException( _lang.getMessage( "config.no.auth.for.id", repo._authid ) );
+          
+          Credentials serverCred = createCredentials( au );
+          
+          server.setServerCredentials( serverCred );
+        }
+        
+        if( repo._proxyauthid != null )
+        {
+          Auth au = null;
+          
+          if( _auths == null )
+            throw new BuildException( _lang.getMessage( "config.no.proxy.auths", repo._proxyauthid ) );
+          
+          for( Auth a : _auths )
+            if( repo._proxyauthid.equals( a.getId() ) )
+              au = a;
+          
+          if( au == null )
+            throw new BuildException( _lang.getMessage( "config.no.proxy.auth.for.id", repo._proxyauthid ) );
+          
+          Credentials proxyCred = createCredentials( au );
+          
+          server.setProxyCredentials( proxyCred );
+        }
         
         RemoteRepositoryM2 r  = new RemoteRepositoryM2( server, dp  );
         
@@ -62,6 +119,31 @@ extends AbstractDataType
     }
 
     return _repositories;
+  }
+  
+  private static Credentials createCredentials( Auth a )
+  {
+    Credentials cred = null;
+    
+    if( a._certfile != null )
+    {
+      File cf = new File( a._certfile );
+      if( ! cf.exists() )
+        throw new BuildException( _lang.getMessage( "config.no.cert.file", a._certfile ) );
+      
+      try
+      {
+        cred = new Credentials( FileUtil.readRawData( cf ), a._name, a._pass );
+      }
+      catch( IOException e )
+      {
+        throw new BuildException(e);
+      }
+    }
+    else
+      cred = new Credentials( a._name, a._pass );
+    
+    return cred;
   }
   
   public Repo createRepo()
@@ -74,6 +156,18 @@ extends AbstractDataType
     _repos.add( r );
     
     return r;
+  }
+  
+  public Auth createAuth()
+  {
+    if( _auths == null )
+    _auths = new ArrayList<Auth>(4);
+    
+    Auth a = new Auth();
+    
+    _auths.add( a );
+    
+    return a;
   }
   
   public class Repo
