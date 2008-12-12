@@ -89,7 +89,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>${project.artifactId}-all</finalName>
+              <finalName>${project.artifactId}-${project.version}-all</finalName>
               <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
               <createDependencyReducedPom>true</createDependencyReducedPom>
               <artifactSet>
