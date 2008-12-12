@@ -20,7 +20,10 @@ package org.apache.maven.mercury.artifact;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
@@ -70,6 +73,8 @@ public class ArtifactBasicMetadata
   protected Collection<ArtifactBasicMetadata> inclusions;
   
   protected Collection<ArtifactBasicMetadata> exclusions;
+  
+  protected Map<String, String> attributes;
 
   /** 
    * transient helper objects, used by DependencyBuilder.
@@ -80,6 +85,56 @@ public class ArtifactBasicMetadata
   //------------------------------------------------------------------
   public ArtifactBasicMetadata()
   {
+  }
+  //------------------------------------------------------------------
+  private void processAttributes( String as )
+  {
+    if( as == null || as.length() < 1 )
+      return;
+    
+    String attrString = as.trim();
+    
+    if( attrString == null || attrString.length() < 1 )
+      return;
+    
+    int fromCh = attrString.indexOf( '{' ); 
+    int toCh   = attrString.indexOf( '}' ); 
+    
+    if( fromCh != -1 && toCh != -1 )
+      attrString = attrString.substring( fromCh+1, toCh );
+    
+    String [] entries = attrString.split( "," );
+    
+    if( entries != null )
+      for( int i=0; i<entries.length; i++ )
+      {
+        String e = entries[i];
+        
+        if( e == null )
+          continue;
+        
+        int eq = e.indexOf( '=' );
+        
+        if( eq == -1 )
+          continue;
+        
+        if( attributes == null )
+          attributes = new LinkedHashMap<String, String>( entries.length );
+        
+        String name = e.substring( 0, eq );
+        
+        if( name == null )
+          continue;
+        
+        name = name.trim();
+
+        String val = e.substring( eq+1 );
+
+        if( val != null )
+          val = val.trim();
+        
+        attributes.put( name, val );
+      }
   }
   //------------------------------------------------------------------
   /**
@@ -115,6 +170,12 @@ public class ArtifactBasicMetadata
     
     if( this.type == null || this.type.length() < 1 )
       this.type = DEFAULT_ARTIFACT_TYPE;
+
+    if( count > 5 )
+      this.scope = nullify( tokens[5] );
+
+    if( count > 6 )
+      processAttributes( nullify( tokens[6] ) );
   }
   //------------------------------------------------------------------
   /**

@@ -1,17 +1,10 @@
 package org.apache.maven.mercury.ant.tasks;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
-import org.apache.maven.mercury.metadata.DependencyBuilder;
-import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
-import org.apache.maven.mercury.repository.api.Repository;
-import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.util.Util;
-import org.apache.tools.ant.BuildException;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -64,11 +57,23 @@ extends AbstractDataType
   public class Dependency
   {
     ArtifactBasicMetadata _amd;
+    
+    boolean _optional = false;
 
     public void setName( String name )
     {
       _amd = new ArtifactBasicMetadata( name );
+
+      _amd.setOptional( _optional );
     }
 
+    public void setOptional( boolean optional )
+    {
+      this._optional = optional;
+
+      if( _amd != null )
+        _amd.setOptional( optional );
+    }
+    
   }
 }

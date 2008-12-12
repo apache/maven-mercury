@@ -82,7 +82,9 @@ extends AbstractDataType
     String _dir;
     String _url;
     String _type;
-
+    String _authid;
+    String _proxyauthid;
+    
     public void setUrl( String url )
     {
       this._url = url;
@@ -97,10 +99,43 @@ extends AbstractDataType
     {
       this._type = type;
     }
+
+    public void setAuthid( String authid )
+    {
+      this._authid = authid;
+    }
+
+    public void setProxyauthid( String proxyauthid )
+    {
+      this._proxyauthid = proxyauthid;
+    }
     
     boolean isLocal()
     {
       return _dir != null;
+    }
+  }
+  
+  public class Auth
+  extends AbstractDataType
+  {
+    String _name;
+    String _pass;
+    String _certfile;
+    
+    public void setName( String name )
+    {
+      this._name = name;
+    }
+
+    public void setPass( String pass )
+    {
+      this._pass = pass;
+    }
+
+    public void setCertfile( String certfile )
+    {
+      this._certfile = certfile;
     }
   }
 
