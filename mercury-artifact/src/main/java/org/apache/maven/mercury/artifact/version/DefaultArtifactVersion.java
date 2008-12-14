@@ -184,6 +184,12 @@ public class DefaultArtifactVersion
               {
                   fallback = true;
               }
+
+              // string tokenzier won't detect these and ignores them
+              if ( part1.indexOf( ".." ) >= 0 || part1.startsWith( "." ) || part1.endsWith( "." ) )
+              {
+                  fallback = true;
+              }
           }
           catch ( NumberFormatException e )
           {
