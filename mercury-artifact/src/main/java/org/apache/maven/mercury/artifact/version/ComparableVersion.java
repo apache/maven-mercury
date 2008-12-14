@@ -15,6 +15,7 @@ package org.apache.maven.mercury.artifact.version;
  * the License.
  */
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -63,11 +64,20 @@ public class ComparableVersion
     private static class IntegerItem
         implements Item
     {
-        private Integer value;
+    	private static final BigInteger BigInteger_ZERO = new BigInteger( "0" );
 
-        public IntegerItem( Integer i )
+        private final BigInteger value;
+
+        public static final IntegerItem ZERO = new IntegerItem();
+
+        private IntegerItem()
         {
-            this.value = i;
+        	this.value = BigInteger_ZERO;
+        }
+
+        public IntegerItem( String str )
+        {
+            this.value = new BigInteger( str );
         }
 
         public int getType()
@@ -77,14 +87,14 @@ public class ComparableVersion
 
         public boolean isNull()
         {
-            return ( value == 0 );
+            return BigInteger_ZERO.equals( value );
         }
 
         public int compareTo( Item item )
         {
             if ( item == null )
             {
-                return value == 0 ? 0 : 1; // 1.0 == 1, 1.1 > 1
+                return BigInteger_ZERO.equals( value ) ? 0 : 1; // 1.0 == 1, 1.1 > 1
             }
 
             switch ( item.getType() )
@@ -340,7 +350,7 @@ public class ComparableVersion
             {
                 if ( i == startIndex )
                 {
-                    list.add( new IntegerItem( 0 ) );
+                    list.add( IntegerItem.ZERO );
                 }
                 else
                 {
@@ -352,7 +362,7 @@ public class ComparableVersion
             {
                 if ( i == startIndex )
                 {
-                    list.add( new IntegerItem( 0 ) );
+                    list.add( IntegerItem.ZERO );
                 }
                 else
                 {
@@ -412,7 +422,7 @@ public class ComparableVersion
 
     private static Item parseItem( boolean isDigit, String buf )
     {
-        return isDigit ? new IntegerItem( new Integer( buf ) ) : new StringItem( buf, false );
+        return isDigit ? new IntegerItem( buf ) : new StringItem( buf, false );
     }
 
     public int compareTo( Object o )
