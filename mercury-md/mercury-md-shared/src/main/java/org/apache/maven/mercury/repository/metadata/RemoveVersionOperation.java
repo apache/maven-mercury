@@ -26,68 +26,73 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * removes a version from Metadata
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class RemoveVersionOperation
-implements MetadataOperation
+    implements MetadataOperation
 {
-  private static final Language lang = new DefaultLanguage( RemoveVersionOperation.class );
-  
-  private String version;
-  
-  /**
-   * @throws MetadataException 
-   * 
-   */
-  public RemoveVersionOperation(  StringOperand data  )
-  throws MetadataException
-  {
-    setOperand( data );
-  }
-  
-  public void setOperand( Object data )
-  throws MetadataException
-  {
-    if( data == null || !(data instanceof StringOperand) )
-      throw new MetadataException( lang.getMessage( "bad.operand", "StringOperand", data == null ? "null" : data.getClass().getName() ) );
-    
-    version = ((StringOperand)data).getOperand();
-  }
+    private static final Language LANG = new DefaultLanguage( RemoveVersionOperation.class );
 
-  /**
-   * remove version to the in-memory metadata instance
-   * 
-   * @param metadata
-   * @param version
-   * @return
-   */
-  public boolean perform( Metadata metadata )
-  throws MetadataException
-  {
-    if( metadata == null )
-      return false;
-    
-    Versioning vs = metadata.getVersioning(); 
-    
-    if( vs == null )
+    private String version;
+
+    /**
+     * @throws MetadataException
+     */
+    public RemoveVersionOperation( StringOperand data )
+        throws MetadataException
     {
-      return false;
+        setOperand( data );
     }
-    
-    if( vs.getVersions() != null && vs.getVersions().size() > 0 )
+
+    public void setOperand( Object data )
+        throws MetadataException
     {
-      List<String> vl = vs.getVersions();
-      if( ! vl.contains( version ) )
-        return false;
+        if ( data == null || !( data instanceof StringOperand ) )
+        {
+            throw new MetadataException( LANG.getMessage( "bad.operand", "StringOperand", data == null ? "null"
+                            : data.getClass().getName() ) );
+        }
+
+        version = ( (StringOperand) data ).getOperand();
     }
-    
-    vs.removeVersion( version );
-    vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
-    
-    return true;
-  }
+
+    /**
+     * remove version to the in-memory metadata instance
+     * 
+     * @param metadata
+     * @param version
+     * @return
+     */
+    public boolean perform( Metadata metadata )
+        throws MetadataException
+    {
+        if ( metadata == null )
+        {
+            return false;
+        }
+
+        Versioning vs = metadata.getVersioning();
+
+        if ( vs == null )
+        {
+            return false;
+        }
+
+        if ( vs.getVersions() != null && vs.getVersions().size() > 0 )
+        {
+            List<String> vl = vs.getVersions();
+            if ( !vl.contains( version ) )
+            {
+                return false;
+            }
+        }
+
+        vs.removeVersion( version );
+        vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
+
+        return true;
+    }
 
 }

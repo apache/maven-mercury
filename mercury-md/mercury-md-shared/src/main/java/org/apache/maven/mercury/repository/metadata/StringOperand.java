@@ -23,26 +23,28 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * String storage
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class StringOperand
     extends AbstractOperand
 {
-  private static final Language lang = new DefaultLanguage( StringOperand.class );
-  String str;
-  
-  public StringOperand( String data )
-  {
-    if( data == null || data.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "bad.string.data", data ) );
-    this.str = data;
-  }
-  
-  public String getOperand()
-  {
-    return str;
-  }
+    private static final Language LANG = new DefaultLanguage( StringOperand.class );
+
+    private String str;
+
+    public StringOperand( String data )
+    {
+        if ( data == null || data.length() < 1 )
+        {
+            throw new IllegalArgumentException( LANG.getMessage( "bad.string.data", data ) );
+        }
+        this.str = data;
+    }
+
+    public String getOperand()
+    {
+        return str;
+    }
 }

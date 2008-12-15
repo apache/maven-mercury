@@ -34,62 +34,68 @@ import org.codehaus.plexus.lang.Language;
 public class AddVersionOperation
     implements MetadataOperation
 {
-  private static final Language lang = new DefaultLanguage( AddVersionOperation.class );
+    private static final Language LANG = new DefaultLanguage( AddVersionOperation.class );
   
-  private String version;
+    private String version;
   
-  /**
-   * @throws MetadataException 
-   * 
-   */
-  public AddVersionOperation(  StringOperand data  )
-  throws MetadataException
-  {
-    setOperand( data );
-  }
+    /**
+     * @throws MetadataException
+     */
+    public AddVersionOperation( StringOperand data )
+        throws MetadataException
+    {
+        setOperand( data );
+    }
   
   public void setOperand( Object data )
-  throws MetadataException
-  {
-    if( data == null || !(data instanceof StringOperand) )
-      throw new MetadataException( lang.getMessage( "bad.operand", "StringOperand", data == null ? "null" : data.getClass().getName() ) );
-    
-    version = ((StringOperand)data).getOperand();
-  }
+        throws MetadataException
+    {
+        if ( data == null || !( data instanceof StringOperand ) )
+        {
+            throw new MetadataException( LANG.getMessage( "bad.operand", "StringOperand", data == null ? "null"
+                            : data.getClass().getName() ) );
+        }
+
+        version = ( (StringOperand) data ).getOperand();
+    }
 
   /**
-   * add version to the in-memory metadata instance
-   * 
-   * @param metadata
-   * @param version
-   * @return
-   * @throws MetadataException 
-   */
-  public boolean perform( Metadata metadata )
-  throws MetadataException
-  {
-    if( metadata == null )
-      return false;
-   
-    Versioning vs = metadata.getVersioning(); 
-    
-    if( vs == null )
+     * add version to the in-memory metadata instance
+     * 
+     * @param metadata
+     * @param version
+     * @return
+     * @throws MetadataException
+     */
+    public boolean perform( Metadata metadata )
+        throws MetadataException
     {
-      vs = new Versioning();
-      metadata.setVersioning( vs );
-    }
-    
-    if( vs.getVersions() != null && vs.getVersions().size() > 0 )
-    {
-      List<String> vl = vs.getVersions();
-      if( vl.contains( version ) )
-        return false;
-    }
-    
-    vs.addVersion( version );
-    vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
-    
-    return true;
-  }
+        if ( metadata == null )
+        {
+            return false;
+        }
 
+        Versioning vs = metadata.getVersioning();
+
+        if ( vs == null )
+        {
+            vs = new Versioning();
+            metadata.setVersioning( vs );
+        }
+
+        if ( vs.getVersions() != null && vs.getVersions().size() > 0 )
+        {
+            List<String> vl = vs.getVersions();
+
+            if ( vl.contains( version ) )
+            {
+                return false;
+            }
+        }
+
+        vs.addVersion( version );
+        vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
+
+        return true;
+    }
 }

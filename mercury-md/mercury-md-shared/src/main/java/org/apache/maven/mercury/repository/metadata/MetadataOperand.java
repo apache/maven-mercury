@@ -22,28 +22,30 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class MetadataOperand
     extends AbstractOperand
 {
-  private static final Language lang = new DefaultLanguage( MetadataOperand.class );
-  Metadata metadata;
-  
-  public MetadataOperand( Metadata data )
-  {
-    if( data == null  )
-      this.metadata = new Metadata();
-    else
-      this.metadata = data;
-  }
-  
-  public Metadata getOperand()
-  {
-    return metadata;
-  }
+    private static final Language LANG = new DefaultLanguage( MetadataOperand.class );
+
+    Metadata metadata;
+
+    public MetadataOperand( Metadata data )
+    {
+        if ( data == null )
+        {
+            this.metadata = new Metadata();
+        }
+        else
+        {
+            this.metadata = data;
+        }
+    }
+
+    public Metadata getOperand()
+    {
+        return metadata;
+    }
 }

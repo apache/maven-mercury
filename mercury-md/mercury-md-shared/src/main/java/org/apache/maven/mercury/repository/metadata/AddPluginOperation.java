@@ -18,7 +18,6 @@
  */
 package org.apache.maven.mercury.repository.metadata;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -33,7 +32,7 @@ import org.codehaus.plexus.lang.Language;
 public class AddPluginOperation
     implements MetadataOperation
 {
-    private static final Language lang = new DefaultLanguage( AddPluginOperation.class );
+    private static final Language LANG = new DefaultLanguage( AddPluginOperation.class );
 
     private Plugin plugin;
 
@@ -50,14 +49,16 @@ public class AddPluginOperation
         throws MetadataException
     {
         if ( data == null || !( data instanceof PluginOperand ) )
-            throw new MetadataException( lang.getMessage( "bad.operand", "PluginOperand", data == null ? "null" : data
-                .getClass().getName() ) );
+        {
+            throw new MetadataException( LANG.getMessage( "bad.operand", "PluginOperand", data == null ? "null"
+                            : data.getClass().getName() ) );
+        }
 
         plugin = ( (PluginOperand) data ).getOperand();
     }
 
     /**
-     * add version to the in-memory metadata instance
+     * add plugin to the in-memory metadata instance
      *
      * @param metadata
      * @param version
@@ -68,14 +69,14 @@ public class AddPluginOperation
         throws MetadataException
     {
         if ( metadata == null )
+        {
             return false;
+        }
 
         List<Plugin> plugins = metadata.getPlugins();
 
-        for ( Iterator<Plugin> pi = plugins.iterator(); pi.hasNext(); )
+        for ( Plugin p : plugins )
         {
-            Plugin p = pi.next();
-
             if ( p.getArtifactId().equals( plugin.getArtifactId() ) )
             {
                 // plugin already enlisted

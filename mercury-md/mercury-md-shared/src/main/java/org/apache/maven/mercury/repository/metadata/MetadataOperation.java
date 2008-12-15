@@ -27,16 +27,18 @@ package org.apache.maven.mercury.repository.metadata;
  */
 public interface MetadataOperation
 {
-  /** sets the operation's data */
-  public void setOperand( Object data )
-  throws MetadataException;
+    /**
+     *  sets the operation's data
+     */
+    public void setOperand( Object data )
+        throws MetadataException;
   
-  /**
-   * performs the operation
-   *
-   * @param metadata to perform on
-   * @return true if operation changed the data
-   */
-  public boolean perform( Metadata metadata )
-  throws MetadataException;
+    /**
+     * performs the operation
+     * 
+     * @param metadata to perform on
+     * @return true if operation changed the data
+     */
+    public boolean perform( Metadata metadata )
+        throws MetadataException;
 }

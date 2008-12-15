@@ -26,7 +26,7 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * removes a Plugin from Metadata
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -50,15 +50,17 @@ public class RemovePluginOperation
         throws MetadataException
     {
         if ( data == null || !( data instanceof PluginOperand ) )
-            throw new MetadataException( lang.getMessage( "bad.operand", "PluginOperand", data == null ? "null" : data
-                .getClass().getName() ) );
+        {
+            throw new MetadataException( lang.getMessage( "bad.operand", "PluginOperand", data == null ? "null"
+                            : data.getClass().getName() ) );
+        }
 
         plugin = ( (PluginOperand) data ).getOperand();
     }
 
     /**
      * remove version to the in-memory metadata instance
-     *
+     * 
      * @param metadata
      * @param version
      * @return

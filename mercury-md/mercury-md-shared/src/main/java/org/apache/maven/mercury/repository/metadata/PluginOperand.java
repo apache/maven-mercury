@@ -23,14 +23,14 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * Plugin storage
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
 public class PluginOperand
     extends AbstractOperand
 {
-    private static final Language lang = new DefaultLanguage( PluginOperand.class );
+    private static final Language LANG = new DefaultLanguage( PluginOperand.class );
 
     Plugin plugin;
 

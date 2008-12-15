@@ -22,65 +22,71 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- * adds new snapshot to metadata
- *
+ * adds version to metadata
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class SetVersionOperation
     implements MetadataOperation
 {
-  private static final Language lang = new DefaultLanguage( SetVersionOperation.class );
-  
-  private String version;
-  
-  /**
-   * @throws MetadataException 
-   * 
-   */
-  public SetVersionOperation(  StringOperand data  )
-  throws MetadataException
-  {
-    setOperand( data );
-  }
-  
-  public void setOperand( Object data )
-  throws MetadataException
-  {
-    if( data == null || !(data instanceof StringOperand) )
-      throw new MetadataException( lang.getMessage( "bad.operand", "SnapshotOperand", data == null ? "null" : data.getClass().getName() ) );
-    
-    version = ((StringOperand)data).getOperand();
-  }
+    private static final Language LANG = new DefaultLanguage( SetVersionOperation.class );
 
-  /**
-   * add/replace snapshot to the in-memory metadata instance
-   * 
-   * @param metadata
-   * @return
-   * @throws MetadataException 
-   */
-  public boolean perform( Metadata metadata )
-  throws MetadataException
-  {
-    if( metadata == null )
-      return false;
-   
-    String vs = metadata.getVersion(); 
-    
-    if( vs == null )
+    private String version;
+
+    /**
+     * @throws MetadataException
+     */
+    public SetVersionOperation( StringOperand data )
+        throws MetadataException
     {
-      if( version == null )
-        return false;
+        setOperand( data );
     }
-    else 
-      if( vs.equals( version ) )
-        return false;
-    
-    metadata.setVersion( version );
-    
-    return true;
-  }
+
+    public void setOperand( Object data )
+        throws MetadataException
+    {
+        if ( data == null || !( data instanceof StringOperand ) )
+        {
+            throw new MetadataException( LANG.getMessage( "bad.operand", "SnapshotOperand", data == null ? "null"
+                            : data.getClass().getName() ) );
+        }
+
+        version = ( (StringOperand) data ).getOperand();
+    }
+
+    /**
+     * add version to the in-memory metadata instance
+     * 
+     * @param metadata
+     * @return
+     * @throws MetadataException
+     */
+    public boolean perform( Metadata metadata )
+        throws MetadataException
+    {
+        if ( metadata == null )
+        {
+            return false;
+        }
+
+        String vs = metadata.getVersion();
+
+        if ( vs == null )
+        {
+            if ( version == null )
+            {
+                return false;
+            }
+        }
+        else if ( vs.equals( version ) )
+        {
+            return false;
+        }
+
+        metadata.setVersion( version );
+
+        return true;
+    }
 
 }
