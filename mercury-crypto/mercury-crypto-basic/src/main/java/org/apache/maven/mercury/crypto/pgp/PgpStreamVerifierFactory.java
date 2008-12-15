@@ -47,7 +47,7 @@ implements StreamVerifierFactory
 
   public static final String DEFAULT_EXTENSION = PgpHelper.EXTENSION;
 
-  private static final Language lang = new DefaultLanguage( PgpStreamVerifierFactory.class );
+  private static final Language LANG = new DefaultLanguage( PgpStreamVerifierFactory.class );
 
   private PGPPublicKeyRingCollection  trustedPublicKeyRing;
   
@@ -88,10 +88,10 @@ implements StreamVerifierFactory
       {
         trustedPublicKeyRing = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(trustedPublicKeyRingStream));
         if( trustedPublicKeyRing == null )
-          throw new StreamVerifierException( lang.getMessage( "bad.factory.init.verify.empty" ) );
+          throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.verify.empty" ) );
       }
       else
-        throw new StreamVerifierException( lang.getMessage( "bad.factory.init.verify" ) );
+        throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.verify" ) );
     }
     catch( Exception e )
     {
@@ -115,7 +115,7 @@ implements StreamVerifierFactory
         algorithm =  secKey.getPublicKey().getAlgorithm();
       }
       else
-        throw new StreamVerifierException( lang.getMessage( "bad.factory.init.generate" ) );
+        throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.generate" ) );
     }
     catch( Exception e )
     {

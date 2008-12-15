@@ -42,8 +42,8 @@ public class MetadataTreeNode
 {
   private static final int DEFAULT_CHILDREN_COUNT = 8;
   
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( MetadataTreeNode.class ); 
-  private static final Language _lang = new DefaultLanguage( MetadataTreeNode.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( MetadataTreeNode.class ); 
+  private static final Language LANG = new DefaultLanguage( MetadataTreeNode.class );
   
   /**
    * this node's artifact MD
@@ -105,10 +105,10 @@ public class MetadataTreeNode
     TreeSet<String> nodes = new TreeSet<String>();
     
     getDistinctNodes( this, nodes );
-if( _log.isDebugEnabled() )
+if( LOG.isDebugEnabled() )
 {
-  _log.debug( "tree distinct nodes count" );
-  _log.debug( nodes.toString() );
+  LOG.debug( "tree distinct nodes count" );
+  LOG.debug( nodes.toString() );
 }
 
     return nodes.size();

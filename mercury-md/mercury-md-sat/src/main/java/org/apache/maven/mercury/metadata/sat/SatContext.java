@@ -38,8 +38,8 @@ import org.codehaus.plexus.lang.Language;
   */
 class SatContext
 {
-  private static final Language _lang = new DefaultLanguage(SatContext.class);
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( SatContext.class );
+  private static final Language LANG = new DefaultLanguage(SatContext.class);
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( SatContext.class );
 
   Map<MetadataTreeNode,SatVar> variables;
   //-----------------------------------------------------------------------
@@ -58,16 +58,16 @@ class SatContext
     
     if( var != null )
     {
-      if( _log.isDebugEnabled() )
-        _log.debug( var.toString() );
+      if( LOG.isDebugEnabled() )
+        LOG.debug( var.toString() );
       return var;
     }
     
     var = new SatVar( n );
     variables.put( n, var );
     
-  if( _log.isDebugEnabled() )
-    _log.debug( var.toString() );
+  if( LOG.isDebugEnabled() )
+    LOG.debug( var.toString() );
 
     return var; 
   }
@@ -93,16 +93,16 @@ class SatContext
   public MetadataTreeNode getSolutionSubtree( MetadataTreeNode tree, int [] model )
   {
     if( tree == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.tree" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.tree" ) );
     
     if( tree.getMd() == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.tree.md" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.tree.md" ) );
     
     if( model == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.model" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.model" ) );
     
     if( model.length < 1 )
-      throw new IllegalArgumentException( _lang.getMessage( "empty.model" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "empty.model" ) );
     
     int sz = 0;
     

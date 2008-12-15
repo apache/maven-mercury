@@ -47,7 +47,7 @@ public class PgpStreamVerifier
 extends AbstractStreamVerifier
 implements StreamVerifier
 {
-  private static final Language lang = new DefaultLanguage( PgpStreamVerifier.class );
+  private static final Language LANG = new DefaultLanguage( PgpStreamVerifier.class );
   
   private PGPPublicKeyRingCollection trustedPublicKeyRing;
 
@@ -76,7 +76,7 @@ implements StreamVerifier
   throws StreamVerifierException
   {
     if( privateKey == null )
-      throw new IllegalArgumentException( lang.getMessage( "null.private.key" ));
+      throw new IllegalArgumentException( LANG.getMessage( "null.private.key" ));
     
     try
     {
@@ -103,7 +103,7 @@ implements StreamVerifier
       if( signature == null )
       {
         if( signatureGenerator == null )
-          throw new StreamVerifierException( lang.getMessage( "no.stream.processor" ) );
+          throw new StreamVerifierException( LANG.getMessage( "no.stream.processor" ) );
         signatureGenerator.update( (byte)b );
       }
       else
@@ -124,7 +124,7 @@ implements StreamVerifier
       if( signature == null )
       {
         if( signatureGenerator == null )
-          throw new StreamVerifierException( lang.getMessage( "no.stream.processor" ) );
+          throw new StreamVerifierException( LANG.getMessage( "no.stream.processor" ) );
         signatureGenerator.update( b, off, len );
       }
       else
@@ -142,10 +142,10 @@ implements StreamVerifier
     try
     {
       if( trustedPublicKeyRing == null )
-        throw new StreamVerifierException( lang.getMessage( "no.trusted.ring" ) );
+        throw new StreamVerifierException( LANG.getMessage( "no.trusted.ring" ) );
 
       if( signatureString == null || signatureString.length() < 1 )
-        throw new StreamVerifierException( lang.getMessage( "no.signature.string" ) );
+        throw new StreamVerifierException( LANG.getMessage( "no.signature.string" ) );
 
       signature = PgpHelper.readSignature( new ByteArrayInputStream( signatureString.getBytes() ) );
       
@@ -169,7 +169,7 @@ implements StreamVerifier
   {
 
     if( signature == null )
-      throw new StreamVerifierException( lang.getMessage( "null.verify.signature" ));
+      throw new StreamVerifierException( LANG.getMessage( "null.verify.signature" ));
 
     try
     {

@@ -81,8 +81,8 @@ public class FileUtil
   public static final int    K = 1024;
   public static final int    DEFAULT_BUFFER_SIZE = 10 * K;
   //---------------------------------------------------------------------------------------------------------------
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( FileUtil.class );
-  private static final Language _lang = new DefaultLanguage( FileUtil.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( FileUtil.class );
+  private static final Language LANG = new DefaultLanguage( FileUtil.class );
 
   private static final OverlappingFileLockException FILE_LOCKED = new OverlappingFileLockException();
   //---------------------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ public class FileUtil
       int len = (int)file.length();
       if( len == 0 )
       {
-        _log.info( _lang.getMessage( "reading.empty.file", file.getAbsolutePath() ) );
+        LOG.info( LANG.getMessage( "reading.empty.file", file.getAbsolutePath() ) );
         return null;
       }
 
@@ -215,13 +215,13 @@ public class FileUtil
         }
         catch( IOException e )
         {
-          throw new FileUtilException( _lang.getMessage( "cannot.read.signature.file", sigFileName, e.getMessage() ) );
+          throw new FileUtilException( LANG.getMessage( "cannot.read.signature.file", sigFileName, e.getMessage() ) );
         }
         vs.add( sv );
       }
       else if( ! sv.getAttributes().isLenient() )
       {
-        throw new FileUtilException( _lang.getMessage( "no.signature.file", ext, sigFileName ) );
+        throw new FileUtilException( LANG.getMessage( "no.signature.file", ext, sigFileName ) );
       }
       // otherwise ignore absence of signature file, if verifier is lenient
     }
@@ -265,7 +265,7 @@ public class FileUtil
           else
           {
             if( !sv.getAttributes().isLenient() )
-              throw new StreamVerifierException( _lang.getMessage( "signature.failed", sv.getAttributes().getExtension(), fileName ) );
+              throw new StreamVerifierException( LANG.getMessage( "signature.failed", sv.getAttributes().getExtension(), fileName ) );
           }
         }
       }
@@ -535,7 +535,7 @@ public class FileUtil
       if( !sf.exists() )
       {
         if( force )
-          throw new StreamVerifierException( _lang.getMessage( "no.mandatory.signature", f.getAbsolutePath(), sf.getAbsolutePath() ) );
+          throw new StreamVerifierException( LANG.getMessage( "no.mandatory.signature", f.getAbsolutePath(), sf.getAbsolutePath() ) );
         else
           continue;
       }
@@ -579,7 +579,7 @@ public class FileUtil
 
       if( fl != null )
       {
-        throw new StreamVerifierException( _lang.getMessage( "file.failed.verification", f.getAbsolutePath(), fl.toString() ) );
+        throw new StreamVerifierException( LANG.getMessage( "file.failed.verification", f.getAbsolutePath(), fl.toString() ) );
       }
     }
     finally
@@ -593,35 +593,35 @@ public class FileUtil
   public static void main( String[] args )
   throws IOException, StreamObserverException
   {
-    Option sign      = new Option( "sign", _lang.getMessage( "option.sign" ) );
-    Option verify    = new Option( "verify", _lang.getMessage( "option.verify" ) );
+    Option sign      = new Option( "sign", LANG.getMessage( "option.sign" ) );
+    Option verify    = new Option( "verify", LANG.getMessage( "option.verify" ) );
     OptionGroup  cmd = new OptionGroup();
     cmd.addOption( sign );
     cmd.addOption( verify );
 
-    Option recurce   = new Option( "r", _lang.getMessage( "option.r" ) );
-    Option force     = new Option( "force", _lang.getMessage( "option.force" ) );
+    Option recurce   = new Option( "r", LANG.getMessage( "option.r" ) );
+    Option force     = new Option( "force", LANG.getMessage( "option.force" ) );
 
     OptionGroup  sig = new OptionGroup();
-    Option sha1      = new Option( "sha1", _lang.getMessage( "option.sha1" ) );
-    Option pgp       = new Option( "pgp", _lang.getMessage( "option.pgp" ) );
+    Option sha1      = new Option( "sha1", LANG.getMessage( "option.sha1" ) );
+    Option pgp       = new Option( "pgp", LANG.getMessage( "option.pgp" ) );
     sig.addOption( sha1 );
     sig.addOption( pgp );
 
     Option keyring   = OptionBuilder.withArgName( "file" )
                                     .hasArg()
                                     .withType( java.io.File.class )
-                                    .withDescription( _lang.getMessage( "option.keyring" ) )
+                                    .withDescription( LANG.getMessage( "option.keyring" ) )
                                     .create( "keyring" )
                                     ;
     Option keyid     = OptionBuilder.withArgName( "hexstring" )
                                     .hasArg()
-                                    .withDescription( _lang.getMessage( "option.keyid" ) )
+                                    .withDescription( LANG.getMessage( "option.keyid" ) )
                                     .create( "keyid" )
                                     ;
     Option keypass   = OptionBuilder.withArgName( "string" )
                                     .hasArg()
-                                    .withDescription( _lang.getMessage( "option.keypass" ) )
+                                    .withDescription( LANG.getMessage( "option.keypass" ) )
                                     .create( "keypass" )
                                     ;
 
@@ -686,7 +686,7 @@ public class FileUtil
       }
       else
       {
-        System.err.println( _lang.getMessage( "bad.pgp.args" ) );
+        System.err.println( LANG.getMessage( "bad.pgp.args" ) );
         return;
       }
     }
@@ -725,12 +725,12 @@ public class FileUtil
       f = new File( fName );
       if( ! f.exists() )
       {
-        System.out.println( _lang.getMessage( "file.not.exists", fName ) );
+        System.out.println( LANG.getMessage( "file.not.exists", fName ) );
         continue;
       }
       if( f.isDirectory() && ! recurse )
       {
-        System.out.println( _lang.getMessage( "file.is.directory", fName ) );
+        System.out.println( LANG.getMessage( "file.is.directory", fName ) );
         continue;
       }
       if( sign )
@@ -763,14 +763,14 @@ public class FileUtil
       try{ Thread.sleep( 1l ); } catch( InterruptedException e ){}
       df.mkdirs();
       exists = df.exists();
-      _log.info( _lang.getMessage( "had.to.create.directory", dir, exists + "" ) );
+      LOG.info( LANG.getMessage( "had.to.create.directory", dir, exists + "" ) );
     }
 
     if( !exists )
-      throw new IOException( _lang.getMessage( "cannot.create.directory", dir ) );
+      throw new IOException( LANG.getMessage( "cannot.create.directory", dir ) );
 
     if( !df.isDirectory() )
-      throw new IOException( _lang.getMessage( "file.is.not.directory", dir, df.exists() + "", df.isDirectory() + "", df.isFile() + "" ) );
+      throw new IOException( LANG.getMessage( "file.is.not.directory", dir, df.exists() + "", df.isDirectory() + "", df.isFile() + "" ) );
 
     File lockFile = new File( dir,LOCK_FILE );
 
@@ -821,14 +821,14 @@ public class FileUtil
       try{ Thread.sleep( 1l ); } catch( InterruptedException e ){}
       df.mkdirs();
       exists = df.exists();
-      _log.info( _lang.getMessage( "had.to.create.directory", dir, exists + "" ) );
+      LOG.info( LANG.getMessage( "had.to.create.directory", dir, exists + "" ) );
     }
 
     if( !exists )
-      throw new IOException( _lang.getMessage( "cannot.create.directory", dir ) );
+      throw new IOException( LANG.getMessage( "cannot.create.directory", dir ) );
 
     if( !df.isDirectory() )
-      throw new IOException( _lang.getMessage( "file.is.not.directory", dir, df.exists() + "", df.isDirectory() + "", df.isFile() + "" ) );
+      throw new IOException( LANG.getMessage( "file.is.not.directory", dir, df.exists() + "", df.isDirectory() + "", df.isFile() + "" ) );
 
     File lockFile = new File( dir,LOCK_FILE );
     if( !lockFile.exists() )
@@ -865,7 +865,7 @@ public class FileUtil
     {
       File df = new File( dir );
       if( !df.isDirectory() )
-        throw new IOException( _lang.getMessage( "file.is.not.directory", dir ) );
+        throw new IOException( LANG.getMessage( "file.is.not.directory", dir ) );
 
       File lock = new File( dir,LOCK_FILE );
       if( lock.exists() )
@@ -873,7 +873,7 @@ public class FileUtil
     }
     catch( IOException e )
     {
-      _log.error( e.getMessage() );
+      LOG.error( e.getMessage() );
     }
   }
   //---------------------------------------------------------------------------------------------------------------
@@ -929,7 +929,7 @@ public class FileUtil
   public static int depth( File file )
   {
     if( file == null || !file.exists() )
-      throw new IllegalArgumentException( _lang.getMessage( "file.not.exists.error", file == null ? "null" : file.getAbsolutePath() ) );
+      throw new IllegalArgumentException( LANG.getMessage( "file.not.exists.error", file == null ? "null" : file.getAbsolutePath() ) );
 
     if( file.isFile() )
       return 0;

@@ -63,7 +63,7 @@ implements RepositoryMetadataCache
   public static final String EVENT_UPDATE_GAV = "update.gav";
   public static final String EVENT_SAVE_RAW = "save.raw";
 
-  private static final Language _lang = new DefaultLanguage( RepositoryGAVMetadata.class );
+  private static final Language LANG = new DefaultLanguage( RepositoryGAVMetadata.class );
   
   static volatile Map<String, MetadataCacheFs> fsCaches = Collections.synchronizedMap( new HashMap<String, MetadataCacheFs>(2) ); 
   
@@ -94,7 +94,7 @@ implements RepositoryMetadataCache
     if( root == null 
         || ( root.exists() && root.isFile() )
     )
-      throw new IllegalArgumentException( _lang.getMessage( "bad.root.file", root == null ? "null" : root.getAbsolutePath() ) );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.root.file", root == null ? "null" : root.getAbsolutePath() ) );
     
     String key = root.getCanonicalPath();
     

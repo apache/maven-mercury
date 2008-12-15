@@ -31,10 +31,10 @@ import org.codehaus.plexus.lang.Language;
 public class ResolveTask
 extends AbstractAntTask
 {
-  private static final Language _lang = new DefaultLanguage( ResolveTask.class );
+  private static final Language LANG = new DefaultLanguage( ResolveTask.class );
   
-  public static final String TASK_NAME = _lang.getMessage( "resolve.task.name" );
-  public static final String TASK_DESC = _lang.getMessage( "resolve.task.desc" );
+  public static final String TASK_NAME = LANG.getMessage( "resolve.task.name" );
+  public static final String TASK_DESC = LANG.getMessage( "resolve.task.desc" );
   
   private boolean _transitive = true;
   
@@ -69,7 +69,7 @@ extends AbstractAntTask
   {
     if( _configId == null )
     {
-      throwIfEnabled( _lang.getMessage( "config.id.mandatory" ) );
+      throwIfEnabled( LANG.getMessage( "config.id.mandatory" ) );
       return;
     }
     
@@ -77,13 +77,13 @@ extends AbstractAntTask
 
     if( so == null )
     {
-      throwIfEnabled( _lang.getMessage( "config.id.object.null", _configId ) );
+      throwIfEnabled( LANG.getMessage( "config.id.object.null", _configId ) );
       return;
     }
     
     if( ! Config.class.isAssignableFrom( so.getClass() ) )
     {
-      throwIfEnabled( _lang.getMessage( "config.id.object.wrong", _configId, so.getClass().getName() ) );
+      throwIfEnabled( LANG.getMessage( "config.id.object.wrong", _configId, so.getClass().getName() ) );
       return;
     }
     
@@ -91,7 +91,7 @@ extends AbstractAntTask
     
     if( Util.isEmpty( _pathId ) && Util.isEmpty( _pathId ) )
     {
-      throwIfEnabled( _lang.getMessage("no.path.ref") );
+      throwIfEnabled( LANG.getMessage("no.path.ref") );
       return;
     }
     
@@ -99,7 +99,7 @@ extends AbstractAntTask
     
     if( _depId == null )
     {
-      throwIfEnabled( _lang.getMessage( "no.dep.id" ) );
+      throwIfEnabled( LANG.getMessage( "no.dep.id" ) );
       return;
     }
     
@@ -107,13 +107,13 @@ extends AbstractAntTask
     
     if( d == null )
     {
-      throwIfEnabled( _lang.getMessage( "no.dep", _depId ) );
+      throwIfEnabled( LANG.getMessage( "no.dep", _depId ) );
       return;
     }
     
-    if( ! Dep.class.isAssignableFrom( d.getClass() )  )
+    if( ! Dep.class.isAssignableFrom( d.getClass() ) )
     {
-      throwIfEnabled( _lang.getMessage( "bad.dep", _depId, d.getClass().getName(), Dep.class.getName() ) );
+      throwIfEnabled( LANG.getMessage( "bad.dep", _depId, d.getClass().getName(), Dep.class.getName() ) );
       return;
     }
     
@@ -125,7 +125,7 @@ extends AbstractAntTask
     {
       if( getProject().getReference( _pathId ) != null )
       {
-        throwIfEnabled( _lang.getMessage( "path.exists", _pathId ) );
+        throwIfEnabled( LANG.getMessage( "path.exists", _pathId ) );
         return;
       }
     }
@@ -135,7 +135,7 @@ extends AbstractAntTask
 
       if( p == null )
       {
-        throwIfEnabled( _lang.getMessage( "no.path.ref", _refPathId ) );
+        throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
         return;
       }
 
@@ -163,7 +163,7 @@ extends AbstractAntTask
       
       if( aRes.hasExceptions() )
       {
-        throwIfEnabled( _lang.getMessage( "vr.error", aRes.getExceptions().toString() ) );
+        throwIfEnabled( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
         return;
       }
       
@@ -180,7 +180,7 @@ extends AbstractAntTask
       {
         List<Artifact> artifacts = resMap.get( key );
 
-        if( !Util.isEmpty( artifacts )  )
+        if( !Util.isEmpty( artifacts ) )
           for( Artifact a : artifacts )
           {
             if( dir == null )

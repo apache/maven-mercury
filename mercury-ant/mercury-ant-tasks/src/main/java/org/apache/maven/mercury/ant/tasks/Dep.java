@@ -18,7 +18,7 @@ import org.codehaus.plexus.lang.Language;
 public class Dep
 extends AbstractDataType
 {
-  private static final Language _lang = new DefaultLanguage( Dep.class );
+  private static final Language LANG = new DefaultLanguage( Dep.class );
   
   private List<Dependency> _dependencies;
   

@@ -77,8 +77,8 @@ public class DefaultPlexusMercury
 extends AbstractLogEnabled
 implements PlexusMercury
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DefaultPlexusMercury.class ); 
-  private static final Language _lang = new DefaultLanguage( DefaultPlexusMercury.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultPlexusMercury.class ); 
+  private static final Language LANG = new DefaultLanguage( DefaultPlexusMercury.class );
   
   @Requirement( hint="maven" )
   DependencyProcessor dependencyProcessor;
@@ -94,7 +94,7 @@ implements PlexusMercury
       return dependencyProcessor;
     
     if( plexus == null )
-      throw new RepositoryException( _lang.getMessage( "no.plexus.injected" ) );
+      throw new RepositoryException( LANG.getMessage( "no.plexus.injected" ) );
     
     DependencyProcessor dp = null;
     
@@ -106,7 +106,7 @@ implements PlexusMercury
     }
     catch( ComponentLookupException e )
     {
-      throw new RepositoryException( _lang.getMessage( "no.dep.processor.injected", hint, e.getMessage() ) );
+      throw new RepositoryException( LANG.getMessage( "no.dep.processor.injected", hint, e.getMessage() ) );
     }
   }
   //---------------------------------------------------------------
@@ -199,7 +199,7 @@ implements PlexusMercury
       throws RepositoryException
   {
     if( repo == null )
-      throw new RepositoryException( _lang.getMessage( "null.repo" ) );
+      throw new RepositoryException( LANG.getMessage( "null.repo" ) );
     
     RepositoryWriter wr = repo.getWriter();
     
@@ -211,7 +211,7 @@ implements PlexusMercury
   throws RepositoryException
   {
     if( Util.isEmpty( repos ) )
-      throw new RepositoryException( _lang.getMessage( "null.repo" ) );
+      throw new RepositoryException( LANG.getMessage( "null.repo" ) );
     
     VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
     
@@ -281,7 +281,7 @@ implements PlexusMercury
   throws RepositoryException
   {
     if( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
-      throw new IllegalArgumentException( _lang.getMessage( "no.artifacts" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
     
     if( artifacts.size() > 1 )
       throw new RepositoryException( "I dont support more'n 1 artifact now" );

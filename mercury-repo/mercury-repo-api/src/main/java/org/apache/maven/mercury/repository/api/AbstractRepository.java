@@ -53,7 +53,7 @@ import org.codehaus.plexus.lang.Language;
 public abstract class AbstractRepository
 implements Repository
 {
-  private static final Language lang = new DefaultLanguage( AbstractRepository.class );
+  private static final Language LANG = new DefaultLanguage( AbstractRepository.class );
   //---------------------------------------------------------------------------
   public static final String DEFAULT_REMOTE_READ_PROTOCOL  = "http";
   public static final String DEFAULT_REMOTE_WRITE_PROTOCOL = "http";
@@ -138,10 +138,10 @@ implements Repository
   throws IllegalArgumentException
   {
     if( type == null || type.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "null.reader.type" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.reader.type" ) );
     
     if( readerFactory == null )
-      throw new IllegalArgumentException( lang.getMessage( "null.reader.factory" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.reader.factory" ) );
     
     readerRegistry.put(  type, readerFactory );
   }
@@ -150,10 +150,10 @@ implements Repository
   throws IllegalArgumentException
   {
     if( type == null || type.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "null.writer.type" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.writer.type" ) );
     
     if( writerFactory == null )
-      throw new IllegalArgumentException( lang.getMessage( "null.writer.factory" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.writer.factory" ) );
     
     writerRegistry.put(  type, writerFactory );
   }
@@ -162,7 +162,7 @@ implements Repository
   throws IllegalArgumentException
   {
     if( type == null || type.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "null.reader.type" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.reader.type" ) );
     
     readerRegistry.remove( type );
   }
@@ -171,7 +171,7 @@ implements Repository
   throws IllegalArgumentException
   {
     if( type == null || type.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "null.writer.type" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.writer.type" ) );
     
     writerRegistry.remove( type );
   }
@@ -180,15 +180,15 @@ implements Repository
   throws IllegalArgumentException, RepositoryException
   {
     if( type == null || type.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "null.reader.type" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.reader.type" ) );
     
     if( repo == null )
-      throw new IllegalArgumentException( lang.getMessage( "null.reader.repo" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.reader.repo" ) );
     
     RepositoryReaderFactory rf = readerRegistry.get( type );
     
     if( rf == null )
-      throw new RepositoryException( lang.getMessage( "null.reader.factory.found" ) );
+      throw new RepositoryException( LANG.getMessage( "null.reader.factory.found" ) );
     
     return rf.getReader( repo, mdProcessor );
   }
@@ -197,15 +197,15 @@ implements Repository
   throws IllegalArgumentException, RepositoryException
   {
     if( type == null || type.length() < 1 )
-      throw new IllegalArgumentException( lang.getMessage( "null.writer.type" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.writer.type" ) );
     
     if( repo == null )
-      throw new IllegalArgumentException( lang.getMessage( "null.writer.repo" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.writer.repo" ) );
     
     RepositoryWriterFactory wf = writerRegistry.get( type );
     
     if( wf == null )
-      throw new RepositoryException( lang.getMessage( "null.writer.factory.found" ) );
+      throw new RepositoryException( LANG.getMessage( "null.writer.factory.found" ) );
     
     return wf.getWriter( repo );
   }

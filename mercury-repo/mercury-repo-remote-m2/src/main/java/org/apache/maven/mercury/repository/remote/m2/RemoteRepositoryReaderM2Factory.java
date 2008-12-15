@@ -31,19 +31,19 @@ import org.codehaus.plexus.lang.Language;
 public class RemoteRepositoryReaderM2Factory
 implements RepositoryReaderFactory
 {
-  private static final Language lang = new DefaultLanguage( RemoteRepositoryReaderM2Factory.class );
-  private static final RemoteRepositoryReaderM2Factory factory = new RemoteRepositoryReaderM2Factory();
+  private static final Language LANG = new DefaultLanguage( RemoteRepositoryReaderM2Factory.class );
+  private static final RemoteRepositoryReaderM2Factory FACTORY = new RemoteRepositoryReaderM2Factory();
   
   static 
   {
-    AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, factory  );
+    AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, FACTORY  );
   }
   
   public RepositoryReader getReader( Repository repo, DependencyProcessor mdProcessor )
   throws RepositoryException
   {
     if( repo == null || !(repo instanceof RemoteRepository) )
-      throw new RepositoryException( lang.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
+      throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
     
     return new RemoteRepositoryReaderM2( (RemoteRepository)repo, mdProcessor );
   }

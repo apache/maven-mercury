@@ -48,8 +48,8 @@ public class EventManager
   public static final String SYSTEM_PROPERTY_EVENT_MASK = "maven.mercury.events";
   public static final String systemPropertyEventMask = System.getProperty( SYSTEM_PROPERTY_EVENT_MASK, null );
 
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( EventManager.class );
-  private static final Language _lang = new DefaultLanguage( EventManager.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( EventManager.class );
+  private static final Language LANG = new DefaultLanguage( EventManager.class );
   
   final List<MercuryEventListener> _listeners = new ArrayList<MercuryEventListener>(8);
   
@@ -171,7 +171,7 @@ public class EventManager
       }
       catch( Throwable th )
       {
-        _log.error( _lang.getMessage( "listener.error", th.getMessage() ) );
+        LOG.error( LANG.getMessage( "listener.error", th.getMessage() ) );
       }
     }
   }

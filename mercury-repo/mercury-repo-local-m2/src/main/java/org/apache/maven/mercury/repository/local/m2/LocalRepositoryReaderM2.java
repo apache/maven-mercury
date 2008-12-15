@@ -60,8 +60,8 @@ public class LocalRepositoryReaderM2
 extends AbstracRepositoryReader
 implements RepositoryReader, MetadataReader
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryReaderM2.class ); 
-  private static final Language _lang = new DefaultLanguage( LocalRepositoryReaderM2.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryReaderM2.class ); 
+  private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderM2.class );
   //---------------------------------------------------------------------------------------------------------------
   private static final String [] _protocols = new String [] { "file" };
   
@@ -101,7 +101,7 @@ implements RepositoryReader, MetadataReader
     
     if( !gaDir.exists() )
     {
-      res.addError( bmd, new RepositoryException( _lang.getMessage( "ga.not.found", bmd.toString(), loc.getGaPath() ) ) );
+      res.addError( bmd, new RepositoryException( LANG.getMessage( "ga.not.found", bmd.toString(), loc.getGaPath() ) ) );
       return null;
     }
     
@@ -150,7 +150,7 @@ implements RepositoryReader, MetadataReader
 
       if( loc.getVersion() == null )
       {
-        res.addError( bmd, new RepositoryException( _lang.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) ) );
+        res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) ) );
         return null;
       }
       
@@ -172,7 +172,7 @@ implements RepositoryReader, MetadataReader
       File gavDir = new File( gaDir, loc.getVersion() );
       if( !gavDir.exists() )
       {
-        res.addError( bmd, new RepositoryException( _lang.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) ) );
+        res.addError( bmd, new RepositoryException( LANG.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) ) );
         return null;
       }
       
@@ -194,7 +194,7 @@ implements RepositoryReader, MetadataReader
       IllegalArgumentException
   {
     if( query == null || query.isEmpty() )
-      throw new IllegalArgumentException( _lang.getMessage( "empty.query", query==null?"null":"empty" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "empty.query", query==null?"null":"empty" ) );
     
     ArtifactResults res = new ArtifactResults();
     
@@ -217,7 +217,7 @@ implements RepositoryReader, MetadataReader
       // binary calculated 
       if( ! binary.exists() )
       {
-        res.addError( bmd, new RepositoryException( _lang.getMessage( "binary.not.found", bmd.toString(), binary.getAbsolutePath() ) ) );
+        res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(), binary.getAbsolutePath() ) ) );
         continue;
       }
 
@@ -243,7 +243,7 @@ implements RepositoryReader, MetadataReader
               da.setPomBlob( FileUtil.readRawData( pomFile ) );
           }
           else
-            _log.warn( _lang.getMessage( "pom.not.found", bmd.toString()) );
+            LOG.warn( LANG.getMessage( "pom.not.found", bmd.toString()) );
         }
 
         da.setVersion( loc.getVersion() );
@@ -280,13 +280,13 @@ implements RepositoryReader, MetadataReader
           }
           catch( IOException e )
           {
-            throw new RepositoryException( _lang.getMessage( "cannot.read.signature.file", sigFileName, e.getMessage() ) );
+            throw new RepositoryException( LANG.getMessage( "cannot.read.signature.file", sigFileName, e.getMessage() ) );
           }
           vs.add( sv );
         }
         else if( ! sv.getAttributes().isLenient() )
         {
-          throw new RepositoryException( _lang.getMessage( "no.signature.file", ext, sigFileName ) );
+          throw new RepositoryException( LANG.getMessage( "no.signature.file", ext, sigFileName ) );
         }
         // otherwise ignore absence of signature file, if verifier is lenient
       }
@@ -321,7 +321,7 @@ implements RepositoryReader, MetadataReader
           else
           {
             if( !sv.getAttributes().isLenient() )
-              throw new RepositoryException( _lang.getMessage( "signature.failed", sv.getAttributes().getExtension(), fileName ) );
+              throw new RepositoryException( LANG.getMessage( "signature.failed", sv.getAttributes().getExtension(), fileName ) );
           }
         }
       }
@@ -362,7 +362,7 @@ implements RepositoryReader, MetadataReader
       pomFile = new File( _repoDir, pomPath );
       if( ! pomFile.exists() )
       {
-        _log.warn( "file \""+pomPath+"\" does not exist in local repo" );
+        LOG.warn( "file \""+pomPath+"\" does not exist in local repo" );
         continue;
       }
       
@@ -382,7 +382,7 @@ implements RepositoryReader, MetadataReader
       }
       catch( Exception e )
       {
-        _log.warn( "error reading "+bmd.toString()+" dependencies", e );
+        LOG.warn( "error reading "+bmd.toString()+" dependencies", e );
         continue;
       }
       
@@ -437,7 +437,7 @@ implements RepositoryReader, MetadataReader
 
     if( loc.getVersion() == null )
     {
-      res.addError( bmd, new RepositoryException( _lang.getMessage( "snapshot.not.found", bmd.toString(), gavDir.getAbsolutePath() ) ) );
+      res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", bmd.toString(), gavDir.getAbsolutePath() ) ) );
       return false;
     }
     

@@ -47,7 +47,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  */
 class CachedMetadata
 {
-  private static final Language _lang = new DefaultLanguage( CachedMetadata.class );
+  private static final Language LANG = new DefaultLanguage( CachedMetadata.class );
   
   private CachedRawMetadata crm;
   
@@ -173,7 +173,7 @@ class CachedMetadata
     
     if( Util.isEmpty( a ) )
       if( mandatory )
-        throw new MetadataCorruptionException(  _lang.getMessage( "no.mandatory.attribute", elem, attr ) );
+        throw new MetadataCorruptionException(  LANG.getMessage( "no.mandatory.attribute", elem, attr ) );
       else 
         return null;
     

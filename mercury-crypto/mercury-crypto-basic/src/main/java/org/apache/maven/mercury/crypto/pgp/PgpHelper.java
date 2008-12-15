@@ -49,7 +49,7 @@ public class PgpHelper
   public static final String PROVIDER = "BC";
   public static final String EXTENSION = "asc";
 
-  private static final Language lang = new DefaultLanguage( PgpHelper.class );
+  private static final Language LANG = new DefaultLanguage( PgpHelper.class );
   //---------------------------------------------------------------------------------
   static 
   {
@@ -69,10 +69,10 @@ public class PgpHelper
   throws IOException, PGPException
   {
     if( in == null )
-      throw new IllegalArgumentException( lang.getMessage( "null.input.stream" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.input.stream" ) );
 
     if( hexId == null || hexId.length() < 16 )
-      throw new IllegalArgumentException( lang.getMessage( "bad.key.id", hexId ) );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.key.id", hexId ) );
     
     long id = hexToId( hexId );
 
@@ -90,7 +90,7 @@ public class PgpHelper
         return keyRing;
     }
 
-    throw new IllegalArgumentException( lang.getMessage( "no.secret.key", hexId ) );
+    throw new IllegalArgumentException( LANG.getMessage( "no.secret.key", hexId ) );
   }
   //---------------------------------------------------------------------------------
   public static long hexToId( String hexId )
@@ -114,7 +114,7 @@ public class PgpHelper
     Object pgpObject = pgpObjectFactory.nextObject();
     
     if( pgpObject == null )
-      throw new PGPException( lang.getMessage( "no.objects.in.stream" ) );
+      throw new PGPException( LANG.getMessage( "no.objects.in.stream" ) );
 
     if( pgpObject instanceof PGPCompressedData )
     {
@@ -130,7 +130,7 @@ public class PgpHelper
     }
     
     if( sigList.size() < 1 )
-      throw new PGPException( lang.getMessage( "no.signatures.in.stream" ) );
+      throw new PGPException( LANG.getMessage( "no.signatures.in.stream" ) );
     
     PGPSignature sig = sigList.get(0);
     

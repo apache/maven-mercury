@@ -34,7 +34,7 @@ import org.apache.maven.wagon.events.TransferEvent;
 public class StupidWagonObserverAdapter
 implements StreamObserver
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( StupidWagonObserverAdapter.class ); 
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( StupidWagonObserverAdapter.class ); 
 
   byte [] buf = new byte[2048];
 
@@ -48,8 +48,8 @@ implements StreamObserver
   {
     this.wagon = wagon;
     this.event = event;
-    if( _log.isDebugEnabled() )
-      _log.debug( "|=========-> adapter for "+event.getResource().getName()+" is created" );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "|=========-> adapter for "+event.getResource().getName()+" is created" );
   }
 
   public void byteReady( int b )
@@ -76,7 +76,7 @@ implements StreamObserver
   public void setLength( long length )
   {
     this.length = length;
-_log.info( "|=-> length is "+length );
+LOG.info( "|=-> length is "+length );
   }
 
   public void setLastModified(String time)

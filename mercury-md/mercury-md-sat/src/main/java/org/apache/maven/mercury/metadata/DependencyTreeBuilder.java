@@ -62,8 +62,8 @@ implements DependencyBuilder, EventGenerator
 {
   public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata("__fake:__fake:1.0");
   
-  private static final Language _lang = new DefaultLanguage(DependencyTreeBuilder.class);
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class ); 
+  private static final Language LANG = new DefaultLanguage(DependencyTreeBuilder.class);
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class ); 
   
   private Collection<MetadataTreeArtifactFilter> _filters;
   private List<Comparator<MetadataTreeNode>> _comparators;
@@ -161,7 +161,7 @@ implements DependencyBuilder, EventGenerator
   throws MetadataTreeException
   {
     if( Util.isEmpty( startMDs ) )
-      throw new MetadataTreeException( _lang.getMessage( "empty.md.collection") );
+      throw new MetadataTreeException( LANG.getMessage( "empty.md.collection") );
 
     List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( startMDs.size() );
 
@@ -206,7 +206,7 @@ implements DependencyBuilder, EventGenerator
         mr = _reader.readDependencies( nodeMD );
   
         if( mr == null )
-          throw new MetadataTreeException( _lang.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
+          throw new MetadataTreeException( LANG.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
         
         MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
     
@@ -236,8 +236,8 @@ implements DependencyBuilder, EventGenerator
         for( ArtifactBasicMetadata md : dependencies )
         {
 
-if( _log.isDebugEnabled() )
-  _log.debug("node "+nodeQuery+", dep "+md );
+if( LOG.isDebugEnabled() )
+  LOG.debug("node "+nodeQuery+", dep "+md );
 
           List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
           if( versions == null || versions.size() < 1 )
@@ -373,7 +373,7 @@ if( _log.isDebugEnabled() )
   throws MetadataTreeException
   {
     if( root == null )
-      throw new MetadataTreeException(_lang.getMessage( "empty.tree" ));
+      throw new MetadataTreeException(LANG.getMessage( "empty.tree" ));
     
     try
     {
@@ -396,7 +396,7 @@ if( _log.isDebugEnabled() )
   throws MetadataTreeException
   {
     if( root == null )
-      throw new MetadataTreeException(_lang.getMessage( "empty.tree" ));
+      throw new MetadataTreeException(LANG.getMessage( "empty.tree" ));
     
     try
     {

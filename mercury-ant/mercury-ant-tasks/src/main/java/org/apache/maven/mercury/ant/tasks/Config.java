@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
@@ -31,7 +30,7 @@ import org.codehaus.plexus.lang.Language;
 public class Config
 extends AbstractDataType
 {
-  private static final Language _lang = new DefaultLanguage( Config.class );
+  private static final Language LANG = new DefaultLanguage( Config.class );
   
   Collection<Repo> _repos;
   
@@ -56,7 +55,7 @@ extends AbstractDataType
       {
         DependencyProcessor dp = new MavenDependencyProcessor();
         
-        LocalRepositoryM2 r = new LocalRepositoryM2( repo.getId(), new File( repo._dir ), dp  );
+        LocalRepositoryM2 r = new LocalRepositoryM2( repo.getId(), new File( repo._dir ), dp );
         
         _repositories.add( r );
       }
@@ -79,14 +78,14 @@ extends AbstractDataType
           Auth au = null;
           
           if( _auths == null )
-            throw new BuildException( _lang.getMessage( "config.no.auths", repo._authid ) );
+            throw new BuildException( LANG.getMessage( "config.no.auths", repo._authid ) );
           
           for( Auth a : _auths )
             if( repo._authid.equals( a.getId() ) )
               au = a;
           
           if( au == null )
-            throw new BuildException( _lang.getMessage( "config.no.auth.for.id", repo._authid ) );
+            throw new BuildException( LANG.getMessage( "config.no.auth.for.id", repo._authid ) );
           
           Credentials serverCred = createCredentials( au );
           
@@ -98,21 +97,21 @@ extends AbstractDataType
           Auth au = null;
           
           if( _auths == null )
-            throw new BuildException( _lang.getMessage( "config.no.proxy.auths", repo._proxyauthid ) );
+            throw new BuildException( LANG.getMessage( "config.no.proxy.auths", repo._proxyauthid ) );
           
           for( Auth a : _auths )
             if( repo._proxyauthid.equals( a.getId() ) )
               au = a;
           
           if( au == null )
-            throw new BuildException( _lang.getMessage( "config.no.proxy.auth.for.id", repo._proxyauthid ) );
+            throw new BuildException( LANG.getMessage( "config.no.proxy.auth.for.id", repo._proxyauthid ) );
           
           Credentials proxyCred = createCredentials( au );
           
           server.setProxyCredentials( proxyCred );
         }
         
-        RemoteRepositoryM2 r  = new RemoteRepositoryM2( server, dp  );
+        RemoteRepositoryM2 r  = new RemoteRepositoryM2( server, dp );
         
         _repositories.add( r );
       }
@@ -129,7 +128,7 @@ extends AbstractDataType
     {
       File cf = new File( a._certfile );
       if( ! cf.exists() )
-        throw new BuildException( _lang.getMessage( "config.no.cert.file", a._certfile ) );
+        throw new BuildException( LANG.getMessage( "config.no.cert.file", a._certfile ) );
       
       try
       {

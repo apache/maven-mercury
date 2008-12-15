@@ -73,8 +73,8 @@ implements RepositoryWriter
   
   public static final long SLEEP_FOR_LOCK_TICK = 5l;
 
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryWriterM2.class ); 
-  private static final Language _lang = new DefaultLanguage( LocalRepositoryWriterM2.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryWriterM2.class ); 
+  private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterM2.class );
   //---------------------------------------------------------------------------------------------------------------
   private static final String [] _protocols = new String [] { "file" };
   
@@ -216,7 +216,7 @@ implements RepositoryWriter
       File aFile = artifact.getFile();
       if( aFile == null && !isPom )
       {
-        throw new RepositoryException( _lang.getMessage( "artifact.no.stream", artifact.toString() ) );
+        throw new RepositoryException( LANG.getMessage( "artifact.no.stream", artifact.toString() ) );
       }
 
       try
@@ -246,7 +246,7 @@ implements RepositoryWriter
       if( isPom )
       {
         if( in == null && !hasPomBlob )
-          throw new RepositoryException( _lang.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
+          throw new RepositoryException( LANG.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
         
         if( in != null )
         {
@@ -268,7 +268,7 @@ implements RepositoryWriter
 //      throw new RepositoryException( _lang.getMessage( "cannot.lock.gav", lockDir, ""+SLEEP_FOR_LOCK ) );
       fLock = FileUtil.lockDir( lockDir, SLEEP_FOR_LOCK, SLEEP_FOR_LOCK_TICK );
       if( fLock == null )
-        throw new RepositoryException( _lang.getMessage( "cannot.lock.gav", lockDir, ""+SLEEP_FOR_LOCK ) );
+        throw new RepositoryException( LANG.getMessage( "cannot.lock.gav", lockDir, ""+SLEEP_FOR_LOCK ) );
 
       String fName = _repoDir.getAbsolutePath()+'/'+relVersionPath+'/'+artifact.getBaseName()+'.'+artifact.getType();
       
@@ -327,7 +327,7 @@ implements RepositoryWriter
         byte [] mdBytes = FileUtil.readRawData( mdFile );
         
         if( mdBytes == null )
-          throw new MetadataException( _lang.getMessage( "file.is.empty", mdFile.getAbsolutePath() ));
+          throw new MetadataException( LANG.getMessage( "file.is.empty", mdFile.getAbsolutePath() ));
         
         md = MetadataBuilder.read( new ByteArrayInputStream(mdBytes) );
       }

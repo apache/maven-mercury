@@ -74,8 +74,8 @@ public class MercuryWagon
 extends AbstractWagon
 implements Wagon
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( MercuryWagon.class ); 
-  private static final Language _lang = new DefaultLanguage( MercuryWagon.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( MercuryWagon.class ); 
+  private static final Language LANG = new DefaultLanguage( MercuryWagon.class );
 
   public static final String SYSTEM_PARAMETER_DEBUG_TRANSFER = "maven.mercury.wagon.debug.transfer";
   private boolean debugTransfer = Boolean.parseBoolean( System.getProperty( SYSTEM_PARAMETER_DEBUG_TRANSFER, "false" ) );
@@ -108,8 +108,8 @@ implements Wagon
    */
   public MercuryWagon()
   {
-    if( _log.isDebugEnabled() )
-      _log.debug( "MercuryWagon instantiated" );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "MercuryWagon instantiated" );
   }
   
   public MercuryWagon( Server server )
@@ -122,10 +122,10 @@ implements Wagon
   throws IllegalArgumentException
   {
     if( server == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.read.server" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.read.server" ) );
     
     if( server.getURL() == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.read.server.url", server.getId() ) );
+      throw new IllegalArgumentException( LANG.getMessage( "null.read.server.url", server.getId() ) );
     
     this.server = server;
     
@@ -185,8 +185,8 @@ implements Wagon
   public void get( String resourceName, File destination )
   throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
   {
-    if( _log.isDebugEnabled() )
-      _log.debug("MercuryWagon getting "+resourceName+" into "+destination);
+    if( LOG.isDebugEnabled() )
+      LOG.debug("MercuryWagon getting "+resourceName+" into "+destination);
 
     Binding binding = null;
     
@@ -222,12 +222,12 @@ implements Wagon
 
     if( response.hasExceptions() )
     {
-      _log.error( response.getExceptions().toString() );
+      LOG.error( response.getExceptions().toString() );
       throw new ResourceDoesNotExistException( response.getExceptions().toString() );
     }
 
-    if( _log.isDebugEnabled() )
-      _log.debug("MercuryWagon got ["+resourceName+" ==> "+destination + "], time " + (System.currentTimeMillis()-start) + " millis");
+    if( LOG.isDebugEnabled() )
+      LOG.debug("MercuryWagon got ["+resourceName+" ==> "+destination + "], time " + (System.currentTimeMillis()-start) + " millis");
     
   }
 
@@ -241,8 +241,8 @@ implements Wagon
   public void put( File source, String destination )
   throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
   {
-    if( _log.isDebugEnabled() )
-      _log.debug( "put request for: "+source+" => "+destination );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "put request for: "+source+" => "+destination );
 
     Resource resource = new Resource( destination );
     
@@ -285,8 +285,8 @@ implements Wagon
       throw new TransferFailedException( response.getExceptions().toString() );
     }
 
-    if( _log.isDebugEnabled() )
-      _log.debug("MercuryWagon put ["+source+" ==> "+destination + "], time " + (System.currentTimeMillis()-start) + " millis");
+    if( LOG.isDebugEnabled() )
+      LOG.debug("MercuryWagon put ["+source+" ==> "+destination + "], time " + (System.currentTimeMillis()-start) + " millis");
   }
 
   protected void closeConnection()
@@ -317,8 +317,8 @@ implements Wagon
   protected void openConnectionInternal()
   throws ConnectionException, AuthenticationException
   {
-    if( _log.isDebugEnabled() )
-      _log.debug( "opening connection to repository "+repository );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "opening connection to repository "+repository );
 
     try
     {
@@ -332,8 +332,8 @@ implements Wagon
 
       String url = protocol + theRest;
 
-      if(_log.isDebugEnabled())
-        _log.debug( "converted url "+repository.getUrl()+" ==> "+url );
+      if(LOG.isDebugEnabled())
+        LOG.debug( "converted url "+repository.getUrl()+" ==> "+url );
 
       Server server = new Server( repository.getId(), new URL( url ) );
 
@@ -343,8 +343,8 @@ implements Wagon
         
         server.setServerCredentials( user );
         
-        if( _log.isDebugEnabled() )
-          _log.debug( "user ceredentials: "+user.getUser()+"/..." );
+        if( LOG.isDebugEnabled() )
+          LOG.debug( "user ceredentials: "+user.getUser()+"/..." );
       }
       
       
@@ -369,13 +369,13 @@ implements Wagon
           
           server.setProxyCredentials( proxyUser );
 
-          if(_log.isDebugEnabled())
-            _log.debug( "proxy credentials set to : " + proxyUser.getUser()+"/..." );
+          if(LOG.isDebugEnabled())
+            LOG.debug( "proxy credentials set to : " + proxyUser.getUser()+"/..." );
         }
       }
 
-      if(_log.isDebugEnabled())
-        _log.debug( "proxy url set to : " + server.getProxy() );
+      if(LOG.isDebugEnabled())
+        LOG.debug( "proxy url set to : " + server.getProxy() );
 
       init( server );
       
@@ -389,7 +389,7 @@ implements Wagon
     catch( Throwable e )
     {
       e.printStackTrace();
-      _log.error( e.getMessage() );
+      LOG.error( e.getMessage() );
       throw new ConnectionException( e.getMessage() );
     }
   }
@@ -426,8 +426,8 @@ implements Wagon
     if( pgpConfig == null )
       return res;
     
-    if( _log.isDebugEnabled() )
-      _log.debug( "PGP signature configuration will be read from "+pgpConfig );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "PGP signature configuration will be read from "+pgpConfig );
     
     Properties pgpProps = new Properties();
     pgpProps.load( new FileInputStream(pgpConfig) );
@@ -444,8 +444,8 @@ implements Wagon
 
       StreamVerifierFactory rf = new PgpStreamVerifierFactory( readerAttr, new FileInputStream(readerKeyring) );
 
-      if( _log.isDebugEnabled() )
-        _log.debug( "public key file: "+new File(readerKeyring).getAbsolutePath() );
+      if( LOG.isDebugEnabled() )
+        LOG.debug( "public key file: "+new File(readerKeyring).getAbsolutePath() );
       
       Set<StreamVerifierFactory> rs = new HashSet<StreamVerifierFactory>(1);
       rs.add( rf );
@@ -458,8 +458,8 @@ implements Wagon
 
     if( writerKeyring != null && writerKeyId != null && writerKeyringPass != null )
     {
-      if( _log.isDebugEnabled() )
-        _log.debug( "secret key file: "+new File(writerKeyring).getAbsolutePath() );
+      if( LOG.isDebugEnabled() )
+        LOG.debug( "secret key file: "+new File(writerKeyring).getAbsolutePath() );
 
       StreamVerifierAttributes writerAttr = new StreamVerifierAttributes(
           PgpStreamVerifierFactory.DEFAULT_EXTENSION
@@ -482,8 +482,8 @@ implements Wagon
   {
       this.userAgent = httpHeaders.getProperty( "User-Agent", null );
       
-      if( _log.isDebugEnabled() )
-        _log.debug( "userAgent set to : "+this.userAgent );
+      if( LOG.isDebugEnabled() )
+        LOG.debug( "userAgent set to : "+this.userAgent );
       
   }
 
@@ -491,8 +491,8 @@ implements Wagon
   public boolean resourceExists( String resourceName )
   throws TransferFailedException, AuthorizationException
   {
-    if( _log.isDebugEnabled() )
-      _log.debug( "check if resourceExists: "+resourceName+" on server "+(server == null ? "null" : server.getURL() ) );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "check if resourceExists: "+resourceName+" on server "+(server == null ? "null" : server.getURL() ) );
 
     File temp;
     try
@@ -527,7 +527,7 @@ implements Wagon
     
     if( response.hasExceptions() )
     {
-      _log.error( response.getExceptions().toString() );
+      LOG.error( response.getExceptions().toString() );
       return false;
     }
     return true;

@@ -35,7 +35,7 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
  */
 public class Binding
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( Binding.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Binding.class );
   
   protected URL                 remoteResource;
   protected File                localFile;

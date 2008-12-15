@@ -48,24 +48,24 @@ import org.codehaus.plexus.lang.Language;
  */
 public class RepositoryUtilM2
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( RepositoryUtilM2.class ); 
-  private static final Language _lang = new DefaultLanguage( RepositoryUtilM2.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( RepositoryUtilM2.class ); 
+  private static final Language LANG = new DefaultLanguage( RepositoryUtilM2.class );
   //----------------------------------------------------------------------------------
   public static void flip( LocalRepositoryM2 repo, File dest )
   {
     if( repo == null )
-      throw new IllegalArgumentException( _lang.getMessage( "lrepo.null" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "lrepo.null" ) );
 
     File lDir = repo.getDirectory();
     
     if( lDir == null )
-      throw new IllegalArgumentException( _lang.getMessage( "lrepo.no.dir" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "lrepo.no.dir" ) );
     
     if( !lDir.exists() || !lDir.isDirectory() )
-      throw new IllegalArgumentException( _lang.getMessage( "lrepo.dir.not.exists", lDir.toString() ) );
+      throw new IllegalArgumentException( LANG.getMessage( "lrepo.dir.not.exists", lDir.toString() ) );
     
     if( dest.exists() && !dest.isFile() )
-      throw new IllegalArgumentException( _lang.getMessage( "dest.is.file", dest.toString() ) );
+      throw new IllegalArgumentException( LANG.getMessage( "dest.is.file", dest.toString() ) );
     
     
   }
@@ -74,7 +74,7 @@ public class RepositoryUtilM2
   {
     
     if( !repoDir.exists() || !repoDir.isDirectory() )
-      throw new IllegalArgumentException( _lang.getMessage( "lrepo.dir.not.exists", repoDir.toString() ) );
+      throw new IllegalArgumentException( LANG.getMessage( "lrepo.dir.not.exists", repoDir.toString() ) );
 
     // temporary solution: just rename metadata, hoping it is correct
     // ideally - will use metadata correction utility

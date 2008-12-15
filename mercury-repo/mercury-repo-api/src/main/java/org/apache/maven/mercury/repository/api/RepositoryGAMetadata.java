@@ -24,7 +24,7 @@ import org.codehaus.plexus.lang.Language;
  */
 public class RepositoryGAMetadata
 {
-  private static final Language _lang = new DefaultLanguage( RepositoryGAVMetadata.class );
+  private static final Language LANG = new DefaultLanguage( RepositoryGAVMetadata.class );
   
   protected ArtifactCoordinates ga;
 
@@ -65,7 +65,7 @@ public class RepositoryGAMetadata
   throws MetadataException
   {
     if( md == null )
-      throw new IllegalArgumentException( _lang.getMessage( "empty.md" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "empty.md" ) );
     
     this.ga = new ArtifactCoordinates( md.getGroupId(), md.getArtifactId(), md.getVersion() );
 

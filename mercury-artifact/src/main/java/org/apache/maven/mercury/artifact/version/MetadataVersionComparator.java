@@ -34,12 +34,12 @@ import org.codehaus.plexus.lang.Language;
 public class MetadataVersionComparator
 implements Comparator<ArtifactBasicMetadata>
 {
-  private static final Language _lang = new DefaultLanguage( MetadataVersionComparator.class );
+  private static final Language LANG = new DefaultLanguage( MetadataVersionComparator.class );
   
   public int compare( ArtifactBasicMetadata v1, ArtifactBasicMetadata v2 )
   {
     if( v1 == null || v2 == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.version.to.compare", v1 == null ? "null" : v1.toString(), v2 == null ? "null" : v2.toString() )  );
+      throw new IllegalArgumentException( LANG.getMessage( "null.version.to.compare", v1 == null ? "null" : v1.toString(), v2 == null ? "null" : v2.toString() )  );
     
     DefaultArtifactVersion av1 = new DefaultArtifactVersion( v1.getVersion() );
     DefaultArtifactVersion av2 = new DefaultArtifactVersion( v2.getVersion() );

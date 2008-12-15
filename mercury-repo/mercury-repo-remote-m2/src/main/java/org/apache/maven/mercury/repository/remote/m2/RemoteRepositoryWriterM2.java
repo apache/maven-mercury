@@ -66,8 +66,8 @@ public class RemoteRepositoryWriterM2
 extends AbstractRepositoryWriter
 implements RepositoryWriter
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( RemoteRepositoryWriterM2.class ); 
-  private static final Language _lang = new DefaultLanguage( RemoteRepositoryWriterM2.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( RemoteRepositoryWriterM2.class ); 
+  private static final Language LANG = new DefaultLanguage( RemoteRepositoryWriterM2.class );
   //---------------------------------------------------------------------------------------------------------------
   private static final String [] _protocols = new String [] { "http", "https", "dav", "webdav" };
   
@@ -86,10 +86,10 @@ implements RepositoryWriter
     
     _server = repo.getServer();
     if( _server == null )
-      throw new IllegalArgumentException( _lang.getMessage( "bad.repository.server.null" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.repository.server.null" ) );
     
     if( _server.getURL() == null )
-      throw new IllegalArgumentException(_lang.getMessage( "bad.repository.server.url.null" ));
+      throw new IllegalArgumentException(LANG.getMessage( "bad.repository.server.url.null" ));
 
     _repo = repo;
     
@@ -151,10 +151,10 @@ implements RepositoryWriter
   throws RepositoryException
   {
     if( artifact == null )
-      throw new RepositoryException( _lang.getMessage( "null.artifact") );
+      throw new RepositoryException( LANG.getMessage( "null.artifact") );
     
     if( artifact.getFile() == null || !artifact.getFile().exists() )
-      throw new RepositoryException( _lang.getMessage( "bad.artifact.file", artifact.toString(), (artifact.getFile() == null ? "null" : artifact.getFile().getAbsolutePath()) ) );
+      throw new RepositoryException( LANG.getMessage( "bad.artifact.file", artifact.toString(), (artifact.getFile() == null ? "null" : artifact.getFile().getAbsolutePath()) ) );
     
     boolean isPom = "pom".equals( artifact.getType() );
     
@@ -162,7 +162,7 @@ implements RepositoryWriter
     boolean hasPomBlob = pomBlob != null && pomBlob.length > 0;
     
     if( !artifact.hasClassifier() && !hasPomBlob )
-      throw new RepositoryException( _lang.getMessage( "no.pom.in.primary.artifact", artifact.toString() ) );
+      throw new RepositoryException( LANG.getMessage( "no.pom.in.primary.artifact", artifact.toString() ) );
     
     InputStream in = artifact.getStream();
     if( in == null )
@@ -170,7 +170,7 @@ implements RepositoryWriter
       File aFile = artifact.getFile();
       if( aFile == null && !isPom )
       {
-        throw new RepositoryException( _lang.getMessage( "artifact.no.stream", artifact.toString() ) );
+        throw new RepositoryException( LANG.getMessage( "artifact.no.stream", artifact.toString() ) );
       }
 
       try
@@ -180,7 +180,7 @@ implements RepositoryWriter
       catch( FileNotFoundException e )
       {
         if( !isPom )
-          throw new RepositoryException( _lang.getMessage( "artifact.no.file", artifact.toString(), aFile.getAbsolutePath(), e.getMessage() ) );
+          throw new RepositoryException( LANG.getMessage( "artifact.no.file", artifact.toString(), aFile.getAbsolutePath(), e.getMessage() ) );
       }
     }
     DefaultArtifactVersion dav = new DefaultArtifactVersion( artifact.getVersion() );
@@ -195,7 +195,7 @@ implements RepositoryWriter
       if( isPom )
       {
         if( in == null && !hasPomBlob )
-          throw new RepositoryException( _lang.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
+          throw new RepositoryException( LANG.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
         
         if( in != null )
         {

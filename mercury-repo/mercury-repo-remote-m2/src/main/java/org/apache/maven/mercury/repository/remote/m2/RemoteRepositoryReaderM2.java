@@ -87,8 +87,8 @@ public class RemoteRepositoryReaderM2
 extends AbstracRepositoryReader
 implements RepositoryReader, MetadataReader
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( RemoteRepositoryReaderM2.class ); 
-  private static final Language _lang = new DefaultLanguage( RemoteRepositoryReaderM2.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( RemoteRepositoryReaderM2.class ); 
+  private static final Language LANG = new DefaultLanguage( RemoteRepositoryReaderM2.class );
 
   // TODO - replace with known Transport's protocols. Should be similar to RepositoryReader/Writer registration
   private static final String [] _protocols = new String [] { "http", "https", "dav", "webdav" };
@@ -111,13 +111,13 @@ implements RepositoryReader, MetadataReader
   throws RepositoryException
   {
     if( repo == null )
-      throw new IllegalArgumentException( _lang.getMessage( "bad.repository.null") );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.repository.null") );
     
     if( repo.getServer() == null )
-      throw new IllegalArgumentException( _lang.getMessage( "bad.repository.server.null") );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.repository.server.null") );
 
     if( repo.getServer().getURL() == null )
-      throw new IllegalArgumentException( _lang.getMessage( "bad.repository.server.url.null") );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.repository.server.url.null") );
     
     _repo = repo;
     
@@ -131,7 +131,7 @@ implements RepositoryReader, MetadataReader
       File temp = File.createTempFile( "temp-", "-locator" );
       _defaultRoot = new File( temp.getParentFile(), "repo" );
       _defaultRoot.mkdirs();
-      _log.info( "temporary repository  folder set to "+_defaultRoot.getCanonicalPath() );
+      LOG.info( "temporary repository  folder set to "+_defaultRoot.getCanonicalPath() );
     }
     catch( IOException e )
     {
@@ -182,7 +182,7 @@ implements RepositoryReader, MetadataReader
     }
 
     if( Util.isEmpty( versions ) )
-      throw new RepositoryException( _lang.getMessage( "group.md.no.versions", _repo.getServer().getURL().toString(), loc.getGaPath() ) );
+      throw new RepositoryException( LANG.getMessage( "group.md.no.versions", _repo.getServer().getURL().toString(), loc.getGaPath() ) );
 
     Quality vq = new Quality( loc.getVersion() );
     
@@ -197,7 +197,7 @@ implements RepositoryReader, MetadataReader
 
       if( ver == null )
       {
-        res.addError( bmd, new RepositoryException( _lang.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) ) );
+        res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) ) );
         return null;
       }
       
@@ -249,7 +249,7 @@ implements RepositoryReader, MetadataReader
       catch( MetadataCorruptionException e )
       {
         // bad cached data - let's overwrite it
-        _log.error( _lang.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
+        LOG.error( LANG.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
       }
     }
     
@@ -258,13 +258,13 @@ implements RepositoryReader, MetadataReader
     byte [] mdBytes = readRawData( mdPath );
     if( mdBytes == null )
     {
-      throw new RepositoryException( _lang.getMessage( "no.gav.md", _repo.getServer().getURL().toString(), mdPath ) ) ;
+      throw new RepositoryException( LANG.getMessage( "no.gav.md", _repo.getServer().getURL().toString(), mdPath ) ) ;
     }
     
     Metadata gavMd = MetadataBuilder.read( new ByteArrayInputStream(mdBytes) );
     if( gavMd == null )
     {
-      throw new RepositoryException( _lang.getMessage( "gav.md.no.versions", _repo.getServer().getURL().toString(), mdPath ) );
+      throw new RepositoryException( LANG.getMessage( "gav.md.no.versions", _repo.getServer().getURL().toString(), mdPath ) );
     }
     
     gavm = new RepositoryGAVMetadata( gavMd );
@@ -276,7 +276,7 @@ implements RepositoryReader, MetadataReader
     
     if( Util.isEmpty( gavm.getSnapshots() ) )
     {
-      throw new RepositoryException( _lang.getMessage( "gav.md.no.versions", _repo.getServer().getURL().toString(), mdPath ) );
+      throw new RepositoryException( LANG.getMessage( "gav.md.no.versions", _repo.getServer().getURL().toString(), mdPath ) );
     }
     
     return gavm.getSnapshots();
@@ -297,7 +297,7 @@ implements RepositoryReader, MetadataReader
     }
     catch( Exception e )
     {
-      res.addError( bmd, new RepositoryException( _lang.getMessage( "cached.metadata.reading.exception", e.getMessage(), bmd.toString(), _repo.getServer().getURL().toString() ) ) );
+      res.addError( bmd, new RepositoryException( LANG.getMessage( "cached.metadata.reading.exception", e.getMessage(), bmd.toString(), _repo.getServer().getURL().toString() ) ) );
       return false;
     }
 
@@ -312,7 +312,7 @@ implements RepositoryReader, MetadataReader
 
     if( ver == null )
     {
-      res.addError( bmd, new RepositoryException( _lang.getMessage( "snapshot.not.found", _repo.getServer().getURL().toString(), bmd.toString() ) ) );
+      res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", _repo.getServer().getURL().toString(), bmd.toString() ) ) );
       return false;
     }
     
@@ -423,7 +423,7 @@ implements RepositoryReader, MetadataReader
       }
       catch( Exception e )
       {
-        _log.warn( "error reading "+bmd.toString()+" dependencies", e );
+        LOG.warn( "error reading "+bmd.toString()+" dependencies", e );
         continue;
       }
       
@@ -453,25 +453,25 @@ implements RepositoryReader, MetadataReader
       catch( MetadataCorruptionException e )
       {
         // bad cached data - let's overwrite it
-        _log.error( _lang.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
+        LOG.error( LANG.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
       }
     }
     
-    if( _log.isDebugEnabled() )
-      _log.debug( _repo.getId()+": did not find in the cache - go out for "+bmd );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( _repo.getId()+": did not find in the cache - go out for "+bmd );
 
     // no cached data, or it has expired - read from repository
     String mdPath = loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName();
     byte[] mavenMetadata = readRawData( mdPath );
     
     if( mavenMetadata == null )
-      throw new MetadataReaderException( _lang.getMessage( "no.group.md", _repo.getServer().getURL().toString(), mdPath ) );
+      throw new MetadataReaderException( LANG.getMessage( "no.group.md", _repo.getServer().getURL().toString(), mdPath ) );
     
     Metadata mmd = MetadataBuilder.getMetadata( mavenMetadata );
 
     if( mmd == null || mmd.getVersioning() == null )
     {
-      _log.warn( _lang.getMessage( "maven.bad.metadata", loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName(), _repo.getId() ) );
+      LOG.warn( LANG.getMessage( "maven.bad.metadata", loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName(), _repo.getId() ) );
       return null;
     }
     
@@ -479,7 +479,7 @@ implements RepositoryReader, MetadataReader
     
     if( gam == null || Util.isEmpty( gam.getVersions() ) )
     {
-      _log.warn( _lang.getMessage( "maven.metadata.no.versions", loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName(), _repo.getId() ) );
+      LOG.warn( LANG.getMessage( "maven.metadata.no.versions", loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName(), _repo.getId() ) );
       return null;
     }
     
@@ -625,7 +625,7 @@ implements RepositoryReader, MetadataReader
       catch( MetadataCacheException e )
       {
         // problems with the cache - move on
-        _log.error( _lang.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
+        LOG.error( LANG.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
       }
     }
     
@@ -678,7 +678,7 @@ implements RepositoryReader, MetadataReader
       
       if( response.hasExceptions() )
       {
-       _log.info(  _lang.getMessage( "read.raw.exceptions", path, response.getExceptions().toString() ) );
+       LOG.info(  LANG.getMessage( "read.raw.exceptions", path, response.getExceptions().toString() ) );
         return null;
       }
       

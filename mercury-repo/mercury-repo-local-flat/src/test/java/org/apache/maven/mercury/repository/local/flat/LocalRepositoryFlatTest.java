@@ -43,7 +43,7 @@ import org.apache.maven.mercury.util.FileUtil;
 public class LocalRepositoryFlatTest
     extends TestCase
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryFlatTest.class ); 
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryFlatTest.class ); 
 
   File _dir;
   LocalRepositoryFlat _repo;

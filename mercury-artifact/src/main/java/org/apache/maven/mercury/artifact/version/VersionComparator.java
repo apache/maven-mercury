@@ -33,12 +33,12 @@ import org.codehaus.plexus.lang.Language;
 public class VersionComparator
 implements Comparator<String>
 {
-  private static final Language _lang = new DefaultLanguage( VersionComparator.class );
+  private static final Language LANG = new DefaultLanguage( VersionComparator.class );
   
   public int compare( String v1, String v2 )
   {
     if( v1 == null || v2 == null )
-      throw new IllegalArgumentException( _lang.getMessage( "null.version.to.compare", v1,v2 )  );
+      throw new IllegalArgumentException( LANG.getMessage( "null.version.to.compare", v1,v2 )  );
     
     DefaultArtifactVersion av1 = new DefaultArtifactVersion( v1 );
     DefaultArtifactVersion av2 = new DefaultArtifactVersion( v2 );

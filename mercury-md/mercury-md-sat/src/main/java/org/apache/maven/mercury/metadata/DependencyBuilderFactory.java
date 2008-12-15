@@ -41,7 +41,7 @@ public class DependencyBuilderFactory
   public static final String JAVA_DEPENDENCY_MODEL = "java";
   public static final String OSGI_DEPENDENCY_MODEL = "osgi";
 
-  private static final Language _lang = new DefaultLanguage( DependencyBuilderFactory.class) ;
+  private static final Language LANG = new DefaultLanguage( DependencyBuilderFactory.class) ;
   
   public static final DependencyBuilder create(
         final String dependencyModel
@@ -55,7 +55,7 @@ public class DependencyBuilderFactory
     if( JAVA_DEPENDENCY_MODEL.equals( dependencyModel ) )
       return new DependencyTreeBuilder( repositories,  filters, comparators, processors );
     
-    throw new IllegalArgumentException( _lang.getMessage( "dependency.model.not.implemented", dependencyModel ) );
+    throw new IllegalArgumentException( LANG.getMessage( "dependency.model.not.implemented", dependencyModel ) );
   }
 
 }

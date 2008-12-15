@@ -44,7 +44,7 @@ import org.mortbay.jetty.client.security.ProxyAuthorization;
  */
 public class SecureSender
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( SecureSender.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( SecureSender.class );
 
   public static void send (Server server, HttpClient httpClient, HttpExchange exchange)
     throws Exception
@@ -66,13 +66,13 @@ public class SecureSender
 
             Address proxyAddress = new Address(host,port);
             HttpDestination destination = httpClient.getDestination(exchange.getAddress(), ssl);  
-            if( _log.isDebugEnabled() )
-                _log.debug("Matched destination "+destination);
+            if( LOG.isDebugEnabled() )
+                LOG.debug("Matched destination "+destination);
 
             destination.setProxy(proxyAddress);
-            if( _log.isDebugEnabled() )
-                _log.debug("Set proxy "+host+":"+port+" on destination");
-            _log.info("Set proxy "+host+":"+port+" on destination");
+            if( LOG.isDebugEnabled() )
+                LOG.debug("Set proxy "+host+":"+port+" on destination");
+            LOG.info("Set proxy "+host+":"+port+" on destination");
          
             //set up authentication for the proxy
             Credentials proxyCredentials = server.getProxyCredentials();
@@ -84,8 +84,8 @@ public class SecureSender
                 else
                 {
                     destination.setProxyAuthentication(new ProxyAuthorization (proxyCredentials.getUser(), proxyCredentials.getPass()));
-                    if( _log.isDebugEnabled() )
-                        _log.debug( "Set proxy authentication: "+proxyCredentials.getUser()+":"+proxyCredentials.getPass());
+                    if( LOG.isDebugEnabled() )
+                        LOG.debug( "Set proxy authentication: "+proxyCredentials.getUser()+":"+proxyCredentials.getPass());
                 }
             }
             destination.send(exchange); 

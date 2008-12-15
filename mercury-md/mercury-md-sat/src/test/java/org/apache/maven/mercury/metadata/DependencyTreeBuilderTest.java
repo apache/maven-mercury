@@ -43,7 +43,7 @@ import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 public class DependencyTreeBuilderTest
 extends TestCase
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilderTest.class ); 
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilderTest.class ); 
   
 //  ArtifactMetadata md = new ArtifactMetadata( "pmd:pmd:3.9" );
 //  File repo = new File("./target/test-classes/localRepo");

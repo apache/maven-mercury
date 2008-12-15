@@ -31,19 +31,19 @@ import org.codehaus.plexus.lang.Language;
 public class RemoteRepositoryWriterM2Factory
 implements RepositoryWriterFactory
 {
-  private static final Language lang = new DefaultLanguage( RemoteRepositoryWriterM2Factory.class );
-  private static final RemoteRepositoryWriterM2Factory factory = new RemoteRepositoryWriterM2Factory();
+  private static final Language LANG = new DefaultLanguage( RemoteRepositoryWriterM2Factory.class );
+  private static final RemoteRepositoryWriterM2Factory FACTORY = new RemoteRepositoryWriterM2Factory();
   
   static 
   {
-    AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, factory  );
+    AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, FACTORY );
   }
   
   public RepositoryWriter getWriter( Repository repo )
   throws RepositoryException
   {
     if( repo == null || !(repo instanceof LocalRepository) )
-      throw new RepositoryException( lang.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
+      throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
     
     return new RemoteRepositoryWriterM2( (RemoteRepository)repo );
   }

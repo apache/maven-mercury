@@ -36,7 +36,7 @@ implements TransferListener
   public static final String SYSTEM_PARAMETER_DEBUG_TRANSFER_BYTES = "maven.mercury.wagon.debug.transfer.bytes";
   private boolean debugTransferBytes = Boolean.parseBoolean( System.getProperty( SYSTEM_PARAMETER_DEBUG_TRANSFER_BYTES, "false" ) );
 
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( TransferEventDebugger.class ); 
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( TransferEventDebugger.class ); 
 
   public void debug( String message )
   {
@@ -45,17 +45,17 @@ implements TransferListener
   public void transferCompleted(
       TransferEvent transferEvent )
   {
-    _log.info("|=============>   completed: "+transferEvent.getResource().getName() );
+    LOG.info("|=============>   completed: "+transferEvent.getResource().getName() );
   }
 
   public void transferError( TransferEvent transferEvent )
   {
-    _log.info("|=============>   error: "+transferEvent.getResource().getName() );
+    LOG.info("|=============>   error: "+transferEvent.getResource().getName() );
   }
 
   public void transferInitiated( TransferEvent transferEvent )
   {
-    _log.info("|=============>   initialized: "+transferEvent.getResource().getName() );
+    LOG.info("|=============>   initialized: "+transferEvent.getResource().getName() );
   }
 
   public void transferProgress(
@@ -64,13 +64,13 @@ implements TransferListener
       int length )
   {
     if( debugTransferBytes )
-      _log.info("|=============>   ready "+length+" bytes : "+transferEvent.getResource().getName() );
+      LOG.info("|=============>   ready "+length+" bytes : "+transferEvent.getResource().getName() );
   }
 
   public void transferStarted(
       TransferEvent transferEvent )
   {
-    _log.info("|=============>   started: "+transferEvent.getResource().getName() );
+    LOG.info("|=============>   started: "+transferEvent.getResource().getName() );
   }
 
 }
