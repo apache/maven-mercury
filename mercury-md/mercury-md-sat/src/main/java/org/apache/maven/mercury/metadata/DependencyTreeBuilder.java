@@ -31,13 +31,10 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.version.VersionException;
-import org.apache.maven.mercury.artifact.version.VersionRange;
-import org.apache.maven.mercury.artifact.version.VersionRangeFactory;
 import org.apache.maven.mercury.event.EventGenerator;
 import org.apache.maven.mercury.event.EventManager;
 import org.apache.maven.mercury.event.EventTypeEnum;
 import org.apache.maven.mercury.event.GenericEvent;
-import org.apache.maven.mercury.event.MercuryEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
@@ -62,8 +59,8 @@ implements DependencyBuilder, EventGenerator
 {
   public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata("__fake:__fake:1.0");
   
-  private static final Language LANG = new DefaultLanguage(DependencyTreeBuilder.class);
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class ); 
+  private static final Language _lang = new DefaultLanguage(DependencyTreeBuilder.class);
+  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class ); 
   
   private Collection<MetadataTreeArtifactFilter> _filters;
   private List<Comparator<MetadataTreeNode>> _comparators;
@@ -161,7 +158,7 @@ implements DependencyBuilder, EventGenerator
   throws MetadataTreeException
   {
     if( Util.isEmpty( startMDs ) )
-      throw new MetadataTreeException( LANG.getMessage( "empty.md.collection") );
+      throw new MetadataTreeException( _lang.getMessage( "empty.md.collection") );
 
     List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( startMDs.size() );
 
@@ -206,7 +203,7 @@ implements DependencyBuilder, EventGenerator
         mr = _reader.readDependencies( nodeMD );
   
         if( mr == null )
-          throw new MetadataTreeException( LANG.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
+          throw new MetadataTreeException( _lang.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
         
         MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
     
@@ -236,8 +233,8 @@ implements DependencyBuilder, EventGenerator
         for( ArtifactBasicMetadata md : dependencies )
         {
 
-if( LOG.isDebugEnabled() )
-  LOG.debug("node "+nodeQuery+", dep "+md );
+if( _log.isDebugEnabled() )
+  _log.debug("node "+nodeQuery+", dep "+md );
 
           List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
           if( versions == null || versions.size() < 1 )
@@ -373,7 +370,7 @@ if( LOG.isDebugEnabled() )
   throws MetadataTreeException
   {
     if( root == null )
-      throw new MetadataTreeException(LANG.getMessage( "empty.tree" ));
+      throw new MetadataTreeException(_lang.getMessage( "empty.tree" ));
     
     try
     {
@@ -396,7 +393,7 @@ if( LOG.isDebugEnabled() )
   throws MetadataTreeException
   {
     if( root == null )
-      throw new MetadataTreeException(LANG.getMessage( "empty.tree" ));
+      throw new MetadataTreeException(_lang.getMessage( "empty.tree" ));
     
     try
     {

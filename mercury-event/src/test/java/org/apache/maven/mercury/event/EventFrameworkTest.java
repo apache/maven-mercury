@@ -24,12 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
-import org.apache.maven.mercury.event.EventGenerator;
-import org.apache.maven.mercury.event.EventManager;
-import org.apache.maven.mercury.event.EventTypeEnum;
-import org.apache.maven.mercury.event.GenericEvent;
-import org.apache.maven.mercury.event.MercuryEvent;
-import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;
 
 /**

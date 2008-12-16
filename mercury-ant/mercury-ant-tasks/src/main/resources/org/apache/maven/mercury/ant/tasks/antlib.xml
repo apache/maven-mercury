@@ -5,7 +5,8 @@
   <taskdef name="resolve" classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
   <taskdef name="write"   classname="org.apache.maven.mercury.ant.tasks.WriteTask"/>
 
-  <typedef name="dep"    classname="org.apache.maven.mercury.ant.tasks.Dep"/>
-  <typedef name="config" classname="org.apache.maven.mercury.ant.tasks.Config"/>
+  <typedef name="dep"             classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="depdependencies" classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="config"          classname="org.apache.maven.mercury.ant.tasks.Config"/>
   
 </antlib>

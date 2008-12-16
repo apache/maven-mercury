@@ -24,6 +24,9 @@ extends BuildFileTest
   static final String _writeRepoDir = "./target/test-repo";
   static       File   _writeRepoDirFile;
   
+  static final String _verifyRepoDir = "./target/test-verify-repo";
+  static       File   _verifyRepoDirFile;
+  
   static final String _compileDir = "./target/compile-classes";
   static       File   _compileDirFile;
   
@@ -127,6 +130,10 @@ extends BuildFileTest
     _writeRepoDirFile = new File( _writeRepoDir );
     FileUtil.delete( _writeRepoDirFile );
     _writeRepoDirFile.mkdirs();
+
+    _verifyRepoDirFile = new File( _verifyRepoDir );
+    FileUtil.delete( _verifyRepoDirFile );
+    _verifyRepoDirFile.mkdirs();
     
     _compileDirFile   = new File( _compileDir );
     FileUtil.delete( _compileDirFile );
@@ -216,12 +223,33 @@ extends BuildFileTest
     System.out.flush();
     
     File af = new File( _writeRepoDirFile, "/t/t/1.0/t-1.0.jar" );
- 
     assertFalse( af.exists() );
+
+    File ap = new File( _writeRepoDirFile, "/t/t/1.0/t-1.0.pom" );
+    assertFalse( ap.exists() );
     
     executeTarget("deploy");
     
     assertTrue( af.exists() );
+    assertTrue( ap.exists() );
+  }
+  //-----------------------------------
+  public void testVerifyPgp()
+  {
+    String title = "write-verify-pgp";
+    System.out.println("========> start "+title);
+    System.out.flush();
+    
+    File af = new File( _verifyRepoDirFile, "/t/t/1.0/t-1.0.jar" );
+    assertFalse( af.exists() );
+    
+    File sig = new File( _verifyRepoDirFile, "/t/t/1.0/t-1.0.jar.asc" );
+    assertFalse( sig.exists() );
+    
+    executeTarget("deploy-verify");
+    
+    assertTrue( af.exists() );
+    assertTrue( sig.exists() );
   }
   //-----------------------------------
 }

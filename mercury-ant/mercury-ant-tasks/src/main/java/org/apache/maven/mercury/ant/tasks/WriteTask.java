@@ -1,35 +1,18 @@
 package org.apache.maven.mercury.ant.tasks;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
-import org.apache.maven.mercury.artifact.ArtifactMetadata;
-import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
-import org.apache.maven.mercury.metadata.DependencyBuilder;
-import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
-import org.apache.maven.mercury.repository.api.ArtifactResults;
-import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.Repository;
-import org.apache.maven.mercury.repository.api.RepositoryException;
-import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.FileList;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
-import org.omg.stub.java.rmi._Remote_Stub;
 
 /**
  *
@@ -41,10 +24,10 @@ import org.omg.stub.java.rmi._Remote_Stub;
 public class WriteTask
 extends AbstractAntTask
 {
-  private static final Language LANG = new DefaultLanguage( WriteTask.class );
+  private static final Language _lang = new DefaultLanguage( WriteTask.class );
   
-  public static final String TASK_NAME = LANG.getMessage( "write.task.name" );
-  public static final String TASK_DESC = LANG.getMessage( "write.task.desc" );
+  public static final String TASK_NAME = _lang.getMessage( "write.task.name" );
+  public static final String TASK_DESC = _lang.getMessage( "write.task.desc" );
   
   private String _repoid;
   private String _file;
@@ -99,7 +82,7 @@ extends AbstractAntTask
   {
     if( _repoid == null )
     {
-      throwIfEnabled( LANG.getMessage( "write.repo.id.mandatory" ) );
+      throwIfEnabled( _lang.getMessage( "write.repo.id.mandatory" ) );
       return;
     }
     
@@ -107,13 +90,13 @@ extends AbstractAntTask
     
     if( repo == null )
     {
-      throwIfEnabled( LANG.getMessage( "write.repo.not.found", _repoid ) );
+      throwIfEnabled( _lang.getMessage( "write.repo.not.found", _repoid ) );
       return;
     }
     
     if( _file == null )
     {
-      throwIfEnabled( LANG.getMessage( "write.file.mandatory" ) );
+      throwIfEnabled( _lang.getMessage( "write.file.mandatory" ) );
       return;
     }
     
@@ -121,33 +104,31 @@ extends AbstractAntTask
     
     if( !file.exists() )
     {
-      throwIfEnabled( LANG.getMessage( "write.file.not.found", _file, _repoid ) );
+      throwIfEnabled( _lang.getMessage( "write.file.not.found", _file, _repoid ) );
       return;
     }
     
     if( Util.isEmpty( _name ) && Util.isEmpty( _pom ) )
     {
-      throwIfEnabled( LANG.getMessage( "write.no.name.no.pom", _file, _repoid ) );
+      throwIfEnabled( _lang.getMessage( "write.no.name.no.pom", _file, _repoid ) );
       return;
     }
 
     if( !Util.isEmpty( _name ) && !Util.isEmpty( _pom ) )
     {
-      throwIfEnabled( LANG.getMessage( "write.no.name.no.pom", _file, _repoid ) );
+      throwIfEnabled( _lang.getMessage( "write.no.name.no.pom", _file, _repoid ) );
       return;
     }
 
     if( !Util.isEmpty( _pom ) )
     {
-      throwIfEnabled( LANG.getMessage( "write.pom.not.supported", _file, _repoid ) );
+      throwIfEnabled( _lang.getMessage( "write.pom.not.supported", _file, _repoid ) );
       return;
     }
 
     try
     {
       DefaultArtifact a = null;
-      
-      File pom = null;
       
       if( !Util.isEmpty( _name ) )
       {
@@ -176,7 +157,7 @@ extends AbstractAntTask
       }
       else
       {
-        throwIfEnabled( LANG.getMessage( "write.pom.not.supported", _file, _repoid ) );
+        throwIfEnabled( _lang.getMessage( "write.pom.not.supported", _file, _repoid ) );
         return;
       }
         

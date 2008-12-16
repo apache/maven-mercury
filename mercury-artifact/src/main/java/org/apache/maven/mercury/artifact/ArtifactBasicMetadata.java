@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;

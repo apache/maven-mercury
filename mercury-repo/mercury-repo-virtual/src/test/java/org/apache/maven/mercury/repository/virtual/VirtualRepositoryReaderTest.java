@@ -29,7 +29,6 @@ import junit.framework.TestCase;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
-import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.event.MercuryEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;

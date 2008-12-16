@@ -19,10 +19,34 @@
     <delete dir="${local.repo.dir}"/>
     <mkdir dir="${local.repo.dir}"/>
 
-  	<merc:config id="conf">
+    <merc:config id="conf">
       <merc:repo id="localRepo" dir="${local.repo.dir}"/>
       <merc:repo id="central"   url="http://repo1.maven.org/maven2"/>
     </merc:config>
+  	
+    <property name="local.verify.dir" value="${basedir}/target/test-verify-repo"/>
+    <delete dir="${local.verify.dir}"/>
+    <mkdir dir="${local.verify.dir}"/>
+
+    <merc:config id="verification-conf">
+    	
+      <merc:repo id="localVerifyRepo" dir="${local.verify.dir}">
+      	
+        <merc:verifywrite type="pgp">
+          <property name="keyring" value="${basedir}/target/test-classes/pgp/secring.gpg"/>
+          <property name="pass"    value="testKey82"/>
+          <property name="key"    value="0EDB5D91141BC4F2"/>
+        </merc:verifywrite>
+      	
+        <merc:verifyread type="pgp">
+          <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
+        </merc:verifyread>
+
+      </merc:repo>
+
+    	
+    </merc:config>
+
 
     <merc:dep id="my-libs">
       <merc:dependency name="asm:asm:3.0"/>
@@ -59,7 +83,13 @@
                 name="t:t:1.0"
                 file="${jar.target}/t.jar"
       />
+  </target>
 
+  <target name="deploy-verify" depends="compile">
+    <merc:write repoid="localVerifyRepo"
+                name="t:t:1.0"
+                file="${jar.target}/t.jar"
+      />
   </target>
   
 </project>
