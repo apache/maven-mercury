@@ -35,7 +35,7 @@ import org.codehaus.plexus.lang.Language;
 public class RepositoryUpdateIntervalPolicy
 implements RepositoryUpdatePolicy
 {
-  private static final Language LANG = new DefaultLanguage( RepositoryUpdateIntervalPolicy.class );
+  private static final Language _lang = new DefaultLanguage( RepositoryUpdateIntervalPolicy.class );
   
   public static final String UPDATE_POLICY_NAME_NEVER = "never";
 
@@ -81,7 +81,7 @@ implements RepositoryUpdatePolicy
   public void init( String policy )
   {
      if( Util.isEmpty( policy ) )
-       throw new IllegalArgumentException( LANG.getMessage( "empty.policy", policy ));
+       throw new IllegalArgumentException( _lang.getMessage( "empty.policy", policy ));
      
      if( policy.startsWith( UPDATE_POLICY_NAME_ALWAYS ) )
        interval = 0L;
@@ -93,12 +93,12 @@ implements RepositoryUpdatePolicy
      {
        int len = policy.length();
        if( len <= UPDATE_POLICY_INTERVAL_LENGTH )
-         throw new IllegalArgumentException( LANG.getMessage( "bad.interval.policy", policy ));
+         throw new IllegalArgumentException( _lang.getMessage( "bad.interval.policy", policy ));
 
        interval = Integer.parseInt( policy.substring( len-1 ) ) * 60000L;
      }
      else
-       throw new IllegalArgumentException( LANG.getMessage( "bad.policy", policy ));
+       throw new IllegalArgumentException( _lang.getMessage( "bad.policy", policy ));
   }
 
   public boolean timestampExpired( long lastUpdateMillis )
@@ -121,12 +121,4 @@ implements RepositoryUpdatePolicy
     return res;
   }
   
-  public static void main(
-      String[] args )
-  {
-    RepositoryUpdateIntervalPolicy up = new RepositoryUpdateIntervalPolicy("interval2");
-    
-    System.out.println("Interval is "+up.interval);
-  }
-
 }

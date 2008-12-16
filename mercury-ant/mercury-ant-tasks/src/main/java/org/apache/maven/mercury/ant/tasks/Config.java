@@ -40,7 +40,7 @@ import org.codehaus.plexus.lang.Language;
 public class Config
 extends AbstractDataType
 {
-  private static final Language LANG = new DefaultLanguage( Config.class );
+  private static final Language _lang = new DefaultLanguage( Config.class );
   
   Collection<Repo> _repos;
   
@@ -73,7 +73,7 @@ extends AbstractDataType
     {
       File cf = new File( a._certfile );
       if( ! cf.exists() )
-        throw new BuildException( LANG.getMessage( "config.no.cert.file", a._certfile ) );
+        throw new BuildException( _lang.getMessage( "config.no.cert.file", a._certfile ) );
       
       try
       {
@@ -252,14 +252,14 @@ extends AbstractDataType
           Auth au = null;
           
           if( _auths == null )
-            throw new BuildException( LANG.getMessage( "config.no.auths", _authid ) );
+            throw new BuildException( _lang.getMessage( "config.no.auths", _authid ) );
           
           for( Auth a : _auths )
             if( _authid.equals( a.getId() ) )
               au = a;
           
           if( au == null )
-            throw new BuildException( LANG.getMessage( "config.no.auth.for.id", _authid ) );
+            throw new BuildException( _lang.getMessage( "config.no.auth.for.id", _authid ) );
           
           Credentials serverCred = createCredentials( au );
           
@@ -271,14 +271,14 @@ extends AbstractDataType
           Auth au = null;
           
           if( _auths == null )
-            throw new BuildException( LANG.getMessage( "config.no.proxy.auths", _proxyauthid ) );
+            throw new BuildException( _lang.getMessage( "config.no.proxy.auths", _proxyauthid ) );
           
           for( Auth a : _auths )
             if( _proxyauthid.equals( a.getId() ) )
               au = a;
           
           if( au == null )
-            throw new BuildException( LANG.getMessage( "config.no.proxy.auth.for.id", _proxyauthid ) );
+            throw new BuildException( _lang.getMessage( "config.no.proxy.auth.for.id", _proxyauthid ) );
           
           Credentials proxyCred = createCredentials( au );
           
@@ -298,7 +298,7 @@ extends AbstractDataType
     }
     
   }
-  
+
   public class Auth
   extends AbstractDataType
   {
@@ -360,17 +360,17 @@ extends AbstractDataType
     throws BuildException
     {
       if( _type == null )
-        throw new BuildException( LANG.getMessage( "config.repo.verifier.no.type" ) );
+        throw new BuildException( _lang.getMessage( "config.repo.verifier.no.type" ) );
       
       if( _properties == null || _properties.isEmpty() )
-        throw new BuildException( LANG.getMessage( "config.repo.verifier.no.properties", _type ) );
+        throw new BuildException( _lang.getMessage( "config.repo.verifier.no.properties", _type ) );
       
       if( PGP.equals( _type ) )
       {
         String keyRing = _properties.get( "keyring" );
         
         if( keyRing == null )
-          throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.no.keyring" ) );
+          throw new BuildException( _lang.getMessage( "config.repo.verifier.pgp.no.keyring" ) );
 
         String pass = _properties.get( "pass" );
         
@@ -395,7 +395,7 @@ extends AbstractDataType
           String keyId = _properties.get( "key" );
           
           if( keyId == null || keyId.length() != 16 )
-            throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.bad.keyid", keyId, keyRing ) );
+            throw new BuildException( _lang.getMessage( "config.repo.verifier.pgp.bad.keyid", keyId, keyRing ) );
           
           try
           {
@@ -420,7 +420,7 @@ extends AbstractDataType
         return fac;
       }
 
-      throw new BuildException( LANG.getMessage( "config.repo.verifier.bad.type", _type ) );
+      throw new BuildException( _lang.getMessage( "config.repo.verifier.bad.type", _type ) );
     }
   }
 

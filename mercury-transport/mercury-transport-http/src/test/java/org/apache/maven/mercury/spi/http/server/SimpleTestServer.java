@@ -32,20 +32,35 @@ import org.mortbay.util.IO;
 public class SimpleTestServer
     extends Server
 {
-    File base;
-    Context context;
+  
+  final static String LOCAL_PATH = "/testRepo/";
+  final static String REMOTE_SEG = "/maven2/repo";
+  
+  File base;
+  Context context;
     
+    public SimpleTestServer( int port )
+    throws Exception
+    {
+      this( port, LOCAL_PATH, REMOTE_SEG );
+    }
     
     public SimpleTestServer()
-        throws Exception
+    throws Exception
     {
-        this( "/testRepo/", "/maven2/repo" );
+      this( 0, LOCAL_PATH, REMOTE_SEG );
     }
 
     public SimpleTestServer( String localPathFragment, String remotePathFragment )
-        throws Exception
+    throws Exception
     {
-        super( 0 );
+      this( 0, localPathFragment, remotePathFragment );
+    }
+    
+    public SimpleTestServer( int port, String localPathFragment, String remotePathFragment )
+    throws Exception
+    {
+        super( port );
 
         HandlerCollection handlers = new HandlerCollection();
         setHandler( handlers );
@@ -76,9 +91,15 @@ public class SimpleTestServer
     }
 
     public SimpleTestServer( File localBase, String remotePathFragment )
-        throws Exception
+    throws Exception
     {
-        super( 0 );
+      this( 0, localBase, remotePathFragment ); 
+    }
+
+    public SimpleTestServer( int port, File localBase, String remotePathFragment )
+    throws Exception
+    {
+        super( port );
 
         HandlerCollection handlers = new HandlerCollection();
         setHandler( handlers );

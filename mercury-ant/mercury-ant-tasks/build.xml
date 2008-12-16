@@ -23,28 +23,39 @@
       <merc:repo id="localRepo" dir="${local.repo.dir}"/>
       <merc:repo id="central"   url="http://repo1.maven.org/maven2"/>
     </merc:config>
-  	
+
+    <merc:config id="config-bad-auth">
+      <merc:repo id="localRepo" dir="${local.repo.dir}"/>
+      <merc:repo id="central"   url="http://localhost:50000/maven2"/>
+    </merc:config>
+
+    <merc:config id="config-auth">
+      <merc:auth id="test-auth" name="foo" pass="bar"/>
+      <merc:repo id="localRepo" dir="${local.repo.dir}"/>
+      <merc:repo id="central"  url="http://localhost:50000/maven2" authid="test-auth">
+      </merc:repo>
+    </merc:config>
+
     <property name="local.verify.dir" value="${basedir}/target/test-verify-repo"/>
     <delete dir="${local.verify.dir}"/>
     <mkdir dir="${local.verify.dir}"/>
 
     <merc:config id="verification-conf">
-    	
+      
       <merc:repo id="localVerifyRepo" dir="${local.verify.dir}">
-      	
+        
         <merc:verifywrite type="pgp">
           <property name="keyring" value="${basedir}/target/test-classes/pgp/secring.gpg"/>
           <property name="pass"    value="testKey82"/>
           <property name="key"    value="0EDB5D91141BC4F2"/>
         </merc:verifywrite>
-      	
+        
         <merc:verifyread type="pgp">
           <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
         </merc:verifyread>
 
       </merc:repo>
 
-    	
     </merc:config>
 
 
@@ -71,8 +82,40 @@
            target="${compiler.version}"
     />
     
-    
     <jar destfile="${jar.target}/t.jar"
+         basedir="${target}"
+    />
+
+  </target>
+
+
+  <target name="compile-bad-auth" depends="init">
+    <merc:resolve pathid="compile-path-bad-auth"
+                 depid="my-libs"
+                 configid="config-bad-auth"
+                 />
+  </target>
+
+	
+  <target name="compile-auth" depends="init">
+
+    <merc:resolve pathid="compile-path-auth"
+                 depid="my-libs"
+                 configid="config-auth"
+                 />
+
+    <property name="cpa" refid="compile-path-auth"/>
+    <echo>compile-path-auth is ${cpa}</echo>
+
+    <javac srcdir="${src}"
+           destdir="${target}"
+           classpathref="compile-path-auth"
+           debug="on"
+           source="${compiler.version}"
+           target="${compiler.version}"
+    />
+
+    <jar destfile="${jar.target}/t-auth.jar"
          basedir="${target}"
     />
 

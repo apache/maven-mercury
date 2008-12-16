@@ -2,6 +2,7 @@ package org.apache.maven.mercury.ant.tasks;
 
 import java.io.File;
 
+import org.apache.maven.mercury.spi.http.server.AuthenticatingTestServer;
 import org.apache.maven.mercury.spi.http.server.SimpleTestServer;
 import org.apache.maven.mercury.util.FileUtil;
 import org.apache.tools.ant.BuildFileTest;
@@ -20,6 +21,7 @@ public class MecuryAntTest
 extends BuildFileTest 
 {
   static final String _localRepoDir = "./target/repo";
+  static       File   _localRepoDirFile;
   
   static final String _writeRepoDir = "./target/test-repo";
   static       File   _writeRepoDirFile;
@@ -34,6 +36,7 @@ extends BuildFileTest
   static       File   _jarDirFile;
 
   static final String _remoteRepoDir = "./target/test-classes/remoteRepo";
+  static       File   _remoteRepoDirFile;
   static final String _remoteRepoUrlPrefix = "http://localhost:";
   static final String _remoteRepoUrlSufix = "/repo";
 
@@ -41,6 +44,9 @@ extends BuildFileTest
   
   SimpleTestServer _jetty;
   String _port;
+  
+  AuthenticatingTestServer _secureJetty;
+  String _securedPort;
     
   Resolver _resolver;
   Config   _config;
@@ -95,16 +101,16 @@ extends BuildFileTest
     _config = new Config();
     _config.setId( "conf" );
     
-    File lrDir = new File( _localRepoDir );
-    FileUtil.delete( lrDir );
-    lrDir.mkdirs();
+    _localRepoDirFile = new File( _localRepoDir );
+    FileUtil.delete( _localRepoDirFile );
+    _localRepoDirFile.mkdirs();
     
     Config.Repo localRepo = _config.createRepo();
     localRepo.setId( "localRepo" );
     localRepo.setDir( _localRepoDir );
     
-    File rrDir = new File( _remoteRepoDir );
-    _jetty = new SimpleTestServer( rrDir, _remoteRepoUrlSufix );
+    _remoteRepoDirFile = new File( _remoteRepoDir );
+    _jetty = new SimpleTestServer( _remoteRepoDirFile, _remoteRepoUrlSufix );
     _jetty.start();
     _port = ""+_jetty.getPort();
     
@@ -125,7 +131,7 @@ extends BuildFileTest
 
     System.setProperty( "ant.home", ".src/test/apache-ant-1.6.5" );
     
-    configureProject("build.xml");
+    configureProject( "build.xml" );
 
     _writeRepoDirFile = new File( _writeRepoDir );
     FileUtil.delete( _writeRepoDirFile );
@@ -214,6 +220,77 @@ extends BuildFileTest
     assertTrue( af.exists() );
 
     assertTrue( jar.exists() );
+  }
+  //-----------------------------------
+  public void testBadAuthRepo()
+  throws Exception
+  {
+    try
+    {
+      String title = "compile-auth";
+      System.out.println("========> start "+title);
+      System.out.flush();
+      
+      _secureJetty = new AuthenticatingTestServer( 50000, _remoteRepoDirFile, "/maven2" );
+      _secureJetty.start();
+      
+      try
+      {
+        executeTarget("compile-bad-auth");
+        fail( "accessing authenticated repo without password succeded - failing test" );
+      }
+      catch( Exception e )
+      {
+        System.out.println("Expected exception: "+e.getMessage() );
+      }
+    }
+    finally
+    {
+      if( _secureJetty != null )
+        try
+        {
+          _secureJetty.stop();
+          _secureJetty.destroy();
+        }
+        catch( Exception e ){}
+    }
+  }
+  //-----------------------------------
+  public void testAuthRepo()
+  throws Exception
+  {
+    try
+    {
+      String title = "compile-auth";
+      System.out.println("========> start "+title);
+      System.out.flush();
+      
+      File af = new File( _compileDirFile, "T.class" );
+   
+      assertFalse( af.exists() );
+  
+      File jar = new File( _jarDirFile, "t-auth.jar" );
+      
+      assertFalse( jar.exists() );
+      
+      _secureJetty = new AuthenticatingTestServer( 50000, _remoteRepoDirFile, "/maven2" );
+      _secureJetty.start();
+      
+      executeTarget("compile-auth");
+      
+      assertTrue( af.exists() );
+      assertTrue( jar.exists() );
+    }
+    finally
+    {
+      if( _secureJetty != null )
+        try
+        {
+          _secureJetty.stop();
+          _secureJetty.destroy();
+        }
+        catch( Exception e ){}
+    }
   }
   //-----------------------------------
   public void testWriteToRepository()

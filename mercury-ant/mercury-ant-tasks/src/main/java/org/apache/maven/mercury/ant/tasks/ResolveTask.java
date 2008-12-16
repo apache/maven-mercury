@@ -31,12 +31,10 @@ import org.codehaus.plexus.lang.Language;
 public class ResolveTask
 extends AbstractAntTask
 {
-  private static final Language LANG = new DefaultLanguage( ResolveTask.class );
+  private static final Language _lang = new DefaultLanguage( ResolveTask.class );
   
-  public static final String TASK_NAME = LANG.getMessage( "resolve.task.name" );
-  public static final String TASK_DESC = LANG.getMessage( "resolve.task.desc" );
-  
-  private boolean _transitive = true;
+  public static final String TASK_NAME = _lang.getMessage( "resolve.task.name" );
+  public static final String TASK_DESC = _lang.getMessage( "resolve.task.desc" );
   
   private String _pathId;
   
@@ -69,7 +67,7 @@ extends AbstractAntTask
   {
     if( _configId == null )
     {
-      throwIfEnabled( LANG.getMessage( "config.id.mandatory" ) );
+      throwIfEnabled( _lang.getMessage( "config.id.mandatory" ) );
       return;
     }
     
@@ -77,13 +75,13 @@ extends AbstractAntTask
 
     if( so == null )
     {
-      throwIfEnabled( LANG.getMessage( "config.id.object.null", _configId ) );
+      throwIfEnabled( _lang.getMessage( "config.id.object.null", _configId ) );
       return;
     }
     
     if( ! Config.class.isAssignableFrom( so.getClass() ) )
     {
-      throwIfEnabled( LANG.getMessage( "config.id.object.wrong", _configId, so.getClass().getName() ) );
+      throwIfEnabled( _lang.getMessage( "config.id.object.wrong", _configId, so.getClass().getName() ) );
       return;
     }
     
@@ -91,7 +89,7 @@ extends AbstractAntTask
     
     if( Util.isEmpty( _pathId ) && Util.isEmpty( _pathId ) )
     {
-      throwIfEnabled( LANG.getMessage("no.path.ref") );
+      throwIfEnabled( _lang.getMessage("no.path.ref") );
       return;
     }
     
@@ -99,7 +97,7 @@ extends AbstractAntTask
     
     if( _depId == null )
     {
-      throwIfEnabled( LANG.getMessage( "no.dep.id" ) );
+      throwIfEnabled( _lang.getMessage( "no.dep.id" ) );
       return;
     }
     
@@ -107,13 +105,13 @@ extends AbstractAntTask
     
     if( d == null )
     {
-      throwIfEnabled( LANG.getMessage( "no.dep", _depId ) );
+      throwIfEnabled( _lang.getMessage( "no.dep", _depId ) );
       return;
     }
     
-    if( ! Dep.class.isAssignableFrom( d.getClass() ) )
+    if( ! Dep.class.isAssignableFrom( d.getClass() )  )
     {
-      throwIfEnabled( LANG.getMessage( "bad.dep", _depId, d.getClass().getName(), Dep.class.getName() ) );
+      throwIfEnabled( _lang.getMessage( "bad.dep", _depId, d.getClass().getName(), Dep.class.getName() ) );
       return;
     }
     
@@ -125,7 +123,7 @@ extends AbstractAntTask
     {
       if( getProject().getReference( _pathId ) != null )
       {
-        throwIfEnabled( LANG.getMessage( "path.exists", _pathId ) );
+        throwIfEnabled( _lang.getMessage( "path.exists", _pathId ) );
         return;
       }
     }
@@ -135,7 +133,7 @@ extends AbstractAntTask
 
       if( p == null )
       {
-        throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
+        throwIfEnabled( _lang.getMessage( "no.path.ref", _refPathId ) );
         return;
       }
 
@@ -161,9 +159,12 @@ extends AbstractAntTask
       
       ArtifactResults aRes = vr.readArtifacts( res );
       
-      if( aRes.hasExceptions() )
+      if( aRes == null )
+        throw new BuildException( _lang.getMessage( "resolve.cannot.read", _configId, res.toString() ) );
+      
+      if( aRes == null || aRes.hasExceptions() )
       {
-        throwIfEnabled( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
+        throwIfEnabled( _lang.getMessage( "vr.error", aRes.getExceptions().toString() ) );
         return;
       }
       
@@ -180,7 +181,7 @@ extends AbstractAntTask
       {
         List<Artifact> artifacts = resMap.get( key );
 
-        if( !Util.isEmpty( artifacts ) )
+        if( !Util.isEmpty( artifacts )  )
           for( Artifact a : artifacts )
           {
             if( dir == null )
@@ -229,11 +230,6 @@ extends AbstractAntTask
   public void setConfigid( String configid )
   {
     this._configId = configid;
-  }
-
-  public void setTransitive( boolean val )
-  {
-    this._transitive = val;
   }
 
   public void setPathid( String pathId )
