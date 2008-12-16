@@ -1,6 +1,8 @@
 <project name="test" default="compile" xmlns:merc="antlib:org.apache.maven.mercury.ant.tasks" >
   
   <target name="init">
+  	
+  	<property file="${basedir}/secret.properties"/>
 
     <property name="config.name" value="conf"/>
     <property name="compiler.version" value="1.5"/>
@@ -46,8 +48,8 @@
         
         <merc:verifywrite type="pgp">
           <property name="keyring" value="${basedir}/target/test-classes/pgp/secring.gpg"/>
-          <property name="pass"    value="testKey82"/>
-          <property name="key"    value="0EDB5D91141BC4F2"/>
+          <property name="pass"    value="${secret.keyring.pass}"/>
+          <property name="key"     value="${secret.keyring.key}"/>
         </merc:verifywrite>
         
         <merc:verifyread type="pgp">
