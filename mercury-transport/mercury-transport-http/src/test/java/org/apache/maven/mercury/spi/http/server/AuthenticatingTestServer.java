@@ -33,7 +33,7 @@ extends SimpleTestServer
     private static final String __password = "bar";
     private static final String __role = "foomeister";
     
-    private void init()
+    public void secure()
     {
       HashUserRealm realm = new HashUserRealm();
       realm.put (__username, __password);
@@ -53,18 +53,25 @@ extends SimpleTestServer
       context.addHandler(securityHandler);
     }
     
-    public AuthenticatingTestServer( int port, File localBase, String remotePathFragment )
+    public AuthenticatingTestServer( int port, File localBase, String remotePathFragment, boolean secured )
     throws Exception
     {
       super( port, localBase, remotePathFragment );
-      init();
+      if( secured )
+          secure();
+    }
+    
+    public AuthenticatingTestServer( int port, File localBase, String remotePathFragment )
+    throws Exception
+    {
+      this( port, localBase, remotePathFragment, true );
     }
 
     public AuthenticatingTestServer()
     throws Exception
     {
       super();
-      init();
+      secure();
     }
 
     public String getUsername()

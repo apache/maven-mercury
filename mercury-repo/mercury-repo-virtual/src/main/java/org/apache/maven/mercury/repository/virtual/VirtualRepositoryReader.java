@@ -91,8 +91,8 @@ implements MetadataReader, EventGenerator
   /** minimum # of queue elements to consider parallelization */
   private static int MIN_PARALLEL = 5;
   
-  private static final Language LANG = new DefaultLanguage( VirtualRepositoryReader.class );
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( VirtualRepositoryReader.class ); 
+  private static final Language _lang = new DefaultLanguage( VirtualRepositoryReader.class );
+  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( VirtualRepositoryReader.class ); 
 
   //----------------------------------------------------------------------------------------------------------------------------
   private List<Repository>       _repositories = new ArrayList<Repository>(8);
@@ -310,7 +310,7 @@ implements MetadataReader, EventGenerator
             }
             catch( VersionException e )
             {
-              throw new RepositoryException( LANG.getMessage( "query.element.bad.version", key.toString(), e.getMessage() ) );
+              throw new RepositoryException( _lang.getMessage( "query.element.bad.version", key.toString(), e.getMessage() ) );
             }
             
             if( keyVersionRange.isSingleton() )
@@ -498,7 +498,7 @@ implements MetadataReader, EventGenerator
       List<ArtifactBasicMetadata> rejects = buckets == null ? null : buckets.get( RepositoryReader.NULL_READER );
   
       if( buckets == null )
-        throw new RepositoryException( LANG.getMessage( "internal.error.sorting.query", query.toString() ) ); 
+        throw new RepositoryException( _lang.getMessage( "internal.error.sorting.query", query.toString() ) ); 
         
       init();
       
@@ -522,7 +522,7 @@ implements MetadataReader, EventGenerator
           ArtifactResults rrRes = rr.readArtifacts( rrQuery );
           
           if( rrRes.hasExceptions() )
-            throw new RepositoryException( LANG.getMessage( "error.reading.existing.artifact", rrRes.getExceptions().toString(), rr.getRepository().getId() ) );
+            throw new RepositoryException( _lang.getMessage( "error.reading.existing.artifact", rrRes.getExceptions().toString(), rr.getRepository().getId() ) );
           
           if( rrRes.hasResults() )
             for( ArtifactBasicMetadata bm : rrRes.getResults().keySet() )
@@ -620,8 +620,8 @@ implements MetadataReader, EventGenerator
   public byte[] readMetadata( ArtifactBasicMetadata bmd )
   throws MetadataReaderException
   {
-    if( LOG.isDebugEnabled() )
-      LOG.debug( "Asking for pom: "+bmd);
+    if( _log.isDebugEnabled() )
+      _log.debug( "Asking for pom: "+bmd);
 
     return readRawData( bmd, "", "pom" );
   }
@@ -635,8 +635,8 @@ implements MetadataReader, EventGenerator
     GenericEvent event = null;
     String eventTag = null; 
     
-    if( LOG.isDebugEnabled() )
-      LOG.debug( "request for "+bmd+", classifier="+classifier+", type="+type );
+    if( _log.isDebugEnabled() )
+      _log.debug( "request for "+bmd+", classifier="+classifier+", type="+type );
     
     if( bmd == null )
       throw new IllegalArgumentException("null bmd supplied");
@@ -666,8 +666,8 @@ implements MetadataReader, EventGenerator
       byte [] res = null;
       Quality vq = new Quality( bmd.getVersion() );
       
-      if( LOG.isDebugEnabled() )
-        LOG.debug( "quality calculated as "+vq.getQuality() == null ? "null" :vq.getQuality().name() );
+      if( _log.isDebugEnabled() )
+        _log.debug( "quality calculated as "+vq.getQuality() == null ? "null" :vq.getQuality().name() );
       
       if( Quality.SNAPSHOT_QUALITY.equals( vq ) )
       {
@@ -679,10 +679,10 @@ implements MetadataReader, EventGenerator
           ArtifactBasicResults vRes = readVersions( query );
           if( Util.isEmpty( vRes ) )
           {
-            if( LOG.isDebugEnabled() )
-              LOG.debug( "no snapshots found - throw exception" );
+            if( _log.isDebugEnabled() )
+              _log.debug( "no snapshots found - throw exception" );
             
-            throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(), classifier, type ) );
+            throw new MetadataReaderException( _lang.getMessage( "no.snapshots", bmd.toString(), classifier, type ) );
           }
             
             
@@ -697,10 +697,10 @@ implements MetadataReader, EventGenerator
           }
           else
           {
-            if( LOG.isDebugEnabled() )
-              LOG.debug( "no snapshots found - throw exception" );
+            if( _log.isDebugEnabled() )
+              _log.debug( "no snapshots found - throw exception" );
             
-            throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(), classifier, type ) );
+            throw new MetadataReaderException( _lang.getMessage( "no.snapshots", bmd.toString(), classifier, type ) );
           }
         }
         catch( Exception e )
@@ -721,8 +721,8 @@ implements MetadataReader, EventGenerator
           res = rr.readRawData( bmdQuery, classifier, type );
           if( res != null )
           {
-            if( LOG.isDebugEnabled() )
-              LOG.debug( bmdQuery+" found in "+rr.getRepository().getServer() );
+            if( _log.isDebugEnabled() )
+              _log.debug( bmdQuery+" found in "+rr.getRepository().getServer() );
 
             if( _eventManager != null )
               eventRead.setInfo( eventRead.getInfo() );
@@ -743,8 +743,8 @@ implements MetadataReader, EventGenerator
         }
       }
       
-      if( LOG.isDebugEnabled() )
-        LOG.debug( "no data found, returning null" );
+      if( _log.isDebugEnabled() )
+        _log.debug( "no data found, returning null" );
       
       return null;
     }

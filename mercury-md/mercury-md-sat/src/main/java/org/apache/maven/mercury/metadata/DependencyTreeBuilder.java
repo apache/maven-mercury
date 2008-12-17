@@ -55,422 +55,445 @@ import org.codehaus.plexus.lang.Language;
  * @version $Id$
  */
 class DependencyTreeBuilder
-implements DependencyBuilder, EventGenerator
+    implements DependencyBuilder, EventGenerator
 {
-  public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata("__fake:__fake:1.0");
-  
-  private static final Language _lang = new DefaultLanguage(DependencyTreeBuilder.class);
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class ); 
-  
-  private Collection<MetadataTreeArtifactFilter> _filters;
-  private List<Comparator<MetadataTreeNode>> _comparators;
-  private Map<String,ArtifactListProcessor> _processors;
-  
-  private VirtualRepositoryReader _reader;
-  
-  private Map< String, MetadataTreeNode > _existingNodes;
-  
-  private EventManager _eventManager;
-  
-  /**
-   * creates an instance of MetadataTree. Use this instance to 
-   * <ul>
-   *    <li>buildTree - process all the dependencies</li>
-   *    <li>resolveConflicts</li>
-   * <ul>
-   * 
-   * @param filters - can veto any artifact before it's added to the tree
-   * @param comparators - used to define selection policies. If null is passed, 
-   * classic comparators - nearest/newest first - will be used. 
-   * @param repositories - order is <b>very</b> important. Ordering allows 
-   * m2eclipse, for instance, insert a workspace repository
-   * @throws RepositoryException
-   */
-  protected DependencyTreeBuilder(
-        Collection<Repository> repositories
-      , Collection<MetadataTreeArtifactFilter> filters
-      , List<Comparator<MetadataTreeNode>> comparators
-      , Map<String,ArtifactListProcessor> processors
-                     )
-  throws RepositoryException
-  {
-    this._filters = filters;
-    this._comparators = comparators;
-    
-    // if used does not want to bother.
-    // if it's an empty list - user does not want any comparators - so be it
-    if( _comparators == null )
-    {
-      _comparators = new ArrayList<Comparator<MetadataTreeNode>>(2);
-      _comparators.add( new ClassicDepthComparator() );
-      _comparators.add( new ClassicVersionComparator() );
-    }
-    
-    if( processors != null )
-      _processors = processors;
-    
-    this._reader = new VirtualRepositoryReader( repositories );
-  }
-  //------------------------------------------------------------------------
-  public MetadataTreeNode buildTree( ArtifactBasicMetadata startMD, ArtifactScopeEnum treeScope )
-  throws MetadataTreeException
-  {
-    if( startMD == null )
-      throw new MetadataTreeException( "null start point" );
-    
-    try
-    {
-      _reader.setEventManager( _eventManager );
-      _reader.setProcessors( _processors );
-      _reader.init();
-    }
-    catch( RepositoryException e )
-    {
-      throw new MetadataTreeException(e);
-    }
-    
-    _existingNodes = new HashMap<String, MetadataTreeNode>(256);
-    
-    GenericEvent treeBuildEvent = null;
-    if( _eventManager != null )
-      treeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_BUILD_EVENT, startMD.getGAV() );
-    
-    MetadataTreeNode root = createNode( startMD, null, startMD, treeScope );
-    
-    if( _eventManager != null )
-      treeBuildEvent.stop();
-    
-    if( _eventManager != null )
-      _eventManager.fireEvent( treeBuildEvent );
-    
-    MetadataTreeNode.reNumber( root, 1 );
-    
-    return root;
-  }
-  //------------------------------------------------------------------------
-  public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactBasicMetadata... startMDs )
-  throws MetadataTreeException
-  {
-    return resolveConflicts( scope, Arrays.asList( startMDs ) );
-  }
-  //------------------------------------------------------------------------
-  public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, List<ArtifactBasicMetadata> startMDs )
-  throws MetadataTreeException
-  {
-    if( Util.isEmpty( startMDs ) )
-      throw new MetadataTreeException( _lang.getMessage( "empty.md.collection") );
+    public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata( "__fake:__fake:1.0" );
 
-    List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( startMDs.size() );
+    private static final Language _lang = new DefaultLanguage( DependencyTreeBuilder.class );
 
-    // build all trees
-    for( ArtifactBasicMetadata bmd : startMDs )
+    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
+
+    private Collection<MetadataTreeArtifactFilter> _filters;
+
+    private List<Comparator<MetadataTreeNode>> _comparators;
+
+    private Map<String, ArtifactListProcessor> _processors;
+
+    private VirtualRepositoryReader _reader;
+
+    private Map<String, MetadataTreeNode> _existingNodes;
+
+    private EventManager _eventManager;
+
+    /**
+     * creates an instance of MetadataTree. Use this instance to
+     * <ul>
+     * <li>buildTree - process all the dependencies</li>
+     * <li>resolveConflicts</li>
+     * <ul>
+     * 
+     * @param filters - can veto any artifact before it's added to the tree
+     * @param comparators - used to define selection policies. If null is passed, classic comparators - nearest/newest
+     *            first - will be used.
+     * @param repositories - order is <b>very</b> important. Ordering allows m2eclipse, for instance, insert a workspace
+     *            repository
+     * @throws RepositoryException
+     */
+    protected DependencyTreeBuilder( Collection<Repository> repositories,
+                                     Collection<MetadataTreeArtifactFilter> filters,
+                                     List<Comparator<MetadataTreeNode>> comparators,
+                                     Map<String, ArtifactListProcessor> processors )
+        throws RepositoryException
     {
-      MetadataTreeNode rooty = buildTree( bmd, scope ); 
-      
-      deps.add( rooty );
-    }
-    
-    DUMMY_ROOT.setDependencies( startMDs );
-    
-    // combine into one tree
-    MetadataTreeNode root = new MetadataTreeNode( DUMMY_ROOT, null, null );
-    
-    for( MetadataTreeNode kid : deps )
-      root.addChild( kid );
-    
-    List<ArtifactMetadata>  res = resolveConflicts( root );
-    
-    res.remove( DUMMY_ROOT );
-    
-    return res;
-  }
-  //-----------------------------------------------------
-  private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent, ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope )
-  throws MetadataTreeException
-  {
-    GenericEvent nodeBuildEvent = null;
-    
-    if( _eventManager != null )
-      nodeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_NODE_BUILD_EVENT, nodeMD.getGAV() );
-    
-    try
-    {
-      checkForCircularDependency( nodeMD, parent );
-  
-      ArtifactMetadata mr;
-      
-      MetadataTreeNode existingNode = _existingNodes.get( nodeQuery.toString() );
-      
-      if( existingNode != null )
-        return MetadataTreeNode.deepCopy( existingNode );
-    
-        mr = _reader.readDependencies( nodeMD );
-  
-        if( mr == null )
-          throw new MetadataTreeException( _lang.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
-        
-        MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
-    
-        List<ArtifactBasicMetadata> allDependencies = mr.getDependencies();
-        
-        if( allDependencies == null || allDependencies.size() < 1 )
-          return node;
-        
-        List<ArtifactBasicMetadata> dependencies = new ArrayList<ArtifactBasicMetadata>( allDependencies.size() );
-        if( globalScope != null )
-          for( ArtifactBasicMetadata md : allDependencies )
-          {
-            ArtifactScopeEnum mdScope = md.getArtifactScope(); 
-            if( globalScope.encloses( mdScope ) )
-              dependencies.add( md );
-          }
-        else
-          dependencies.addAll( allDependencies );
-        
-        if( Util.isEmpty( dependencies ) )
-          return node;
+        this._filters = filters;
+        this._comparators = comparators;
 
-        ArtifactBasicResults res = _reader.readVersions( dependencies );
-
-        Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata>> expandedDeps = res.getResults();
-        
-        for( ArtifactBasicMetadata md : dependencies )
+        // if used does not want to bother.
+        // if it's an empty list - user does not want any comparators - so be it
+        if ( _comparators == null )
         {
-
-if( _log.isDebugEnabled() )
-  _log.debug("node "+nodeQuery+", dep "+md );
-
-          List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
-          if( versions == null || versions.size() < 1 )
-          {
-            if( md.isOptional() )
-              continue;
-            
-            throw new MetadataTreeException( "did not find non-optional artifact for " + md + " <== " + showPath( node ) );
-          }
-          
-          boolean noGoodVersions = true;
-          boolean noVersions = true;
-          for( ArtifactBasicMetadata ver : versions )
-          {
-            if( veto( ver, _filters) || vetoInclusionsExclusions(node, ver) )
-            {
-              // there were good versions, but this one is filtered out
-              noGoodVersions = false;
-              continue;
-            }
-            
-            MetadataTreeNode kid = createNode( ver, node, md, globalScope );
-            node.addChild( kid );
-            
-            noVersions = false;
-            
-            noGoodVersions = false;
-          }
-          
-          
-          if( noVersions && !noGoodVersions )
-          {
-            // there were good versions, but they were all filtered out
-            continue;
-          }
-          else if( noGoodVersions )
-          {
-            if( md.isOptional() )
-              continue;
-            throw new MetadataTreeException( "did not find non-optional artifact for " + md );
-          }
-          else
-            node.addQuery(md);
-      }
-        
-      _existingNodes.put( nodeQuery.toString(), node );
-    
-      return node;
-    }
-    catch (RepositoryException e)
-    {
-      if( _eventManager != null )
-        nodeBuildEvent.setResult( e.getMessage() );
-
-      throw new MetadataTreeException( e );
-    }
-    catch( VersionException e )
-    {
-      if( _eventManager != null )
-        nodeBuildEvent.setResult( e.getMessage() );
-
-      throw new MetadataTreeException( e );
-    }
-    catch( MetadataTreeException e )
-    {
-      if( _eventManager != null )
-        nodeBuildEvent.setResult( e.getMessage() );
-      throw e;
-    }
-    finally
-    {
-      if( _eventManager != null )
-      {
-        nodeBuildEvent.stop();
-        _eventManager.fireEvent( nodeBuildEvent );
-      }
-    }
-  }
-  //-----------------------------------------------------
-  private void checkForCircularDependency( ArtifactBasicMetadata md, MetadataTreeNode parent )
-  throws MetadataTreeCircularDependencyException
-  {
-    MetadataTreeNode p = parent;
-    int count = 0;
-    while( p != null )
-    {
-      count++;
-//System.out.println("circ "+md+" vs "+p.md);
-      if( md.sameGA(p.md) )
-      {
-        p = parent;
-        StringBuilder sb = new StringBuilder( 128 );
-        sb.append( md.toString() );
-        while( p!= null )
-        {
-          sb.append(" <- "+p.md.toString() );
-
-          if( md.sameGA(p.md) )
-          {
-            throw new MetadataTreeCircularDependencyException("circular dependency "+count + " levels up. "
-                + sb.toString() + " <= "+(p.parent == null ? "no parent" : p.parent.md) );
-          }
-          p = p.parent;
+            _comparators = new ArrayList<Comparator<MetadataTreeNode>>( 2 );
+            _comparators.add( new ClassicDepthComparator() );
+            _comparators.add( new ClassicVersionComparator() );
         }
-      }
-      p = p.parent;
-    }
-  }
-  //-----------------------------------------------------
-  private boolean veto(ArtifactBasicMetadata md, Collection<MetadataTreeArtifactFilter> filters )
-  {
-    if( filters != null && filters.size() > 1)
-      for( MetadataTreeArtifactFilter filter : filters )
-        if( filter.veto(md) )
-          return true;
-    return false;
-  }
-  //-----------------------------------------------------
-  private boolean vetoInclusionsExclusions( MetadataTreeNode node, ArtifactBasicMetadata ver )
-  throws VersionException
-  {
-    for( MetadataTreeNode n = node; n != null; n = n.getParent() )
-    {
-      ArtifactBasicMetadata md = n.getQuery();
-      
-      if( !md.allowDependency( ver ) ) // veto it
-        return true;
-    }
-    return false; // allow because all parents are OK with it
-  }
-  //-----------------------------------------------------
-  public List<ArtifactMetadata> resolveConflicts( MetadataTreeNode root )
-  throws MetadataTreeException
-  {
-    if( root == null )
-      throw new MetadataTreeException(_lang.getMessage( "empty.tree" ));
-    
-    try
-    {
-      DefaultSatSolver solver = new DefaultSatSolver( root, _eventManager );
-      
-      solver.applyPolicies( getComparators() );
 
-      List<ArtifactMetadata> res = solver.solve();
-      
-      return res;
-    }
-    catch (SatException e)
-    {
-      throw new MetadataTreeException(e);
-    }
-    
-  }
-  //-----------------------------------------------------
-  public MetadataTreeNode resolveConflictsAsTree( MetadataTreeNode root )
-  throws MetadataTreeException
-  {
-    if( root == null )
-      throw new MetadataTreeException(_lang.getMessage( "empty.tree" ));
-    
-    try
-    {
-      DefaultSatSolver solver = new DefaultSatSolver( root, _eventManager );
-      
-      solver.applyPolicies( getComparators() );
+        if ( processors != null )
+            _processors = processors;
 
-      MetadataTreeNode res = solver.solveAsTree();
-      
-      return res;
+        this._reader = new VirtualRepositoryReader( repositories );
     }
-    catch (SatException e)
-    {
-      throw new MetadataTreeException(e);
-    }
-    
-  }
-  //-----------------------------------------------------
-  private List<Comparator<MetadataTreeNode>> getComparators()
-  {
-    if( Util.isEmpty( _comparators ) )
-      _comparators = new ArrayList<Comparator<MetadataTreeNode>>(2);
-    
-    if( _comparators.size() < 1 )
-    {
-      _comparators.add( new ClassicDepthComparator() );
-      _comparators.add( new ClassicVersionComparator() );
-    }
-    
-    return _comparators;
-  }
-  //-----------------------------------------------------
-  private String showPath( MetadataTreeNode node )
-  throws MetadataTreeCircularDependencyException
-  {
-    StringBuilder sb = new StringBuilder( 256 );
-    
-    String comma = "";
-    
-    MetadataTreeNode p = node;
 
-    while( p != null )
+    // ------------------------------------------------------------------------
+    public MetadataTreeNode buildTree( ArtifactBasicMetadata startMD, ArtifactScopeEnum treeScope )
+        throws MetadataTreeException
     {
-      sb.append( comma + p.getMd().toString() );
-      
-      comma = " <== ";
-      
-      p = p.parent;
+        if ( startMD == null )
+            throw new MetadataTreeException( "null start point" );
+
+        try
+        {
+            _reader.setEventManager( _eventManager );
+            _reader.setProcessors( _processors );
+            _reader.init();
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataTreeException( e );
+        }
+
+        _existingNodes = new HashMap<String, MetadataTreeNode>( 256 );
+
+        GenericEvent treeBuildEvent = null;
+        if ( _eventManager != null )
+            treeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_BUILD_EVENT, startMD.getGAV() );
+
+        MetadataTreeNode root = createNode( startMD, null, startMD, treeScope );
+
+        if ( _eventManager != null )
+            treeBuildEvent.stop();
+
+        if ( _eventManager != null )
+            _eventManager.fireEvent( treeBuildEvent );
+
+        MetadataTreeNode.reNumber( root, 1 );
+
+        return root;
     }
-    
-    return sb.toString();
-  }
 
-  public void register( MercuryEventListener listener )
-  {
-    if( _eventManager == null )
-      _eventManager = new EventManager();
-      
-    _eventManager.register( listener );
-  }
+    // ------------------------------------------------------------------------
+    public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactBasicMetadata... startMDs )
+        throws MetadataTreeException
+    {
+        return resolveConflicts( scope, Arrays.asList( startMDs ) );
+    }
 
-  public void unRegister( MercuryEventListener listener )
-  {
-    if( _eventManager != null )
-      _eventManager.unRegister( listener );
-  }
-  
-  public void setEventManager( EventManager eventManager )
-  {
-    if( _eventManager == null )
-      _eventManager = eventManager;
-    else
-      _eventManager.getListeners().addAll( eventManager.getListeners() );
-      
-  }
+    // ------------------------------------------------------------------------
+    public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, List<ArtifactBasicMetadata> startMDs )
+        throws MetadataTreeException
+    {
+        if ( Util.isEmpty( startMDs ) )
+            throw new MetadataTreeException( _lang.getMessage( "empty.md.collection" ) );
+
+        int nodeCount = startMDs.size();
+
+        if ( nodeCount == 1 )
+        {
+            ArtifactBasicMetadata bmd = startMDs.get( 0 );
+            MetadataTreeNode rooty = buildTree( bmd, scope );
+            List<ArtifactMetadata> res = resolveConflicts( rooty );
+            return res;
+        }
+
+        List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
+
+        // build all trees
+        for ( ArtifactBasicMetadata bmd : startMDs )
+        {
+            MetadataTreeNode rooty = buildTree( bmd, scope );
+
+            deps.add( rooty );
+        }
+
+        DUMMY_ROOT.setDependencies( startMDs );
+
+        // combine into one tree
+        MetadataTreeNode root = new MetadataTreeNode( DUMMY_ROOT, null, null );
+
+        for ( MetadataTreeNode kid : deps )
+            root.addChild( kid );
+
+        List<ArtifactMetadata> res = resolveConflicts( root );
+
+        res.remove( DUMMY_ROOT );
+
+        return res;
+    }
+
+    // -----------------------------------------------------
+    private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent,
+                                         ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope )
+        throws MetadataTreeException
+    {
+        GenericEvent nodeBuildEvent = null;
+
+        if ( _eventManager != null )
+            nodeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_NODE_BUILD_EVENT, nodeMD.getGAV() );
+
+        try
+        {
+            checkForCircularDependency( nodeMD, parent );
+
+            ArtifactMetadata mr;
+
+            MetadataTreeNode existingNode = _existingNodes.get( nodeQuery.toString() );
+
+            if ( existingNode != null )
+                return MetadataTreeNode.deepCopy( existingNode );
+
+            mr = _reader.readDependencies( nodeMD );
+
+            if ( mr == null )
+                throw new MetadataTreeException( _lang.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
+
+            MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
+
+            List<ArtifactBasicMetadata> allDependencies = mr.getDependencies();
+
+            if ( allDependencies == null || allDependencies.size() < 1 )
+                return node;
+
+            List<ArtifactBasicMetadata> dependencies = new ArrayList<ArtifactBasicMetadata>( allDependencies.size() );
+            if ( globalScope != null )
+                for ( ArtifactBasicMetadata md : allDependencies )
+                {
+                    ArtifactScopeEnum mdScope = md.getArtifactScope();
+                    if ( globalScope.encloses( mdScope ) )
+                        dependencies.add( md );
+                }
+            else
+                dependencies.addAll( allDependencies );
+
+            if ( Util.isEmpty( dependencies ) )
+                return node;
+
+            ArtifactBasicResults res = _reader.readVersions( dependencies );
+
+            Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata>> expandedDeps = res.getResults();
+
+            for ( ArtifactBasicMetadata md : dependencies )
+            {
+
+                if ( _log.isDebugEnabled() )
+                    _log.debug( "node " + nodeQuery + ", dep " + md );
+
+                List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
+                if ( versions == null || versions.size() < 1 )
+                {
+                    if ( md.isOptional() )
+                        continue;
+
+                    throw new MetadataTreeException( "did not find non-optional artifact for " + md + " <== "
+                        + showPath( node ) );
+                }
+
+                boolean noGoodVersions = true;
+                boolean noVersions = true;
+                for ( ArtifactBasicMetadata ver : versions )
+                {
+                    if ( veto( ver, _filters ) || vetoInclusionsExclusions( node, ver ) )
+                    {
+                        // there were good versions, but this one is filtered out
+                        noGoodVersions = false;
+                        continue;
+                    }
+
+                    MetadataTreeNode kid = createNode( ver, node, md, globalScope );
+                    node.addChild( kid );
+
+                    noVersions = false;
+
+                    noGoodVersions = false;
+                }
+
+                if ( noVersions && !noGoodVersions )
+                {
+                    // there were good versions, but they were all filtered out
+                    continue;
+                }
+                else if ( noGoodVersions )
+                {
+                    if ( md.isOptional() )
+                        continue;
+                    throw new MetadataTreeException( "did not find non-optional artifact for " + md );
+                }
+                else
+                    node.addQuery( md );
+            }
+
+            _existingNodes.put( nodeQuery.toString(), node );
+
+            return node;
+        }
+        catch ( RepositoryException e )
+        {
+            if ( _eventManager != null )
+                nodeBuildEvent.setResult( e.getMessage() );
+
+            throw new MetadataTreeException( e );
+        }
+        catch ( VersionException e )
+        {
+            if ( _eventManager != null )
+                nodeBuildEvent.setResult( e.getMessage() );
+
+            throw new MetadataTreeException( e );
+        }
+        catch ( MetadataTreeException e )
+        {
+            if ( _eventManager != null )
+                nodeBuildEvent.setResult( e.getMessage() );
+            throw e;
+        }
+        finally
+        {
+            if ( _eventManager != null )
+            {
+                nodeBuildEvent.stop();
+                _eventManager.fireEvent( nodeBuildEvent );
+            }
+        }
+    }
+
+    // -----------------------------------------------------
+    private void checkForCircularDependency( ArtifactBasicMetadata md, MetadataTreeNode parent )
+        throws MetadataTreeCircularDependencyException
+    {
+        MetadataTreeNode p = parent;
+        int count = 0;
+        while ( p != null )
+        {
+            count++;
+            // System.out.println("circ "+md+" vs "+p.md);
+            if ( md.sameGA( p.md ) )
+            {
+                p = parent;
+                StringBuilder sb = new StringBuilder( 128 );
+                sb.append( md.toString() );
+                while ( p != null )
+                {
+                    sb.append( " <- " + p.md.toString() );
+
+                    if ( md.sameGA( p.md ) )
+                    {
+                        throw new MetadataTreeCircularDependencyException( "circular dependency " + count
+                            + " levels up. " + sb.toString() + " <= " + ( p.parent == null ? "no parent" : p.parent.md ) );
+                    }
+                    p = p.parent;
+                }
+            }
+            p = p.parent;
+        }
+    }
+
+    // -----------------------------------------------------
+    private boolean veto( ArtifactBasicMetadata md, Collection<MetadataTreeArtifactFilter> filters )
+    {
+        if ( filters != null && filters.size() > 1 )
+            for ( MetadataTreeArtifactFilter filter : filters )
+                if ( filter.veto( md ) )
+                    return true;
+        return false;
+    }
+
+    // -----------------------------------------------------
+    private boolean vetoInclusionsExclusions( MetadataTreeNode node, ArtifactBasicMetadata ver )
+        throws VersionException
+    {
+        for ( MetadataTreeNode n = node; n != null; n = n.getParent() )
+        {
+            ArtifactBasicMetadata md = n.getQuery();
+
+            if ( !md.allowDependency( ver ) ) // veto it
+                return true;
+        }
+        return false; // allow because all parents are OK with it
+    }
+
+    // -----------------------------------------------------
+    public List<ArtifactMetadata> resolveConflicts( MetadataTreeNode root )
+        throws MetadataTreeException
+    {
+        if ( root == null )
+            throw new MetadataTreeException( _lang.getMessage( "empty.tree" ) );
+
+        try
+        {
+            DefaultSatSolver solver = new DefaultSatSolver( root, _eventManager );
+
+            solver.applyPolicies( getComparators() );
+
+            List<ArtifactMetadata> res = solver.solve();
+
+            return res;
+        }
+        catch ( SatException e )
+        {
+            throw new MetadataTreeException( e );
+        }
+
+    }
+
+    // -----------------------------------------------------
+    public MetadataTreeNode resolveConflictsAsTree( MetadataTreeNode root )
+        throws MetadataTreeException
+    {
+        if ( root == null )
+            throw new MetadataTreeException( _lang.getMessage( "empty.tree" ) );
+
+        try
+        {
+            DefaultSatSolver solver = new DefaultSatSolver( root, _eventManager );
+
+            solver.applyPolicies( getComparators() );
+
+            MetadataTreeNode res = solver.solveAsTree();
+
+            return res;
+        }
+        catch ( SatException e )
+        {
+            throw new MetadataTreeException( e );
+        }
+
+    }
+
+    // -----------------------------------------------------
+    private List<Comparator<MetadataTreeNode>> getComparators()
+    {
+        if ( Util.isEmpty( _comparators ) )
+            _comparators = new ArrayList<Comparator<MetadataTreeNode>>( 2 );
+
+        if ( _comparators.size() < 1 )
+        {
+            _comparators.add( new ClassicDepthComparator() );
+            _comparators.add( new ClassicVersionComparator() );
+        }
+
+        return _comparators;
+    }
+
+    // -----------------------------------------------------
+    private String showPath( MetadataTreeNode node )
+        throws MetadataTreeCircularDependencyException
+    {
+        StringBuilder sb = new StringBuilder( 256 );
+
+        String comma = "";
+
+        MetadataTreeNode p = node;
+
+        while ( p != null )
+        {
+            sb.append( comma + p.getMd().toString() );
+
+            comma = " <== ";
+
+            p = p.parent;
+        }
+
+        return sb.toString();
+    }
+
+    public void register( MercuryEventListener listener )
+    {
+        if ( _eventManager == null )
+            _eventManager = new EventManager();
+
+        _eventManager.register( listener );
+    }
+
+    public void unRegister( MercuryEventListener listener )
+    {
+        if ( _eventManager != null )
+            _eventManager.unRegister( listener );
+    }
+
+    public void setEventManager( EventManager eventManager )
+    {
+        if ( _eventManager == null )
+            _eventManager = eventManager;
+        else
+            _eventManager.getListeners().addAll( eventManager.getListeners() );
+
+    }
 }

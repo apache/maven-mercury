@@ -60,7 +60,6 @@
 
     </merc:config>
 
-
     <merc:dep id="my-libs">
       <merc:dependency name="asm:asm:3.0"/>
     </merc:dep>
@@ -98,7 +97,7 @@
                  />
   </target>
 
-	
+  
   <target name="compile-auth" depends="init">
 
     <merc:resolve pathid="compile-path-auth"
@@ -121,6 +120,49 @@
          basedir="${target}"
     />
 
+  </target>
+
+  <target name="bad-pgp" depends="init">
+
+    <merc:config id="pgp-conf">
+      <merc:repo id="localPgpRepo"  dir="${local.verify.dir}"/>
+      <merc:repo id="remotePgpRepo" url="http://localhost:50000/maven2">
+        <merc:verifyread type="pgp">
+          <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
+        </merc:verifyread>
+      </merc:repo>
+    </merc:config>
+
+  	<merc:dep id="t-bad">
+      <merc:dependency name="t:bad:1.0"/>
+    </merc:dep>
+  	
+    <merc:resolve pathid="path-pgp-good"
+                 depid="t-bad"
+                 configid="pgp-conf"
+                 />
+  </target>
+  
+
+  <target name="good-pgp" depends="init">
+  
+    <merc:config id="pgp-conf">
+      <merc:repo id="localPgpRepo"  dir="${local.verify.dir}"/>
+      <merc:repo id="remotePgpRepo" url="http://localhost:50000/maven2">
+        <merc:verifyread type="pgp">
+          <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
+        </merc:verifyread>
+      </merc:repo>
+    </merc:config>
+
+    <merc:dep id="t-good">
+      <merc:dependency name="t:t:1.0"/>
+    </merc:dep>
+    
+    <merc:resolve pathid="path-pgp-good"
+                  configid="pgp-conf"
+                  depid="t-good"
+                 />
   </target>
 
   <target name="deploy" depends="compile">
