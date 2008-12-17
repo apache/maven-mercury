@@ -364,6 +364,9 @@ public class MecuryAntTest
         assertFalse( af.exists() );
 
         restart( 50000, _remoteRepoDirFile, "/maven2", false );
+        
+        // wait for it to start ..
+        Thread.sleep( 2000L );
 
         executeTarget( "good-pgp" );
 
