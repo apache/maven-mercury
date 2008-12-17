@@ -337,7 +337,7 @@ public class MecuryAntTest
         File af = new File( _verifyRepoDirFile, "t/bad/1.0/bad-1.0.jar" );
         assertFalse( af.exists() );
 
-        restart( 50000, _remoteRepoDirFile, "/maven2", true );
+        restart( 50000, _remoteRepoDirFile, "/maven2", false );
 
         try
         {
@@ -363,7 +363,7 @@ public class MecuryAntTest
         File af = new File( _verifyRepoDirFile, "t/t/1.0/t-1.0.jar" );
         assertFalse( af.exists() );
 
-        restart( 50000, _remoteRepoDirFile, "/maven2", true );
+        restart( 50000, _remoteRepoDirFile, "/maven2", false );
 
         executeTarget( "good-pgp" );
 
