@@ -83,7 +83,7 @@ public class FileUtil
   public static final int    K = 1024;
   public static final int    DEFAULT_BUFFER_SIZE = 10 * K;
   
-  public static final String [] URL_PROTOCOLS = new String [] {"http://","https://","file://"};
+  public static final String [] URL_PROTOCOLS = new String [] {"http://","https://","file://","dav://","davs://","webdav://","webdavs://","dav+http://","dav+https://"};
   //---------------------------------------------------------------------------------------------------------------
   private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( FileUtil.class );
   private static final Language LANG = new DefaultLanguage( FileUtil.class );
