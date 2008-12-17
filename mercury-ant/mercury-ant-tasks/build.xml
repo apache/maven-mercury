@@ -6,7 +6,8 @@
 
     <property name="config.name" value="conf"/>
     <property name="compiler.version" value="1.5"/>
-    
+    <property name="build.compiler" value="extJavac"/>
+
     <property name="src" value="${basedir}/src/test/compile"/>
 
   	<property name="target" value="${basedir}/target/compile-classes"/>
