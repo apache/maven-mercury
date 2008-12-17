@@ -42,7 +42,7 @@ public class MecuryAntTest
 
     static final String _remoteRepoUrlPrefix = "http://localhost:";
 
-    static final String _remoteRepoUrlSufix = "/repo";
+    static final String _remoteRepoUrlSufix = "/maven2";
 
     static final String _pathId = "class-path";
 
@@ -118,7 +118,7 @@ public class MecuryAntTest
         localRepo.setDir( _localRepoDir );
 
         _remoteRepoDirFile = new File( _remoteRepoDir );
-        _jetty = new AuthenticatingTestServer( 0, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
+        _jetty = new AuthenticatingTestServer( 50000, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
         _jetty.start();
         _port = "" + _jetty.getPort();
 
@@ -337,7 +337,7 @@ public class MecuryAntTest
         File af = new File( _verifyRepoDirFile, "t/bad/1.0/bad-1.0.jar" );
         assertFalse( af.exists() );
 
-        restart( 50000, _remoteRepoDirFile, "/maven2", false );
+//        restart( 50000, _remoteRepoDirFile, "/maven2", false );
 
         try
         {
@@ -363,10 +363,7 @@ public class MecuryAntTest
         File af = new File( _verifyRepoDirFile, "t/t/1.0/t-1.0.jar" );
         assertFalse( af.exists() );
 
-        restart( 50000, _remoteRepoDirFile, "/maven2", false );
-        
-        // wait for it to start ..
-        Thread.sleep( 2000L );
+//        restart( 50000, _remoteRepoDirFile, "/maven2", false );
 
         executeTarget( "good-pgp" );
 
