@@ -3,7 +3,6 @@ package org.apache.maven.mercury.ant.tasks;
 import java.io.File;
 
 import org.apache.maven.mercury.spi.http.server.AuthenticatingTestServer;
-import org.apache.maven.mercury.spi.http.server.SimpleTestServer;
 import org.apache.maven.mercury.util.FileUtil;
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.Project;
