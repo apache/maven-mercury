@@ -29,13 +29,13 @@
 
     <merc:config id="config-bad-auth">
       <merc:repo id="localRepo" dir="${local.repo.dir}"/>
-      <merc:repo id="central"   url="http://localhost:50000/maven2"/>
+      <merc:repo id="central"   url="http://localhost:${repo.port}/maven2"/>
     </merc:config>
 
     <merc:config id="config-auth">
       <merc:auth id="test-auth" name="foo" pass="bar"/>
       <merc:repo id="localRepo" dir="${local.repo.dir}"/>
-      <merc:repo id="central"  url="http://localhost:50000/maven2" authid="test-auth">
+      <merc:repo id="central"  url="http://localhost:${repo.port}/maven2" authid="test-auth">
       </merc:repo>
     </merc:config>
 
@@ -127,7 +127,7 @@
 
     <merc:config id="pgp-conf">
       <merc:repo id="localPgpRepo"  dir="${local.verify.dir}"/>
-      <merc:repo id="remotePgpRepo" url="http://localhost:50000/maven2">
+      <merc:repo id="remotePgpRepo" url="http://localhost:${repo.port}/maven2">
         <merc:verifyread type="pgp">
           <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
         </merc:verifyread>
@@ -149,7 +149,7 @@
   
     <merc:config id="pgp-conf">
       <merc:repo id="localPgpRepo"  dir="${local.verify.dir}"/>
-      <merc:repo id="remotePgpRepo" url="http://localhost:50000/maven2">
+      <merc:repo id="remotePgpRepo" url="http://localhost:${repo.port}/maven2">
         <merc:verifyread type="pgp">
           <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
         </merc:verifyread>

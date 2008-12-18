@@ -48,7 +48,8 @@ public class MecuryAntTest
 
     AuthenticatingTestServer _jetty;
 
-    String _port;
+    int _port;
+    static final int DEFAULT_PORT = 22883;
 
     Resolver _resolver;
 
@@ -118,10 +119,10 @@ public class MecuryAntTest
         localRepo.setDir( _localRepoDir );
 
         _remoteRepoDirFile = new File( _remoteRepoDir );
-        _jetty = new AuthenticatingTestServer( 50000, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
+        _jetty = new AuthenticatingTestServer( 0, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
         _jetty.start();
-        _port = "" + _jetty.getPort();
-
+        _port = _jetty.getPort();
+        
         Config.Repo remoteRepo = _config.createRepo();
         remoteRepo.setId( "remoteRepo" );
         remoteRepo.setUrl( _remoteRepoUrlPrefix + _port + _remoteRepoUrlSufix );
@@ -139,8 +140,6 @@ public class MecuryAntTest
 
         System.setProperty( "ant.home", ".src/test/apache-ant-1.6.5" );
 
-        configureProject( "build.xml" );
-
         _writeRepoDirFile = new File( _writeRepoDir );
         FileUtil.delete( _writeRepoDirFile );
         _writeRepoDirFile.mkdirs();
@@ -156,6 +155,9 @@ public class MecuryAntTest
         _jarDirFile = new File( _jarDir );
         FileUtil.delete( _jarDirFile );
         _jarDirFile.mkdirs();
+
+        configureProject( "build.xml" );
+        getProject().setProperty( "repo.port", ""+_port );
     }
 
     // -----------------------------------
@@ -167,7 +169,7 @@ public class MecuryAntTest
         _jetty = new AuthenticatingTestServer( port, localBase, remotePathFragment, secured );
         _jetty.start();
         
-        this._port = ""+port;
+        this._port = port;
     }
 
     // -----------------------------------
@@ -252,7 +254,7 @@ public class MecuryAntTest
         System.out.println( "========> start " + title );
         System.out.flush();
         
-        restart( 50000, _remoteRepoDirFile, "/maven2", true );
+        restart( _port, _remoteRepoDirFile, "/maven2", true );
 
         try
         {
@@ -281,7 +283,7 @@ public class MecuryAntTest
 
         assertFalse( jar.exists() );
 
-        restart( 50000, _remoteRepoDirFile, "/maven2", true );
+        restart( _port, _remoteRepoDirFile, "/maven2", true );
 
         executeTarget( "compile-auth" );
 
@@ -337,8 +339,6 @@ public class MecuryAntTest
         File af = new File( _verifyRepoDirFile, "t/bad/1.0/bad-1.0.jar" );
         assertFalse( af.exists() );
 
-//        restart( 50000, _remoteRepoDirFile, "/maven2", false );
-
         try
         {
             executeTarget( "bad-pgp" );
@@ -362,8 +362,6 @@ public class MecuryAntTest
 
         File af = new File( _verifyRepoDirFile, "t/t/1.0/t-1.0.jar" );
         assertFalse( af.exists() );
-
-//        restart( 50000, _remoteRepoDirFile, "/maven2", false );
 
         executeTarget( "good-pgp" );
 
