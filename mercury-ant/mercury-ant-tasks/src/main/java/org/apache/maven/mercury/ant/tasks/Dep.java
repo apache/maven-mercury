@@ -29,6 +29,11 @@ extends AbstractDataType
     this._transitive = val;
   }
   
+  protected void setList( List<Dependency> dependencies )
+  {
+      _dependencies = dependencies;
+  }
+  
   protected List<ArtifactBasicMetadata> getList()
   {
     if( Util.isEmpty( _dependencies ) )
