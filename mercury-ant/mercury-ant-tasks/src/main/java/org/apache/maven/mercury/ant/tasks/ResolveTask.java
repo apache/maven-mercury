@@ -4,17 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
-import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
-import org.apache.maven.mercury.metadata.DependencyBuilder;
-import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
-import org.apache.maven.mercury.repository.api.ArtifactResults;
-import org.apache.maven.mercury.repository.api.Repository;
-import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileList;
@@ -45,7 +37,7 @@ extends AbstractAntTask
 
     private String _depId;
 
-    private ArtifactScopeEnum scope = ArtifactScopeEnum.compile;
+    private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private List<Dep.Dependency> _dependencies;
 
@@ -67,33 +59,6 @@ extends AbstractAntTask
     public void execute()
         throws BuildException
     {
-
-        // Config
-
-        Config config = null;
-        if ( _configId == null )
-        {
-            config = new Config( null, null );
-        }
-        else
-        {
-            Object so = getProject().getReference( _configId );
-    
-            if ( so == null )
-            {
-                throwIfEnabled( _lang.getMessage( "config.id.object.null", _configId ) );
-                return;
-            }
-    
-            if ( !Config.class.isAssignableFrom( so.getClass() ) )
-            {
-                throwIfEnabled( _lang.getMessage( "config.id.object.wrong", _configId, so.getClass().getName() ) );
-                return;
-            }
-    
-            config = (Config) so;
-        }
-
         // Dependencies
         Dep dep = null;
 
@@ -154,7 +119,9 @@ extends AbstractAntTask
 
         try
         {
-            Collection<Artifact> artifacts = dep.resolve( config, scope );
+            Config config = AbstractAntTask.findConfig( getProject(), _configId );
+            
+            Collection<Artifact> artifacts = dep.resolve( config, _scope );
 
             if ( artifacts == null )
                 return;
@@ -265,7 +232,7 @@ extends AbstractAntTask
 
     public void setScope( ArtifactScopeEnum scope )
     {
-        this.scope = scope;
+        this._scope = scope;
     }
 
     public void addConfiguredDependency( Dep.Dependency dependency )

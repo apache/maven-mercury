@@ -1,6 +1,5 @@
 package org.apache.maven.mercury.ant.tasks;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,6 +10,8 @@ import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.logging.IMercuryLogger;
+import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
@@ -18,7 +19,6 @@ import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -32,22 +32,17 @@ extends AbstractDataType
 implements ResourceCollection
 {
     private static final Language _lang = new DefaultLanguage( Dep.class );
+    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( Dep.class ); 
 
     private List<Dependency> _dependencies;
     
     private List<Artifact> _artifacts;
+    
+    private String _configId;
+
+    private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private boolean _transitive = true;
-
-    public void setTransitive( boolean val )
-    {
-        this._transitive = val;
-    }
-
-    protected void setList( List<Dependency> dependencies )
-    {
-        _dependencies = dependencies;
-    }
 
     protected List<ArtifactBasicMetadata> getDependencies()
     {
@@ -95,6 +90,12 @@ implements ResourceCollection
                 _amd.setOptional( optional );
         }
 
+    }
+    //----------------------------------------------------------------------------------------
+    protected List<Artifact> resolve()
+    throws Exception
+    {
+        return resolve( AbstractAntTask.findConfig( getProject(), _configId ), _scope );
     }
     //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve( Config config, ArtifactScopeEnum scope )
@@ -155,9 +156,29 @@ implements ResourceCollection
                 for ( Artifact a : artifacts )
                     _artifacts.add( a );
         }
-        
-        
+
         return _artifacts;
+    }
+
+    // attributes
+    public void setConfigid( String configid )
+    {
+        this._configId = configid;
+    }
+
+    public void setScope( ArtifactScopeEnum scope )
+    {
+        this._scope = scope;
+    }
+    
+    public void setTransitive( boolean val )
+    {
+        this._transitive = val;
+    }
+
+    protected void setList( List<Dependency> dependencies )
+    {
+        _dependencies = dependencies;
     }
     //----------------------------------------------------------------------------------------
     public boolean isFilesystemOnly()
@@ -167,12 +188,39 @@ implements ResourceCollection
 
     public Iterator iterator()
     {
-        return null;
+        try
+        {
+            List<Artifact> artifacts = resolve();
+            
+            if( Util.isEmpty( artifacts ) )
+                return null;
+            
+            return artifacts.iterator();
+        }
+        catch ( Exception e )
+        {
+            _log.error( e.getMessage() );
+            
+            return null;
+        }
     }
 
     public int size()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            List<Artifact> artifacts = resolve();
+            
+            if( Util.isEmpty( artifacts ) )
+                return 0;
+            
+            return artifacts.size();
+        }
+        catch ( Exception e )
+        {
+            _log.error( e.getMessage() );
+            
+            return 0;
+        }
     }
 }
