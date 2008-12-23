@@ -239,11 +239,43 @@ public class MecuryAntTest
 
         assertFalse( jar.exists() );
 
-        executeTarget( "compile" );
+        executeTarget( title );
 
         assertTrue( af.exists() );
 
         assertTrue( jar.exists() );
+    }
+
+    // -----------------------------------
+    public void testCompileThinPath()
+    {
+        String title = "compile-thin-path";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        executeTarget( title );
+
+        assertTrue( af.exists() );
+    }
+
+    // -----------------------------------
+    public void testCompileThinPath2()
+    {
+        String title = "compile-thin-path-2";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        executeTarget( title );
+
+        assertTrue( af.exists() );
     }
 
     // -----------------------------------

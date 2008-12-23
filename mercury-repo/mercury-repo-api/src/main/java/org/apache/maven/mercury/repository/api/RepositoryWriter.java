@@ -47,4 +47,39 @@ extends RepositoryOperator
   
   public void setMetadataCache( RepositoryMetadataCache mdCache );
   public RepositoryMetadataCache getMetadataCache();
+  
+  public static final RepositoryWriter NULL_WRITER =
+  new RepositoryWriter()
+  {
+
+    public RepositoryMetadataCache getMetadataCache()
+    {
+        return null;
+    }
+
+    public void setMetadataCache( RepositoryMetadataCache mdCache )
+    {
+    }
+
+    public void writeArtifacts( Collection<Artifact> artifact )
+        throws RepositoryException
+    {
+    }
+
+    public boolean canHandle( String protocol )
+    {
+        return false;
+    }
+
+    public void close()
+    {
+    }
+
+    public String[] getProtocols()
+    {
+        return null;
+    }
+      
+  };
+          
 }

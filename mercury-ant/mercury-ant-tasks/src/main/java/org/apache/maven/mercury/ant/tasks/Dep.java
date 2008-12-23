@@ -1,5 +1,6 @@
 package org.apache.maven.mercury.ant.tasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
+import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
@@ -38,29 +40,34 @@ implements ResourceCollection
     
     private List<Artifact> _artifacts;
     
+    private List<File> _files;
+    
     private String _configId;
     
-    String _pom;
-
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private boolean _transitive = true;
 
-    protected List<ArtifactBasicMetadata> getDependencies()
+    private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
+    throws RepositoryException
     {
         if ( Util.isEmpty( _dependencies ) )
-        {
-            if( Util.isEmpty( _pom ) )
-                return null;
-
-            // TODO: 2008-12-22 oleg: to be implemented 
-            throw new UnsupportedOperationException( _lang.getMessage( "dep.pom.not.implemented" ) );
-        }
+            return null;
 
         List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _dependencies.size() );
 
         for ( Dependency d : _dependencies )
-            res.add( d._amd );
+        {
+            if( d._amd == null )
+                throw new IllegalArgumentException( _lang.getMessage( "dep.dependency.name.mandatory" ) );
+            
+            if( Util.isEmpty( d._pom )) 
+                res.add( d._amd );
+            else
+            {
+                ArtifactMetadata deps = vr.readDependencies( d._amd );
+            }
+        }
 
         return res;
     }
@@ -103,9 +110,9 @@ implements ResourceCollection
         public void setPom( String pom )
         {
             this._pom = pom;
-
-            // TODO: 2008-12-22 oleg: to be implemented 
-            throw new UnsupportedOperationException( _lang.getMessage( "dep.dependency.pom.not.implemented" ) );
+            
+            if( _amd == null )
+                throw new UnsupportedOperationException( _lang.getMessage( "dep.dependency.pom.needs.name", pom ) );
         }
 
     }
@@ -131,13 +138,13 @@ implements ResourceCollection
 
         DependencyBuilder db =
             DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+
+        VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
         
-        List<ArtifactMetadata> res = db.resolveConflicts( scope, getDependencies() );
+        List<ArtifactMetadata> res = db.resolveConflicts( scope, getDependencies(vr) );
 
         if ( Util.isEmpty( res ) )
             return null;
-
-        VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
 
         ArtifactResults aRes = vr.readArtifacts( res );
 
@@ -190,14 +197,6 @@ implements ResourceCollection
     {
         this._scope = scope;
     }
-    
-    public void setPom( String pom )
-    {
-        this._pom = pom;
-
-        // TODO: 2008-12-22 oleg: to be implemented
-        throw new UnsupportedOperationException( _lang.getMessage( "dep.pom.not.implemented" ) );
-    }
 
     public void setTransitive( boolean val )
     {
@@ -218,12 +217,20 @@ implements ResourceCollection
     {
         try
         {
+            if( _files != null )
+                return _files.iterator();
+            
             List<Artifact> artifacts = resolve();
             
             if( Util.isEmpty( artifacts ) )
                 return null;
             
-            return artifacts.iterator();
+            _files = new ArrayList<File>( artifacts.size() );
+            
+            for( Artifact a : _artifacts )
+                _files.add( a.getFile() );
+            
+            return _files.iterator();
         }
         catch ( Exception e )
         {

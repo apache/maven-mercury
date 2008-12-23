@@ -58,7 +58,7 @@ public class Config
         
         Repo central = createRepo();
         central.setId( "central" );
-        central.setUrl( remoteUrl );
+        central.setUrl( remoteUrl == null ? DEFAULT_CENTRAL_URL : remoteUrl );
         
     }
 
