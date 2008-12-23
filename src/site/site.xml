@@ -20,35 +20,18 @@
 
 -->
 <project>
-  <bannerLeft>
-    <name>Mercury</name>
-    <src>http://maven.apache.org/images/apache-maven-project-2.png</src>
-    <href>http://maven.apache.org/mercury/</href>
-  </bannerLeft>
+  <!-- TODO remove when using Maven Parent 11+ -->
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-stylus-skin</artifactId>
+    <version>1.1-SNAPSHOT</version>
+  </skin>
 
   <body>
-    <breadcrumbs>
-      <item name="Apache" href="http://www.apache.org/" />
-      <item name="Maven" href="http://maven.apache.org/" />
-      <item name="Mercury" href="http://maven.apache.org/mercury/" />
-    </breadcrumbs>
-
-    <links>
-      <item name="Apache" href="http://www.apache.org/"/>
-      <item name="Maven 1.x" href="http://maven.apache.org/maven-1.x"/>
-      <item name="Maven 2.x" href="http://maven.apache.org/"/>
-      <item name="SCM" href="http://maven.apache.org/scm"/>
-      <item name="Wagon" href="http://maven.apache.org/wagon"/>
-      <item name="JXR" href="http://maven.apache.org/jxr"/>
-      <item name="Doxia" href="http://maven.apache.org/doxia"/>
-    </links>
-
     <menu name="Documentation">
       <item name="Wiki" href="http://docs.codehaus.org/display/MAVEN/Mercury" />
     </menu>
 
     <menu ref="modules"/>
-
   </body>
-
 </project>
