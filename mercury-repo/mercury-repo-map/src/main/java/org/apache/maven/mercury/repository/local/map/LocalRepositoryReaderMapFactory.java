@@ -27,12 +27,12 @@ import org.apache.maven.mercury.repository.api.RepositoryReaderFactory;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
-public class LocalRepositoryreaderMapFactory
+public class LocalRepositoryReaderMapFactory
     implements RepositoryReaderFactory
 {
-    private static final Language _lang = new DefaultLanguage( LocalRepositoryreaderMapFactory.class );
+    private static final Language _lang = new DefaultLanguage( LocalRepositoryReaderMapFactory.class );
 
-    private static final LocalRepositoryreaderMapFactory FACTORY = new LocalRepositoryreaderMapFactory();
+    private static final LocalRepositoryReaderMapFactory FACTORY = new LocalRepositoryReaderMapFactory();
 
     static
     {
