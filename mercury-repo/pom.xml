@@ -35,7 +35,7 @@ under the License.
     <module>mercury-repo-api</module>
     <module>mercury-repo-local-m2</module>
     <module>mercury-repo-local-flat</module>
-    <module>mercury-repo-local-map</module>
+    <module>mercury-repo-map</module>
     <module>mercury-repo-remote-m2</module>
     <module>mercury-repo-cache-fs</module>
     <module>mercury-repo-virtual</module>
