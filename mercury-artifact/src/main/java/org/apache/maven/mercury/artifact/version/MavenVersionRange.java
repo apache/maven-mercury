@@ -44,7 +44,7 @@ implements VersionRange
   private boolean _osgiVersion = Boolean.parseBoolean( System.getProperty( SYSTEM_PARAMETER_OSGI_VERSION, SYSTEM_PARAMETER_OSGI_VERSION_DEFAULT ) );
 
   private static final DefaultArtifactVersion ZERO_VERSION = new DefaultArtifactVersion("0.0.0");
-  private static final Language LANG = new DefaultLanguage( MavenVersionRange.class );
+  private static final Language _lang = new DefaultLanguage( MavenVersionRange.class );
   
   QualityRange _toQualityRange = QualityRange.ALL;
   
@@ -79,14 +79,14 @@ implements VersionRange
       else if( range.startsWith("(") )
         _fromInclusive = false;
       else
-        throw new VersionException( LANG.getMessage( "invalid.maven.version.range", range ) );
+        throw new VersionException( _lang.getMessage( "invalid.maven.version.range", range ) );
 
       if( range.endsWith("]") )
         _toInclusive = true;
       else if( range.endsWith(")") )
         _toInclusive = false;
       else
-        throw new VersionException( LANG.getMessage( "invalid.maven.version.range", range ) );
+        throw new VersionException( _lang.getMessage( "invalid.maven.version.range", range ) );
       
       int ind = range.indexOf(',');
 
@@ -102,7 +102,7 @@ implements VersionRange
           if( vq.getQuality().equals( QualityEnum.snapshot )
               || vq.getQuality().equals( QualityEnum.unknown )
           )
-              throw new VersionException( LANG.getMessage( "bad.version.sn", sFromT ) );
+              throw new VersionException( _lang.getMessage( "bad.version.sn", sFromT ) );
           
           _fromVersion = new DefaultArtifactVersion( sFromT );
         }
@@ -120,10 +120,10 @@ implements VersionRange
       }
       
       if( _fromVersion == null && _fromInclusive )
-        throw new VersionException( LANG.getMessage( "invalid.maven.version.range.bad.from", range ) );
+        throw new VersionException( _lang.getMessage( "invalid.maven.version.range.bad.from", range ) );
       
       if( _toVersion == null && _toInclusive )
-        throw new VersionException( LANG.getMessage( "invalid.maven.version.range.bad.to", range ) );
+        throw new VersionException( _lang.getMessage( "invalid.maven.version.range.bad.to", range ) );
       
     }
     else
@@ -173,7 +173,7 @@ implements VersionRange
       if( c == '-' || c == '_' )
         continue;
       
-      throw new VersionException( LANG.getMessage( "invalid.character", ""+c, v ) );
+      throw new VersionException( _lang.getMessage( "invalid.character", ""+c, v ) );
     }
   }
   //--------------------------------------------------------------------------------------------

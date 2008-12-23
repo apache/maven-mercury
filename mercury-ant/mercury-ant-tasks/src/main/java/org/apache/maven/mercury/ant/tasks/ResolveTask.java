@@ -27,7 +27,7 @@ import org.codehaus.plexus.lang.Language;
  * @version $Id$
  */
 public class ResolveTask
-    extends AbstractAntTask
+extends AbstractAntTask
 {
     private static final Language _lang = new DefaultLanguage( ResolveTask.class );
 
@@ -154,56 +154,27 @@ public class ResolveTask
 
         try
         {
-            Collection<Repository> repos = config.getRepositories();
+            Collection<Artifact> artifacts = dep.resolve( config, scope );
 
-            DependencyBuilder db =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null,
-                                                 null );
-            List<ArtifactMetadata> res = db.resolveConflicts( scope, dep.getList() );
-
-            if ( Util.isEmpty( res ) )
+            if ( artifacts == null )
                 return;
-
-            VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-
-            ArtifactResults aRes = vr.readArtifacts( res );
-
-            if ( aRes == null )
-                throw new BuildException( _lang.getMessage( "resolve.cannot.read", _configId, res.toString() ) );
-
-            if ( aRes == null || aRes.hasExceptions() )
-            {
-                throwIfEnabled( _lang.getMessage( "vr.error", aRes.getExceptions().toString() ) );
-                return;
-            }
-
-            if ( !aRes.hasResults() )
-                return;
-
-            Map<ArtifactBasicMetadata, List<Artifact>> resMap = aRes.getResults();
 
             FileList pathFileList = new FileList();
 
             File dir = null;
 
-            for ( ArtifactBasicMetadata key : resMap.keySet() )
+            for ( Artifact a : artifacts )
             {
-                List<Artifact> artifacts = resMap.get( key );
+                if ( dir == null )
+                    dir = a.getFile().getParentFile();
 
-                if ( !Util.isEmpty( artifacts ) )
-                    for ( Artifact a : artifacts )
-                    {
-                        if ( dir == null )
-                            dir = a.getFile().getParentFile();
+                String aPath = a.getFile().getCanonicalPath();
 
-                        String aPath = a.getFile().getCanonicalPath();
+                FileList.FileName fn = new FileList.FileName();
 
-                        FileList.FileName fn = new FileList.FileName();
+                fn.setName( aPath );
 
-                        fn.setName( aPath );
-
-                        pathFileList.addConfiguredFile( fn );
-                    }
+                pathFileList.addConfiguredFile( fn );
             }
 
             pathFileList.setDir( dir );
