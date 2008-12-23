@@ -39,6 +39,8 @@ implements ResourceCollection
     private List<Artifact> _artifacts;
     
     private String _configId;
+    
+    String _pom;
 
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
@@ -47,7 +49,13 @@ implements ResourceCollection
     protected List<ArtifactBasicMetadata> getDependencies()
     {
         if ( Util.isEmpty( _dependencies ) )
-            return null;
+        {
+            if( Util.isEmpty( _pom ) )
+                return null;
+
+            // TODO: 2008-12-22 oleg: to be implemented 
+            throw new UnsupportedOperationException( _lang.getMessage( "dep.pom.not.implemented" ) );
+        }
 
         List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _dependencies.size() );
 
@@ -72,6 +80,8 @@ implements ResourceCollection
     public class Dependency
     {
         ArtifactBasicMetadata _amd;
+        
+        String _pom;
 
         boolean _optional = false;
 
@@ -90,12 +100,22 @@ implements ResourceCollection
                 _amd.setOptional( optional );
         }
 
+        public void setPom( String pom )
+        {
+            this._pom = pom;
+
+            // TODO: 2008-12-22 oleg: to be implemented 
+            throw new UnsupportedOperationException( _lang.getMessage( "dep.dependency.pom.not.implemented" ) );
+        }
+
     }
     //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve()
     throws Exception
     {
-        return resolve( AbstractAntTask.findConfig( getProject(), _configId ), _scope );
+        Config config = AbstractAntTask.findConfig( getProject(), _configId );
+        
+        return resolve( config, _scope );
     }
     //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve( Config config, ArtifactScopeEnum scope )
@@ -171,6 +191,14 @@ implements ResourceCollection
         this._scope = scope;
     }
     
+    public void setPom( String pom )
+    {
+        this._pom = pom;
+
+        // TODO: 2008-12-22 oleg: to be implemented
+        throw new UnsupportedOperationException( _lang.getMessage( "dep.pom.not.implemented" ) );
+    }
+
     public void setTransitive( boolean val )
     {
         this._transitive = val;
