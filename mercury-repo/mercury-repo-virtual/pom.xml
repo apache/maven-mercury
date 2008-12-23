@@ -20,17 +20,15 @@ under the License.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <artifactId>mercury-repo-virtual</artifactId>
-  
-  <name>Mercury Virtual Repository</name>
-  <description />
-  
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-repo</artifactId>
     <version>1.0.0-alpha-3-SNAPSHOT</version>
   </parent>
   
+  <artifactId>mercury-repo-virtual</artifactId>
+  
+  <name>Mercury Virtual Repository</name>
   
 <!-- had to move all tests to IT: http://jira.codehaus.org/browse/MERCURY-47 
   <build>
@@ -61,9 +59,7 @@ under the License.
   </build>
 -->
 
-
   <dependencies>
-
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-cache-fs</artifactId>
@@ -88,6 +84,5 @@ under the License.
       <artifactId>mercury-repo-remote-m2</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

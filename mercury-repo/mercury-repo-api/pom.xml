@@ -19,10 +19,6 @@ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.maven.mercury</groupId>
-  <artifactId>mercury-repo-api</artifactId>
-  <name>Mercury Repository APIs</name>
-  <description>Repository APIs</description>
 
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
@@ -30,8 +26,13 @@ under the License.
     <version>1.0.0-alpha-3-SNAPSHOT</version>
   </parent>
 
-  <dependencies>
+  <groupId>org.apache.maven.mercury</groupId>
+  <artifactId>mercury-repo-api</artifactId>
 
+  <name>Mercury Repository APIs</name>
+  <description>Repository APIs</description>
+
+  <dependencies>
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-artifact</artifactId>
@@ -56,6 +57,5 @@ under the License.
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-md-shared</artifactId>
     </dependency>
-
   </dependencies>
 </project>

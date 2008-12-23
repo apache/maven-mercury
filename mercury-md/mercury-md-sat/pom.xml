@@ -19,32 +19,16 @@ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>mercury-md-sat</artifactId>
-  <name>Mercury Dependency Builder</name>
-  <description />
+
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-md</artifactId>
     <version>1.0.0-alpha-3-SNAPSHOT</version>
   </parent>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>package-tests</id>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+  <artifactId>mercury-md-sat</artifactId>
 
-  </build>
+  <name>Mercury Dependency Builder</name>
 
   <dependencies>
     <!-- SAT solver used to calculate viable ranges when dependencies are expressed pseudo boolean form -->
@@ -93,6 +77,22 @@ under the License.
       <artifactId>mercury-repo-remote-m2</artifactId>
       <scope>test</scope>
     </dependency>
-    
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>package-tests</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

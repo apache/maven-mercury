@@ -29,23 +29,11 @@ under the License.
   <groupId>org.sonatype.maven.plugins</groupId>
   <artifactId>mercury-compare-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
+  
   <name>Mercury Maven resolution comparison</name>
   <description>Mercury Maven resolution comparison</description>
-  <prerequisites />
-  
   <inceptionYear>2008</inceptionYear>
-	<build>
-		<plugins>
-			<plugin>
-			   <groupId>org.apache.maven.plugins</groupId>
-			   <artifactId>maven-compiler-plugin</artifactId>
-			     <configuration>
-			       <source>1.5</source>
-			       <target>1.5</target>
-			    </configuration>
-			</plugin>
-		</plugins>
-	</build>
+
   <developers>
     <developer>
       <name>Oleg Gusakov</name>
@@ -56,13 +44,12 @@ under the License.
       <timezone>-8</timezone>
     </developer>
   </developers>
-  
+
   <properties>
     <test.maven.version>2.0.9</test.maven.version>
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
@@ -86,6 +73,18 @@ under the License.
     	<artifactId>jetty-maven-plugin</artifactId>
     	<version>7.0.0.pre5</version>
     </dependency>
-
   </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+			   <groupId>org.apache.maven.plugins</groupId>
+			   <artifactId>maven-compiler-plugin</artifactId>
+			     <configuration>
+			       <source>1.5</source>
+			       <target>1.5</target>
+			    </configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

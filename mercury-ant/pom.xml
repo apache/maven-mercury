@@ -18,19 +18,20 @@ specific language governing permissions and limitations
 under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>9</version>
+    <version>10</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.maven.mercury</groupId>
   <artifactId>mercury-ant</artifactId>
-  <packaging>pom</packaging>
-  <name>Mercury Ant</name>
   <version>1.0-alpha-1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Mercury Ant</name>
   <description>Maven Mercury Ant is an ant-task wrapper for MErcry functionality: classpath creation, artifact deployment .</description>
 
   <developers>
@@ -43,8 +44,33 @@ under the License.
     <module>mercury-ant-tasks</module>
   </modules>
 
-  <properties>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/trunk/</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/mercury/trunk/</url>
+  </scm>
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/MERCURY</url>
+  </issueManagement>
+  <ciManagement>
+    <system>hudson</system>
+    <url>http://grid.sonatype.org/ci/view/Mercury/job/mercury</url>
+  </ciManagement>
+  <distributionManagement>
+    <repository>
+      <id>${distMgmtReleasesId}</id>
+      <name>${distMgmtReleasesName}</name>
+      <url>${distMgmtReleasesUrl}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${distMgmtSnapshotsId}</id>
+      <name>${distMgmtSnapshotsName}</name>
+      <url>${distMgmtSnapshotsUrl}</url>
+    </snapshotRepository>
+  </distributionManagement>
 
+  <properties>
     <ant.version>1.7.0</ant.version>
     <antunit.version>1.1</antunit.version>
     <mercury.version>1.0.0-alpha-3-SNAPSHOT</mercury.version>
@@ -62,7 +88,6 @@ under the License.
     <distMgmtSnapshotsId>apache.snapshots</distMgmtSnapshotsId>
     <distMgmtSnapshotsName>Apache Snapshots</distMgmtSnapshotsName>
     <distMgmtSnapshotsUrl>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</distMgmtSnapshotsUrl>
-
   </properties>
 
   <dependencyManagement>
@@ -151,21 +176,14 @@ under the License.
       </dependency>
       
     </dependencies>
-    
   </dependencyManagement>
-
-
   <dependencies>
-      
     <!-- Test Dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-
   </dependencies>
-
-
 
   <build>
     <defaultGoal>install</defaultGoal>
@@ -388,36 +406,4 @@ under the License.
       </reporting>
     </profile>
   </profiles>
-
-  <distributionManagement>
-    <repository>
-      <id>${distMgmtReleasesId}</id>
-      <name>${distMgmtReleasesName}</name>
-      <url>${distMgmtReleasesUrl}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${distMgmtSnapshotsId}</id>
-      <name>${distMgmtSnapshotsName}</name>
-      <url>${distMgmtSnapshotsUrl}</url>
-    </snapshotRepository>
-  </distributionManagement>
-  
-  <url>http://maven.apache.org/mercury/</url>
-  
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MERCURY</url>
-  </issueManagement>
-  
-  <ciManagement>
-    <system>hudson</system>
-    <url>http://grid.sonatype.org/ci/view/Mercury/job/mercury</url>
-  </ciManagement>
-
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/trunk/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/trunk/</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/mercury/trunk/</url>
-  </scm>
-
 </project>

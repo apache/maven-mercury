@@ -19,17 +19,35 @@ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>mercury-transport-file</artifactId>
-  <name>Mercury File Transport</name>
-  <description />
+
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-transport</artifactId>
     <version>1.0.0-alpha-3-SNAPSHOT</version>
   </parent>
 
-  <build>
+  <artifactId>mercury-transport-file</artifactId>
+  <name>Mercury File Transport</name>
 
+  <dependencies>
+    <!-- Mercury Dependencies -->
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-transport-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-crypto-basic</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-util</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -46,27 +64,4 @@ under the License.
     </plugins>
 
   </build>
-
-
-
-  <dependencies>
-
-    <!-- Mercury Dependencies -->
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-transport-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-crypto-basic</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-util</artifactId>
-    </dependency>
-
-  </dependencies>
-
 </project>

@@ -27,6 +27,7 @@ under the License.
   </parent>
 
   <artifactId>mercury-it</artifactId>
+
   <name>Mercury Integration Tests</name>
   <description>Mercury Integration Tests</description>
 
@@ -57,95 +58,9 @@ under the License.
     <nexus-base-url>${nexus-application-protocol}://${nexus-application-host}:${nexus-application-port}/${nexus-application-name}/</nexus-base-url>
 
     <nexus-control-port>33002</nexus-control-port>
-
   </properties>
 
-  <build>
-
-    <filters>
-      <filter>src/test/filters/filter.txt</filter>
-    </filters>
-
-    <testResources>
-
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-        <excludes>
-            <exclude>pgp/**</exclude>
-            <exclude>repo/**</exclude>
-        </excludes>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-            <include>pgp/**</include>
-            <include>repo/**</include>
-        </includes>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus</directory>
-        <filtering>false</filtering>
-        <excludes>
-            <exclude>work/conf/**</exclude>
-        </excludes>
-        <targetPath>../nexus-webapp-${nexus.version}/runtime</targetPath>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus</directory>
-        <filtering>true</filtering>
-        <includes>
-            <include>work/conf/**</include>
-        </includes>
-        <targetPath>../nexus-webapp-${nexus.version}/runtime</targetPath>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus</directory>
-        <filtering>false</filtering>
-        <includes>
-            <include>log4j.properties</include>
-        </includes>
-        <targetPath>../nexus-webapp-${nexus.version}/runtime/apps/nexus/conf</targetPath>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus/conf</directory>
-        <filtering>true</filtering>
-        <targetPath>../nexus-webapp-${nexus.version}/conf</targetPath>
-      </testResource>
-
-    </testResources>
-
-    <plugins>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.0</version>
-        <executions>
-          <execution>
-            <id>unpack-bundle</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeArtifactIds>nexus-webapp</includeArtifactIds>
-              <outputDirectory>${bundle-expanded-dir}</outputDirectory>
-              <excludes>**/conf/plexus.properties</excludes>
-            </configuration>
-          </execution>
-
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <dependencies>
-    
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-event</artifactId>
@@ -286,7 +201,88 @@ under the License.
       <artifactId>maven-mercury</artifactId>
       <version>${maven.version}</version>
     </dependency>
-
   </dependencies>
 
+  <build>
+    <filters>
+      <filter>src/test/filters/filter.txt</filter>
+    </filters>
+
+    <testResources>
+
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+            <exclude>pgp/**</exclude>
+            <exclude>repo/**</exclude>
+        </excludes>
+      </testResource>
+
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+            <include>pgp/**</include>
+            <include>repo/**</include>
+        </includes>
+      </testResource>
+
+      <testResource>
+        <directory>src/test/nexus</directory>
+        <filtering>false</filtering>
+        <excludes>
+            <exclude>work/conf/**</exclude>
+        </excludes>
+        <targetPath>../nexus-webapp-${nexus.version}/runtime</targetPath>
+      </testResource>
+
+      <testResource>
+        <directory>src/test/nexus</directory>
+        <filtering>true</filtering>
+        <includes>
+            <include>work/conf/**</include>
+        </includes>
+        <targetPath>../nexus-webapp-${nexus.version}/runtime</targetPath>
+      </testResource>
+
+      <testResource>
+        <directory>src/test/nexus</directory>
+        <filtering>false</filtering>
+        <includes>
+            <include>log4j.properties</include>
+        </includes>
+        <targetPath>../nexus-webapp-${nexus.version}/runtime/apps/nexus/conf</targetPath>
+      </testResource>
+
+      <testResource>
+        <directory>src/test/nexus/conf</directory>
+        <filtering>true</filtering>
+        <targetPath>../nexus-webapp-${nexus.version}/conf</targetPath>
+      </testResource>
+
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <id>unpack-bundle</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>nexus-webapp</includeArtifactIds>
+              <outputDirectory>${bundle-expanded-dir}</outputDirectory>
+              <excludes>**/conf/plexus.properties</excludes>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

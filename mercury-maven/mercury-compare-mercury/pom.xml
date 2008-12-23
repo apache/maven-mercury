@@ -28,30 +28,11 @@ under the License.
   
   <groupId>org.sonatype.maven.plugins</groupId>
   <artifactId>mercury-compare-mercury</artifactId>
-  
   <packaging>maven-plugin</packaging>
+
   <name>Mercury Maven resolusion comparisson</name>
   <description>Mercury Maven resolusion comparisson</description>
-  <prerequisites />
-  
 
-  <properties>
-    <maven.version>3.0-SNAPSHOT</maven.version>
-  </properties>
-
-	<build>
-		<plugins>
-			<plugin>
-			   <groupId>org.apache.maven.plugins</groupId>
-			   <artifactId>maven-compiler-plugin</artifactId>
-			     <configuration>
-			       <source>1.5</source>
-			       <target>1.5</target>
-			    </configuration>
-			</plugin>
-		</plugins>
-	</build>
-  
   <developers>
     <developer>
       <name>Oleg Gusakov</name>
@@ -62,7 +43,11 @@ under the License.
       <timezone>-8</timezone>
     </developer>
   </developers>
-  
+
+  <properties>
+    <maven.version>3.0-SNAPSHOT</maven.version>
+  </properties>
+
   <dependencies>
   
     <dependency>
@@ -86,7 +71,19 @@ under the License.
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-remote-m2</artifactId>
     </dependency>
-
   </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+			   <groupId>org.apache.maven.plugins</groupId>
+			   <artifactId>maven-compiler-plugin</artifactId>
+			     <configuration>
+			       <source>1.5</source>
+			       <target>1.5</target>
+			    </configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
 

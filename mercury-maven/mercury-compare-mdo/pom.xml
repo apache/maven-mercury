@@ -20,16 +20,33 @@ under the License.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>mercury-compare-mdo</artifactId>
-  <name>Mercury Compare MDO</name>
-  <description />
-
   <parent>
   	<groupId>org.apache.maven.mercury</groupId>
   	<artifactId>mercury-pom</artifactId>
   	<version>1.0.0-alpha-2-SNAPSHOT</version>
   </parent>
-  
+
+  <artifactId>mercury-compare-mdo</artifactId>
+  <name>Mercury Compare MDO</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-lang</artifactId>
+    </dependency>
+
+  	<dependency>
+  		<groupId>org.apache.maven.mercury</groupId>
+  		<artifactId>mercury-artifact</artifactId>
+  	</dependency>
+    
+    <!--  for some reason transitive does not work - have to copy deps from mercury-util --> 
+  	<dependency>
+  		<groupId>org.apache.maven.mercury</groupId>
+  		<artifactId>mercury-util</artifactId>
+  	</dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -60,26 +77,6 @@ under the License.
         </executions>
         
       </plugin>
-</plugins>
-</build>
-  <dependencies>
-
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-lang</artifactId>
-    </dependency>
-
-  	<dependency>
-  		<groupId>org.apache.maven.mercury</groupId>
-  		<artifactId>mercury-artifact</artifactId>
-  	</dependency>
-    
-    <!--  for some reason transitive does not work - have to copy deps from mercury-util --> 
-  	<dependency>
-  		<groupId>org.apache.maven.mercury</groupId>
-  		<artifactId>mercury-util</artifactId>
-  	</dependency>
-    
-  </dependencies>
-  
+    </plugins>
+  </build>
 </project>
