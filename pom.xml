@@ -251,7 +251,7 @@ under the License.
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-repo-local-m2</artifactId>
-        <classifier>tests</classifier>
+        <type>test-jar</type>
         <version>${project.version}</version>
       </dependency>
       
@@ -294,7 +294,7 @@ under the License.
        <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-transport-http</artifactId>
-        <classifier>tests</classifier>
+        <type>test-jar</type>
         <version>${project.version}</version>
       </dependency>
   
