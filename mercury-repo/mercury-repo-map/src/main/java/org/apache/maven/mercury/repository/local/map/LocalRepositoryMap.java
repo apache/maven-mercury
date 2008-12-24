@@ -40,69 +40,63 @@ extends AbstractRepository
 implements LocalRepository
 {
     public static final String FLAT_REPOSITORY_TYPE = "map";
+    
+    protected Storage _storage;
 
     // ----------------------------------------------------------------------------------
-    public LocalRepositoryMap( String id, DependencyProcessor dp, Map<ArtifactBasicMetadata,File> files )
+    public LocalRepositoryMap( String id, DependencyProcessor dp, Storage storage )
     {
         super( id, FLAT_REPOSITORY_TYPE );
         setDependencyProcessor( dp );
+        
+        _storage = storage;
     }
-
     // ----------------------------------------------------------------------------------
     public File getDirectory()
     {
         return null;
     }
-
     // ----------------------------------------------------------------------------------
     public RepositoryReader getReader()
     {
-        return RepositoryReader.NULL_READER;
+        return new LocalRepositoryReaderMap( this, getDependencyProcessor() );
     }
-
     // ----------------------------------------------------------------------------------
     public RepositoryReader getReader( String protocol )
     {
-        return new LocalRepositoryReaderMap( this, getDependencyProcessor() );
+        return getReader();
     }
-
     // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter()
     {
         return RepositoryWriter.NULL_WRITER;
     }
-
     // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter( String protocol )
         throws NonExistentProtocolException
     {
         return getWriter();
     }
-
     // ----------------------------------------------------------------------------------
     public boolean isLocal()
     {
         return true;
     }
-
     // ----------------------------------------------------------------------------------
     public boolean isReadable()
     {
         return true;
     }
-
     // ----------------------------------------------------------------------------------
     public boolean isWriteable()
     {
         return false;
     }
-
     // ----------------------------------------------------------------------------------
     public String getType()
     {
         return FLAT_REPOSITORY_TYPE;
     }
-
     // ----------------------------------------------------------------------------------
     public String getMetadataName()
     {

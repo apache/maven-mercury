@@ -25,11 +25,13 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
+import org.apache.maven.mercury.builder.api.DependencyProcessorException;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.logging.IMercuryLogger;
@@ -52,95 +54,141 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 public class LocalRepositoryReaderMap
-extends AbstracRepositoryReader
-implements RepositoryReader
+    extends AbstracRepositoryReader
+    implements RepositoryReader
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryReaderMap.class ); 
-  private static final Language _lang = new DefaultLanguage( LocalRepositoryReaderMap.class );
-  //---------------------------------------------------------------------------------------------------------------
-  private static final String [] _protocols = new String [] { "map" };
-  
-  private final LocalRepository _repo;
-  //---------------------------------------------------------------------------------------------------------------
-  public LocalRepositoryReaderMap( Repository repo, DependencyProcessor dp )
-  {
-      if( repo == null )
-          throw new IllegalArgumentException("localRepo cannot be null");
+    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryReaderMap.class );
+
+    private static final Language _lang = new DefaultLanguage( LocalRepositoryReaderMap.class );
+
+    // ---------------------------------------------------------------------------------------------------------------
+    private static final String[] _protocols = new String[] { "map" };
+
+    private final LocalRepositoryMap _repo;
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public LocalRepositoryReaderMap( Repository repo, DependencyProcessor dp )
+    {
+        if ( repo == null )
+            throw new IllegalArgumentException( "localRepo cannot be null" );
+
+        if ( dp == null )
+            throw new IllegalArgumentException( "localRepo cannot be null" );
+
+        _mdProcessor = dp;
+
+        _repo = (LocalRepositoryMap) repo;
+
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public Repository getRepository()
+    {
+        return _repo;
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public boolean canHandle( String protocol )
+    {
+        return AbstractRepository.DEFAULT_LOCAL_READ_PROTOCOL.equals( protocol );
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public String[] getProtocols()
+    {
+        return _protocols;
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
+        throws RepositoryException
+    {
+        if( Util.isEmpty( query ) )
+            return null;
         
-      if( dp == null )
-          throw new IllegalArgumentException("localRepo cannot be null");
-      
-      _mdProcessor = dp;
-      _repo = (LocalRepository) repo;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public Repository getRepository()
-  {
-    return _repo;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public boolean canHandle( String protocol )
-  {
-    return AbstractRepository.DEFAULT_LOCAL_READ_PROTOCOL.equals( protocol );
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public String[] getProtocols()
-  {
-    return _protocols;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------------------------------------
-/* (non-Javadoc)
- * @see org.apache.maven.mercury.repository.api.RepositoryReader#readArtifacts(java.util.Collection)
- */
-public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
-    throws RepositoryException
-{
-    // TODO Auto-generated method stub
-    return null;
-}
-/* (non-Javadoc)
- * @see org.apache.maven.mercury.repository.api.RepositoryReader#readDependencies(java.util.Collection)
- */
-public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
-    throws RepositoryException
-{
-    // TODO Auto-generated method stub
-    return null;
-}
-/* (non-Javadoc)
- * @see org.apache.maven.mercury.repository.api.RepositoryReader#readRawData(java.lang.String)
- */
-public byte[] readRawData( String path )
+        if( Util.isEmpty( _repo._storage ) )
+            return null;
+        
+        ArtifactResults res = new ArtifactResults();
+        
+        for( ArtifactBasicMetadata bmd : query )
+        {
+            Artifact a;
+            try
+            {
+                a = _repo._storage.findArtifact( bmd );
+            }
+            catch ( StorageException e )
+            {
+                throw new RepositoryException(e);
+            }
+            
+            if( a != null )
+                res.add( bmd, a );
+        }
+
+        return res;
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public byte[] readRawData( String path )
     throws MetadataReaderException
-{
-    // TODO Auto-generated method stub
-    return null;
-}
-/* (non-Javadoc)
- * @see org.apache.maven.mercury.repository.api.RepositoryReader#readVersions(java.util.Collection)
- */
-public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
-    throws RepositoryException
-{
-    // TODO Auto-generated method stub
-    return null;
-}
-/* (non-Javadoc)
- * @see org.apache.maven.mercury.repository.api.RepositoryOperator#close()
- */
-public void close()
-{
-    // TODO Auto-generated method stub
-    
-}
-/* (non-Javadoc)
- * @see org.apache.maven.mercury.builder.api.MetadataReader#readRawData(org.apache.maven.mercury.artifact.ArtifactBasicMetadata, java.lang.String, java.lang.String)
- */
-public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
-    throws MetadataReaderException
-{
-    // TODO Auto-generated method stub
-    return null;
-}
+    {
+        try
+        {
+            return _repo._storage.findRaw( path );
+        }
+        catch ( StorageException e )
+        {
+            throw new MetadataReaderException(e);
+        }
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
+        throws MetadataReaderException
+    {
+        
+        String key =  bmd.getGroupId()
+            + ":"+bmd.getArtifactId()
+            + ":"+bmd.getVersion()
+            + ":"+ (classifier == null ? "" : classifier)
+            + ":"+ (type == null ? bmd.getType() : type)
+        ;
+        
+        return readRawData( key );
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
+        throws RepositoryException
+    {
+        if( Util.isEmpty( query ) )
+            return null;
+        
+        DependencyProcessor dp = _repo.getDependencyProcessor();
+        
+        ArtifactBasicResults res = new ArtifactBasicResults( query.size() );
+        
+        for( ArtifactBasicMetadata bmd : query )
+        {
+            try
+            {
+                List<ArtifactBasicMetadata> deps = dp.getDependencies( bmd, this, System.getenv(), System.getProperties() );
+                
+                res.add( bmd, deps );
+            }
+            catch ( Exception e )
+            {
+                res.addError( bmd, e );
+            }
+        }
+        
+        return res;
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
+        throws RepositoryException
+    {
+        return null;
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public void close()
+    {
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------
 }
