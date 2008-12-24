@@ -120,22 +120,24 @@ extends RepositoryOperator, MetadataReader
       {
         return null;
       }
+
       public Repository getRepository()
       {
         return null;
       }
-      public ArtifactResults readArtifacts(
-          Collection<ArtifactBasicMetadata> query )
+
+      public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
+      throws RepositoryException
+      {
+        return null;
+      }
+
+      public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
           throws RepositoryException
       {
         return null;
       }
-      public ArtifactBasicResults readDependencies(
-          Collection<ArtifactBasicMetadata> query )
-          throws RepositoryException
-      {
-        return null;
-      }
+
       public byte[] readRawData( String path )
           throws MetadataReaderException
       {
