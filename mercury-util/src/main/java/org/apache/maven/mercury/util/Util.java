@@ -19,6 +19,7 @@
 package org.apache.maven.mercury.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * general utility helpers
@@ -43,6 +44,11 @@ public class Util
    public static final boolean isEmpty( Object [] o )
    {
      return o == null || o.length < 1;
+   }
+
+   public static final boolean isEmpty( Map o )
+   {
+     return o == null || o.isEmpty();
    }
 
    public static final boolean isEmpty( Object o )

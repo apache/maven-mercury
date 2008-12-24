@@ -324,6 +324,16 @@ public class FileUtil
     out.close();
   }
   //---------------------------------------------------------------------------------------------------------------
+  public static File writeTempData( byte [] bytes )
+  throws IOException
+  {
+      File f = File.createTempFile( "temp-", "-mercury-util" );
+      
+      writeRawData( f, bytes );
+      
+      return f;
+  }
+  //---------------------------------------------------------------------------------------------------------------
   public static void writeRawData( File file, byte [] bytes )
   throws IOException
   {
