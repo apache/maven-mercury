@@ -7,6 +7,10 @@
   <taskdef name="write"        classname="org.apache.maven.mercury.ant.tasks.WriteTask"/>
 
   <typedef name="dep"             classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="deps"            classname="org.apache.maven.mercury.ant.tasks.Dep"/>
   <typedef name="config"          classname="org.apache.maven.mercury.ant.tasks.Config"/>
+  <typedef name="repository"      classname="org.apache.maven.mercury.ant.tasks.Repo"/>
+  <typedef name="auth"            classname="org.apache.maven.mercury.ant.tasks.Auth"/>
+  <typedef name="proxyauth"       classname="org.apache.maven.mercury.ant.tasks.Auth"/>
   
 </antlib>

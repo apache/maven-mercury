@@ -33,8 +33,8 @@ public class Dep
 extends AbstractDataType
 implements ResourceCollection
 {
-    private static final Language _lang = new DefaultLanguage( Dep.class );
-    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( Dep.class ); 
+    private static final Language LANG = new DefaultLanguage( Dep.class );
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Dep.class ); 
 
     private List<Dependency> _dependencies;
     
@@ -59,7 +59,7 @@ implements ResourceCollection
         for ( Dependency d : _dependencies )
         {
             if( d._amd == null )
-                throw new IllegalArgumentException( _lang.getMessage( "dep.dependency.name.mandatory" ) );
+                throw new IllegalArgumentException( LANG.getMessage( "dep.dependency.name.mandatory" ) );
             
             if( Util.isEmpty( d._pom )) 
                 res.add( d._amd );
@@ -112,7 +112,7 @@ implements ResourceCollection
             this._pom = pom;
             
             if( _amd == null )
-                throw new UnsupportedOperationException( _lang.getMessage( "dep.dependency.pom.needs.name", pom ) );
+                throw new UnsupportedOperationException( LANG.getMessage( "dep.dependency.pom.needs.name", pom ) );
         }
 
     }
@@ -149,11 +149,11 @@ implements ResourceCollection
         ArtifactResults aRes = vr.readArtifacts( res );
 
         if ( aRes == null )
-            throw new BuildException( _lang.getMessage( "resolve.cannot.read", config.getId(), res.toString() ) );
+            throw new BuildException( LANG.getMessage( "resolve.cannot.read", config.getId(), res.toString() ) );
 
         if ( aRes == null || aRes.hasExceptions() )
         {
-            throw new Exception( _lang.getMessage( "vr.error", aRes.getExceptions().toString() ) );
+            throw new Exception( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
         }
 
         if ( !aRes.hasResults() )
@@ -234,7 +234,7 @@ implements ResourceCollection
         }
         catch ( Exception e )
         {
-            _log.error( e.getMessage() );
+            LOG.error( e.getMessage() );
             
             return null;
         }
@@ -253,7 +253,7 @@ implements ResourceCollection
         }
         catch ( Exception e )
         {
-            _log.error( e.getMessage() );
+            LOG.error( e.getMessage() );
             
             return 0;
         }

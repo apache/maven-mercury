@@ -24,10 +24,10 @@ import org.codehaus.plexus.lang.Language;
 public class WriteTask
 extends AbstractAntTask
 {
-  private static final Language _lang = new DefaultLanguage( WriteTask.class );
+  private static final Language LANG = new DefaultLanguage( WriteTask.class );
   
-  public static final String TASK_NAME = _lang.getMessage( "write.task.name" );
-  public static final String TASK_DESC = _lang.getMessage( "write.task.desc" );
+  public static final String TASK_NAME = LANG.getMessage( "write.task.name" );
+  public static final String TASK_DESC = LANG.getMessage( "write.task.desc" );
   
   private String _repoid;
   private String _file;
@@ -82,7 +82,7 @@ extends AbstractAntTask
   {
     if( _repoid == null )
     {
-      throwIfEnabled( _lang.getMessage( "write.repo.id.mandatory" ) );
+      throwIfEnabled( LANG.getMessage( "write.repo.id.mandatory" ) );
       return;
     }
     
@@ -90,13 +90,13 @@ extends AbstractAntTask
     
     if( repo == null )
     {
-      throwIfEnabled( _lang.getMessage( "write.repo.not.found", _repoid ) );
+      throwIfEnabled( LANG.getMessage( "write.repo.not.found", _repoid ) );
       return;
     }
     
     if( _file == null )
     {
-      throwIfEnabled( _lang.getMessage( "write.file.mandatory" ) );
+      throwIfEnabled( LANG.getMessage( "write.file.mandatory" ) );
       return;
     }
     
@@ -104,25 +104,25 @@ extends AbstractAntTask
     
     if( !file.exists() )
     {
-      throwIfEnabled( _lang.getMessage( "write.file.not.found", _file, _repoid ) );
+      throwIfEnabled( LANG.getMessage( "write.file.not.found", _file, _repoid ) );
       return;
     }
     
     if( Util.isEmpty( _name ) && Util.isEmpty( _pom ) )
     {
-      throwIfEnabled( _lang.getMessage( "write.no.name.no.pom", _file, _repoid ) );
+      throwIfEnabled( LANG.getMessage( "write.no.name.no.pom", _file, _repoid ) );
       return;
     }
 
     if( !Util.isEmpty( _name ) && !Util.isEmpty( _pom ) )
     {
-      throwIfEnabled( _lang.getMessage( "write.no.name.no.pom", _file, _repoid ) );
+      throwIfEnabled( LANG.getMessage( "write.no.name.no.pom", _file, _repoid ) );
       return;
     }
 
     if( !Util.isEmpty( _pom ) )
     {
-      throwIfEnabled( _lang.getMessage( "write.pom.not.supported", _file, _repoid ) );
+      throwIfEnabled( LANG.getMessage( "write.pom.not.supported", _file, _repoid ) );
       return;
     }
 
@@ -157,7 +157,7 @@ extends AbstractAntTask
       }
       else
       {
-        throwIfEnabled( _lang.getMessage( "write.pom.not.supported", _file, _repoid ) );
+        throwIfEnabled( LANG.getMessage( "write.pom.not.supported", _file, _repoid ) );
         return;
       }
         

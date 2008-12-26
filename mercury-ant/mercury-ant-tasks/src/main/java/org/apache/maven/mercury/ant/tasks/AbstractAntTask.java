@@ -13,7 +13,7 @@ import org.codehaus.plexus.lang.Language;
 public class AbstractAntTask
     extends Task
 {
-    private static final Language _lang = new DefaultLanguage( ResolveTask.class );
+    private static final Language LANG = new DefaultLanguage( ResolveTask.class );
 
     protected boolean _failOnError = true;
 
@@ -39,17 +39,17 @@ public class AbstractAntTask
 
         if ( configId == null )
         {
-            config = new Config( null, null );
+            config = Config.getDefaultConfig( project );
         }
         else
         {
             Object so = project.getReference( configId );
 
             if ( so == null )
-                throw new Exception( _lang.getMessage( "config.id.object.null", configId ) );
+                throw new Exception( LANG.getMessage( "config.id.object.null", configId ) );
 
             if ( !Config.class.isAssignableFrom( so.getClass() ) )
-                throw new Exception( _lang.getMessage( "config.id.object.wrong", configId, so.getClass().getName() ) );
+                throw new Exception( LANG.getMessage( "config.id.object.wrong", configId, so.getClass().getName() ) );
 
             config = (Config) so;
         }

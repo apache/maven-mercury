@@ -21,7 +21,12 @@
     <property name="local.repo.dir" value="${basedir}/target/test-repo"/>
     <delete dir="${local.repo.dir}"/>
     <mkdir dir="${local.repo.dir}"/>
+  	
+  	<taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"/>
 
+  	<!--
+  	 | The most complex way to configure repositories
+  	-->
     <merc:config id="conf">
       <merc:repo id="localRepo" dir="${local.repo.dir}"/>
       <merc:repo id="central"   url="http://repo1.maven.org/maven2"/>
@@ -79,7 +84,6 @@
     <javac srcdir="${src}"
            destdir="${target}"
            classpathref="compile-path"
-           debug="on"
            source="${compiler.version}"
            target="${compiler.version}"
     />
@@ -112,7 +116,6 @@
     <javac srcdir="${src}"
            destdir="${target}"
            classpathref="compile-path-auth"
-           debug="on"
            source="${compiler.version}"
            target="${compiler.version}"
     />
@@ -183,7 +186,6 @@
   <target name="compile-thin-path" depends="init">
     <javac srcdir="${src}"
            destdir="${target}"
-           debug="on"
            source="${compiler.version}"
            target="${compiler.version}"
     >
@@ -197,19 +199,50 @@
 
   <target name="compile-thin-path-2" depends="init">
 
-  	<path id="thin-path-2"> 
-    	<merc:dep>
+    <path id="thin-path-2"> 
+      <merc:dep>
         <merc:dependency name="asm:asm:3.0"/>
       </merc:dep>
     </path>
 
-  	<javac srcdir="${src}"
+    <javac srcdir="${src}"
            destdir="${target}"
-  	      classpathref="thin-path-2"
-           debug="on"
+           classpathref="thin-path-2"
            source="${compiler.version}"
            target="${compiler.version}"
     />
+  </target>
+
+  <target name="compile-fail" depends="init">
+    <javac srcdir="${src}"
+           destdir="${target}"
+           source="${compiler.version}"
+           target="${compiler.version}"
+    />
+  </target>
+
+	
+
+  <target name="compile-thin-path-3" depends="init">
+  	
+  	<repository id="localPath3" dir="${basedir}/target/path-3"/>
+  	
+    <repository id="remotePath3" url="http://localhost:${repo.port}/maven2">
+      <auth name="foo" pass="bar"/>
+  	</repository>
+
+    <javac srcdir="${src}"
+           destdir="${target}"
+           source="${compiler.version}"
+           target="${compiler.version}"
+    >
+      <classpath> 
+        <deps>
+          <dependency name="asm:asm:3.0"/>
+        </deps>
+      </classpath>
+    </javac>
+
   </target>
   
 </project>

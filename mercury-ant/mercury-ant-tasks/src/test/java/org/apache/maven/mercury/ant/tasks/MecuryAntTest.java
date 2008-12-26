@@ -114,7 +114,7 @@ public class MecuryAntTest
         FileUtil.delete( _localRepoDirFile );
         _localRepoDirFile.mkdirs();
 
-        Config.Repo localRepo = _config.createRepo();
+        Repo localRepo = _config.createRepo();
         localRepo.setId( "localRepo" );
         localRepo.setDir( _localRepoDir );
 
@@ -123,7 +123,7 @@ public class MecuryAntTest
         _jetty.start();
         _port = _jetty.getPort();
         
-        Config.Repo remoteRepo = _config.createRepo();
+        Repo remoteRepo = _config.createRepo();
         remoteRepo.setId( "remoteRepo" );
         remoteRepo.setUrl( _remoteRepoUrlPrefix + _port + _remoteRepoUrlSufix );
 
@@ -225,6 +225,31 @@ public class MecuryAntTest
     }
 
     // -----------------------------------
+    public void testCompileFail()
+    {
+        String title = "compile-fail";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        try
+        {
+            executeTarget( title );
+            
+            fail(title+" did not raise an exception");
+        }
+        catch( Throwable e )
+        {
+            System.out.println("Expected exception: "+e.getMessage() );
+        }
+
+        assertFalse( af.exists() );
+    }
+
+    // -----------------------------------
     public void testCompile()
     {
         String title = "compile";
@@ -276,6 +301,33 @@ public class MecuryAntTest
         executeTarget( title );
 
         assertTrue( af.exists() );
+    }
+
+    // -----------------------------------
+    public void testCompileThinPath3()
+    throws Exception
+    {
+        String title = "compile-thin-path-3";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+        
+        restart( _port, _remoteRepoDirFile, "/maven2", true );
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        File asm = new File( "target/path-3/asm/asm/3.0/asm-3.0.jar" );
+        
+        asm.delete();
+
+        assertFalse( asm.exists() );
+        
+        executeTarget( title );
+
+        assertTrue( af.exists() );
+
+        assertTrue( asm.exists() );
     }
 
     // -----------------------------------
