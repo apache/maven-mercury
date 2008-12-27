@@ -55,10 +55,15 @@ under the License.
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-repo-virtual</artifactId>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-repo-local-m2</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.mercury</groupId>
+        <artifactId>mercury-repo-local-map</artifactId>
       </dependency>
 
       <dependency>

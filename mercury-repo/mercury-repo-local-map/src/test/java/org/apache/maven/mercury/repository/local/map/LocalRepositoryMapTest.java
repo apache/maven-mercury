@@ -31,6 +31,7 @@ import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
+import org.apache.maven.mercury.util.FileUtil;
 
 /**
  * @author Oleg Gusakov
@@ -58,8 +59,10 @@ public class LocalRepositoryMapTest
         bmd = new ArtifactBasicMetadata("t:t:1.0::pom");
         
         _pom = new File("./target/test-classes/t-1.0.pom");
-        
-        _storage = new DefaultStorage();
+
+        _dir = File.createTempFile( "temp-", "-mercury-default-storage" );
+        _dir.delete();
+        _storage = new DefaultStorage( _dir );
         
         _storage.add( bmd.getGAV(), _pom );
         
@@ -69,6 +72,13 @@ public class LocalRepositoryMapTest
         
         _rr = _repo.getReader();
         
+    }
+
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        FileUtil.delete( _dir );
     }
 
     public void testReadMap()

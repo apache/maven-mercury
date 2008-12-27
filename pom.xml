@@ -241,10 +241,16 @@ under the License.
         <artifactId>mercury-repo-api</artifactId>
         <version>${project.version}</version>
       </dependency>
-  
+
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-repo-local-m2</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.mercury</groupId>
+        <artifactId>mercury-repo-local-map</artifactId>
         <version>${project.version}</version>
       </dependency>
       

@@ -44,6 +44,7 @@ public class NioTest
     try
     {
       File file = File.createTempFile( "test-nio-", "-file" );
+      file.deleteOnExit();
       
       String fn = file.getAbsolutePath();
       
@@ -72,6 +73,7 @@ public class NioTest
   
       l1.release();
       c1.close();
+      c2.close();
       
       file.delete();
 

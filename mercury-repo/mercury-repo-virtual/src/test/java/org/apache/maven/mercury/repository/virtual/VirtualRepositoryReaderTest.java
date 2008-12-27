@@ -139,6 +139,7 @@ extends TestCase
   {
     Artifact a = new DefaultArtifact( new ArtifactBasicMetadata("a:a:1.0:text:txt") );
     File bin = File.createTempFile( "vr-", "-test.txt" );
+    bin.deleteOnExit();
     FileUtil.writeRawData( bin, "test" );
     a.setFile( bin );
     

@@ -55,6 +55,8 @@ implements ResourceCollection
             return null;
 
         List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _dependencies.size() );
+        
+       
 
         for ( Dependency d : _dependencies )
         {
@@ -65,7 +67,14 @@ implements ResourceCollection
                 res.add( d._amd );
             else
             {
+                
+//                vr.addRepository( repo );
+                
                 ArtifactMetadata deps = vr.readDependencies( d._amd );
+                
+                if( deps != null && !Util.isEmpty( deps.getDependencies() ) )
+                    for( ArtifactBasicMetadata bmd : deps.getDependencies() )
+                        res.add( bmd );
             }
         }
 

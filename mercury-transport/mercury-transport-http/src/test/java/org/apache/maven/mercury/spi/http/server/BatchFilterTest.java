@@ -82,6 +82,7 @@ public class BatchFilterTest extends TestCase
             }  
         }
         f.delete(); 
+        f.deleteOnExit();
     }
 
     public void testHandlePutWithoutBatching() throws Exception

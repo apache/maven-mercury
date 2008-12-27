@@ -312,16 +312,21 @@ public class FileUtil
   throws IOException
   {
     OutputStream out = new FileOutputStream( f );
+    try
+    {
+      byte [] buf = new byte[ DEFAULT_BUFFER_SIZE ];
+      int n;
 
-    byte [] buf = new byte[ DEFAULT_BUFFER_SIZE ];
-    int n;
-
-    while( (n = in.read( buf ) ) > 0 )
-        out.write( buf, 0, n );
+      while( (n = in.read( buf ) ) > 0 )
+          out.write( buf, 0, n );
+      out.flush();
+    }
+    finally
+    {
+      out.close();
+    }
 
     in.close();
-    out.flush();
-    out.close();
   }
   //---------------------------------------------------------------------------------------------------------------
   public static File writeTempData( byte [] bytes )

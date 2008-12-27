@@ -69,6 +69,7 @@ public class LocalRepositoryFlatTest
     a = new DefaultArtifact( new ArtifactBasicMetadata("a:a:1.0.0") );
     
     File ant = File.createTempFile( "test-flat", "-repo" );
+    ant.deleteOnExit();
     InputStream in = LocalRepositoryFlatTest.class.getResourceAsStream( "/ant-1.6.5.jar" );
     FileUtil.writeRawData( ant, in );
     a.setFile( ant );
@@ -77,12 +78,20 @@ public class LocalRepositoryFlatTest
     b = new DefaultArtifact( new ArtifactBasicMetadata("b:b:1.0.0") );
     
     File antlr = File.createTempFile( "test-flat", "-repo" );
+    antlr.deleteOnExit();
     in = LocalRepositoryFlatTest.class.getResourceAsStream( "/antlr-2.7.7.jar" );
     FileUtil.writeRawData( antlr, in );
     b.setFile( antlr );
     b.setPomBlob( pomBlob );
   }
-  
+
+  @Override
+  protected void tearDown()
+      throws Exception
+  {
+    FileUtil.delete( _dir );
+  }  
+
   public void testWriteFlat()
   throws Exception
   {

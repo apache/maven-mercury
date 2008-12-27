@@ -224,12 +224,12 @@
 	
 
   <target name="compile-thin-path-3" depends="init">
-  	
-  	<repository id="localPath3" dir="${basedir}/target/path-3"/>
-  	
+    
+    <repository id="localPath3" dir="${basedir}/target/path-3"/>
+    
     <repository id="remotePath3" url="http://localhost:${repo.port}/maven2">
       <auth name="foo" pass="bar"/>
-  	</repository>
+    </repository>
 
     <javac srcdir="${src}"
            destdir="${target}"
@@ -239,6 +239,28 @@
       <classpath> 
         <deps>
           <dependency name="asm:asm:3.0"/>
+        </deps>
+      </classpath>
+    </javac>
+
+  </target>
+
+  <target name="compile-thin-path-pom" depends="init">
+    
+    <repository id="localPath3" dir="${basedir}/target/path-pom"/>
+    
+    <repository id="remotePath3" url="http://localhost:${repo.port}/maven2">
+      <auth name="foo" pass="bar"/>
+    </repository>
+
+    <javac srcdir="${src}"
+           destdir="${target}"
+           source="${compiler.version}"
+           target="${compiler.version}"
+    >
+      <classpath> 
+        <deps>
+          <dependency name="t:t:3.0::pom" pom="${basedir}/target/test-classes/" />
         </deps>
       </classpath>
     </javac>

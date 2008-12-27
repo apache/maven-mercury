@@ -319,6 +319,37 @@ public class MecuryAntTest
 
         File asm = new File( "target/path-3/asm/asm/3.0/asm-3.0.jar" );
         
+        FileUtil.delete( asm );
+        
+        asm.delete();
+
+        assertFalse( asm.exists() );
+        
+        executeTarget( title );
+
+        assertTrue( af.exists() );
+
+        assertTrue( asm.exists() );
+    }
+
+    // -----------------------------------
+    public void testCompileThinPathPom()
+    throws Exception
+    {
+        String title = "compile-thin-path-pom";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        restart( _port, _remoteRepoDirFile, "/maven2", true );
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        File asm = new File( "target/path-pom/asm/asm/3.0/asm-3.0.jar" );
+
+        FileUtil.delete( asm );
+
         asm.delete();
 
         assertFalse( asm.exists() );
