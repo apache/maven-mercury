@@ -2,6 +2,7 @@ package org.apache.maven.mercury.ant.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.util.Util;
@@ -31,7 +32,7 @@ extends AbstractDataType
 
     Collection<Auth> _auths;
 
-    Collection<Repository> _repositories;
+    List<Repository> _repositories;
 
     public Config()
     {
@@ -48,7 +49,7 @@ extends AbstractDataType
         central.setUrl( remoteUrl == null ? DEFAULT_CENTRAL_URL : remoteUrl );
     }
 
-    public Collection<Repository> getRepositories()
+    public List<Repository> getRepositories()
         throws BuildException
     {
         if ( Util.isEmpty( _repos ) )

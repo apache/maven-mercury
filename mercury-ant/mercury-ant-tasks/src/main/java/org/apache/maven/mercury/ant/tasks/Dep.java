@@ -2,15 +2,16 @@ package org.apache.maven.mercury.ant.tasks;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
@@ -18,6 +19,10 @@ import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
+import org.apache.maven.mercury.repository.local.map.DefaultStorage;
+import org.apache.maven.mercury.repository.local.map.LocalRepositoryMap;
+import org.apache.maven.mercury.repository.local.map.Storage;
+import org.apache.maven.mercury.repository.local.map.StorageException;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
@@ -47,6 +52,10 @@ implements ResourceCollection
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private boolean _transitive = true;
+    
+    private LocalRepositoryMap _pomRepo;
+    
+    private Storage _pomStorage;
 
     private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
     throws RepositoryException
@@ -56,8 +65,6 @@ implements ResourceCollection
 
         List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _dependencies.size() );
         
-       
-
         for ( Dependency d : _dependencies )
         {
             if( d._amd == null )
@@ -67,10 +74,22 @@ implements ResourceCollection
                 res.add( d._amd );
             else
             {
+                String key = d._amd.getGAV();
                 
-//                vr.addRepository( repo );
+                ArtifactMetadata deps = null;
                 
-                ArtifactMetadata deps = vr.readDependencies( d._amd );
+                try
+                {
+                    _pomStorage.add( key, new File(d._pom) );
+                    
+                    deps = vr.readDependencies( d._amd );
+                
+                    _pomStorage.removeRaw( key );
+                }
+                catch ( StorageException e )
+                {
+                    throw new RepositoryException(e);
+                }
                 
                 if( deps != null && !Util.isEmpty( deps.getDependencies() ) )
                     for( ArtifactBasicMetadata bmd : deps.getDependencies() )
@@ -143,7 +162,15 @@ implements ResourceCollection
         if( Util.isEmpty( _dependencies ) )
             return null;
 
-        Collection<Repository> repos = config.getRepositories();
+        List<Repository> repos = config.getRepositories();
+        
+        DependencyProcessor dp = new MavenDependencyProcessor();
+        
+        _pomStorage = new DefaultStorage();
+        
+        _pomRepo = new LocalRepositoryMap( "inMemMdRepo", dp, _pomStorage );
+        
+        repos.add( 0, _pomRepo );
 
         DependencyBuilder db =
             DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
@@ -221,7 +248,7 @@ implements ResourceCollection
     {
         return true;
     }
-
+    //----------------------------------------------------------------------------------------
     public Iterator iterator()
     {
         try
@@ -248,7 +275,7 @@ implements ResourceCollection
             return null;
         }
     }
-
+    //----------------------------------------------------------------------------------------
     public int size()
     {
         try
@@ -267,4 +294,6 @@ implements ResourceCollection
             return 0;
         }
     }
+    //----------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
 }

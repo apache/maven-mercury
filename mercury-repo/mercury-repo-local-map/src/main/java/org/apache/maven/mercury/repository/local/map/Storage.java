@@ -52,7 +52,17 @@ public interface Storage
      * 
      * @param key
      * @param file
+     * @throws StorageException 
      */
-    public abstract void add( String key, File file );
+    public abstract void add( String key, File file )
+    throws StorageException;
+
+    /**
+     * delete this datum
+     * 
+     * @param key
+     */
+    public abstract void removeRaw( String key )
+    throws StorageException;
 
 }

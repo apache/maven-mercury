@@ -42,6 +42,11 @@ implements LocalRepository
     protected Storage _storage;
 
     // ----------------------------------------------------------------------------------
+    public Storage getStorage()
+    {
+        return _storage;
+    }
+    // ----------------------------------------------------------------------------------
     public LocalRepositoryMap( String id, DependencyProcessor dp, Storage storage )
     {
         super( id, FLAT_REPOSITORY_TYPE );

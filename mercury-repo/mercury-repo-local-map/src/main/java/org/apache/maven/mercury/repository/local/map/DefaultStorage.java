@@ -117,11 +117,25 @@ implements Storage
     }
 
     public void add( String key, File file )
+    throws StorageException
     {
+        if( file == null || !file.exists() )
+            throw new StorageException( _lang.getMessage( "defaultStorage.add.file.no.file", key ) );
+        
         if( _files == null )
             _files = new HashMap<String, File>(32);
         
         _files.put( key, file );
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.maven.mercury.repository.local.map.Storage#removeRaw(java.lang.String)
+     */
+    public void removeRaw( String key )
+    throws StorageException
+    {
+        if( Util.isEmpty( _files ) )
+            throw new StorageException( _lang.getMessage( "dep.cannot.remove", key ) );
     }
     
 }

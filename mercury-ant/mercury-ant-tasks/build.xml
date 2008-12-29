@@ -260,7 +260,7 @@
     >
       <classpath> 
         <deps>
-          <dependency name="t:t:3.0::pom" pom="${basedir}/target/test-classes/" />
+          <dependency name="t:t:3.0::pom" pom="${basedir}/target/test-classes/t-3.0.pom" />
         </deps>
       </classpath>
     </javac>
