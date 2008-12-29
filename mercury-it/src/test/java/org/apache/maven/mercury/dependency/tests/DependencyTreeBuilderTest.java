@@ -102,7 +102,7 @@ extends TestCase
 //    RemoteRepositoryM2 centralRepo = new RemoteRepositoryM2(central);
 //    reps.add(centralRepo);
 
-    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps, null, null, null );
+    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
     depBuilder.register( new DumbListener() );
     
     vReader = new VirtualRepositoryReader( reps );
@@ -231,7 +231,7 @@ extends TestCase
     remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
     reps.add( remoteRepo );
     
-    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps, null, null, null );
+    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
 //    depBuilder.register( new DumbListener() );
     
     ArtifactMetadata md = new ArtifactMetadata( artifactId );

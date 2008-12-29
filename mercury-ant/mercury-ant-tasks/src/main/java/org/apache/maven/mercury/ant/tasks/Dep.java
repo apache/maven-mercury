@@ -173,7 +173,7 @@ implements ResourceCollection
         repos.add( 0, _pomRepo );
 
         DependencyBuilder db =
-            DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+            DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
 
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
         

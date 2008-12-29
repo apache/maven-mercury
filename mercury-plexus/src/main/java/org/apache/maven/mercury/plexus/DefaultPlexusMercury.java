@@ -288,7 +288,7 @@ implements PlexusMercury
     
     try
     {
-      DependencyBuilder depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+      DependencyBuilder depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
       
       ArtifactBasicMetadata a = artifacts.getMetadataList().get( 0 );
 

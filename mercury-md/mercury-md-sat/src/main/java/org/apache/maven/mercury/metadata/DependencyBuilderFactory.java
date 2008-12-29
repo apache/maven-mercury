@@ -41,14 +41,23 @@ public class DependencyBuilderFactory
   public static final String JAVA_DEPENDENCY_MODEL = "java";
   public static final String OSGI_DEPENDENCY_MODEL = "osgi";
 
-  private static final Language LANG = new DefaultLanguage( DependencyBuilderFactory.class) ;
+  private static final Language LANG = new DefaultLanguage( DependencyBuilderFactory.class);
   
   public static final DependencyBuilder create(
-        final String dependencyModel
-      , final Collection<Repository> repositories
-      , final Collection<MetadataTreeArtifactFilter> filters
-      , final List<Comparator<MetadataTreeNode>> comparators
-      , final Map<String,ArtifactListProcessor> processors
+        String dependencyModel
+      , Collection<Repository> repositories
+                     )
+  throws RepositoryException
+  {
+      return create( dependencyModel, repositories, null, null, null );
+  }
+  
+  public static final DependencyBuilder create(
+        String dependencyModel
+      , Collection<Repository> repositories
+      , Collection<MetadataTreeArtifactFilter> filters
+      , List<Comparator<MetadataTreeNode>> comparators
+      , Map<String,ArtifactListProcessor> processors
                      )
   throws RepositoryException
   {
