@@ -28,6 +28,12 @@
   </skin>
 
   <body>
+    <breadcrumbs>
+      <!-- TODO: This breadcrumb should be removed when it has been solved in the parent -->
+      <item name="Maven" href="http://maven.apache.org/index.html" />
+      <item name="Mercury" href="http://maven.apache.org/mercury/index.html" />
+    </breadcrumbs>
+
     <menu name="Documentation">
       <item name="Wiki" href="http://docs.codehaus.org/display/MAVEN/Mercury" />
     </menu>
