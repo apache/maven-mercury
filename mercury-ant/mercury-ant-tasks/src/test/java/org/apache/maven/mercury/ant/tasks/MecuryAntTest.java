@@ -57,9 +57,9 @@ public class MecuryAntTest
 
     Dep _dep;
 
-    Dep.Dependency _asm;
+    Dependency _asm;
 
-    Dep.Dependency _ant;
+    Dependency _ant;
 
     // -----------------------------------
     final class Resolver
@@ -347,6 +347,32 @@ public class MecuryAntTest
         assertFalse( af.exists() );
 
         File asm = new File( "target/path-pom/asm/asm/3.0/asm-3.0.jar" );
+
+        FileUtil.delete( asm );
+
+        asm.delete();
+
+        assertFalse( asm.exists() );
+        
+        executeTarget( title );
+
+        assertTrue( af.exists() );
+
+        assertTrue( asm.exists() );
+    }
+    // -----------------------------------
+    public void testCompileOldSyntax()
+    throws Exception
+    {
+        String title = "compile-old-syntax";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        File asm = new File( "target/path-old/asm/asm/3.0/asm-3.0.jar" );
 
         FileUtil.delete( asm );
 

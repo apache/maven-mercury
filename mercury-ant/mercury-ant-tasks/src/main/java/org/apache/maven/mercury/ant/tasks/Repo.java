@@ -40,31 +40,35 @@ public class Repo
 {
     private static final Language LANG = new DefaultLanguage( Repo.class );
     
-    String _dir;
+    private static final String DEFAULT_LAYOUT = "default";
+    
+    private String _dir;
 
-    String _url;
+    private String _url;
 
-    String _type;
+    private String _type;
 
-    String _authid;
+    private String _authid;
 
-    String _proxyauthid;
+    private String _layout = DEFAULT_LAYOUT;
 
-    boolean _readable = true;
+    private String _proxyauthid;
 
-    boolean _writeable = false;
+    private boolean _readable = true;
 
-    Auth _auth;
+    private boolean _writeable = false;
 
-    Auth _proxyAuth;
+    private Auth _auth;
 
-    List<Verify> _writeVerifiers;
+    private Auth _proxyAuth;
 
-    List<Verify> _readVerifiers;
+    private List<Verify> _writeVerifiers;
 
-    transient boolean _managed = false;
+    private List<Verify> _readVerifiers;
 
-    transient boolean _registered = false;
+    private transient boolean _managed = false;
+
+    private transient boolean _registered = false;
 
     public Repo()
     {
@@ -75,57 +79,95 @@ public class Repo
         _managed = managed;
     }
     
+    private void processDefaults()
+    {
+        if( _managed )
+            return;
+        
+        if( _registered )
+            return;
+        
+        if( getId() == null )
+        {
+            String id = "random." + (int)(Math.random()*10000.) + ("."+System.nanoTime() ) ;
+
+            super.setId( id );
+        }
+        
+        Config.addDefaultRepository( getProject(), this );
+        
+        _registered = true;
+    }
+    
     @Override
     public void setId( String id )
     {
         super.setId( id );
         
-        if( _managed )
-            return;
-        
-        Config.addDefaultRepository( getProject(), this );
-
+        processDefaults();
     }
 
     public void setReadable( boolean readable )
     {
         this._readable = readable;
+        
+        processDefaults();
     }
 
     public void setWriteable( boolean writeable )
     {
         this._writeable = writeable;
+        
+        processDefaults();
     }
 
     public void setUrl( String url )
     {
-        if( getId() == null )
-            throw new IllegalArgumentException( LANG.getMessage( "repo.no.id", url ) );
-        
         this._url = url;
+        
+        processDefaults();
     }
 
     public void setDir( String dir )
     {
-        if( getId() == null )
-            throw new IllegalArgumentException( LANG.getMessage( "repo.no.id", dir ) );
-        
         this._dir = dir;
+        
+        processDefaults();
+    }
+
+    // alternative - old - syntax
+    public void setPath( String path )
+    {
+        setDir( path );
     }
 
     public void setType( String type )
     {
         this._type = type;
+        
+        processDefaults();
     }
 
     public void setAuthid( String authid )
     {
         this._authid = authid;
+        
+        processDefaults();
     }
 
     public void setProxyauthid( String proxyauthid )
     {
         this._proxyauthid = proxyauthid;
+        
+        processDefaults();
+    }
+
+    public void setLayout( String layout )
+    {
+        if( !DEFAULT_LAYOUT.equals( layout ) )
+            throw new IllegalArgumentException( LANG.getMessage( "repo.layout.not.supported", layout ) );
+        
+        processDefaults();
     }
 
     boolean isLocal()

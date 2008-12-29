@@ -111,39 +111,6 @@ implements ResourceCollection
 
         return dep;
     }
-
-    public class Dependency
-    {
-        ArtifactBasicMetadata _amd;
-        
-        String _pom;
-
-        boolean _optional = false;
-
-        public void setName( String name )
-        {
-            _amd = new ArtifactBasicMetadata( name );
-
-            _amd.setOptional( _optional );
-        }
-
-        public void setOptional( boolean optional )
-        {
-            this._optional = optional;
-
-            if ( _amd != null )
-                _amd.setOptional( optional );
-        }
-
-        public void setPom( String pom )
-        {
-            this._pom = pom;
-            
-            if( _amd == null )
-                throw new UnsupportedOperationException( LANG.getMessage( "dep.dependency.pom.needs.name", pom ) );
-        }
-
-    }
     //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve()
     throws Exception

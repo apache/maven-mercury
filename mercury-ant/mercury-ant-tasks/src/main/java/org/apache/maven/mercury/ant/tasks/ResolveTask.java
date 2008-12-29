@@ -39,7 +39,7 @@ extends AbstractAntTask
 
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
-    private List<Dep.Dependency> _dependencies;
+    private List<Dependency> _dependencies;
 
     // ----------------------------------------------------------------------------------------
     @Override
@@ -235,11 +235,15 @@ extends AbstractAntTask
         this._scope = scope;
     }
 
-    public void addConfiguredDependency( Dep.Dependency dependency )
+    public Dependency createDependency(  )
     {
         if ( Util.isEmpty( _dependencies ) )
-            _dependencies = new ArrayList<Dep.Dependency>( 8 );
+            _dependencies = new ArrayList<Dependency>( 8 );
+        
+        Dependency dependency = new Dependency();
 
         _dependencies.add( dependency );
+        
+        return dependency;
     }
 }

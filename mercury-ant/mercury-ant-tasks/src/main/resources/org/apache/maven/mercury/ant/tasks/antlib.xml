@@ -2,15 +2,26 @@
 
 <antlib>
 
-  <taskdef name="resolve"      classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
-  <taskdef name="dependencies" classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
-  <taskdef name="write"        classname="org.apache.maven.mercury.ant.tasks.WriteTask"/>
+  <taskdef name="resolve"          classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
+  <taskdef name="write"            classname="org.apache.maven.mercury.ant.tasks.WriteTask"/>
 
-  <typedef name="dep"             classname="org.apache.maven.mercury.ant.tasks.Dep"/>
-  <typedef name="deps"            classname="org.apache.maven.mercury.ant.tasks.Dep"/>
-  <typedef name="config"          classname="org.apache.maven.mercury.ant.tasks.Config"/>
-  <typedef name="repository"      classname="org.apache.maven.mercury.ant.tasks.Repo"/>
-  <typedef name="auth"            classname="org.apache.maven.mercury.ant.tasks.Auth"/>
-  <typedef name="proxyauth"       classname="org.apache.maven.mercury.ant.tasks.Auth"/>
+  <typedef name="dep"              classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="repository"       classname="org.apache.maven.mercury.ant.tasks.Repo"/>
+  <typedef name="config"           classname="org.apache.maven.mercury.ant.tasks.Config"/>
+  
+  <!-- helper sytaxes -->
+  <typedef name="deps"             classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="dependencySet"    classname="org.apache.maven.mercury.ant.tasks.Dep"/>
+  <typedef name="settings"         classname="org.apache.maven.mercury.ant.tasks.Config"/>
+
+  <!-- do we need them as upper-level elements ?? -->
+  <typedef name="auth"             classname="org.apache.maven.mercury.ant.tasks.Auth"/>
+  <typedef name="proxyauth"        classname="org.apache.maven.mercury.ant.tasks.Auth"/>
+  
+  <!--  good old syntax -->  
+  <taskdef name="dependencies" classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
+
+  <typedef name="localRepository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>
+  <typedef name="remoteRepository" classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   
 </antlib>

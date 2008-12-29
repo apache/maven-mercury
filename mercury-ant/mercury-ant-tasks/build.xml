@@ -267,4 +267,25 @@
 
   </target>
   
+
+  <target name="compile-old-syntax" depends="init">
+    
+  	<remoteRepository id="remote.repository.old" url="http://localhost:${repo.port}/maven2" />
+
+  	<localRepository path="${basedir}/target/path-old" layout="default"/>
+    
+  	<dependencies pathId="dependency.classpath">
+  	  <dependency groupId="asm" artifactId="asm" version="3.0"/>
+  	</dependencies>
+  	
+    <javac srcdir="${src}"
+           destdir="${target}"
+           source="${compiler.version}"
+           target="${compiler.version}"
+    >
+      <classpath refid="dependency.classpath"/> 
+    </javac>
+
+  </target>
+
 </project>
