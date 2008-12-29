@@ -308,11 +308,26 @@ public class Repo
         return _auth;
     }
 
+    public Auth createAuthentication()
+    {
+        return createAuth();
+    }
+
     public Auth createProxyauth()
     {
         _auth = new Auth();
 
         return _auth;
+    }
+
+    public Auth createProxyauthentication()
+    {
+        return createProxyauth();
+    }
+
+    public Auth createProxyAuthentication()
+    {
+        return createProxyauth();
     }
 
     public class Verify

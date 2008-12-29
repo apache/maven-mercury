@@ -33,14 +33,44 @@ public class Auth
         this._name = name;
     }
 
+    // compatibility with old syntax
+    public void setUsername( String name )
+    {
+        setName( name );
+    }
+
     public void setPass( String pass )
     {
         this._pass = pass;
     }
 
+    // compatibility with old syntax
+    public void setPassword( String pass )
+    {
+        setPass( pass );
+    }
+
+    // compatibility with old syntax
+    public void setPassphrase( String pass )
+    {
+        setPass( pass );
+    }
+
     public void setCertfile( String certfile )
     {
         this._certfile = certfile;
+    }
+
+    // compatibility with old syntax
+    public void setPrivateKey( String certfile )
+    {
+        setCertfile( certfile );
+    }
+
+    // compatibility with old syntax + case independence
+    public void setPrivatekey( String certfile )
+    {
+        setCertfile( certfile );
     }
     
     protected static Auth findAuth( Project project, String authId )

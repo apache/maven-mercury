@@ -386,6 +386,34 @@ public class MecuryAntTest
 
         assertTrue( asm.exists() );
     }
+    // -----------------------------------
+    public void testCompileOldSyntaxWithAuth()
+    throws Exception
+    {
+        String title = "compile-old-syntax-with-auth";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        restart( _port, _remoteRepoDirFile, "/maven2", true );
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        File asm = new File( "target/path-old-auth/asm/asm/3.0/asm-3.0.jar" );
+
+        FileUtil.delete( asm );
+
+        asm.delete();
+
+        assertFalse( asm.exists() );
+        
+        executeTarget( title );
+
+        assertTrue( af.exists() );
+
+        assertTrue( asm.exists() );
+    }
 
     // -----------------------------------
     public void testBadAuthRepo()
