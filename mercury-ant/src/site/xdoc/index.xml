@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ -->
+
+<document>
+
+  <properties>
+    <title>Mercury Ant Tasks</title>
+    <author email="ogusakov_AT_apache_DOT_org">Oleg Gusakov</author>
+  </properties>
+
+  <body>
+
+    <section name="Mercury Ant tasks">
+
+      <p>Mercury Ant tasks is an Apache Ant wrapper for Mercury functionality. It supports both new and a subset of the old maven-ant-tasks syntax</p>
+
+      <p>
+        <!-- workaround for DOXIA-227: usemap attribute is stripped (fixed in Doxia 1.1, was 1.0-beta-1) -->
+        <script type="text/javascript">
+          tag='<img src="mercury-deps.png" width="610" height="498" border="0" usemap="#Mercury_dependencies" />';
+          tag=tag.substring(0,tag.length-2)+' usemap=\'#Mercury_ant_dependencies\''+tag.substring(tag.length-2);
+          document.write(tag);
+        </script>
+
+        <map name="Mercury_ant_dependencies">
+          <area shape="rect" coords="145,1,297,30" href="mercury-ant-tasks/" />
+        </map>
+      </p>
+
+    </section>
+
+  </body>
+
+</document>
