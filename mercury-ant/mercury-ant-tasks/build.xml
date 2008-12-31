@@ -186,9 +186,7 @@
   <target name="compile-thin-path">
 
     <taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"/>
-<!--  	
-    <repo id="central"   url="http://localhost:${repo.port}/maven2"/>
--->  	
+  	
     <javac srcdir="${basedir}/src/test/compile"
            destdir="${basedir}/target/compile-classes"
            source="1.5"
@@ -226,7 +224,6 @@
     />
   </target>
 
-	
 
   <target name="compile-thin-path-3" depends="init">
     
