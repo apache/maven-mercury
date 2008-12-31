@@ -24,6 +24,11 @@
   <body>
 
     <menu ref="parent"/>
+    
+    <menu name="Mercury Ant">
+      <item name="Introduction" href="intro.html"/>
+      <item name="How To"       href="howto.html"/>
+    </menu>
 
     <menu ref="reports"/>
 

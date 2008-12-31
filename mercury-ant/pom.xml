@@ -35,9 +35,35 @@ under the License.
   <description>Maven Mercury Ant is an ant-task wrapper for MErcry functionality: classpath creation, artifact deployment .</description>
 
   <developers>
+  
     <developer>
+      <id>ogusakov</id>
       <name>Oleg Gusakov</name>
+      <roles>
+        <role>Committer</role>
+      </roles>
     </developer>
+    
+    <developer>
+      <id>bentmann</id>
+      <name>Benjamin Bentmann</name>
+      <email>bentmann@apache.org</email>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    
+      <developer>
+      <id>hboutemy</id>
+      <name>Herve Boutemy</name>
+      <email>hboutemy@apache.org</email>
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+
   </developers>
 
   <modules>
@@ -58,16 +84,25 @@ under the License.
     <url>http://grid.sonatype.org/ci/view/Mercury/job/mercury</url>
   </ciManagement>
   <distributionManagement>
+
     <repository>
       <id>${distMgmtReleasesId}</id>
       <name>${distMgmtReleasesName}</name>
       <url>${distMgmtReleasesUrl}</url>
     </repository>
+
     <snapshotRepository>
       <id>${distMgmtSnapshotsId}</id>
       <name>${distMgmtSnapshotsName}</name>
       <url>${distMgmtSnapshotsUrl}</url>
     </snapshotRepository>
+
+    <site>
+      <id>${distMgmtSiteId}</id>
+      <name>${distMgmtSiteName}</name>
+      <url>${distMgmtSiteUrl}</url>
+    </site>
+
   </distributionManagement>
 
   <properties>
@@ -88,6 +123,11 @@ under the License.
     <distMgmtSnapshotsId>apache.snapshots</distMgmtSnapshotsId>
     <distMgmtSnapshotsName>Apache Snapshots</distMgmtSnapshotsName>
     <distMgmtSnapshotsUrl>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</distMgmtSnapshotsUrl>
+
+    <distMgmtSiteId>apache.snapshots</distMgmtSiteId>
+    <distMgmtSiteName>Apache Snapshots</distMgmtSiteName>
+    <distMgmtSiteUrl>scp://people.apache.org/home/ogusakov/public_html/sites/mercury-ant</distMgmtSiteUrl>
+
   </properties>
 
   <dependencyManagement>
@@ -235,7 +275,7 @@ under the License.
           </execution>
         </executions>
       </plugin>
-
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>

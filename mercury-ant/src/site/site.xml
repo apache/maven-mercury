@@ -32,6 +32,7 @@
       <!-- TODO: This breadcrumb should be removed when it has been solved in the parent -->
       <item name="Maven" href="http://maven.apache.org/index.html" />
       <item name="Mercury" href="http://maven.apache.org/mercury/index.html" />
+      <item name="Mercury Ant" href="http://maven.apache.org/mercury/mercury-ant/index.html" />
     </breadcrumbs>
 
     <menu name="Documentation">
@@ -39,5 +40,6 @@
     </menu>
 
     <menu ref="modules"/>
+
   </body>
 </project>

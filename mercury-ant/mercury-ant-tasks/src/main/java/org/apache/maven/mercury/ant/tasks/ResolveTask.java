@@ -104,9 +104,9 @@ extends AbstractAntTask
                 return;
             }
         }
-        else
+        else if( !Util.isEmpty( _refPathId ) )
         {
-            Object p = getProject().getReference( _refPathId );
+             Object p = getProject().getReference( _refPathId );
 
             if ( p == null )
             {
@@ -116,6 +116,8 @@ extends AbstractAntTask
 
             path = (Path) p;
         }
+        else
+            _pathId = Config.DEFAULT_PATH_ID;
 
         try
         {

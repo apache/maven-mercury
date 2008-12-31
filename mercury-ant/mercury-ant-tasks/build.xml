@@ -290,7 +290,7 @@
   <target name="compile-old-syntax-with-auth" depends="init">
     
     <remoteRepository id="remote.repository.old" url="http://localhost:${repo.port}/maven2">
-    	<authentication username="foo" password="bar"/>
+      <authentication username="foo" password="bar"/>
     </remoteRepository>
 
     <localRepository path="${basedir}/target/path-old-auth" layout="default"/>
@@ -306,6 +306,28 @@
     >
       <classpath refid="dependency.classpath"/> 
     </javac>
+
+  </target>
+  
+  <target name="test-default-path-id">
+
+  	<taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"/>
+    
+  	<config>
+      <repository id="remote.repository" url="http://localhost:${repo.port}/maven2"/>
+      <repository dir="${basedir}/target/defaul-path-id"/>
+    </config>
+    
+    <dependencies>
+      <dependency groupId="asm" artifactId="asm" version="3.0"/>
+    </dependencies>
+    
+    <javac srcdir="${basedir}/src/test/compile"
+           destdir="${basedir}/target/compile-classes"
+    	     classpathref="mercury.path"
+           source="1.5"
+           target="1.5"
+    />
 
   </target>
 

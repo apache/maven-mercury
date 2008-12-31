@@ -1,0 +1,321 @@
+Where to get mercury-ant-tasks?
+
+ All the development releases will be deployed to {{{http://people.apache.org/~ogusakov/repos/test/org/apache/maven/mercury/mercury-ant-tasks/1.0-alpha-1-SNAPSHOT}this site}}
+ 
+ There are several ways to start using mercury ant tasks. First - make the necessary libraries available for ant:
+ 
+  * <<mercury-ant-tasks-VERSION-all.jar>> - an uber jar with almost (see below) all the required dependencies
+  
+  * <<bcpg-jdk15-140.jar>> and <<bcprov-jdk15-140.jar>> from 
+    {{{http://repo1.maven.org/maven2/bouncycastle}this central repository location}} - this in case you plan to use PGP signatures
+  
+  One way to make them available is to drop or link them into <<~/.ant/lib>>, as a matter of fact, this is the easiest for the Bounce 
+  castle binaries as their version will change much less often, compared to mercury.
+  
+  Another way would be defining a classpath inside a <<taskdef>> tag, such as:
+
++------------+ 
+<taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"
+  classpath="/path/to/the/mercury-ant-tasks-VERSION-all.jar:/path/to/bouncycastle/bcpg-jdk15-140.jar:/path/to/bouncycastle/bcprov-jdk15-140.jar"
+/>
++------------+ 
+     
+     Then there is a second choice to make:
+     
+     * use mercury-ant-tasks directly  
+     
+     * use mercury-ant-tasks in a namespace
+     
+     Please check <<xmlns>> attribute for ant <<\<project\>>> element or <<uri>> attribute of the <<\<taskdef\>>> in 
+     {{{http://ant.apache.org/manual/index.html}Ant documentation}} if you'd like
+     to use namespaces - all examples in this document use the mercury-ant-tasks element directly.
+     
+Examples
+
+     You can check the test {{{http://people.apache.org/~ogusakov/repos/test/org/apache/maven/mercury/mercury-ant-tasks/1.0-alpha-1-SNAPSHOT/build.xml}build.xml}}
+     if you'd like to see various existing options. But that file is really a test script, it's too complex. It's much easier to check the following usage examples.
+     
+* How to access dependencies from the central repository
+
+ Here the dependency asm:asm:3.0 is downloaded from the default central repository and stored in the default local repository.
+ See {{{http://maven.apache.org}Maven site}} for more information on default locations for central and local repositories.
+ These defaults could be changed vis system properties - see the {{{reference.html}reference docs}}  
+
++---+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+>
+  <classpath> 
+    <deps>
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+  </classpath>
+</javac>
++---+
+     
+* How to read dependencies from a POM file
+ 
+ Still defaults to central repo, <dependencies> section from the pom provides the classpath
+
++---+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+>
+  <classpath> 
+    <deps>
+      <dependency name="t:t:1.0::pom" pom="${basedir}/t-1.0.pom"/>
+    </deps>
+  </classpath>
+</javac>
++---+
+     
+* How to create and reference a named classpath
+
++---+
+<path id="my.path">
+    <deps>
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+</path>
+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+       classpathref="my.path"
+/>
++---+
+     
+* How to create and reference several scoped classpaths
+
++---+
+<path id="my.compile.path">
+    <deps>
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+</path>
+
+<path id="my.test.path">
+    <deps scope="test">
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+</path>
+
+...
+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+       classpathref="my.compile.path"
+/>
+
+<java clasname="my.package.test.CodeTest"
+       classpathref="my.test.path"
+/>
++---+
+
+* How to define repositories
+
+ Please pay attention to the consistency of the <<id>> attribute for remote repositories. It is used as a key for caching 
+ artifact metadata and if you change it between runs, the old cached data will become invisible and this will affect the 
+ response time. Local repository is not cached, so id could be generated automatically. But you can also specify it - does
+ not hurt to be consistent.
+ 
+ <<repo>> and <<repository>> could be used interchangingly. 
+
++---+
+<repo id="myCentral" 
+ url="http://localhost:8081/nexus/contengs/groups/public"
+/>
+
+<repository dir="/my/local/repo"/>
+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+>
+  <classpath> 
+    <deps>
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+  </classpath>
+</javac>
++---+
+
+* How to configure repository authentication
+
+ <<repo>> can contain nested authentication elements
+
++---+
+<repo id="myCentral" 
+ url="http://localhost:8081/nexus/contengs/groups/public"
+>
+  <auth name="foo" pass="bar"/>
+</repo>
+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+>
+  <classpath> 
+    <deps>
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+  </classpath>
+</javac>
++---+
+
+
+* How to write a binary to a remote repository via webDAV[s]
+
+ Not a problem at all
+
++---+
+<repo id="myCentral" 
+ url="http://localhost:8081/nexus/contengs/groups/public"
+>
+  <auth name="foo" pass="bar"/>
+</repo>
+
+<write repoid="myCentral"
+       name="t:t:1.0"
+       file="${basedir}/target/t.jar"
+/>
++---+
+
+
+* How to generate a PGP signature
+
+ Piece of cake, provided you have the key already generated and sitting in your keyring. Please make it a habbit to keep 
+ all secret material outside of your build file; in this example they are stored in a separate file in the user's home. 
+ Don't forget to also protect it with approptiate file permitions, like <chmod 400 ~/secret/secret.properties>
+
++---+
+<property file="${user.home}/secret/secret.properties"/>
+
+<repo id="myCentral" 
+ url="http://localhost:8081/nexus/contengs/groups/public"
+>
+  <auth name="foo" pass="bar"/>
+  <verifywrite type="pgp">
+    <property name="keyring" value="${user.home}/.gnupg/secring.gpg"/>
+    <property name="pass"    value="${secret.keyring.pass}"/>
+    <property name="key"     value="${secret.keyring.key}"/>
+  </verifywrite>
+</repo>
+
+<write repoid="myCentral"
+       name="t:t:1.0"
+       file="${basedir}/target/t.jar"
+/>
++---+
+
+
+* How to validate PGP signatures
+
+ Even simpler'n writing them. The following snippet sets up repository to check PGP signatures and fail reads if 
+ PGP signature does not exists or if a secret key used to sign a file does not have a corresponding public key in
+ the specified public keyring.
+    
++---+
+<property file="${user.home}/secret/secret.properties"/>
+
+<repo id="myCentral" 
+ url="http://localhost:8081/nexus/contengs/groups/public"
+>
+  <verifyread type="pgp" lenient="false">
+    <property name="keyring" value="${user.home}/.gnupg/pubring.gpg"/>
+  </verifywrite>
+</repo>
++---+
+
+
+* How to use maven-ant syntax
+
+ Actually quite simple - just use it. Not everything is supported yet, but basic stuff - resolving
+ dependencies - now works. Both syntaxes could be used simultaneously.  
+    
++---+
+<remoteRepository id="remote.repository.old" url="http://localhost:${repo.port}/maven2">
+  <authentication username="foo" password="bar"/>
+</remoteRepository>
+
+<localRepository path="${basedir}/target/path-old-auth" layout="default"/>
+    
+<dependencies pathId="dependency.classpath">
+  <dependency groupId="asm" artifactId="asm" version="3.0"/>
+</dependencies>
+    
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+>
+  <classpath refid="dependency.classpath"/> 
+</javac>
++---+
+
+Advanced examples
+
+* How to declare all configurations in one default block
+
+ In previous examples we used repositories loosely in the build file. There is a possibility to define them all in one 
+ block. This example will create a default configuration and then use it to create a default path "mercury.path", then 
+ use this path in compilation 
+ 
++---+
+    <config>
+      <repository id="remote.repository" url="http://localhost:${repo.port}/maven2"/>
+      <repository dir="${basedir}/target/defaul-path-id"/>
+    </config>
+    
+    <dependencies>
+      <dependency groupId="asm" artifactId="asm" version="3.0"/>
+    </dependencies>
+    
+    <javac srcdir="${basedir}/src/main/java"
+           destdir="${basedir}/target/classes"
+             classpathref="mercury.path"
+    />
++---+
+
+* How to name a configuration block
+
+  If this block has an id - we can refer it by this id from elsewhere in the build. Here we also create a path with id "my.path"
+ 
++---+
+<config id="my.local.config">
+  <auth id="myauth" name="foo" pass="bar"/>
+  <repo id="localRepo" dir="/my/repo"/>
+  <repo id="my.central" url="http://localhost:8081/maven2" authid="my.auth"/>
+</config>
+
+<dependencies pathid="my.path" configid="my.local.config">
+  <dependency name="asm:asm:3.0"/>
+</dependencies>
++---+
+
+
+
+* How to configure signature verification in the configuration block
+
+ The repository element inside configuration block is the same repository element used elsewhere, so the same paremeters could be used.
+ 
++---+
+<config>
+  <auth id="myauth" name="foo" pass="bar"/>
+  <repo id="localRepo" dir="/my/repo"/>
+
+  <repo id="myCentral" 
+   url="http://localhost:8081/nexus/contengs/groups/public"
+  >
+    <verifyread type="pgp" lenient="false">
+      <property name="keyring" value="${user.home}/.gnupg/pubring.gpg"/>
+    </verifywrite>
+    
+    <verifywrite type="pgp">
+      <property name="keyring" value="${user.home}/.gnupg/secring.gpg"/>
+      <property name="pass"    value="${secret.keyring.pass}"/>
+      <property name="key"     value="${secret.keyring.key}"/>
+    </verifywrite>
+
+  </repo>
+</config>
+
+<dependencies pathid="my.path">
+  <dependency name="asm:asm:3.0"/>
+</dependencies>
++---+

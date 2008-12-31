@@ -20,13 +20,15 @@ extends AbstractDataType
 {
     private static final Language LANG = new DefaultLanguage( Config.class );
     
-    private static final String DEFAULT_LOCAL_DIR = System.getProperty( "user.home" )+"/.m2/repository"; 
+    public static final String DEFAULT_LOCAL_DIR = System.getProperty( "user.home" )+"/.m2/repository"; 
     
-    private static final String DEFAULT_CENTRAL_URL = System.getProperty( "mercury.central.url", "http://repo1.maven.org/maven2" ); 
+    public static final String DEFAULT_CENTRAL_URL = System.getProperty( "mercury.central.url", "http://repo1.maven.org/maven2" ); 
     
-    private static final String DEFAULT_CONFIG_ID = System.getProperty( "mercury.default.config.id"
+    public static final String DEFAULT_CONFIG_ID = System.getProperty( "mercury.default.config.id"
                                                                         , "mercury.default.config.id."+System.currentTimeMillis() 
                                                                       ); 
+    
+    public static final String DEFAULT_PATH_ID = System.getProperty( "mercury.default.path.id", "mercury.path" ); 
 
     Collection<Repo> _repos;
 
@@ -65,14 +67,31 @@ extends AbstractDataType
 
         return _repositories;
     }
+    
+    private void init()
+    {
+        if( getId() != null )
+            return;
+        
+        setId(DEFAULT_CONFIG_ID);
+         
+        getProject().addReference( DEFAULT_CONFIG_ID, this );
+    }
 
     public Repo createRepo()
     {
+        init();
+        
         Repo r = new Repo(true);
 
         listRepo( r );
 
         return r;
+    }
+
+    public Repo createRepository()
+    {
+        return createRepo();
     }
 
     protected void listRepo( Repo repo )
@@ -116,6 +135,8 @@ extends AbstractDataType
 
     public Auth createAuth()
     {
+        init();
+        
         if ( _auths == null )
             _auths = new ArrayList<Auth>( 4 );
 

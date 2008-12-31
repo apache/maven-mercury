@@ -537,4 +537,28 @@ public class MecuryAntTest
         assertTrue( af.exists() );
     }
     // -----------------------------------
+    // -----------------------------------
+    public void testDefaultPathId()
+    throws Exception
+    {
+        String title = "test-default-path-id";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File af = new File( _compileDirFile, "T.class" );
+
+        assertFalse( af.exists() );
+
+        File asm = new File( "target/defaul-path-id/asm/asm/3.0/asm-3.0.jar" );
+
+        FileUtil.delete( asm );
+
+        assertFalse( asm.exists() );
+        
+        executeTarget( title );
+
+        assertTrue( af.exists() );
+
+        assertTrue( asm.exists() );
+    }
 }

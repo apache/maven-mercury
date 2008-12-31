@@ -1,0 +1,61 @@
+Mercury Ant Tasks
+
+ This project is an implementation of Ant wrapper for Mercury functionality. It also implements a
+subset of <<maven-ant tasks>> syntax (and, of cause - functionality). Please note that below is a description of
+<<all>> available options; routine usage is much simpler:
+
++------------------------------------------+
+<javac srcdir="src/main/java"
+       destdir="target/classes"
+>
+  <classpath> 
+    <deps>
+      <dependency name="asm:asm:3.0"/>
+    </deps>
+  </classpath>
+</javac>
++------------------------------------------+
+
+   * <<configuration>>
+   
+     * named authentication elements to be used by repository or proxy authentication
+     
+     * supports both name/password or certificate pointer (file or URL) plus optional password
+     
+     * named repository configurations
+     
+     * local repositories (not limited to one)
+     
+     * remote repositories
+     
+     * stream verification per repository - separate for reading and writing
+     
+     * currently supported SHA-1 and PGP (.asc)
+     
+     * default configuration is provided if no configuration is specified in the 
+     
+     * repositories defined outside <<<config>>> element are automatically added   
+     
+   * <<named dependency sets>>
+   
+     * lists dependencies and optionally - their Maven scopes
+     
+     * standardized on a one-string naming convention
+     
+     * supports OSGi-syntax version ranges
+     
+   * <<ant path creation/alteration>>
+   
+     * a task that either creates a new ant path or adds to existing one
+     
+     * optionally allows to specify Maven-like scope for the path resolution
+     
+   * <<repository writes>>
+   
+     * allows to write named files into repositories
+     
+     * optional classifiers, types
+     
+     * signature generation is configured per repository
+     
+     * SHA1, PGP

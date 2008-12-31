@@ -22,9 +22,9 @@ under the License.
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-  <groupId>org.apache.maven.mercury</groupId>
-  <artifactId>mercury-ant</artifactId>
-  <version>1.0-alpha-1-SNAPSHOT</version>
+    <groupId>org.apache.maven.mercury</groupId>
+    <artifactId>mercury-ant</artifactId>
+    <version>1.0-alpha-1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.maven.mercury</groupId>
