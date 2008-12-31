@@ -8,6 +8,8 @@
   <typedef name="deps"              classname="org.apache.maven.mercury.ant.tasks.Dep"/>
   <typedef name="repository"       classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   <typedef name="config"           classname="org.apache.maven.mercury.ant.tasks.Config"/>
+  <typedef name="repo"             classname="org.apache.maven.mercury.ant.tasks.Repo"/>
+  <typedef name="repository"       classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   
   <!-- helper sytaxes -->
   <typedef name="dep"             classname="org.apache.maven.mercury.ant.tasks.Dep"/>
@@ -21,6 +23,7 @@
   <!--  good old syntax -->  
   <taskdef name="dependencies" classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
 
+  <typedef name="localRepository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   <typedef name="localRepository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   <typedef name="remoteRepository" classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   

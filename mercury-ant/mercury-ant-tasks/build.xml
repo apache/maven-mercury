@@ -29,7 +29,7 @@
   	-->
     <merc:config id="conf">
       <merc:repo id="localRepo" dir="${local.repo.dir}"/>
-      <merc:repo id="central"   url="http://repo1.maven.org/maven2"/>
+      <merc:repo id="central"   url="http://localhost:${repo.port}/maven2"/>
     </merc:config>
 
     <merc:config id="config-bad-auth">
@@ -183,16 +183,21 @@
       />
   </target>
 
-  <target name="compile-thin-path" depends="init">
-    <javac srcdir="${src}"
-           destdir="${target}"
-           source="${compiler.version}"
-           target="${compiler.version}"
-    >
+  <target name="compile-thin-path">
+
+    <taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"/>
+<!--  	
+    <repo id="central"   url="http://localhost:${repo.port}/maven2"/>
+-->  	
+    <javac srcdir="${basedir}/src/test/compile"
+           destdir="${basedir}/target/compile-classes"
+           source="1.5"
+           target="1.5"
+  	>
       <classpath>
-        <merc:dep>
-          <merc:dependency name="asm:asm:3.0"/>
-        </merc:dep>
+        <dep>
+          <dependency name="asm:asm:3.0"/>
+        </dep>
      </classpath>
     </javac>
   </target>

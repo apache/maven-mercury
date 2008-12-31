@@ -74,8 +74,9 @@ extends AbstractDataType
             return;
         
         setId(DEFAULT_CONFIG_ID);
-         
-        getProject().addReference( DEFAULT_CONFIG_ID, this );
+        
+        if( getProject() != null )
+            getProject().addReference( DEFAULT_CONFIG_ID, this );
     }
 
     public Repo createRepo()
