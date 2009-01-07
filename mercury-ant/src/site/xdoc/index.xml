@@ -32,19 +32,6 @@
 
       <p>Mercury Ant tasks is an Apache Ant wrapper for Mercury functionality. It supports both new and a subset of the old maven-ant-tasks syntax</p>
 
-      <p>
-        <!-- workaround for DOXIA-227: usemap attribute is stripped (fixed in Doxia 1.1, was 1.0-beta-1) -->
-        <script type="text/javascript">
-          tag='<img src="mercury-deps.png" width="610" height="498" border="0" usemap="#Mercury_dependencies" />';
-          tag=tag.substring(0,tag.length-2)+' usemap=\'#Mercury_ant_dependencies\''+tag.substring(tag.length-2);
-          document.write(tag);
-        </script>
-
-        <map name="Mercury_ant_dependencies">
-          <area shape="rect" coords="145,1,297,30" href="mercury-ant-tasks/" />
-        </map>
-      </p>
-
     </section>
 
   </body>

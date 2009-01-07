@@ -1,3 +1,11 @@
+ ------
+ Maven Ant tasks
+ ------
+ Oleg Gusakov
+ ------
+ 21 December 2008
+ ------
+
 Where to get mercury-ant-tasks?
 
  All the development releases will be deployed to {{{http://people.apache.org/~ogusakov/repos/test/org/apache/maven/mercury/mercury-ant-tasks/1.0-alpha-1-SNAPSHOT}this site}}

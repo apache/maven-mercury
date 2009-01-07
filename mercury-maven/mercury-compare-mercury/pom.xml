@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury</artifactId>
-    <version>1.0.0-alpha-2-SNAPSHOT</version>
+    <version>1.0.0-alpha-3-SNAPSHOT</version>
   </parent>
   
   <groupId>org.sonatype.maven.plugins</groupId>
@@ -43,9 +43,9 @@ under the License.
       <timezone>-8</timezone>
     </developer>
   </developers>
-
+  
   <properties>
-    <maven.version>3.0-SNAPSHOT</maven.version>
+    <maven.version>3.0-alpha-1</maven.version>
   </properties>
 
   <dependencies>

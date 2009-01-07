@@ -61,6 +61,7 @@ under the License.
   </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-event</artifactId>

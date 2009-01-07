@@ -1,3 +1,11 @@
+ ------
+ Maven Ant tasks
+ ------
+ Oleg Gusakov
+ ------
+ 21 December 2008
+ ------
+
 Mercury Ant Tasks
 
  This project is an implementation of Ant wrapper for Mercury functionality. It also implements a
