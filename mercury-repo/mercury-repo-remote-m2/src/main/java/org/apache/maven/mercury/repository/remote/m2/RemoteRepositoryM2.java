@@ -35,7 +35,7 @@ extends AbstractRepository
 implements RemoteRepository
 {
   public static final String METADATA_FILE_NAME = "maven-metadata.xml";
-
+  
   private Server _server;
     
     /** default update policy */

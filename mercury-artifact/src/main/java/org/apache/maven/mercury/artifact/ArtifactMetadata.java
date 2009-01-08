@@ -19,6 +19,7 @@
 package org.apache.maven.mercury.artifact;
 
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -64,68 +65,19 @@ extends ArtifactBasicMetadata
     {
     }
     //------------------------------------------------------------------
-    /**
-     * group:artifact:version:classifier:packaging
-     */
-    public ArtifactMetadata( String name )
-    {
-      if( name == null )
-        return;
-      
-      String [] tokens = name.split(":");
-      
-      if( tokens == null || tokens.length < 1 )
-        return;
- 
-      int count = tokens.length;
-      
-    this.groupId = nullify( tokens[0] );
 
-    if( count > 1 )
-      this.artifactId = nullify( tokens[1] );
-    
-    if( count > 2 )
-      this.version = nullify( tokens[2] );
-    
-    if( count > 3 )
-      this.classifier = nullify( tokens[3] );
-    
-    if( count > 4 )
-      this.type = nullify( tokens[4] );
-    }
-    private static final String nullify( String s )
-    {
-      if( s == null || s.length() < 1 )
-        return null;
-      return s;
-    }
-    public ArtifactMetadata( String groupId, String name, String version )
-    {
-        this( groupId, name, version, null );
-    }
-
-    public ArtifactMetadata( String groupId, String name, String version, String type )
-    {
-        this( groupId, name, version, type, null );
-    }
-
-    public ArtifactMetadata( String groupId, String name, String version, String type, ArtifactScopeEnum artifactScope )
-    {
-        this( groupId, name, version, type, artifactScope, null );
-    }
-
-    public ArtifactMetadata( String groupId, String name, String version, String type, ArtifactScopeEnum artifactScope, String classifier )
-    {
-        this( groupId, name, version, type, artifactScope, classifier, null );
-    }
-
-    public ArtifactMetadata( String groupId, String name, String version, String type, ArtifactScopeEnum artifactScope, String classifier, String artifactUri )
-    {
-        this( groupId, name, version, type, artifactScope, classifier, artifactUri, null, true, null );
-    }
-
-    public ArtifactMetadata( String groupId, String name, String version, String type, ArtifactScopeEnum artifactScope, String classifier, String artifactUri, String why, boolean resolved,
-                             String error )
+    public ArtifactMetadata( String groupId
+                             , String name
+                             , String version
+                             , String type
+                             , ArtifactScopeEnum artifactScope
+                             , String classifier
+                             , String artifactUri
+                             , String why
+                             , boolean resolved
+                             , String error
+                             , Map<String, String> attributes
+                             )
     {
         this.groupId = groupId;
         this.artifactId = name;
@@ -137,20 +89,21 @@ extends ArtifactBasicMetadata
         this.why = why;
         this.resolved = resolved;
         this.error = error;
+        this.attributes = attributes;
     }
 
     public ArtifactMetadata( ArtifactBasicMetadata bmd )
     {
-      this( bmd.getGroupId(), bmd.getArtifactId(), bmd.getVersion(), bmd.getType(), null, bmd.getClassifier() );
-    }
-
-    public ArtifactMetadata( String groupId, String name, String version, String type, String scopeString, String classifier, String artifactUri, String why, boolean resolved, String error )
-    {
-        this( groupId, name, version, type, scopeString == null ? ArtifactScopeEnum.DEFAULT_SCOPE : ArtifactScopeEnum.valueOf( scopeString ), classifier, artifactUri, why, resolved, error );
+      this( bmd.getGroupId(), bmd.getArtifactId(), bmd.getVersion(), bmd.getType(), null, bmd.getClassifier(), null, null, true, null, bmd.getAttributes() );
     }
 
     public ArtifactMetadata( Artifact af )
     {
+    }
+
+    public ArtifactMetadata( String gav )
+    {
+        this( new ArtifactBasicMetadata(gav) );
     }
 
     public boolean isResolved()

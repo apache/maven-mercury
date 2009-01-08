@@ -216,8 +216,8 @@ implements PlexusMercury
     VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
     
     ArtifactResults ar = vr.readArtifacts( artifacts );
-    if( ar.hasExceptions() )
-      throw new RepositoryException( ar.getExceptions().toString() );
+    if( ar == null || ar.hasExceptions() )
+      throw new RepositoryException( ar == null ? "null result" : ar.getExceptions().toString() );
     
     if( !ar.hasResults() )
       return null;

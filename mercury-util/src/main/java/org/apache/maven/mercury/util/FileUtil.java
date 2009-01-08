@@ -18,11 +18,13 @@
  */
 package org.apache.maven.mercury.util;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +41,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -984,6 +988,52 @@ public class FileUtil
 
     return new FileInputStream( new File(resource) );
   }
+  // -----------------------------------------------------
+    public static final void unZip( InputStream zipInputStream, File destDir )
+        throws FileNotFoundException, IOException
+    {
+        ZipInputStream zis = new ZipInputStream( zipInputStream );
+
+        BufferedOutputStream dest = null;
+        ZipEntry entry;
+        while ( ( entry = zis.getNextEntry() ) != null )
+        {
+            File fo = new File( destDir, entry.getName() );
+            
+            if( LOG.isDebugEnabled() )
+                LOG.debug( "Extracting: " + fo.getCanonicalPath() );
+
+            int count;
+            byte data[] = new byte[DEFAULT_BUFFER_SIZE];
+
+            // write the files to the disk
+            if ( entry.isDirectory() )
+            {
+                fo.mkdirs();
+                continue;
+            }
+            
+            fo.getParentFile().mkdirs();
+
+            FileOutputStream fos = new FileOutputStream( fo );
+            
+            dest = new BufferedOutputStream( fos, DEFAULT_BUFFER_SIZE );
+            
+            while ( ( count = zis.read( data, 0, DEFAULT_BUFFER_SIZE ) ) != -1 )
+            {
+                dest.write( data, 0, count );
+            }
+            
+            dest.flush();
+            
+            dest.close();
+        }
+        
+        zis.close();
+
+        if( LOG.isDebugEnabled() )
+            LOG.debug( destDir + " - done." );
+    }
   //---------------------------------------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------------------------------------
 }

@@ -18,6 +18,7 @@
  */
 package org.apache.maven.mercury.util;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
@@ -39,6 +40,11 @@ public class Util
    public static final boolean isEmpty( String o )
    {
      return o == null || o.length() < 1;
+   }
+   
+   public static final boolean isEmpty( File o )
+   {
+     return o == null || !o.exists() || o.length() < 1L;
    }
 
    public static final boolean isEmpty( Object [] o )

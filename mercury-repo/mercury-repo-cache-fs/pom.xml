@@ -31,6 +31,35 @@ under the License.
 
   <name>Mercury Repository FS Cache</name>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.modello</groupId>
+        <artifactId>modello-maven-plugin</artifactId>
+        <!--
+        <version>1.0-alpha-17</version>
+        -->
+        <configuration>
+          <version>1.0.0</version>
+          <models>
+            <model>src/main/mdo/cached-metadata.mdo</model>
+          </models>
+        </configuration>
+        <executions>
+          <execution>
+            <id>standard</id>
+            <goals>
+              <goal>java</goal>
+              <goal>xpp3-reader</goal>
+              <goal>xpp3-writer</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>

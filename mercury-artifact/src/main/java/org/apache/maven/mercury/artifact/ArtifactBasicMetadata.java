@@ -141,12 +141,12 @@ public class ArtifactBasicMetadata
    * empty string to specify missing component - for instance query for common-1.3.zip
    * can be specified as ":common:1.3::zip" - note missing groupId and classifier. 
    */
-  public ArtifactBasicMetadata( String query )
+  public ArtifactBasicMetadata( String gavQuery )
   {
-    if( query == null )
+    if( gavQuery == null )
       return;
     
-    String [] tokens = query.split(":");
+    String [] tokens = gavQuery.split(":");
     
     if( tokens == null || tokens.length < 1 )
       return;
@@ -321,6 +321,11 @@ public class ArtifactBasicMetadata
   public void setType( String type )
   {
     this.type = type;
+  }
+  
+  public Map<String, String> getAttributes()
+  {
+      return attributes;
   }
 
   public String getScope()
