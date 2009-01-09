@@ -172,7 +172,7 @@ class DependencyTreeBuilder
 
         int nodeCount = startMDs.size();
 
-        if ( nodeCount == 1 )
+        if ( nodeCount == 1 && inclusions == null && exclusions == null )
         {
             ArtifactBasicMetadata bmd = startMDs.get( 0 );
             MetadataTreeNode rooty = buildTree( bmd, scope );
