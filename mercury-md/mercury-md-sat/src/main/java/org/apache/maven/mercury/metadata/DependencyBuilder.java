@@ -21,7 +21,10 @@ package org.apache.maven.mercury.metadata;
 import java.util.List;
 
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactExclusionList;
+import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.event.MercuryEventListener;
 
@@ -67,9 +70,13 @@ public interface DependencyBuilder
    * @return list of resolved GAVs
    * @throws MetadataTreeException
    */
-  public abstract List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactBasicMetadata... startMDs )
-  throws MetadataTreeException;
-  public abstract List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, List<ArtifactBasicMetadata> startMDs )
+  public abstract List<ArtifactMetadata> resolveConflicts( 
+                                          ArtifactScopeEnum   scope
+                                        , ArtifactQueryList artifacts
+                                        , ArtifactInclusionList inclusions
+                                        , ArtifactExclusionList exclusions
+                                        )
+
   throws MetadataTreeException;
 
   /**

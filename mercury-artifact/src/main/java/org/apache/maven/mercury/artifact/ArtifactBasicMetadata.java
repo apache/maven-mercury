@@ -261,6 +261,11 @@ public class ArtifactBasicMetadata
     return artifactId + "-" + version + (classifier == null ? "" :"-"+classifier);
   }
   
+  public String getFileName()
+  {
+    return getBaseName() + "." + (type==null ? DEFAULT_ARTIFACT_TYPE : type);
+  }
+  
   public String getBaseName( String classifier )
   {
     return artifactId + "-" + version + ((classifier == null||classifier.length()<1) ? "" :"-"+classifier);

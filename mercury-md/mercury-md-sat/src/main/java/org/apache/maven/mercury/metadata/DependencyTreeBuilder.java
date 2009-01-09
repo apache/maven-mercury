@@ -19,7 +19,6 @@
 package org.apache.maven.mercury.metadata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,7 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactExclusionList;
+import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.version.VersionException;
@@ -151,16 +153,20 @@ class DependencyTreeBuilder
     }
 
     // ------------------------------------------------------------------------
-    public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactBasicMetadata... startMDs )
-        throws MetadataTreeException
-    {
-        return resolveConflicts( scope, Arrays.asList( startMDs ) );
-    }
+    public List<ArtifactMetadata> resolveConflicts( 
+                                        ArtifactScopeEnum   scope
+                                      , ArtifactQueryList artifacts
+                                      , ArtifactInclusionList inclusions
+                                      , ArtifactExclusionList exclusions
+                                                  )
 
-    // ------------------------------------------------------------------------
-    public List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, List<ArtifactBasicMetadata> startMDs )
-        throws MetadataTreeException
+    throws MetadataTreeException
     {
+        if ( artifacts == null )
+            throw new MetadataTreeException( _lang.getMessage( "empty.md.collection" ) );
+
+        List<ArtifactBasicMetadata> startMDs = artifacts.getMetadataList();
+        
         if ( Util.isEmpty( startMDs ) )
             throw new MetadataTreeException( _lang.getMessage( "empty.md.collection" ) );
 
@@ -185,6 +191,8 @@ class DependencyTreeBuilder
         }
 
         DUMMY_ROOT.setDependencies( startMDs );
+        DUMMY_ROOT.setInclusions( inclusions == null ? null : inclusions.getMetadataList() );
+        DUMMY_ROOT.setExclusions( exclusions == null ? null : exclusions.getMetadataList() );
 
         // combine into one tree
         MetadataTreeNode root = new MetadataTreeNode( DUMMY_ROOT, null, null );
@@ -200,8 +208,9 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
-    private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent,
-                                         ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope )
+    private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent
+                                         , ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope
+                                       )
         throws MetadataTreeException
     {
         GenericEvent nodeBuildEvent = null;

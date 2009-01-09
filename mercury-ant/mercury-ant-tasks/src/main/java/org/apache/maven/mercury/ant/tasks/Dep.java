@@ -10,6 +10,7 @@ import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.logging.IMercuryLogger;
@@ -144,7 +145,7 @@ implements ResourceCollection
 
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
         
-        List<ArtifactMetadata> res = db.resolveConflicts( scope, getDependencies(vr) );
+        List<ArtifactMetadata> res = db.resolveConflicts( scope, new ArtifactQueryList( getDependencies(vr) ), null, null );
 
         if ( Util.isEmpty( res ) )
             return null;
