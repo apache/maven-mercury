@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -33,6 +34,7 @@ public class DefaultMonitor
 {
     Writer _writer;
     boolean _timestamp = true;
+    private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
 
     public DefaultMonitor( boolean timestamp )
@@ -64,7 +66,7 @@ public class DefaultMonitor
             {
                 if( _timestamp )
                 {
-                    _writer.write( new Date().toString() );
+                    _writer.write( fmt.format( new Date() ) );
                     _writer.write( ": " );
                 }
                 _writer.write( msg );
