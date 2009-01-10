@@ -996,15 +996,18 @@ public class FileUtil
 
         BufferedOutputStream dest = null;
         ZipEntry entry;
+
         while ( ( entry = zis.getNextEntry() ) != null )
         {
-            File fo = new File( destDir, entry.getName() );
+            String entryName = entry.getName();
+            
+            File fo = new File( destDir, entryName );
             
             if( LOG.isDebugEnabled() )
                 LOG.debug( "Extracting: " + fo.getCanonicalPath() );
 
             int count;
-            byte data[] = new byte[DEFAULT_BUFFER_SIZE];
+            byte data[] = new byte[ DEFAULT_BUFFER_SIZE ];
 
             // write the files to the disk
             if ( entry.isDirectory() )

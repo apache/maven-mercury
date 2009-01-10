@@ -66,4 +66,10 @@ public class Util
    {
      return isEmpty(s) ? dflt : s;
    }
+   
+   public static final void say( String msg, Monitor monitor )
+   {
+       if( monitor != null )
+           monitor.message( msg );
+   }
 }
