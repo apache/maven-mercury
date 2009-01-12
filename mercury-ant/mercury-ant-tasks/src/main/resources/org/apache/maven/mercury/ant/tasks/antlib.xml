@@ -24,7 +24,6 @@
   <taskdef name="dependencies" classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
 
   <typedef name="localRepository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>
-  <typedef name="localRepository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   <typedef name="remoteRepository" classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   
 </antlib>
