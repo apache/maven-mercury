@@ -144,12 +144,15 @@ public class FileUtil
   throws IOException
   {
     File fOut = null;
+    
     if( toFile.isDirectory() )
       fOut = new File(toFile, f.getName() );
     else
       fOut = toFile;
+    
     FileInputStream fis = new FileInputStream(f);
-    writeRawData( fOut, fis );
+    
+    writeRawData( fis, fOut );
   }
   //---------------------------------------------------------------------------------------------------------------
   /**
@@ -312,7 +315,7 @@ public class FileUtil
     writeRawData( file, sBytes.getBytes( DEFAULT_CHARSET ) );
   }
   //---------------------------------------------------------------------------------------------------------------
-  public static void writeRawData( File f, InputStream in )
+  public static void writeRawData( InputStream in, File f )
   throws IOException
   {
     OutputStream out = new FileOutputStream( f );
@@ -323,6 +326,7 @@ public class FileUtil
 
       while( (n = in.read( buf ) ) > 0 )
           out.write( buf, 0, n );
+      
       out.flush();
     }
     finally

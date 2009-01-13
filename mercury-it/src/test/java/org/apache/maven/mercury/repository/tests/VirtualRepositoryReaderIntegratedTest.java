@@ -179,7 +179,7 @@ extends TestCase
       // restore back 5 versions
       File mdf = new File( _testBase, "a/a/maven-metadata.xml");
       InputStream in = VirtualRepositoryReaderIntegratedTest.class.getResourceAsStream( "/repoVr/a.a-maven-metadata.xml" );
-      FileUtil.writeRawData( mdf, in );
+      FileUtil.writeRawData( in, mdf );
     }
   }
   //-------------------------------------------------------------------------

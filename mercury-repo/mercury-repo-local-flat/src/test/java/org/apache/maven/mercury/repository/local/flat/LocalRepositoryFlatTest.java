@@ -71,7 +71,7 @@ public class LocalRepositoryFlatTest
     File ant = File.createTempFile( "test-flat", "-repo" );
     ant.deleteOnExit();
     InputStream in = LocalRepositoryFlatTest.class.getResourceAsStream( "/ant-1.6.5.jar" );
-    FileUtil.writeRawData( ant, in );
+    FileUtil.writeRawData( in, ant );
     a.setFile( ant );
     a.setPomBlob( pomBlob );
     
@@ -80,7 +80,7 @@ public class LocalRepositoryFlatTest
     File antlr = File.createTempFile( "test-flat", "-repo" );
     antlr.deleteOnExit();
     in = LocalRepositoryFlatTest.class.getResourceAsStream( "/antlr-2.7.7.jar" );
-    FileUtil.writeRawData( antlr, in );
+    FileUtil.writeRawData( in, antlr );
     b.setFile( antlr );
     b.setPomBlob( pomBlob );
   }

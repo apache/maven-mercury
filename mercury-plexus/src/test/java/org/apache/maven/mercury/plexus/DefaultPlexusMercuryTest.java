@@ -99,7 +99,7 @@ extends TestCase
 
     // prep. Artifact
     File artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
-    FileUtil.writeRawData( artifactBinary, getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ) );
+    FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
     
     a = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven.mercury:mercury-core:2.0.9") );
     

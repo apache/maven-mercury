@@ -125,13 +125,13 @@ extends PlexusTestCase
     vFacSha1.add( sha1F );
 
     artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
-    FileUtil.writeRawData( artifactBinary, getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ) );
+    FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
     binarySize = artifactBinary.length();
 
     _log.info( "Binary size is "+binarySize+" bytes" );
 
     artifactPom = File.createTempFile( "test-repo-writer", "pom" );
-    FileUtil.writeRawData( artifactPom, getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ) );
+    FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ), artifactPom );
     pomSize = artifactPom.length();
     pomBytes = FileUtil.readRawData( artifactPom );
   }
@@ -265,7 +265,7 @@ extends PlexusTestCase
       DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9-20080805.215925-"+si) );
       da.setPomBlob( pomBytes );
       File ab = File.createTempFile( "test-core-", "-bin" );
-      FileUtil.writeRawData( ab, getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ) );
+      FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), ab );
       da.setFile( ab );
       set.add( da );
     }
@@ -334,14 +334,14 @@ extends PlexusTestCase
       DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0."+si+"-SNAPSHOT") );
       da.setPomBlob( pomBytes );
       File ab = File.createTempFile( "test-core-", "-bin" );
-      FileUtil.writeRawData( ab, getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ) );
+      FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), ab );
       da.setFile( ab );
       set.add( da );
 
       da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-mercury:2.0."+si+"-SNAPSHOT") );
       da.setPomBlob( pomBytes );
       ab = File.createTempFile( "test-mercury-", "-bin" );
-      FileUtil.writeRawData( ab, getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ) );
+      FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), ab );
       da.setFile( ab );
       set.add( da );
     }
