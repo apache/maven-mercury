@@ -337,6 +337,9 @@ implements PlexusMercury
       q.add( query );
       
       ArtifactBasicResults res = vr.readVersions( q );
+      
+      if( res == null )
+          return null;
 
       if( res.hasExceptions() )
           throw new RepositoryException( res.getExceptions().toString() );
