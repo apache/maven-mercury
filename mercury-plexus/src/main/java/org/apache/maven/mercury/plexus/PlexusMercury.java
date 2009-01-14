@@ -203,4 +203,16 @@ public interface PlexusMercury
   public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
   throws RepositoryException;  
   
+  /**
+   * get all available versions of for the artifact query.
+   * 
+   * @param repo repository instance to search
+   * @param query metadata query to search by
+   * @return list of found version metadatas
+   * @throws PlexusMercuryException
+   */
+  public List<ArtifactBasicMetadata> readVersions( List<Repository> repos
+                                                   , ArtifactBasicMetadata query
+                                                  )
+  throws RepositoryException;
 }

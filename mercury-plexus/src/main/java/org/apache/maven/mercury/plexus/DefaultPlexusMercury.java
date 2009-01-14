@@ -48,6 +48,7 @@ import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.metadata.MetadataTreeException;
 import org.apache.maven.mercury.metadata.MetadataTreeNode;
+import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -316,6 +317,31 @@ implements PlexusMercury
     {
       throw new RepositoryException( e );
     }
+  }
+  //---------------------------------------------------------------
+  /**
+   * get all available versions of for the artifact query.
+   * 
+   * @param repo repository instance to search
+   * @param query metadata query to search by
+   * @return list of found version metadatas
+   * @throws PlexusMercuryException
+   */
+  public List<ArtifactBasicMetadata> readVersions( List<Repository> repos
+                                                   , ArtifactBasicMetadata query
+                                                  )
+  throws RepositoryException
+  {
+      VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
+      List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>(1);
+      q.add( query );
+      
+      ArtifactBasicResults res = vr.readVersions( q );
+
+      if( res.hasExceptions() )
+          throw new RepositoryException( res.getExceptions().toString() );
+
+      return res.getResult( query );
   }
   //---------------------------------------------------------------
   //---------------------------------------------------------------
