@@ -58,22 +58,6 @@ implements LocalRepository
         setDependencyProcessor( dependencyProcessor );
     }
     //----------------------------------------------------------------------------------
-    /**
-     * for consistency purpose
-     * @throws MalformedURLException 
-     */
-    private void createServer()
-    {
-        try
-        {
-            this.server = new Server( getId(), directory.toURL() );
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new IllegalArgumentException(e);
-        }
-    }
-    //----------------------------------------------------------------------------------
     public LocalRepositoryM2( String id, File directory, DependencyProcessor dependencyProcessor )
     {
         this( id, directory, DEFAULT_REPOSITORY_TYPE, dependencyProcessor );
@@ -86,7 +70,14 @@ implements LocalRepository
         
         setDependencyProcessor( dependencyProcessor );
         
-        createServer();
+        try
+        {
+            this.server = new Server( getId(), directory.toURL() );
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new IllegalArgumentException(e);
+        }
     }
     //----------------------------------------------------------------------------------
     public File getDirectory()
