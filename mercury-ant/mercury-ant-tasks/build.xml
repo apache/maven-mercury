@@ -185,6 +185,7 @@
 
   <target name="compile-thin-path">
 
+    <property name="build.compiler" value="extJavac"/>
     <taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"/>
   	
     <javac srcdir="${basedir}/src/test/compile"
@@ -313,6 +314,7 @@
   
   <target name="test-default-path-id">
 
+    <property name="build.compiler" value="extJavac"/>
   	<taskdef resource="org/apache/maven/mercury/ant/tasks/antlib.xml"/>
     
   	<config>
