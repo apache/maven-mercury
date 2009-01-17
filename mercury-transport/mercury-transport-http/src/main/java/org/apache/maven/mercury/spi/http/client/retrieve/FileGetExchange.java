@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
+import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
 
 import org.apache.maven.mercury.crypto.api.StreamObserver;
 import org.apache.maven.mercury.logging.IMercuryLogger;

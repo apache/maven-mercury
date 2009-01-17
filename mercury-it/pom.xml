@@ -185,6 +185,7 @@ under the License.
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-client</artifactId>
+      <classifier>assembly</classifier>
     </dependency>
     
     <dependency>

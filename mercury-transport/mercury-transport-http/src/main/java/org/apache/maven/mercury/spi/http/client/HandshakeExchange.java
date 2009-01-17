@@ -21,7 +21,7 @@ package org.apache.maven.mercury.spi.http.client;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
+import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
 
 import org.mortbay.io.Buffer;
 import org.mortbay.jetty.client.HttpClient;
