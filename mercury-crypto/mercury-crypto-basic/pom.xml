@@ -34,11 +34,13 @@ under the License.
     <dependency>
       <groupId>bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
+      <optional>true</optional>
     </dependency>
     
     <dependency>
       <groupId>bouncycastle</groupId>
       <artifactId>bcpg-jdk15</artifactId>
+      <optional>true</optional>
     </dependency>
     
     <dependency>
