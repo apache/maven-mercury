@@ -1,0 +1,10 @@
+Release 1.0.0-alpha-3: 2009-01-18
+
+6 issues resolved. Main driver for this release - maven-3.0-alpha-2 prep. 
+and mercury based tools: mercury-ant in particular.
+
+APIs are not stable yet, major changes:
+- plexus component has been altered to handle resolution of multiple artifacts
+- DependencyBuilder has been changed to handle global inclusion/exclusion lists
+- Virtual Repository exception handling has been changed to correctly report back 
+  missing metadata, yet process multiple repositories correctly 
