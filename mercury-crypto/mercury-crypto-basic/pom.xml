@@ -47,5 +47,6 @@ under the License.
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-crypto-api</artifactId>
     </dependency>
+
   </dependencies>
 </project>

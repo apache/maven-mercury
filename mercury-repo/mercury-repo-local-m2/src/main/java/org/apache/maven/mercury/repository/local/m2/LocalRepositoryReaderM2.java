@@ -155,8 +155,10 @@ public class LocalRepositoryReaderM2
 
             if ( loc.getVersion() == null )
             {
-                res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(),
-                                                                             loc.getGaPath() ) ) );
+//                res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(),
+//                                                                             loc.getGaPath() ) ) );
+                if( LOG.isErrorEnabled() )
+                    LOG.error( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
                 return null;
             }
 
@@ -178,8 +180,10 @@ public class LocalRepositoryReaderM2
             File gavDir = new File( gaDir, loc.getVersion() );
             if ( !gavDir.exists() )
             {
-                res.addError( bmd, new RepositoryException( LANG.getMessage( "gavdir.not.found", bmd.toString(),
-                                                                             gavDir.getAbsolutePath() ) ) );
+//                res.addError( bmd, new RepositoryException( LANG.getMessage( "gavdir.not.found", bmd.toString(),
+//                                                                             gavDir.getAbsolutePath() ) ) );
+                if( LOG.isErrorEnabled() )
+                    LOG.error( LANG.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) );
                 return null;
             }
 
@@ -224,13 +228,15 @@ public class LocalRepositoryReaderM2
             // binary calculated
             if ( !binary.exists() )
             {
-                res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(),
-                                                                             binary.getAbsolutePath() ) ) );
+//                res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(),
+//                                                                             binary.getAbsolutePath() ) ) );
+                if( LOG.isErrorEnabled() )
+                    LOG.error( LANG.getMessage( "binary.not.found", bmd.toString(), binary.getAbsolutePath() ) );
+
                 continue;
             }
 
-            try
-            // reading pom if one exists
+            try // reading pom if one exists
             {
                 if ( checkFile( binary, vFacs ) )
                 {
@@ -453,8 +459,11 @@ public class LocalRepositoryReaderM2
 
         if ( loc.getVersion() == null )
         {
-            res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", bmd.toString(),
-                                                                         gavDir.getAbsolutePath() ) ) );
+//            res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", bmd.toString(),
+//                                                                         gavDir.getAbsolutePath() ) ) );
+            if( LOG.isErrorEnabled() )
+                LOG.error( LANG.getMessage( "snapshot.not.found", bmd.toString(), gavDir.getAbsolutePath() )  );
+                
             return false;
         }
 

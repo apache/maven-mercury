@@ -79,8 +79,14 @@ under the License.
     <commons.digester.version>1.8</commons.digester.version>
     <commons.cli.version>1.1</commons.cli.version>
     
-    <jetty.version>6.1-SNAPSHOT</jetty.version>
+    <jetty.version>6.1-20081027.122859-83</jetty.version>
+    <jetty.client.version>6.1-20090117.135319-41</jetty.client.version>
+    <jetty.servlet.api.version>6.1-20081027.122859-80</jetty.servlet.api.version>
+    <jetty.util5.version>6.1-20081228.163933-16</jetty.util5.version>
+    <jetty.servlet.tester.version>6.1-20081228.163933-73</jetty.servlet.tester.version>
+    
     <junit.version>3.8.1</junit.version>
+    
     <bouncy.castle.version>140</bouncy.castle.version>
     <sat4j.version>2.0.4</sat4j.version>
     
@@ -192,7 +198,7 @@ under the License.
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-client</artifactId>
       <classifier>assembly</classifier>
-      <version>6.1-SNAPSHOT</version>
+      <version>${jetty.client.version}</version>
       <exclusions>
         <exclusion>
          <groupId>org.mortbay.jetty</groupId> 
@@ -218,19 +224,19 @@ under the License.
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>servlet-api-2.5</artifactId>
-      <version>${jetty.version}</version>
+      <version>${jetty.servlet.api.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-util5</artifactId>
-      <version>${jetty.version}</version>
+      <version>${jetty.util5.version}</version>
     </dependency>
 
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-servlet-tester</artifactId>
-        <version>${jetty.version}</version>
+        <version>${jetty.servlet.tester.version}</version>
       </dependency>
 
       <dependency>

@@ -197,7 +197,10 @@ implements RepositoryReader, MetadataReader
 
       if( ver == null )
       {
-        res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) ) );
+//        res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) ) );
+        if( LOG.isErrorEnabled() )
+            LOG.error( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
+        
         return null;
       }
       
@@ -297,8 +300,11 @@ implements RepositoryReader, MetadataReader
     }
     catch( Exception e )
     {
-      res.addError( bmd, new RepositoryException( LANG.getMessage( "cached.metadata.reading.exception", e.getMessage(), bmd.toString(), _repo.getServer().getURL().toString() ) ) );
-      return false;
+//      res.addError( bmd, new RepositoryException( LANG.getMessage( "cached.metadata.reading.exception", e.getMessage(), bmd.toString(), _repo.getServer().getURL().toString() ) ) );
+        if( LOG.isErrorEnabled() )
+            LOG.error( LANG.getMessage( "cached.metadata.reading.exception", e.getMessage(), bmd.toString(), _repo.getServer().getURL().toString() ) );
+
+        return false;
     }
 
     // version-SNAPSHOT or exact TS exists?
@@ -312,7 +318,10 @@ implements RepositoryReader, MetadataReader
 
     if( ver == null )
     {
-      res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", _repo.getServer().getURL().toString(), bmd.toString() ) ) );
+//      res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", _repo.getServer().getURL().toString(), bmd.toString() ) ) );
+        if( LOG.isErrorEnabled() )
+            LOG.error( LANG.getMessage( "snapshot.not.found", _repo.getServer().getURL().toString(), bmd.toString() ) );
+
       return false;
     }
     
