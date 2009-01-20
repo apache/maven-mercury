@@ -79,11 +79,11 @@ under the License.
     <commons.digester.version>1.8</commons.digester.version>
     <commons.cli.version>1.1</commons.cli.version>
     
-    <jetty.version>6.1-20081027.122859-83</jetty.version>
-    <jetty.client.version>6.1-20090117.135319-41</jetty.client.version>
-    <jetty.servlet.api.version>6.1-20081027.122859-80</jetty.servlet.api.version>
-    <jetty.util5.version>6.1-20081228.163933-16</jetty.util5.version>
-    <jetty.servlet.tester.version>6.1-20081228.163933-73</jetty.servlet.tester.version>
+    <jetty.version>6.1-SONATYPE-20090119</jetty.version>
+    <jetty.client.version>6.1-SONATYPE-20090119</jetty.client.version>
+    <jetty.servlet.api.version>6.1-SONATYPE-20090119</jetty.servlet.api.version>
+    <jetty.util5.version>6.1-SONATYPE-20090119</jetty.util5.version>
+    <jetty.servlet.tester.version>6.1-SONATYPE-20090119</jetty.servlet.tester.version>
     
     <junit.version>3.8.1</junit.version>
     

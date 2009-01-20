@@ -112,7 +112,7 @@ under the License.
     <maven.version>3.0-SNAPSHOT</maven.version>
 
     <junit.version>3.8.2</junit.version>
-    <jetty.version>6.1-SNAPSHOT</jetty.version>
+    <jetty.version>6.1-SONATYPE-20090119</jetty.version>
 
 
     <java.version>1.5</java.version>
