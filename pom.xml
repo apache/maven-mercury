@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.maven.mercury</groupId>
   <artifactId>mercury</artifactId>
-  <version>1.0.0-alpha-3</version>
+  <version>1.0.0-alpha-3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Mercury</name>
@@ -104,9 +104,9 @@ under the License.
   
  
  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0.0-alpha-3</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0.0-alpha-3</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/mercury/tags/mercury-1.0.0-alpha-3</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/trunk/</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/mercury/trunk/</url>
   </scm>
   <issueManagement>
     <system>jira</system>
