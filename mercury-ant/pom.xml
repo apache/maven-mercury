@@ -112,6 +112,7 @@ under the License.
     <maven.version>3.0-SNAPSHOT</maven.version>
 
     <junit.version>3.8.2</junit.version>
+    <jetty.version>6.1-SONATYPE-20090119</jetty.version>
 
 
     <java.version>1.5</java.version>
@@ -200,9 +201,16 @@ under the License.
       </dependency>
       
       <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>${jetty.version}</version>
+        <scope>test</scope>
+      </dependency>
+      
+      <dependency>
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-transport-http</artifactId>
-        <classifier>tests</classifier>
+        <type>test-jar</type>
         <version>${mercury.version}</version>
         <scope>test</scope>
       </dependency>
@@ -230,6 +238,14 @@ under the License.
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>${jetty.version}</version>
+        <scope>test</scope>
+      </dependency>
+      
   </dependencies>
 
   <build>

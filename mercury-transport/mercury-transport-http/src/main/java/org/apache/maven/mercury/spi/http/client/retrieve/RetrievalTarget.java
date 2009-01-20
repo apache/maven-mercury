@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
+import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
 
 import org.apache.maven.mercury.crypto.api.StreamObserver;
 import org.apache.maven.mercury.crypto.api.StreamVerifier;

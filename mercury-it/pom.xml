@@ -101,6 +101,18 @@ under the License.
     </dependency>
 
     <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <optional>false</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcpg-jdk15</artifactId>
+      <optional>false</optional>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-local-m2</artifactId>
       <scope>test</scope>
@@ -185,6 +197,7 @@ under the License.
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-client</artifactId>
+      <classifier>assembly</classifier>
     </dependency>
     
     <dependency>
