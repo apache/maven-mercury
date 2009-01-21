@@ -219,6 +219,23 @@ extends PlexusTestCase
     assertNull( res );
   }
   //-------------------------------------------------------------------------------------
+  public void testResolveNonExistent()
+  {
+    ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+    
+    Collection<ArtifactMetadata> res = null;
+    try
+    {
+        res = pm.resolve( repos, ArtifactScopeEnum.compile, bmd );
+    }
+    catch ( RepositoryException e )
+    {
+        fail( "reading non-existent artifact should not raise an exception, got "+e.getMessage() );
+    }
+    
+    assertNull( res );
+  }
+  //-------------------------------------------------------------------------------------
   public void testResolve()
   throws Exception
   {
