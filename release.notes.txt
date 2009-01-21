@@ -1,6 +1,6 @@
 Release 1.0.0-alpha-3: 2009-01-18
 
-6 issues resolved. Main driver for this release - maven-3.0-alpha-2 prep. 
+7 issues resolved. Main driver for this release - maven-3.0-alpha-2 prep. 
 and mercury based tools: mercury-ant in particular.
 
 APIs are not stable yet, major changes:

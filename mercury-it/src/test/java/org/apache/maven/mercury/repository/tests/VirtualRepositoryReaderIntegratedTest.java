@@ -28,9 +28,12 @@ import junit.framework.TestCase;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
+import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
@@ -43,6 +46,7 @@ import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.spi.http.server.HttpTestServer;
 import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
+import org.apache.maven.mercury.util.Util;
 
 public class VirtualRepositoryReaderIntegratedTest
 extends TestCase
@@ -181,6 +185,64 @@ extends TestCase
       InputStream in = VirtualRepositoryReaderIntegratedTest.class.getResourceAsStream( "/repoVr/a.a-maven-metadata.xml" );
       FileUtil.writeRawData( in, mdf );
     }
+  }
+  //-------------------------------------------------------------------------
+  public void testReadBadVersions()
+  {
+    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("does.not:exist:1.0");
+    List<ArtifactBasicMetadata> q = THelper.toList( bmd );
+    
+    ArtifactBasicResults vres = null;
+    try
+    {
+        vres = _vr.readVersions( q );
+    }
+    catch ( Exception e )
+    {
+        fail("reading non-existing artifact throws an exception");
+    }
+     
+    assertNull( vres );
+    
+  }
+  //-------------------------------------------------------------------------
+  public void testReadBadDependencies()
+  {
+    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("does.not:exist:1.0");
+    
+    ArtifactMetadata vres = null;
+    try
+    {
+        vres = _vr.readDependencies( bmd );
+    }
+    catch ( Exception e )
+    {
+        fail("reading non-existing artifact throws an exception");
+    }
+     
+    assertTrue( Util.isEmpty( vres.getDependencies() ) );
+    
+  }
+  //-------------------------------------------------------------------------
+  public void testReadBadArtifact()
+  {
+      ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("does.not:exist:1.0");
+      List<ArtifactBasicMetadata> q = THelper.toList( bmd );
+      
+    ArtifactResults vres = null;
+    try
+    {
+        vres = _vr.readArtifacts(  q );
+    }
+    catch ( Exception e )
+    {
+        fail("reading non-existing artifact throws an exception");
+    }
+    
+    assertNotNull( vres );
+    
+    assertFalse( vres.hasResults() );
+    
   }
   //-------------------------------------------------------------------------
   //-------------------------------------------------------------------------
