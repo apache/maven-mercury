@@ -232,8 +232,6 @@ extends PlexusTestCase
     {
         fail( "reading non-existent artifact should not raise an exception, got "+e.getMessage() );
     }
-    
-    assertNull( res );
   }
   //-------------------------------------------------------------------------------------
   public void testResolve()
