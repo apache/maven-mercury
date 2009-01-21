@@ -505,7 +505,7 @@ public class VirtualRepositoryReader
 
     // ----------------------------------------------------------------------------------------------------------------------------
     public ArtifactResults readArtifacts( Collection<? extends ArtifactBasicMetadata> query )
-        throws RepositoryException
+    throws RepositoryException
     {
         GenericEvent event = null;
 
