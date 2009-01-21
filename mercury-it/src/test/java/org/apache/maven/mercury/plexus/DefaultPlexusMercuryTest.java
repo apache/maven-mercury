@@ -202,6 +202,23 @@ extends PlexusTestCase
     assertTrue( pomBytes.length > 10 );
   }
   //-------------------------------------------------------------------------------------
+  public void testReadNonExistent()
+  {
+    ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+    
+    Collection<Artifact> res = null;
+    try
+    {
+        res = pm.read( repos, bmd );
+    }
+    catch ( RepositoryException e )
+    {
+        fail( "reading non-existent artifact should not raise an exception, got "+e.getMessage() );
+    }
+    
+    assertNull( res );
+  }
+  //-------------------------------------------------------------------------------------
   public void testResolve()
   throws Exception
   {

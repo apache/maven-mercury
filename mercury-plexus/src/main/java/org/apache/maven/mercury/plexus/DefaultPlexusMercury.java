@@ -47,7 +47,6 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.metadata.MetadataTreeException;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
 import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
@@ -223,12 +222,13 @@ implements PlexusMercury
     VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
     
     ArtifactResults ar = vr.readArtifacts( artifacts );
-    if( ar == null || ar.hasExceptions() )
-      throw new RepositoryException( ar == null ? "null result" : ar.getExceptions().toString() );
     
-    if( !ar.hasResults() )
+    if( ar == null || !ar.hasResults() )
       return null;
-    
+
+    if( ar.hasExceptions() )
+      throw new RepositoryException( ar.getExceptions().toString() );
+
     Map<ArtifactBasicMetadata, List<Artifact>> am = ar.getResults();
     
     List<Artifact> al = new ArrayList<Artifact>();
@@ -238,6 +238,7 @@ implements PlexusMercury
     return al;
     
   }
+
   public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
       throws RepositoryException
   {
@@ -275,7 +276,6 @@ implements PlexusMercury
       throws RepositoryException  
   {
     return resolve( repos, scope, new ArtifactQueryList( metadata ), null, null );
-      
   }
   
   //---------------------------------------------------------------
