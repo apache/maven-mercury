@@ -31,6 +31,7 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
 import org.apache.maven.mercury.repository.api.Repository;
+import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
@@ -181,6 +182,25 @@ extends TestCase
       InputStream in = VirtualRepositoryReaderIntegratedTest.class.getResourceAsStream( "/repoVr/a.a-maven-metadata.xml" );
       FileUtil.writeRawData( in, mdf );
     }
+  }
+  //-------------------------------------------------------------------------
+  public void testReadBadMetadata()
+  {
+    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("r:r:1");
+    List<ArtifactBasicMetadata> q = THelper.toList( bmd );
+    
+    ArtifactBasicResults vres = null;
+    try
+    {
+        vres = _vr.readVersions( q );
+    }
+    catch ( Exception e )
+    {
+        fail("reading non-existing artifact throws an exception");
+    }
+     
+    assertNull( vres );
+    
   }
   //-------------------------------------------------------------------------
   //-------------------------------------------------------------------------
