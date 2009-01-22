@@ -194,7 +194,7 @@ public class LocalRepositoryReaderM2
         // time stamped snapshot requested
         else if ( vq.equals( Quality.SNAPSHOT_TS_QUALITY ) )
         {
-            loc.setVersionDir( loc.getBaseVersion() + FileUtil.DASH + Artifact.SNAPSHOT_VERSION );
+            loc.setVersionDir( loc.getVersionWithoutTS() + FileUtil.DASH + Artifact.SNAPSHOT_VERSION );
         }
 
         return loc;
