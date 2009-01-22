@@ -101,6 +101,25 @@ public class ArtifactLocation
     return dav.getBase();
   }
   
+  public String getVersionWithoutTS()
+  {
+    if( version == null )
+      return null;
+    
+    int li = version.lastIndexOf( '-' );
+    
+    if( li < 1 )
+        return version;
+    
+    int li2 = version.substring( 0, li ).lastIndexOf( '-' );
+    
+    if( li2 > 0 )
+        return version.substring( 0, li2 );
+    
+    return version;
+        
+  }
+  
   //---------------------------------------------------------
   public String getGaPath()
   {
