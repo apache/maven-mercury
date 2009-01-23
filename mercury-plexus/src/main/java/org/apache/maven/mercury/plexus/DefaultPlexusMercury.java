@@ -226,8 +226,11 @@ implements PlexusMercury
     if( ar == null || !ar.hasResults() )
       return null;
 
-    if( ar.hasExceptions() )
-      throw new RepositoryException( ar.getExceptions().toString() );
+    if( ar.hasExceptions() && LOG.isWarnEnabled() )
+      LOG.info( ar.getExceptions().toString() );
+    
+    if( !ar.hasResults() )
+      return null;
 
     Map<ArtifactBasicMetadata, List<Artifact>> am = ar.getResults();
     
@@ -296,18 +299,6 @@ implements PlexusMercury
     try
     {
       DependencyBuilder depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
-      
-//      ArtifactBasicMetadata a = artifacts.getMetadataList().get( 0 );
-//
-//      if( inclusions != null && ! inclusions.isEmpty() )
-//        a.setInclusions( inclusions.getMetadataList() );
-//
-//      if( exclusions != null && ! exclusions.isEmpty() )
-//        a.setExclusions( exclusions.getMetadataList() );
-//      
-//      MetadataTreeNode root = depBuilder.buildTree( a, scope );
-//      
-//    List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
 
       List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
     
@@ -341,8 +332,8 @@ implements PlexusMercury
       if( res == null )
           return null;
 
-      if( res.hasExceptions() )
-          throw new RepositoryException( res.getExceptions().toString() );
+      if( res.hasExceptions() && LOG.isWarnEnabled() )
+          LOG.warn( res.getExceptions().toString() );
 
       return res.getResult( query );
   }
