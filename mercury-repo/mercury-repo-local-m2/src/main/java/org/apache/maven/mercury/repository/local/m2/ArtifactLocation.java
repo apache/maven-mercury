@@ -18,6 +18,7 @@
  */
 package org.apache.maven.mercury.repository.local.m2;
 
+import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.util.FileUtil;
@@ -87,9 +88,17 @@ public class ArtifactLocation
     return getSeparatedPrefix() + getRelPomPath();
   }
   
+  public String getAbsGavPath()
+  {
+      if( prefix == null )
+          return null;
+
+    return getSeparatedPrefix() + getGavPath();
+  }
+  
   public String getGavPath()
   {
-    return getGaPath()+FileUtil.SEP+versionDir;
+    return getGaPath() + FileUtil.SEP + calculateVersionDir( version );
   }
   
   public String getBaseVersion()
@@ -101,7 +110,7 @@ public class ArtifactLocation
     return dav.getBase();
   }
   
-  public String getVersionWithoutTS()
+  public String getVersionWithoutTS(  )
   {
     if( version == null )
       return null;
@@ -117,7 +126,35 @@ public class ArtifactLocation
         return version.substring( 0, li2 );
     
     return version;
-        
+  }
+  
+  public static String stripTS( String ver  )
+  {
+    if( ver == null )
+      return null;
+    
+    int li = ver.lastIndexOf( '-' );
+    
+    if( li < 1 )
+        return ver;
+    
+    int li2 = ver.substring( 0, li ).lastIndexOf( '-' );
+    
+    if( li2 > 0 )
+        return ver.substring( 0, li2 );
+    
+    return ver;
+  }
+  //---------------------------------------------------------------------------------------------------------------
+  public static String calculateVersionDir( String ver )
+  {
+      if( ver == null )
+          return ver;
+      
+      if( ver.matches( ".+-\\d{8}\\.\\d{6}-\\d+" ) )
+          return stripTS( ver )+FileUtil.DASH+Artifact.SNAPSHOT_VERSION;
+      
+      return ver;
   }
   
   //---------------------------------------------------------
@@ -184,6 +221,7 @@ public class ArtifactLocation
 
     return prefix+(prefix.endsWith( FileUtil.SEP ) ? "" : FileUtil.SEP);
   }
+
   public void setPrefix( String prefix )
   {
     this.prefix = prefix;

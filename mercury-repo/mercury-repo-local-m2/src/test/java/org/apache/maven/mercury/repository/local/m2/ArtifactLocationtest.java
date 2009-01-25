@@ -62,6 +62,35 @@ public class ArtifactLocationtest
         
         assertEquals( "3.0-20080920.0156007", chop );
     }
+    
+    public void testChopTSstatic()
+    throws Exception
+    {
+        String chop = ArtifactLocation.calculateVersionDir( "3.0-alpha-1-20080920.015600-7" );
+        
+        assertEquals( "3.0-alpha-1-SNAPSHOT", chop );
+
+        
+        chop = ArtifactLocation.calculateVersionDir( "3.0-20080920.015600-7" );
+        
+        assertEquals( "3.0-SNAPSHOT", chop );
+        
+
+        chop = ArtifactLocation.calculateVersionDir( "3.0-20080920.01560-7" );
+        
+        assertEquals( "3.0-20080920.01560-7", chop );
+
+        
+        chop = ArtifactLocation.calculateVersionDir( "3.0-20080920.015600" );
+        
+        assertEquals( "3.0-20080920.015600", chop );
+
+        
+        chop = ArtifactLocation.calculateVersionDir( "3.0" );
+        
+        assertEquals( "3.0", chop );
+
+    }
 
 
 }

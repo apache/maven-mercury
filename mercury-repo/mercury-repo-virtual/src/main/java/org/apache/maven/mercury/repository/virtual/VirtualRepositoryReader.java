@@ -96,9 +96,9 @@ public class VirtualRepositoryReader
     /** minimum # of queue elements to consider parallelization */
     private static int MIN_PARALLEL = 5;
 
-    private static final Language _lang = new DefaultLanguage( VirtualRepositoryReader.class );
+    private static final Language LANG = new DefaultLanguage( VirtualRepositoryReader.class );
 
-    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( VirtualRepositoryReader.class );
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( VirtualRepositoryReader.class );
 
     // ----------------------------------------------------------------------------------------------------------------------------
     private List<Repository> _repositories = new ArrayList<Repository>( 8 );
@@ -284,8 +284,8 @@ public class VirtualRepositoryReader
                     
                     if( repoRes != null && repoRes.hasExceptions() )
                     {
-                        if( _log.isWarnEnabled() )
-                            _log.warn( repoRes.getExceptions().toString() );
+                        if( LOG.isWarnEnabled() )
+                            LOG.warn( repoRes.getExceptions().toString() );
                     }
 
                     if ( repoRes != null && repoRes.hasResults() )
@@ -329,7 +329,7 @@ public class VirtualRepositoryReader
                             }
                             catch ( VersionException e )
                             {
-                                throw new RepositoryException( _lang.getMessage( "query.element.bad.version",
+                                throw new RepositoryException( LANG.getMessage( "query.element.bad.version",
                                                                                  key.toString(), e.getMessage() ) );
                             }
 
@@ -420,6 +420,9 @@ public class VirtualRepositoryReader
 
                         if ( _eventManager != null )
                             eventRead.setInfo( eventRead.getInfo() + ", found: " + md.getDependencies() );
+                        
+                        if( LOG.isDebugEnabled() )
+                            LOG.debug( bmd+" dependecies found : " + md.getDependencies() );
 
                         return md;
                     }
@@ -524,7 +527,7 @@ public class VirtualRepositoryReader
             List<ArtifactBasicMetadata> rejects = buckets == null ? null : buckets.get( RepositoryReader.NULL_READER );
 
             if ( buckets == null )
-                throw new RepositoryException( _lang.getMessage( "internal.error.sorting.query", query.toString() ) );
+                throw new RepositoryException( LANG.getMessage( "internal.error.sorting.query", query.toString() ) );
 
             init();
 
@@ -552,7 +555,7 @@ public class VirtualRepositoryReader
                     ArtifactResults rrRes = rr.readArtifacts( rrQuery );
 
                     if ( rrRes.hasExceptions() )
-                        throw new RepositoryException( _lang.getMessage( "error.reading.existing.artifact",
+                        throw new RepositoryException( LANG.getMessage( "error.reading.existing.artifact",
                                                                          rrRes.getExceptions().toString(),
                                                                          rr.getRepository().getId() ) );
 
@@ -655,8 +658,8 @@ public class VirtualRepositoryReader
     public byte[] readMetadata( ArtifactBasicMetadata bmd )
         throws MetadataReaderException
     {
-        if ( _log.isDebugEnabled() )
-            _log.debug( "Asking for pom: " + bmd );
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "Asking for pom: " + bmd );
 
         return readRawData( bmd, "", "pom" );
     }
@@ -671,8 +674,8 @@ public class VirtualRepositoryReader
         GenericEvent event = null;
         String eventTag = null;
 
-        if ( _log.isDebugEnabled() )
-            _log.debug( "request for " + bmd + ", classifier=" + classifier + ", type=" + type );
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "request for " + bmd + ", classifier=" + classifier + ", type=" + type );
 
         if ( bmd == null )
             throw new IllegalArgumentException( "null bmd supplied" );
@@ -701,8 +704,8 @@ public class VirtualRepositoryReader
             byte[] res = null;
             Quality vq = new Quality( bmd.getVersion() );
 
-            if ( _log.isDebugEnabled() )
-                _log.debug( "quality calculated as " + vq.getQuality() == null ? "null" : vq.getQuality().name() );
+            if ( LOG.isDebugEnabled() )
+                LOG.debug( "quality calculated as " + vq.getQuality() == null ? "null" : vq.getQuality().name() );
 
             if ( Quality.SNAPSHOT_QUALITY.equals( vq ) )
             {
@@ -714,10 +717,10 @@ public class VirtualRepositoryReader
                     ArtifactBasicResults vRes = readVersions( query );
                     if ( Util.isEmpty( vRes ) )
                     {
-                        if ( _log.isDebugEnabled() )
-                            _log.debug( "no snapshots found - throw exception" );
+                        if ( LOG.isDebugEnabled() )
+                            LOG.debug( "no snapshots found - throw exception" );
 
-                        throw new MetadataReaderException( _lang.getMessage( "no.snapshots", bmd.toString(),
+                        throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(),
                                                                              classifier, type ) );
                     }
 
@@ -733,10 +736,10 @@ public class VirtualRepositoryReader
                     }
                     else
                     {
-                        if ( _log.isDebugEnabled() )
-                            _log.debug( "no snapshots found - throw exception" );
+                        if ( LOG.isDebugEnabled() )
+                            LOG.debug( "no snapshots found - throw exception" );
 
-                        throw new MetadataReaderException( _lang.getMessage( "no.snapshots", bmd.toString(),
+                        throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(),
                                                                              classifier, type ) );
                     }
                 }
@@ -760,8 +763,8 @@ public class VirtualRepositoryReader
                     res = rr.readRawData( bmdQuery, classifier, type );
                     if ( res != null )
                     {
-                        if ( _log.isDebugEnabled() )
-                            _log.debug( bmdQuery + " found in " + rr.getRepository().getServer() );
+                        if ( LOG.isDebugEnabled() )
+                            LOG.debug( bmdQuery + " found in " + rr.getRepository().getServer() );
 
                         if ( _eventManager != null )
                             eventRead.setInfo( eventRead.getInfo() );
@@ -782,8 +785,8 @@ public class VirtualRepositoryReader
                 }
             }
 
-            if ( _log.isDebugEnabled() )
-                _log.debug( "no data found, returning null" );
+            if ( LOG.isDebugEnabled() )
+                LOG.debug( "no data found, returning null" );
 
             return null;
         }

@@ -617,7 +617,7 @@ implements RepositoryReader, MetadataReader
       mod = new ArtifactBasicMetadata();
       mod.setGroupId( bmd.getGroupId() );
       mod.setArtifactId( bmd.getArtifactId() );
-      mod.setVersion( bmd.getVersion() );
+      mod.setVersion( ArtifactLocation.calculateVersionDir( bmd.getVersion() ) );
       mod.setClassifier( classifier );
       mod.setType( type );
 
@@ -626,8 +626,8 @@ implements RepositoryReader, MetadataReader
         res = _mdCache.findRaw( mod );
         if( res != null )
         {
-//if( _log.isDebugEnabled() )
-//  _log.debug( "found "+bmd+" in the cache" );
+if( LOG.isDebugEnabled() )
+  LOG.debug( "found "+bmd+" in the cache" );
           return res;
         }
       }
@@ -638,12 +638,23 @@ implements RepositoryReader, MetadataReader
       }
     }
     
+    mod = new ArtifactBasicMetadata( bmd.getGroupId()+":"+bmd.getArtifactId()+":"+bmd.getVersion()
+                                     +":" + (classifier==null?"":classifier)
+                                     +":" + (type == null ? bmd.getType() : type )
+                                     );
+    
+//    ArtifactLocation loc = new ArtifactLocation( "", mod );
+    
+//    String bmdPath = loc.getAbsPath();
+    
     String bmdPath = bmd.getGroupId().replace( '.', '/' )
                     + '/'+bmd.getArtifactId()
                     + '/'+bmd.getVersion()
                     + '/'+bmd.getBaseName(classifier)
                     + '.' + (type == null ? bmd.getType() : type )
                     ;
+if( LOG.isDebugEnabled() )
+    LOG.debug( "calculated raw path as "+bmdPath );
     
     res = readRawData( bmdPath );
     

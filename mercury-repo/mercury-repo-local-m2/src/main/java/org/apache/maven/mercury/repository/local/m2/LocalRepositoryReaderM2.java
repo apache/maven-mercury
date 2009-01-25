@@ -125,33 +125,34 @@ public class LocalRepositoryReaderM2
 
             File[] files = gaDir.listFiles();
 
-            // find latest
-            for ( File vf : files )
-            {
-                if ( vf.isFile() )
-                    continue;
-
-                String vn = vf.getName();
-
-                // RELEASE?
-                if ( noSnapshots && vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
-                    continue;
-
-                if ( loc.getVersion() == null )
+            if( files != null && files.length > 0 )
+                // find latest
+                for ( File vf : files )
                 {
-                    loc.setVersion( vn );
-                    tempDav = new DefaultArtifactVersion( vn );
-                    continue;
+                    if ( vf.isFile() )
+                        continue;
+    
+                    String vn = vf.getName();
+    
+                    // RELEASE?
+                    if ( noSnapshots && vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
+                        continue;
+    
+                    if ( loc.getVersion() == null )
+                    {
+                        loc.setVersion( vn );
+                        tempDav = new DefaultArtifactVersion( vn );
+                        continue;
+                    }
+    
+                    tempDav2 = new DefaultArtifactVersion( vn );
+                    if ( tempDav2.compareTo( tempDav ) > 0 )
+                    {
+                        loc.setVersion( vn );
+                        tempDav = tempDav2;
+                    }
+    
                 }
-
-                tempDav2 = new DefaultArtifactVersion( vn );
-                if ( tempDav2.compareTo( tempDav ) > 0 )
-                {
-                    loc.setVersion( vn );
-                    tempDav = tempDav2;
-                }
-
-            }
 
             if ( loc.getVersion() == null )
             {
@@ -378,7 +379,7 @@ public class LocalRepositoryReaderM2
         for ( ArtifactBasicMetadata bmd : query )
         {
             String pomPath =
-                bmd.getGroupId().replace( '.', '/' ) + "/" + bmd.getArtifactId() + "/" + bmd.getVersion() + "/"
+                bmd.getGroupId().replace( '.', '/' ) + "/" + bmd.getArtifactId() + "/" + ArtifactLocation.calculateVersionDir( bmd.getVersion() ) + "/"
                     + bmd.getArtifactId() + '-' + bmd.getVersion() + ".pom";
 
             pomFile = new File( _repoDir, pomPath );
@@ -421,7 +422,7 @@ public class LocalRepositoryReaderM2
             return true;
 
         // no real SNAPSHOT file, let's try to find one
-        File gavDir = new File( loc.getGavPath() );
+        File gavDir = new File( loc.getAbsGavPath() );
         File[] files = gavDir.listFiles();
         loc.setVersion( null );
         DefaultArtifactVersion tempDav = null;
@@ -429,33 +430,34 @@ public class LocalRepositoryReaderM2
 
         int aLen = loc.getBaseName().length();
 
-        // find latest
-        for ( File vf : files )
-        {
-            if ( vf.isFile() )
-                continue;
-
-            String vn = vf.getName().substring( aLen + 1 );
-
-            // no snapshots
-            if ( vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
-                continue;
-
-            if ( loc.getVersion() == null )
+        if( files != null && files.length > 0 )
+            // find latest
+            for ( File vf : files )
             {
-                loc.setVersion( vn );
-                tempDav = new DefaultArtifactVersion( vn );
-                continue;
+                if ( vf.isFile() )
+                    continue;
+    
+                String vn = vf.getName().substring( aLen + 1 );
+    
+                // no snapshots
+                if ( vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
+                    continue;
+    
+                if ( loc.getVersion() == null )
+                {
+                    loc.setVersion( vn );
+                    tempDav = new DefaultArtifactVersion( vn );
+                    continue;
+                }
+    
+                tempDav2 = new DefaultArtifactVersion( vn );
+                if ( tempDav2.compareTo( tempDav ) > 0 )
+                {
+                    loc.setVersion( vn );
+                    tempDav = tempDav2;
+                }
+    
             }
-
-            tempDav2 = new DefaultArtifactVersion( vn );
-            if ( tempDav2.compareTo( tempDav ) > 0 )
-            {
-                loc.setVersion( vn );
-                tempDav = tempDav2;
-            }
-
-        }
 
         if ( loc.getVersion() == null )
         {
@@ -556,24 +558,19 @@ public class LocalRepositoryReaderM2
     public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
-        return readRawData( relPathOf( bmd, classifier, type, null ) );
+        return readRawData( relPathOf( bmd, classifier, type ) );
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static String relPathOf( ArtifactBasicMetadata bmd, String classifier, String type,
-                                     DefaultArtifactVersion inDav )
+    private static String relPathOf( ArtifactBasicMetadata bmd, String classifier, String type )
     {
-        DefaultArtifactVersion dav = inDav;
-        if ( inDav == null )
-            dav = new DefaultArtifactVersion( bmd.getVersion() );
-        Quality aq = dav.getQuality();
-        boolean isSnapshot = aq.equals( Quality.SNAPSHOT_QUALITY ) || aq.equals( Quality.SNAPSHOT_TS_QUALITY );
-
         String bmdPath =
-            bmd.getGroupId().replace( '.', '/' ) + '/' + bmd.getArtifactId() + '/'
-                + ( isSnapshot ? dav.getBase() + '-' + Artifact.SNAPSHOT_VERSION : bmd.getVersion() );
+            bmd.getGroupId().replace( '.', '/' ) + '/' + bmd.getArtifactId() + '/' + ArtifactLocation.calculateVersionDir( bmd.getVersion() );
 
         String path = bmdPath + '/' + bmd.getBaseName( classifier ) + '.' + ( type == null ? bmd.getType() : type );
+        
+if( LOG.isDebugEnabled() )
+    LOG.debug( bmd.toString()+" path is "+ path);
 
         return path;
     }
