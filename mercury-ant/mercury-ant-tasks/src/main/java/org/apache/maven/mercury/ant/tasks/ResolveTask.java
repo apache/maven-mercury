@@ -19,7 +19,7 @@ import org.codehaus.plexus.lang.Language;
  * @version $Id$
  */
 public class ResolveTask
-extends AbstractAntTask
+    extends AbstractAntTask
 {
     private static final Language _lang = new DefaultLanguage( ResolveTask.class );
 
@@ -62,7 +62,7 @@ extends AbstractAntTask
         // Dependencies
         Dep dep = null;
 
-        if ( _depId == null && Util.isEmpty( _dependencies ) )
+        if ( ( _depId == null ) && Util.isEmpty( _dependencies ) )
         {
             throwIfEnabled( _lang.getMessage( "no.dep.id" ) );
             return;
@@ -106,7 +106,7 @@ extends AbstractAntTask
         }
         else if( !Util.isEmpty( _refPathId ) )
         {
-             Object p = getProject().getReference( _refPathId );
+            Object p = getProject().getReference( _refPathId );
 
             if ( p == null )
             {
@@ -117,16 +117,20 @@ extends AbstractAntTask
             path = (Path) p;
         }
         else
+        {
             _pathId = Config.DEFAULT_PATH_ID;
+        }
 
         try
         {
             Config config = AbstractAntTask.findConfig( getProject(), _configId );
-            
+
             Collection<Artifact> artifacts = dep.resolve( config, _scope );
 
             if ( artifacts == null )
+            {
                 return;
+            }
 
             FileList pathFileList = new FileList();
 
@@ -135,7 +139,9 @@ extends AbstractAntTask
             for ( Artifact a : artifacts )
             {
                 if ( dir == null )
+                {
                     dir = a.getFile().getParentFile();
+                }
 
                 String aPath = a.getFile().getCanonicalPath();
 
@@ -170,9 +176,13 @@ extends AbstractAntTask
         catch ( Exception e )
         {
             if ( _failOnError )
+            {
                 throw new BuildException( e.getMessage() );
+            }
             else
+            {
                 return;
+            }
         }
     }
 
@@ -240,12 +250,14 @@ extends AbstractAntTask
     public Dependency createDependency(  )
     {
         if ( Util.isEmpty( _dependencies ) )
+        {
             _dependencies = new ArrayList<Dependency>( 8 );
-        
+        }
+
         Dependency dependency = new Dependency();
 
         _dependencies.add( dependency );
-        
+
         return dependency;
     }
 }

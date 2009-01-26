@@ -28,7 +28,9 @@ public class AbstractAntTask
         throws BuildException
     {
         if ( _failOnError )
+        {
             throw new BuildException( msg );
+        }
     }
 
     // ----------------------------------------------------------------------------------------
@@ -46,14 +48,18 @@ public class AbstractAntTask
             Object so = project.getReference( configId );
 
             if ( so == null )
+            {
                 throw new Exception( LANG.getMessage( "config.id.object.null", configId ) );
+            }
 
             if ( !Config.class.isAssignableFrom( so.getClass() ) )
+            {
                 throw new Exception( LANG.getMessage( "config.id.object.wrong", configId, so.getClass().getName() ) );
+            }
 
             config = (Config) so;
         }
-        
+
         return config;
     }
     // ----------------------------------------------------------------------------------------

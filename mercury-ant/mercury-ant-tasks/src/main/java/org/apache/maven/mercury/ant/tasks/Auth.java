@@ -18,10 +18,10 @@ public class Auth
     extends AbstractDataType
 {
     private static final Language LANG = new DefaultLanguage( Auth.class );
-    
-    private static final String DEFAULT_AUTH_ID = System.getProperty( "mercury.default.auth.id"
-                                                                        , "mercury.default.auth.id."+System.currentTimeMillis() 
-                                                                      ); 
+
+    private static final String DEFAULT_AUTH_ID =
+        System.getProperty( "mercury.default.auth.id", "mercury.default.auth.id." + System.currentTimeMillis() );
+
     String _name;
 
     String _pass;
@@ -72,14 +72,16 @@ public class Auth
     {
         setCertfile( certfile );
     }
-    
+
     protected static Auth findAuth( Project project, String authId )
     {
-        Object ao = authId == null ? project.getReference( DEFAULT_AUTH_ID ) : project.getReference( authId );
+        Object ao = ( authId == null ) ? project.getReference( DEFAULT_AUTH_ID ) : project.getReference( authId );
 
         if( ao == null )
+        {
             return null;
-        
+        }
+
         return (Auth) ao;
     }
 
@@ -91,7 +93,9 @@ public class Auth
         {
             File cf = new File( _certfile );
             if ( !cf.exists() )
+            {
                 throw new BuildException( LANG.getMessage( "config.no.cert.file", _certfile ) );
+            }
 
             try
             {
@@ -103,7 +107,9 @@ public class Auth
             }
         }
         else
+        {
             cred = new Credentials( _name, _pass );
+        }
 
         return cred;
     }

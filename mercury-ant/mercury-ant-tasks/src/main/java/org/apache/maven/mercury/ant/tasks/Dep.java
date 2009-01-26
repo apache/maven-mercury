@@ -36,65 +36,75 @@ import org.codehaus.plexus.lang.Language;
  * @version $Id$
  */
 public class Dep
-extends AbstractDataType
-implements ResourceCollection
+    extends AbstractDataType
+    implements ResourceCollection
 {
     private static final Language LANG = new DefaultLanguage( Dep.class );
-    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Dep.class ); 
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Dep.class );
 
     private List<Dependency> _dependencies;
-    
+
     private List<Artifact> _artifacts;
-    
+
     private List<File> _files;
-    
+
     private String _configId;
-    
+
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private boolean _transitive = true;
-    
+
     private LocalRepositoryMap _pomRepo;
-    
+
     private Storage _pomStorage;
 
     private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
-    throws RepositoryException
+        throws RepositoryException
     {
         if ( Util.isEmpty( _dependencies ) )
+        {
             return null;
+        }
 
         List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _dependencies.size() );
-        
+
         for ( Dependency d : _dependencies )
         {
-            if( d._amd == null )
+            if ( d._amd == null )
+            {
                 throw new IllegalArgumentException( LANG.getMessage( "dep.dependency.name.mandatory" ) );
-            
-            if( Util.isEmpty( d._pom )) 
+            }
+
+            if ( Util.isEmpty( d._pom ) )
+            {
                 res.add( d._amd );
+            }
             else
             {
                 String key = d._amd.getGAV();
-                
+
                 ArtifactMetadata deps = null;
-                
+
                 try
                 {
-                    _pomStorage.add( key, new File(d._pom) );
-                    
+                    _pomStorage.add( key, new File( d._pom ) );
+
                     deps = vr.readDependencies( d._amd );
-                
+
                     _pomStorage.removeRaw( key );
                 }
                 catch ( StorageException e )
                 {
-                    throw new RepositoryException(e);
+                    throw new RepositoryException( e );
                 }
-                
-                if( deps != null && !Util.isEmpty( deps.getDependencies() ) )
-                    for( ArtifactBasicMetadata bmd : deps.getDependencies() )
+
+                if ( deps != null && !Util.isEmpty( deps.getDependencies() ) )
+                {
+                    for ( ArtifactBasicMetadata bmd : deps.getDependencies() )
+                    {
                         res.add( bmd );
+                    }
+                }
             }
         }
 
@@ -104,7 +114,9 @@ implements ResourceCollection
     public Dependency createDependency()
     {
         if ( _dependencies == null )
+        {
             _dependencies = new ArrayList<Dependency>( 8 );
+        }
 
         Dependency dep = new Dependency();
 
@@ -114,69 +126,83 @@ implements ResourceCollection
     }
     //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve()
-    throws Exception
+        throws Exception
     {
         Config config = AbstractAntTask.findConfig( getProject(), _configId );
-        
+
         return resolve( config, _scope );
     }
     //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve( Config config, ArtifactScopeEnum scope )
-    throws Exception
+        throws Exception
     {
-        if( ! Util.isEmpty(_artifacts) )
+        if ( !Util.isEmpty( _artifacts ) )
+        {
             return _artifacts;
-        
-        if( Util.isEmpty( _dependencies ) )
+        }
+
+        if ( Util.isEmpty( _dependencies ) )
+        {
             return null;
+        }
 
         List<Repository> repos = config.getRepositories();
-        
+
         DependencyProcessor dp = new MavenDependencyProcessor();
-        
+
         _pomStorage = new DefaultStorage();
-        
+
         _pomRepo = new LocalRepositoryMap( "inMemMdRepo", dp, _pomStorage );
-        
+
         repos.add( 0, _pomRepo );
 
-        DependencyBuilder db =
-            DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
+        DependencyBuilder db = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
 
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-        
-        List<ArtifactMetadata> res = db.resolveConflicts( scope, new ArtifactQueryList( getDependencies(vr) ), null, null );
+
+        List<ArtifactMetadata> res =
+            db.resolveConflicts( scope, new ArtifactQueryList( getDependencies( vr ) ), null, null );
 
         if ( Util.isEmpty( res ) )
+        {
             return null;
+        }
 
         ArtifactResults aRes = vr.readArtifacts( res );
 
         if ( aRes == null )
+        {
             throw new BuildException( LANG.getMessage( "resolve.cannot.read", config.getId(), res.toString() ) );
+        }
 
-        if ( aRes == null || aRes.hasExceptions() )
+        if ( ( aRes == null ) || aRes.hasExceptions() )
         {
             throw new Exception( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
         }
 
         if ( !aRes.hasResults() )
+        {
             return null;
-        
+        }
+
 
         Map<ArtifactBasicMetadata, List<Artifact>> resMap = aRes.getResults();
-        
+
         int count = 0;
         for ( ArtifactBasicMetadata key : resMap.keySet() )
         {
             List<Artifact> artifacts = resMap.get( key );
-            if( artifacts != null )
+            if ( artifacts != null )
+            {
                 count += artifacts.size();
+            }
         }
-        
-        if( count == 0 )
+
+        if ( count == 0 )
+        {
             return null;
-        
+        }
+
         _artifacts = new ArrayList<Artifact>( count );
 
         for ( ArtifactBasicMetadata key : resMap.keySet() )
@@ -184,8 +210,12 @@ implements ResourceCollection
             List<Artifact> artifacts = resMap.get( key );
 
             if ( !Util.isEmpty( artifacts ) )
+            {
                 for ( Artifact a : artifacts )
+                {
                     _artifacts.add( a );
+                }
+            }
         }
 
         return _artifacts;
@@ -217,29 +247,35 @@ implements ResourceCollection
         return true;
     }
     //----------------------------------------------------------------------------------------
-    public Iterator iterator()
+    public Iterator<File> iterator()
     {
         try
         {
-            if( _files != null )
+            if ( _files != null )
+            {
                 return _files.iterator();
-            
+            }
+
             List<Artifact> artifacts = resolve();
-            
-            if( Util.isEmpty( artifacts ) )
+
+            if ( Util.isEmpty( artifacts ) )
+            {
                 return null;
-            
+            }
+
             _files = new ArrayList<File>( artifacts.size() );
-            
-            for( Artifact a : _artifacts )
+
+            for ( Artifact a : _artifacts )
+            {
                 _files.add( a.getFile() );
-            
+            }
+
             return _files.iterator();
         }
         catch ( Exception e )
         {
             LOG.error( e.getMessage() );
-            
+
             return null;
         }
     }
@@ -249,16 +285,18 @@ implements ResourceCollection
         try
         {
             List<Artifact> artifacts = resolve();
-            
-            if( Util.isEmpty( artifacts ) )
+
+            if ( Util.isEmpty( artifacts ) )
+            {
                 return 0;
-            
+            }
+
             return artifacts.size();
         }
         catch ( Exception e )
         {
             LOG.error( e.getMessage() );
-            
+
             return 0;
         }
     }

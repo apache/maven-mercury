@@ -17,7 +17,7 @@ public class Dependency
     private static final Language LANG = new DefaultLanguage( Dependency.class );
 
     ArtifactBasicMetadata _amd;
-    
+
     String _pom;
 
     boolean _optional = false;
@@ -34,22 +34,28 @@ public class Dependency
         this._optional = optional;
 
         if ( _amd != null )
+        {
             _amd.setOptional( optional );
+        }
     }
 
     public void setPom( String pom )
     {
         this._pom = pom;
-        
-        if( _amd == null )
+
+        if ( _amd == null )
+        {
             throw new UnsupportedOperationException( LANG.getMessage( "dep.dependency.pom.needs.name", pom ) );
+        }
     }
 
     public void setGroupId( String groupId )
     {
-        if( _amd == null )
+        if ( _amd == null )
+        {
             _amd = new ArtifactBasicMetadata();
-        
+        }
+
         _amd.setGroupId( groupId );
     }
 
@@ -60,9 +66,11 @@ public class Dependency
 
     public void setArtifactId( String artifactId )
     {
-        if( _amd == null )
+        if ( _amd == null )
+        {
             _amd = new ArtifactBasicMetadata();
-        
+        }
+
         _amd.setArtifactId( artifactId );
     }
 
@@ -73,9 +81,11 @@ public class Dependency
 
     public void setVersion( String version )
     {
-        if( _amd == null )
+        if ( _amd == null )
+        {
             _amd = new ArtifactBasicMetadata();
-        
+        }
+
         _amd.setVersion( version );
     }
 }

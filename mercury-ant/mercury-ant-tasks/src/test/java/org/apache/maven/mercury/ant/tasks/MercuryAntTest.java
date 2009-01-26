@@ -13,7 +13,7 @@ import org.apache.tools.ant.types.Path;
  * @author Oleg Gusakov
  * @version $Id$
  */
-public class MecuryAntTest
+public class MercuryAntTest
     extends BuildFileTest
 {
     static final String _localRepoDir = "./target/repo";
@@ -88,7 +88,7 @@ public class MecuryAntTest
     }
 
     // -----------------------------------
-    public MecuryAntTest( String name )
+    public MercuryAntTest( String name )
     {
         super( name );
     }
@@ -122,7 +122,7 @@ public class MecuryAntTest
         _jetty = new AuthenticatingTestServer( 0, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
         _jetty.start();
         _port = _jetty.getPort();
-        
+
         Repo remoteRepo = _config.createRepo();
         remoteRepo.setId( "remoteRepo" );
         remoteRepo.setUrl( _remoteRepoUrlPrefix + _port + _remoteRepoUrlSufix );
@@ -157,7 +157,7 @@ public class MecuryAntTest
         _jarDirFile.mkdirs();
 
         configureProject( "build.xml" );
-        getProject().setProperty( "repo.port", ""+_port );
+        getProject().setProperty( "repo.port", "" + _port );
     }
 
     // -----------------------------------
@@ -165,10 +165,10 @@ public class MecuryAntTest
         throws Exception
     {
         tearDown();
-        
+
         _jetty = new AuthenticatingTestServer( port, localBase, remotePathFragment, secured );
         _jetty.start();
-        
+
         this._port = port;
     }
 
@@ -238,12 +238,12 @@ public class MecuryAntTest
         try
         {
             executeTarget( title );
-            
-            fail(title+" did not raise an exception");
+
+            fail( title + " did not raise an exception" );
         }
         catch( Throwable e )
         {
-            System.out.println("Expected exception: "+e.getMessage() );
+            System.out.println( "Expected exception: " + e.getMessage() );
         }
 
         assertFalse( af.exists() );
@@ -310,7 +310,7 @@ public class MecuryAntTest
         String title = "compile-thin-path-3";
         System.out.println( "========> start " + title );
         System.out.flush();
-        
+
         restart( _port, _remoteRepoDirFile, "/maven2", true );
 
         File af = new File( _compileDirFile, "T.class" );
@@ -318,13 +318,13 @@ public class MecuryAntTest
         assertFalse( af.exists() );
 
         File asm = new File( "target/path-3/asm/asm/3.0/asm-3.0.jar" );
-        
+
         FileUtil.delete( asm );
-        
+
         asm.delete();
 
         assertFalse( asm.exists() );
-        
+
         executeTarget( title );
 
         assertTrue( af.exists() );
@@ -353,7 +353,7 @@ public class MecuryAntTest
         asm.delete();
 
         assertFalse( asm.exists() );
-        
+
         executeTarget( title );
 
         assertTrue( af.exists() );
@@ -379,7 +379,7 @@ public class MecuryAntTest
         asm.delete();
 
         assertFalse( asm.exists() );
-        
+
         executeTarget( title );
 
         assertTrue( af.exists() );
@@ -407,7 +407,7 @@ public class MecuryAntTest
         asm.delete();
 
         assertFalse( asm.exists() );
-        
+
         executeTarget( title );
 
         assertTrue( af.exists() );
@@ -422,7 +422,7 @@ public class MecuryAntTest
         String title = "compile-auth";
         System.out.println( "========> start " + title );
         System.out.flush();
-        
+
         restart( _port, _remoteRepoDirFile, "/maven2", true );
 
         try
@@ -511,12 +511,12 @@ public class MecuryAntTest
         try
         {
             executeTarget( "bad-pgp" );
-            
+
             fail( "reading bad pgp signature did not trigger an exception. Failing the test" );
         }
         catch ( Exception e )
         {
-            System.out.println("Expected exception: "+ e.getMessage() );
+            System.out.println( "Expected exception: " + e.getMessage() );
         }
 
         assertFalse( af.exists() );
@@ -554,7 +554,7 @@ public class MecuryAntTest
         FileUtil.delete( asm );
 
         assertFalse( asm.exists() );
-        
+
         executeTarget( title );
 
         assertTrue( af.exists() );

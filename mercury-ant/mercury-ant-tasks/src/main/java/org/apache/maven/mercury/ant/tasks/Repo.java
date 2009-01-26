@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,7 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * repository data type
- * 
+ *
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -39,9 +38,9 @@ public class Repo
     extends AbstractDataType
 {
     private static final Language LANG = new DefaultLanguage( Repo.class );
-    
+
     private static final String DEFAULT_LAYOUT = "default";
-    
+
     private String _dir;
 
     private String _url;
@@ -78,60 +77,64 @@ public class Repo
     {
         _managed = managed;
     }
-    
+
     private void processDefaults()
     {
-        if( _managed )
-            return;
-        
-        if( _registered )
-            return;
-        
-        if( getId() == null )
+        if ( _managed )
         {
-            String id = "random." + (int)(Math.random()*10000.) + ("."+System.nanoTime() ) ;
+            return;
+        }
+
+        if ( _registered )
+        {
+            return;
+        }
+
+        if ( getId() == null )
+        {
+            String id = "random." + (int) ( Math.random() * 10000. ) + ( "." + System.nanoTime() );
 
             super.setId( id );
         }
-        
+
         Config.addDefaultRepository( getProject(), this );
-        
+
         _registered = true;
     }
-    
+
     @Override
     public void setId( String id )
     {
         super.setId( id );
-        
+
         processDefaults();
     }
 
     public void setReadable( boolean readable )
     {
         this._readable = readable;
-        
+
         processDefaults();
     }
 
     public void setWriteable( boolean writeable )
     {
         this._writeable = writeable;
-        
+
         processDefaults();
     }
 
     public void setUrl( String url )
     {
         this._url = url;
-        
+
         processDefaults();
     }
 
     public void setDir( String dir )
     {
         this._dir = dir;
-        
+
         processDefaults();
     }
 
@@ -144,41 +147,45 @@ public class Repo
     public void setType( String type )
     {
         this._type = type;
-        
+
         processDefaults();
     }
 
     public void setAuthid( String authid )
     {
         this._authid = authid;
-        
+
         processDefaults();
     }
 
     public void setProxyauthid( String proxyauthid )
     {
         this._proxyauthid = proxyauthid;
-        
+
         processDefaults();
     }
 
     public void setLayout( String layout )
     {
-        if( !DEFAULT_LAYOUT.equals( layout ) )
+        if ( !DEFAULT_LAYOUT.equals( layout ) )
+        {
             throw new IllegalArgumentException( LANG.getMessage( "repo.layout.not.supported", layout ) );
-        
+        }
+
         processDefaults();
     }
 
     boolean isLocal()
     {
-        return _dir != null;
+        return ( _dir != null );
     }
 
     public Verify createVerifywrite()
     {
         if ( _writeVerifiers == null )
+        {
             _writeVerifiers = new ArrayList<Verify>( 2 );
+        }
 
         Verify v = new Verify();
 
@@ -190,7 +197,9 @@ public class Repo
     public Verify createVerifyread()
     {
         if ( _readVerifiers == null )
+        {
             _readVerifiers = new ArrayList<Verify>( 2 );
+        }
 
         Verify v = new Verify();
 
@@ -202,12 +211,16 @@ public class Repo
     private Set<StreamVerifierFactory> getVerifiers( List<Verify> vlist )
     {
         if ( Util.isEmpty( vlist ) )
+        {
             return null;
+        }
 
         Set<StreamVerifierFactory> facs = new HashSet<StreamVerifierFactory>( vlist.size() );
 
         for ( Verify v : vlist )
+        {
             facs.add( v.getVerifierFactory() );
+        }
 
         return facs;
 
@@ -252,10 +265,10 @@ public class Repo
             {
                 throw new BuildException( e );
             }
-            
+
             Auth au = null;
-            
-            if( _auth != null )
+
+            if ( _auth != null )
             {
                 au = _auth;
             }
@@ -264,19 +277,21 @@ public class Repo
                 au = Auth.findAuth( getProject(), _authid );
 
                 if ( au == null )
+                {
                     throw new BuildException( LANG.getMessage( "config.no.auth.for.id", _authid ) );
+                }
             }
-            
-            if( au != null )
+
+            if ( au != null )
             {
                 Credentials serverCred = au.createCredentials();
-    
+
                 server.setServerCredentials( serverCred );
-                
+
                 au = null;
             }
-            
-            if( _proxyAuth != null )
+
+            if ( _proxyAuth != null )
             {
                 au = _proxyAuth;
             }
@@ -285,10 +300,12 @@ public class Repo
                 au = Auth.findAuth( getProject(), _proxyauthid );
 
                 if ( au == null )
+                {
                     throw new BuildException( LANG.getMessage( "config.no.proxy.auth.for.id", _proxyauthid ) );
+                }
             }
-            
-            if( au != null )
+
+            if ( au != null )
             {
                 Credentials proxyCred = au.createCredentials();
 
@@ -331,115 +348,125 @@ public class Repo
     }
 
     public class Verify
-    extends AbstractDataType
-{
-    public static final String PGP = "pgp";
-
-    public static final String SHA1 = "sha1";
-
-    String _type;
-
-    boolean _lenient = true;
-
-    boolean _sufficient = false;
-
-    Map<String, String> _properties;
-
-    public void setType( String type )
+        extends AbstractDataType
     {
-        this._type = type;
-    }
+        public static final String PGP = "pgp";
 
-    public void setLenient( boolean lenient )
-    {
-        this._lenient = lenient;
-    }
+        public static final String SHA1 = "sha1";
 
-    public void setSufficient( boolean sufficient )
-    {
-        this._sufficient = sufficient;
-    }
+        String _type;
 
-    public void addConfiguredProperty( Property property )
-    {
-        if ( _properties == null )
-            _properties = new HashMap<String, String>( 4 );
+        boolean _lenient = true;
 
-        _properties.put( property.getName(), property.getValue() );
-    }
+        boolean _sufficient = false;
 
-    public StreamVerifierFactory getVerifierFactory()
-        throws BuildException
-    {
-        if ( _type == null )
-            throw new BuildException( LANG.getMessage( "config.repo.verifier.no.type" ) );
+        Map<String, String> _properties;
 
-        if ( _properties == null || _properties.isEmpty() )
-            throw new BuildException( LANG.getMessage( "config.repo.verifier.no.properties", _type ) );
-
-        if ( PGP.equals( _type ) )
+        public void setType( String type )
         {
-            String keyRing = _properties.get( "keyring" );
-
-            if ( keyRing == null )
-                throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.no.keyring" ) );
-
-            String pass = _properties.get( "pass" );
-
-            if ( pass == null ) // reader configuration
-            {
-                try
-                {
-                    PgpStreamVerifierFactory fac =
-                        new PgpStreamVerifierFactory(
-                                                      new StreamVerifierAttributes(
-                                                                                    PgpStreamVerifierFactory.DEFAULT_EXTENSION,
-                                                                                    _lenient, _sufficient ),
-                                                      FileUtil.toStream( keyRing ) );
-                    return fac;
-                }
-                catch ( Exception e )
-                {
-                    throw new BuildException( e );
-                }
-            }
-            else
-            // writer configuration
-            {
-                String keyId = _properties.get( "key" );
-
-                if ( keyId == null || keyId.length() != 16 )
-                    throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.bad.keyid", keyId,
-                                                                keyRing ) );
-
-                try
-                {
-                    PgpStreamVerifierFactory fac =
-                        new PgpStreamVerifierFactory(
-                                                      new StreamVerifierAttributes(
-                                                                                    PgpStreamVerifierFactory.DEFAULT_EXTENSION,
-                                                                                    _lenient, _sufficient ),
-                                                      FileUtil.toStream( keyRing ), keyId, pass );
-                    return fac;
-                }
-                catch ( Exception e )
-                {
-                    throw new BuildException( e );
-                }
-
-            }
-        }
-        else if ( SHA1.equals( _type ) )
-        {
-            SHA1VerifierFactory fac =
-                new SHA1VerifierFactory( new StreamVerifierAttributes( SHA1VerifierFactory.DEFAULT_EXTENSION,
-                                                                       _lenient, _sufficient ) );
-
-            return fac;
+            this._type = type;
         }
 
-        throw new BuildException( LANG.getMessage( "config.repo.verifier.bad.type", _type ) );
+        public void setLenient( boolean lenient )
+        {
+            this._lenient = lenient;
+        }
+
+        public void setSufficient( boolean sufficient )
+        {
+            this._sufficient = sufficient;
+        }
+
+        public void addConfiguredProperty( Property property )
+        {
+            if ( _properties == null )
+            {
+                _properties = new HashMap<String, String>( 4 );
+            }
+
+            _properties.put( property.getName(), property.getValue() );
+        }
+
+        public StreamVerifierFactory getVerifierFactory()
+            throws BuildException
+        {
+            if ( _type == null )
+            {
+                throw new BuildException( LANG.getMessage( "config.repo.verifier.no.type" ) );
+            }
+
+            if ( ( _properties == null ) || _properties.isEmpty() )
+            {
+                throw new BuildException( LANG.getMessage( "config.repo.verifier.no.properties", _type ) );
+            }
+
+            if ( PGP.equals( _type ) )
+            {
+                String keyRing = _properties.get( "keyring" );
+
+                if ( keyRing == null )
+                {
+                    throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.no.keyring" ) );
+                }
+
+                String pass = _properties.get( "pass" );
+
+                if ( pass == null ) // reader configuration
+                {
+                    try
+                    {
+                        PgpStreamVerifierFactory fac =
+                            new PgpStreamVerifierFactory(
+                                                          new StreamVerifierAttributes(
+                                                                                        PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                        _lenient, _sufficient ),
+                                                          FileUtil.toStream( keyRing ) );
+                        return fac;
+                    }
+                    catch ( Exception e )
+                    {
+                        throw new BuildException( e );
+                    }
+                }
+                else
+                // writer configuration
+                {
+                    String keyId = _properties.get( "key" );
+
+                    if ( ( keyId == null ) || ( keyId.length() != 16 ) )
+                    {
+                        throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.bad.keyid", keyId,
+                                                                    keyRing ) );
+                    }
+
+                    try
+                    {
+                        PgpStreamVerifierFactory fac =
+                            new PgpStreamVerifierFactory(
+                                                          new StreamVerifierAttributes(
+                                                                                        PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                        _lenient, _sufficient ),
+                                                          FileUtil.toStream( keyRing ), keyId, pass );
+                        return fac;
+                    }
+                    catch ( Exception e )
+                    {
+                        throw new BuildException( e );
+                    }
+
+                }
+            }
+            else if ( SHA1.equals( _type ) )
+            {
+                SHA1VerifierFactory fac =
+                    new SHA1VerifierFactory( new StreamVerifierAttributes( SHA1VerifierFactory.DEFAULT_EXTENSION,
+                                                                           _lenient, _sufficient ) );
+
+                return fac;
+            }
+
+            throw new BuildException( LANG.getMessage( "config.repo.verifier.bad.type", _type ) );
+        }
     }
-}
 
 }
