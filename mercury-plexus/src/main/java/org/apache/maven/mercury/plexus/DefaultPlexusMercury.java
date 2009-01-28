@@ -293,9 +293,6 @@ implements PlexusMercury
     if( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
       throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
     
-    if( artifacts.size() > 1 )
-      throw new RepositoryException( "I dont support more'n 1 artifact now" );
-    
     try
     {
       DependencyBuilder depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
