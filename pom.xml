@@ -89,6 +89,7 @@ under the License.
     
     <bouncy.castle.version>140</bouncy.castle.version>
     <sat4j.version>2.0.4</sat4j.version>
+    <ant.version>1.7.1</ant.version>
     
     <!-- mercury-wagon -->
     <wagon.provider.api.version>1.0-beta-4</wagon.provider.api.version>
@@ -154,6 +155,13 @@ under the License.
         <groupId>bouncycastle</groupId>
         <artifactId>bcpg-jdk15</artifactId>
         <version>${bouncy.castle.version}</version>
+      </dependency>
+
+      <!--  Mercury ant-tasks dependency -->
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant</artifactId>
+        <version>${ant.version}</version>
       </dependency>
 
       <!-- SAT solver used to calculate viable ranges when dependencies are expressed pseudo boolean form -->
