@@ -27,7 +27,6 @@ under the License.
     <version>1.0.0-alpha-4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.apache.maven.mercury</groupId>
   <artifactId>mercury-ant-tasks</artifactId>
   <name>Mercury Ant Tasks</name>
   <description>Maven Mercury Ant tasks code</description>
@@ -37,7 +36,19 @@ under the License.
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.7.1</version>
+        <version>${ant.version}</version>
+      </dependency>
+ 
+      <dependency>
+        <groupId>bouncycastle</groupId>
+        <artifactId>bcprov-jdk15</artifactId>
+        <optional>true</optional>
+      </dependency>
+
+      <dependency>
+        <groupId>bouncycastle</groupId>
+        <artifactId>bcpg-jdk15</artifactId>
+        <optional>true</optional>
       </dependency>
     
       <!-- Mercury deps -->
@@ -76,6 +87,32 @@ under the License.
         <groupId>org.apache.maven.mercury</groupId>
         <artifactId>mercury-md-sat</artifactId>
       </dependency>
+ 
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-client</artifactId>
+      <classifier>assembly</classifier>
+      <exclusions>
+        <exclusion>
+         <groupId>org.mortbay.jetty</groupId> 
+         <artifactId>jetty</artifactId>
+        </exclusion>
+        <exclusion>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-sslengine</artifactId>
+        </exclusion>
+        <exclusion>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-util</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-util5</artifactId>
+    </dependency>
+    
   
       <!-- Maven dependencies -->
       <dependency>
@@ -120,9 +157,11 @@ under the License.
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>${project.artifactId}-${project.version}-all</finalName>
+              
               <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
-              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+             
               <artifactSet>
                 <excludes>
                   <exclude>ant:ant</exclude>
