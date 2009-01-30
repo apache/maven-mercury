@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury</artifactId>
-    <version>1.0.0-alpha-4-SNAPSHOT</version>
+    <version>1.0.0-alpha-4</version>
   </parent>
 
   <artifactId>mercury-repo</artifactId>
