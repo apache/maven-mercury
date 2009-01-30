@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.maven.mercury</groupId>
   <artifactId>mercury</artifactId>
-  <version>1.0.0-alpha-4-SNAPSHOT</version>
+  <version>1.0.0-alpha-4</version>
   <packaging>pom</packaging>
 
   <name>Mercury</name>
@@ -89,6 +89,10 @@ under the License.
     
     <bouncy.castle.version>140</bouncy.castle.version>
     <sat4j.version>2.0.4</sat4j.version>
+    <ant.version>1.7.1</ant.version>
+    
+    <!-- maven version: non-modules only !! Never use in Mercury modules!! -->
+    <maven.version>3.0-SNAPSHOT</maven.version>
     
     <!-- mercury-wagon -->
     <wagon.provider.api.version>1.0-beta-4</wagon.provider.api.version>
@@ -104,9 +108,9 @@ under the License.
   
  
  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/trunk/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/trunk/</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/mercury/trunk/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0.0-alpha-4</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0.0-alpha-4</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/mercury/tags/mercury-1.0.0-alpha-4</url>
   </scm>
   <issueManagement>
     <system>jira</system>
@@ -154,6 +158,13 @@ under the License.
         <groupId>bouncycastle</groupId>
         <artifactId>bcpg-jdk15</artifactId>
         <version>${bouncy.castle.version}</version>
+      </dependency>
+
+      <!--  Mercury ant-tasks dependency -->
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant</artifactId>
+        <version>${ant.version}</version>
       </dependency>
 
       <!-- SAT solver used to calculate viable ranges when dependencies are expressed pseudo boolean form -->
