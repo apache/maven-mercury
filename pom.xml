@@ -91,6 +91,9 @@ under the License.
     <sat4j.version>2.0.4</sat4j.version>
     <ant.version>1.7.1</ant.version>
     
+    <!-- maven version: non-modules only !! Never use in Mercury modules!! -->
+    <maven.version>3.0-SNAPSHOT</maven.version>
+    
     <!-- mercury-wagon -->
     <wagon.provider.api.version>1.0-beta-4</wagon.provider.api.version>
 
