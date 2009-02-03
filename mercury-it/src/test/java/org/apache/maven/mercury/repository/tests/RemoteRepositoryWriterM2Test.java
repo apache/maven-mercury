@@ -42,80 +42,95 @@ import org.apache.maven.mercury.util.FileUtil;
  * @version $Id$
  *
  */
-public class RemoteRepositoryWriterM2NexusTest
+public class RemoteRepositoryWriterM2Test
 extends AbstractRepositoryWriterM2Test
 {
-  protected boolean needNexus = false;
-  
-  String nexusReleasesTestDir = "./target/nexus-webapp-1.0.1/runtime/work/storage/releases";
-  String nexusReleasesTestUrl = Nexus.nexusTestUrl+"/content/repositories/releases";
+    static final String _davContext = "/webdav";
 
-  String nexusSnapshotsTestDir = "./target/nexus-webapp-1.0.1/runtime/work/storage/snapshots";
-  String nexusSnapshotsTestUrl = Nexus.nexusTestUrl+"/content/repositories/snapshots";
+    static final String _user = "foo";
+
+    static final String _pass = "bar";
+
+    WebDavServer _dav;
+
+    RemoteRepositoryM2 _davRepo;
+
+  String _basePath = "./target/webdav";
 
   //------------------------------------------------------------------------------
   @Override
   void setReleases()
   throws Exception
   {
-    Nexus.stop();
-    targetDirectory = new File(nexusReleasesTestDir);
-    FileUtil.delete( new File( targetDirectory, "org" ) );
-    server.setURL( new URL(nexusReleasesTestUrl) );
-    Nexus.start( plexus );
   }
   //------------------------------------------------------------------------------
   @Override
   void setSnapshots()
   throws Exception
   {
-    Nexus.stop();
-    targetDirectory = new File( nexusSnapshotsTestDir );
-    FileUtil.delete( new File( targetDirectory, "org" ) );
-    server.setURL( new URL( nexusSnapshotsTestUrl ) );
-    Nexus.start( plexus );
+  }
+  //---------------------------------------------------------------------------------------------
+  protected void startDavServer( String basePath, String baseHint )
+  throws Exception
+  {
+      targetDirectory = new File( basePath );
+
+      FileUtil.delete( targetDirectory );
+
+      targetDirectory.mkdirs();
+      
+      _dav = new WebDavServer( 0, targetDirectory, _davContext, getContainer(), 9, baseHint );
+      
+      _dav.start();
+      
+      Credentials user = new Credentials(_user,_pass);
+      
+      server = new Server("dav", new URL("http://localhost:"+_dav.getPort()+_davContext), false, false, user );
+      
+System.out.println("Server: "+server.getURL() + " ==> " + basePath );
+      
+      mdProcessor = new MetadataProcessorMock();
+      
+      repo = new RemoteRepositoryM2( server, mdProcessor );
+      
+      // verifiers
+      factories = new HashSet<StreamVerifierFactory>();       
+      factories.add( 
+          new PgpStreamVerifierFactory(
+                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, false )
+                  , getClass().getResourceAsStream( secretKeyFile )
+                  , keyId
+                  , secretKeyPass
+                                      )
+                    );
+      factories.add( new SHA1VerifierFactory(false,false) );
+      server.setWriterStreamVerifierFactories(factories);
+        
+      reader = repo.getReader();
+      writer = repo.getWriter();
+      
+  }
+  //---------------------------------------------------------------------------------------------
+  protected void stopDavServer()
+  throws Exception
+  {
+      if( _dav != null )
+      {
+          _dav.stop();
+          _dav.destroy();
+          _dav = null;
+      }  
   }
   //------------------------------------------------------------------------------
   @Override
   protected void setUp()
   throws Exception
   {
-    needNexus = true;
-    
     super.setUp();
 
-    mdProcessor = new MetadataProcessorMock();
-
     query = new ArrayList<ArtifactBasicMetadata>();
-    
-    Credentials user = new Credentials( Nexus.nexusTestUser, Nexus.nexusTestPass );
 
-    server = new Server( "nexusTest", new URL(nexusSnapshotsTestUrl), false, false, user );
-    
-    repo = new RemoteRepositoryM2( "testNexusRepo", server, new MavenDependencyProcessor() );
-    
-    mdProcessor = new MetadataProcessorMock();
-    
-    query = new ArrayList<ArtifactBasicMetadata>();
-    
-    // verifiers
-    factories = new HashSet<StreamVerifierFactory>();       
-    factories.add( 
-        new PgpStreamVerifierFactory(
-                new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, false )
-                , getClass().getResourceAsStream( secretKeyFile )
-                , keyId
-                , secretKeyPass
-                                    )
-                  );
-    factories.add( new SHA1VerifierFactory(false,false) );
-    server.setWriterStreamVerifierFactories(factories);
-      
-    repo.setDependencyProcessor( mdProcessor );
-    reader = repo.getReader();
-    writer = repo.getWriter();
-    
-    setSnapshots();
+    startDavServer( _basePath, "mercury-test"  );
   }
   //-------------------------------------------------------------------------
   @Override
@@ -123,20 +138,22 @@ extends AbstractRepositoryWriterM2Test
   throws Exception
   {
     super.tearDown();
+    
+    stopDavServer();
   }
   //-------------------------------------------------------------------------
   @Override
   public void testWriteContentionMultipleArtifacts()
       throws Exception
   {
-    System.out.println("Mutliple Artifacts contention test fails for remote repo. Currently there is no way to synchronize those writes");
+    System.out.println("Mutliple Artifacts contention does not apply to remote repo client");
   }
   
   @Override
   public void testWriteContentionSingleArtifact()
       throws Exception
   {
-    System.out.println("Single Artifacts contention test fails for remote repo. Currently there is no way to synchronize those writes");
+    System.out.println("Single Artifacts contention does not apply to remote repo client");
   }
   
   //-------------------------------------------------------------------------

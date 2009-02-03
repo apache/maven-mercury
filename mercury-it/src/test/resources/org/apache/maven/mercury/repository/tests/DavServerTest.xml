@@ -1,0 +1,55 @@
+<component-set>
+  <components>
+
+    <component>
+      <role>org.sonatype.webdav.security.Authentication</role>
+      <role-hint>properties</role-hint>
+      <implementation>org.sonatype.webdav.security.PropertiesAuthentication</implementation>
+      <configuration>
+        <properties>
+          <property>
+            <name>foo</name>
+            <value>bar</value>
+          </property>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.sonatype.webdav.security.Authorization</role>
+      <role-hint>properties</role-hint>
+      <implementation>org.sonatype.webdav.security.PropertiesAuthorization</implementation>
+      <configuration>
+        <properties>
+          <property>
+            <name>foo</name>
+            <value>admin,repository.read,repository.write</value>
+          </property>
+        </properties>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.sonatype.webdav.ResourceCollection</role>
+      <role-hint>mercury-test</role-hint>
+      <implementation>org.sonatype.webdav.FileResourceCollection</implementation>
+      <description></description>
+      <isolated-realm>false</isolated-realm>
+      <configuration>
+        <root-path>./target/webdav</root-path>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.sonatype.webdav.ResourceCollection</role>
+      <role-hint>mercury-test-2</role-hint>
+      <implementation>org.sonatype.webdav.FileResourceCollection</implementation>
+      <description></description>
+      <isolated-realm>false</isolated-realm>
+      <configuration>
+        <root-path>./target/webdav2</root-path>
+      </configuration>
+    </component>
+        
+  </components>
+</component-set>

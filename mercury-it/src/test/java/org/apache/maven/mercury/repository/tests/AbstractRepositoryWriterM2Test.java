@@ -54,8 +54,6 @@ import org.codehaus.plexus.PlexusTestCase;
 public abstract class AbstractRepositoryWriterM2Test
 extends PlexusTestCase
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( AbstractRepositoryWriterM2Test.class ); 
-  
   Repository repo;
   
   File targetDirectory; 
@@ -128,14 +126,13 @@ extends PlexusTestCase
     FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
     binarySize = artifactBinary.length();
 
-    _log.info( "Binary size is "+binarySize+" bytes" );
+    System.out.println( "Binary size is "+binarySize+" bytes" );
 
     artifactPom = File.createTempFile( "test-repo-writer", "pom" );
     FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ), artifactPom );
     pomSize = artifactPom.length();
     pomBytes = FileUtil.readRawData( artifactPom );
   }
-  
   
   @Override
   protected void tearDown()

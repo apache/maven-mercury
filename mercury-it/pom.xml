@@ -35,6 +35,8 @@ under the License.
     <maven.version>3.0-SNAPSHOT</maven.version>
     <spice.model.builder.version>1.2</spice.model.builder.version>
     
+    <plexus.webdav.version>1.0-SNAPSHOT</plexus.webdav.version>
+    
     <nexus.version>1.0.1</nexus.version>
     <nexus.client.version>1.1-M1</nexus.client.version>
 
@@ -170,35 +172,9 @@ under the License.
     </dependency>
 
     <dependency>
-      <groupId>org.sonatype.appbooter</groupId>
-      <artifactId>plexus-forked-app-booter</artifactId>
-    </dependency>
-  
-    <dependency>
-      <groupId>org.sonatype.nexus</groupId>
-      <artifactId>nexus-rest-api</artifactId>
-        <version>${nexus.client.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-component-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.nexus</groupId>
-      <artifactId>nexus-rest-client-java</artifactId>
-        <version>${nexus.client.version}</version>
-    </dependency>
-  
-    <dependency>
-      <groupId>org.sonatype.nexus</groupId>
-      <artifactId>nexus-webapp</artifactId>
-      <version>${nexus.version}</version>
-      <classifier>bundle</classifier>
-      <type>zip</type>
-      <scope>provided</scope>
+      <groupId>org.sonatype.spice</groupId>
+      <artifactId>plexus-webdav</artifactId>
+      <version>${plexus.webdav.version}</version>
     </dependency>
 
     <dependency>
