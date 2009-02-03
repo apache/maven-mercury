@@ -173,6 +173,7 @@ extends PlexusTestCase
     artifacts.add( da );
     
     writer.writeArtifacts( artifacts );
+    Thread.sleep( 2000L );
     
     f = new File( targetDirectory, "/org/apache/maven/maven-core/"+repo.getMetadataName());
     assertTrue( f.exists() );
