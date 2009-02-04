@@ -121,11 +121,11 @@ extends PlexusTestCase
     vFacPgp  = new HashSet<StreamVerifierFactory>(1);
     vFacSha1 = new HashSet<StreamVerifierFactory>(1);
 
-    if( ! differentEOL )
-    {
+//    if( ! differentEOL )
+//    {
         vFacPgp.add( pgpF );
         vFacSha1.add( sha1F );
-    }
+//    }
 
     artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
     FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
