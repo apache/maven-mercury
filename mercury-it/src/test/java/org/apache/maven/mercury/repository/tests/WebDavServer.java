@@ -20,6 +20,10 @@ under the License.
 package org.apache.maven.mercury.repository.tests;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.Servlet;
 
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
@@ -71,12 +75,22 @@ extends Server
         
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         setHandler(contexts);
-        Context context = new Context(contexts, remotePathFragment, Context.SESSIONS);
+        
+        Context context = new Context( contexts, remotePathFragment, Context.SESSIONS );
         context.addServlet(new ServletHolder( new WebdavServlet() ), "/*");
-        context.setResourceBase( base.getCanonicalPath() );
         context.setAttribute( PlexusConstants.PLEXUS_KEY, container );
+        context.setResourceBase( base.getCanonicalPath() );
+        
         context.setAttribute( "resourceCollectionHint", fileCollectionHint );
-        context.setAttribute( "debug", debugLevel );
+        context.setAttribute( "debug", debugLevel+"" );
+
+//        Map<String,String> initParams = new HashMap<String, String>(8);
+//        
+//        initParams.put( "resourceCollectionHint", fileCollectionHint );
+//        initParams.put( "debug", debugLevel+"" );
+//        
+//        context.setInitParams( initParams  );
+        
     }
 
     public int getPort()

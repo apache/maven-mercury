@@ -36,17 +36,15 @@ import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
 import org.codehaus.plexus.PlexusTestCase;
 
-import junit.framework.TestCase;
-
 /**
- * This set of UTs covers a complex use case,
+ * This set of UTs covers a comprehensive use case,
  * involving majority of Mercury repository functionality
  *
  * @author Oleg Gusakov
  * @version $Id$
  *
  */
-public class ComplexRepositoryTest
+public class ComprehensiveRepositoryTest
 extends PlexusTestCase
 {
     WebDavServer _server1;
