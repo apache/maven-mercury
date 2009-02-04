@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,8 @@ import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.mercury.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.mercury.util.TimeUtil;
+import org.codehaus.plexus.lang.DefaultLanguage;
+import org.codehaus.plexus.lang.Language;
 import org.codehaus.plexus.util.WriterFactory;
 
 /**
@@ -40,7 +41,7 @@ import org.codehaus.plexus.util.WriterFactory;
  */
 public class MetadataBuilder
 {
-
+    private static final Language LANG = new DefaultLanguage( MetadataBuilder.class );
     /**
      * instantiate Metadata from a stream
      * 
@@ -263,9 +264,23 @@ public class MetadataBuilder
             return sn;
         }
 
-        String sbn = version.substring( version.lastIndexOf( '-' ) + 1 );
+        int pos = version.lastIndexOf( '-' );
+        
+        if( pos == -1 )
+            throw new IllegalArgumentException( LANG.getMessage( "bad.snapshot.version", version ) );
+
+        String sbn = version.substring( pos + 1 );
+        
         int bn = Integer.parseInt( sbn );
         sn.setBuildNumber( bn );
+        
+        String sts = version.substring( 0, pos);
+        pos = sts.lastIndexOf( '-' );
+        
+        if( pos == -1 )
+            throw new IllegalArgumentException( LANG.getMessage( "bad.snapshot.version", version ) );
+        
+        sn.setTimestamp( sts.substring( pos+1 ) );
 
         return sn;
     }

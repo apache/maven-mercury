@@ -24,8 +24,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
@@ -66,8 +68,8 @@ public class RemoteRepositoryWriterM2
 extends AbstractRepositoryWriter
 implements RepositoryWriter
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( RemoteRepositoryWriterM2.class ); 
-  private static final Language _lang = new DefaultLanguage( RemoteRepositoryWriterM2.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( RemoteRepositoryWriterM2.class ); 
+  private static final Language LANG = new DefaultLanguage( RemoteRepositoryWriterM2.class );
   //---------------------------------------------------------------------------------------------------------------
   private static final String [] _protocols = new String [] { "http", "https", "dav", "webdav" };
   
@@ -86,10 +88,10 @@ implements RepositoryWriter
     
     _server = repo.getServer();
     if( _server == null )
-      throw new IllegalArgumentException( _lang.getMessage( "bad.repository.server.null" ) );
+      throw new IllegalArgumentException( LANG.getMessage( "bad.repository.server.null" ) );
     
     if( _server.getURL() == null )
-      throw new IllegalArgumentException(_lang.getMessage( "bad.repository.server.url.null" ));
+      throw new IllegalArgumentException(LANG.getMessage( "bad.repository.server.url.null" ));
 
     _repo = repo;
     
@@ -151,10 +153,10 @@ implements RepositoryWriter
   throws RepositoryException
   {
     if( artifact == null )
-      throw new RepositoryException( _lang.getMessage( "null.artifact") );
+      throw new RepositoryException( LANG.getMessage( "null.artifact") );
     
     if( artifact.getFile() == null || !artifact.getFile().exists() )
-      throw new RepositoryException( _lang.getMessage( "bad.artifact.file", artifact.toString(), (artifact.getFile() == null ? "null" : artifact.getFile().getAbsolutePath()) ) );
+      throw new RepositoryException( LANG.getMessage( "bad.artifact.file", artifact.toString(), (artifact.getFile() == null ? "null" : artifact.getFile().getAbsolutePath()) ) );
     
     boolean isPom = "pom".equals( artifact.getType() );
     
@@ -162,7 +164,7 @@ implements RepositoryWriter
     boolean hasPomBlob = pomBlob != null && pomBlob.length > 0;
     
     if( !artifact.hasClassifier() && !hasPomBlob )
-      throw new RepositoryException( _lang.getMessage( "no.pom.in.primary.artifact", artifact.toString() ) );
+      throw new RepositoryException( LANG.getMessage( "no.pom.in.primary.artifact", artifact.toString() ) );
     
     InputStream in = artifact.getStream();
     if( in == null )
@@ -170,7 +172,7 @@ implements RepositoryWriter
       File aFile = artifact.getFile();
       if( aFile == null && !isPom )
       {
-        throw new RepositoryException( _lang.getMessage( "artifact.no.stream", artifact.toString() ) );
+        throw new RepositoryException( LANG.getMessage( "artifact.no.stream", artifact.toString() ) );
       }
 
       try
@@ -180,7 +182,7 @@ implements RepositoryWriter
       catch( FileNotFoundException e )
       {
         if( !isPom )
-          throw new RepositoryException( _lang.getMessage( "artifact.no.file", artifact.toString(), aFile.getAbsolutePath(), e.getMessage() ) );
+          throw new RepositoryException( LANG.getMessage( "artifact.no.file", artifact.toString(), aFile.getAbsolutePath(), e.getMessage() ) );
       }
     }
     DefaultArtifactVersion dav = new DefaultArtifactVersion( artifact.getVersion() );
@@ -188,14 +190,15 @@ implements RepositoryWriter
     boolean isSnapshot = aq.equals( Quality.SNAPSHOT_QUALITY ) || aq.equals( Quality.SNAPSHOT_TS_QUALITY );
 
     String relGroupPath = artifact.getGroupId().replace( '.', '/' )+"/"+artifact.getArtifactId();
-    String relVersionPath = relGroupPath + '/' + (isSnapshot ? (dav.getBase()+'-'+Artifact.SNAPSHOT_VERSION) : artifact.getVersion() );
+    String versionFolder = (isSnapshot ? (dav.getBase()+'-'+Artifact.SNAPSHOT_VERSION) : artifact.getVersion() );
+    String relVersionPath = relGroupPath + '/' + versionFolder;
 
     try
     {
       if( isPom )
       {
         if( in == null && !hasPomBlob )
-          throw new RepositoryException( _lang.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
+          throw new RepositoryException( LANG.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
         
         if( in != null )
         {
@@ -232,18 +235,19 @@ implements RepositoryWriter
         md.setArtifactId( artifact.getArtifactId() );
       }
       
-      MetadataOperation mdOp = null;
+      List<MetadataOperation> ops = new ArrayList<MetadataOperation>(2); 
       
       if( isSnapshot )
       {
         Snapshot sn = MetadataBuilder.createSnapshot( artifact.getVersion() );
         sn.setLocalCopy( true );
-        mdOp = new SetSnapshotOperation( new SnapshotOperand(sn) );
+        ops.add( new SetSnapshotOperation( new SnapshotOperand(sn) ) );
+        ops.add( new AddVersionOperation( new StringOperand(versionFolder) ) );
       }
       else
-        mdOp = new AddVersionOperation( new StringOperand(artifact.getVersion()) ); 
+          ops.add( new AddVersionOperation( new StringOperand(artifact.getVersion()) ) ); 
       
-      byte [] gaResBytes = MetadataBuilder.changeMetadata( md, mdOp );
+      byte [] gaResBytes = MetadataBuilder.changeMetadata( md, ops );
       Metadata gaMd = MetadataBuilder.getMetadata( gaResBytes );
       
       bindings.add( new Binding(new URL(gaMdUrl), new ByteArrayInputStream(gaResBytes)) );
@@ -259,6 +263,7 @@ implements RepositoryWriter
         md.setVersion( artifact.getVersion() );
       }
       
+      MetadataOperation mdOp = new AddVersionOperation( new StringOperand(artifact.getVersion()) );
       byte [] gavResBytes = MetadataBuilder.changeMetadata( md, mdOp );
       Metadata gavMd = MetadataBuilder.getMetadata( gavResBytes );
       

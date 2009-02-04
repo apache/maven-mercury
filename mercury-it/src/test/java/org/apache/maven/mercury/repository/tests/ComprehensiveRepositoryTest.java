@@ -29,8 +29,11 @@ import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
+import org.apache.maven.mercury.repository.api.ArtifactResults;
+import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
+import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.transport.api.Credentials;
 import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
@@ -69,6 +72,10 @@ extends PlexusTestCase
     
     static final String _resourceBase = "./target/test-classes";
     
+    List<Repository> _rrs;
+    List<Repository> _lrs;
+    List<Repository> _repos;
+    
     
     @Override
     protected void setUp()
@@ -99,6 +106,10 @@ extends PlexusTestCase
         server = new Server("rr2", new URL("http://localhost:"+_port2+_context2), false, false, user );
         _rr2 = new RemoteRepositoryM2( server, dp );
         
+        _rrs = new ArrayList<Repository>(2);
+        _rrs.add( _rr1 );
+        _rrs.add( _rr2 );
+        
         _lbase1 = new File( _local1 );
         FileUtil.delete( _lbase1 );
         _lbase1.mkdirs();
@@ -109,6 +120,13 @@ extends PlexusTestCase
         _lbase2.mkdirs();
         _lr2 = new LocalRepositoryM2( "lr2", _lbase2, dp );
         
+        _lrs = new ArrayList<Repository>(2);
+        _lrs.add( _lr1 );
+        _lrs.add( _lr2 );
+        
+        _repos = new ArrayList<Repository>();
+        _repos.addAll( _rrs );
+        _repos.addAll( _lrs );
     }
 
     @Override
@@ -136,19 +154,141 @@ extends PlexusTestCase
             finally { _server2 = null; }
     }
     
-    public void testWriteReadArtifact()
+    public void writeArtifact( String name, File af, File ap, Repository repo )
     throws Exception
     {
-        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
-        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
-        
-        DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9") );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata(name) );
         
         da.setPomBlob( FileUtil.readRawData( ap ) );
         da.setFile( af );
         List<Artifact> al = new ArrayList<Artifact>();
         al.add( da );
         
-        _rr2.getWriter().writeArtifacts( al );
+        repo.getWriter().writeArtifacts( al );
+    }
+    
+    public List<Artifact> readArtifact( String name , List<Repository> repos )
+    throws Exception
+    {
+        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata(name);
+        
+        List<ArtifactBasicMetadata> al = new ArrayList<ArtifactBasicMetadata>();
+        al.add( bmd );
+        
+        VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
+        
+        ArtifactResults  res = vr.readArtifacts( al );
+        
+        assertNotNull( res );
+        
+        if( res.hasExceptions() )
+            System.out.println( res.getExceptions() );
+        
+        assertTrue( res.hasResults(bmd) );
+        
+        return res.getResults( bmd );
+    }
+    
+    public void testWriteReadArtifact()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9";
+        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata( name );
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _rr2 );
+        
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _rrs );
+        
+        System.out.println(al);
+        
+        File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar" );
+        File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar" );
+        
+        assertFalse( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+        
+        al = readArtifact( name, _repos );
+        
+        assertTrue( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+    }
+    
+    public void testWriteReadTimeStamp()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata( name );
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _rr2 );
+        
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _rrs );
+        
+        System.out.println(al);
+        
+        File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar" );
+        File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar" );
+        
+        assertFalse( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+        
+        al = readArtifact( name, _repos );
+        
+        assertTrue( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+    }
+    
+    public void testWriteReadLocalTimeStamp()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata( name );
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        File aJar2 = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _lr2 );
+        
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _repos );
+        
+        System.out.println(al);
+        
+        File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar" );
+        File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar" );
+        
+        assertTrue( localRepo1Jar.exists() );
+        assertTrue( localRepo2Jar.exists() );
     }
 }
