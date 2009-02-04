@@ -100,6 +100,8 @@ extends PlexusTestCase
   /** current test works with releases */
   abstract void setSnapshots() throws Exception;
   
+  static final boolean differentEOL = File.pathSeparatorChar == ';';
+  
   
   @Override
   protected void setUp()
@@ -119,8 +121,11 @@ extends PlexusTestCase
     vFacPgp  = new HashSet<StreamVerifierFactory>(1);
     vFacSha1 = new HashSet<StreamVerifierFactory>(1);
 
-    vFacPgp.add( pgpF );
-    vFacSha1.add( sha1F );
+    if( ! differentEOL )
+    {
+        vFacPgp.add( pgpF );
+        vFacSha1.add( sha1F );
+    }
 
     artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
     FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
