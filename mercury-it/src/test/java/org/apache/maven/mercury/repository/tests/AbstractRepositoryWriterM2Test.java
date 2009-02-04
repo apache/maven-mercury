@@ -248,6 +248,28 @@ extends PlexusTestCase
     assertEquals( pomSize, ap.length() );  
   }
   
+  public void testWriteClassifier()
+  throws Exception
+  {
+    setSnapshots();
+    
+    Set<Artifact> set = new HashSet<Artifact>(3);
+    DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9:all") );
+//    da.setPomBlob( pomBytes );
+    da.setFile( artifactBinary );
+    set.add( da );
+    
+    writer.writeArtifacts( set );
+    
+    File af = new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/maven-core-2.0.9-all.jar");
+    assertTrue( af.exists() );
+    assertEquals( binarySize, af.length() );
+//    
+//    File ap = new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom");
+//    assertTrue( ap.exists() );
+//    assertEquals( pomSize, ap.length() );  
+  }
+  
   public void testWriteContentionSingleArtifact()
   throws Exception
   {
