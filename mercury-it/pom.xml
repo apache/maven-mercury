@@ -40,12 +40,6 @@ under the License.
   <dependencies>
 
     <dependency>
-      <groupId>org.sonatype.spice</groupId>
-      <artifactId>model-builder</artifactId>
-      <version>${spice.model.builder.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-event</artifactId>
     </dependency>
@@ -178,8 +172,19 @@ under the License.
         </exclusion>
       </exclusions>
     </dependency>
-    
-    
+
+    <dependency>
+      <groupId>org.sonatype.spice</groupId>
+      <artifactId>model-builder</artifactId>
+      <version>${spice.model.builder.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven.shared</groupId>
+          <artifactId>maven-shared-model</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
   </dependencies>
 
   <build>
