@@ -158,8 +158,6 @@ public class MercuryAntTest
 
         configureProject( "build.xml" );
         getProject().setProperty( "repo.port", "" + _port );
-        
-        Thread.sleep( 2000L );
     }
 
     // -----------------------------------
@@ -530,6 +528,12 @@ public class MercuryAntTest
         String title = "verify-read-good-pgp";
         System.out.println( "========> start " + title );
         System.out.flush();
+        
+        if( File.pathSeparatorChar == ';' )
+        {
+            System.out.println( "PGP test temporarily disabled under Windows,\nbecause all files were signed under Unix\nand SVN properties make checkout to convert EOL,\nbreaking signatures" + title );
+            return;
+        }
 
         File af = new File( _verifyRepoDirFile, "t/t/1.0/t-1.0.jar" );
         assertFalse( af.exists() );
