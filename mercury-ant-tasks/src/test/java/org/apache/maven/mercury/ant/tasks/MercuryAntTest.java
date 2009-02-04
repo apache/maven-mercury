@@ -158,6 +158,8 @@ public class MercuryAntTest
 
         configureProject( "build.xml" );
         getProject().setProperty( "repo.port", "" + _port );
+        
+        Thread.sleep( 2000L );
     }
 
     // -----------------------------------
@@ -533,8 +535,6 @@ public class MercuryAntTest
         assertFalse( af.exists() );
 
         executeTarget( "good-pgp" );
-        
-        Thread.sleep( 2000L );
 
         assertTrue( af.exists() );
     }

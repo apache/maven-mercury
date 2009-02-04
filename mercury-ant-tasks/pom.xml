@@ -148,8 +148,6 @@ under the License.
 
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-<!--         <version>1.1</version>
- -->
         <executions>
           <execution>
             <phase>package</phase>
