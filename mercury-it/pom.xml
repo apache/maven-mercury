@@ -34,33 +34,7 @@ under the License.
   <properties>
     <maven.version>3.0-SNAPSHOT</maven.version>
     <spice.model.builder.version>1.2</spice.model.builder.version>
-    
     <plexus.webdav.version>1.0-SNAPSHOT</plexus.webdav.version>
-    
-    <nexus.version>1.0.1</nexus.version>
-    <nexus.client.version>1.1-M1</nexus.client.version>
-
-    <nexus-security-enabled>false</nexus-security-enabled>
-
-    <bundle-expanded-dir>target</bundle-expanded-dir>
-    <config-expanded-dir>target/test-nexus-config</config-expanded-dir>
-
-    <nexus-relative-basedir>${bundle-expanded-dir}/nexus-webapp-${nexus.version}</nexus-relative-basedir>
-    <nexus-abs-basedir>${project.build.directory}/nexus-webapp-${nexus.version}</nexus-abs-basedir>
-
-    <config-target-dir>${nexus-abs-basedir}/runtime/apps/nexus/conf</config-target-dir>
-    <work-target-dir>${nexus-abs-basedir}/runtime/work</work-target-dir>
-    <nexus-plexus-config-file>${nexus-abs-basedir}/conf/plexus.xml</nexus-plexus-config-file>
-
-    <nexus-application-protocol>http</nexus-application-protocol>
-    <nexus-application-host>localhost</nexus-application-host>
-    <nexus-application-name>nexus</nexus-application-name>
-    <nexus-application-port>8091</nexus-application-port>
-    <jetty-application-host>0.0.0.0</jetty-application-host>
-
-    <nexus-base-url>${nexus-application-protocol}://${nexus-application-host}:${nexus-application-port}/${nexus-application-name}/</nexus-base-url>
-
-    <nexus-control-port>33002</nexus-control-port>
   </properties>
 
   <dependencies>
@@ -197,7 +171,15 @@ under the License.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-mercury</artifactId>
       <version>${maven.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven.shared</groupId>
+          <artifactId>maven-shared-model</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    
+    
   </dependencies>
 
   <build>
@@ -223,39 +205,6 @@ under the License.
             <include>pgp/**</include>
             <include>repo/**</include>
         </includes>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus</directory>
-        <filtering>false</filtering>
-        <excludes>
-            <exclude>work/conf/**</exclude>
-        </excludes>
-        <targetPath>../nexus-webapp-${nexus.version}/runtime</targetPath>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus</directory>
-        <filtering>true</filtering>
-        <includes>
-            <include>work/conf/**</include>
-        </includes>
-        <targetPath>../nexus-webapp-${nexus.version}/runtime</targetPath>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus</directory>
-        <filtering>false</filtering>
-        <includes>
-            <include>log4j.properties</include>
-        </includes>
-        <targetPath>../nexus-webapp-${nexus.version}/runtime/apps/nexus/conf</targetPath>
-      </testResource>
-
-      <testResource>
-        <directory>src/test/nexus/conf</directory>
-        <filtering>true</filtering>
-        <targetPath>../nexus-webapp-${nexus.version}/conf</targetPath>
       </testResource>
 
     </testResources>
