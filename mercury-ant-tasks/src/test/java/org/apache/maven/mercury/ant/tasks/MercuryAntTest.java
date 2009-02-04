@@ -533,6 +533,8 @@ public class MercuryAntTest
         assertFalse( af.exists() );
 
         executeTarget( "good-pgp" );
+        
+        Thread.sleep( 2000L );
 
         assertTrue( af.exists() );
     }
