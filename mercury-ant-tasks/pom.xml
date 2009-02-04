@@ -169,6 +169,11 @@ under the License.
                   <exclude>org.bouncycastle:bcpg-jdk15</exclude>
                   <exclude>bouncycastle:bcprov-jdk15</exclude>
                   <exclude>bouncycastle:bcpg-jdk15</exclude>
+
+                  <exclude>org.mortbay.jetty:jetty</exclude>
+                  <exclude>org.mortbay.jetty:jetty-util5</exclude>
+                  <exclude>org.mortbay.jetty:jetty-util</exclude>
+                  <exclude>org.mortbay.jetty:jetty-sslengine</exclude>
                 </excludes>
               </artifactSet>
               <filters>
