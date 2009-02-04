@@ -182,17 +182,20 @@ extends PlexusTestCase
     
     f = new File( targetDirectory, "/org/apache/maven/maven-core/"+repo.getMetadataName());
     assertTrue( f.exists() );
-    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/"+repo.getMetadataName()+".asc").exists() );
-    FileUtil.verify( f, vFacPgp, false, true );
-    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/"+repo.getMetadataName()+".sha1").exists() );
-    FileUtil.verify( f, vFacSha1, false, true );
+    
+//  [MERCURY-83] - should not verify repo metadata, it's repository's business    
+//    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/"+repo.getMetadataName()+".asc").exists() );
+//    FileUtil.verify( f, vFacPgp, false, true );
+//    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/"+repo.getMetadataName()+".sha1").exists() );
+//    FileUtil.verify( f, vFacSha1, false, true );
 
     f = new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/"+repo.getMetadataName());
     assertTrue( f.exists() );
-    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/"+repo.getMetadataName()+".asc").exists() );
-    FileUtil.verify( f, vFacPgp, false, true );
-    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/"+repo.getMetadataName()+".sha1").exists() );
-    FileUtil.verify( f, vFacSha1, false, true );
+//    [MERCURY-83] - should not verify repo metadata, it's repository's business    
+//    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/"+repo.getMetadataName()+".asc").exists() );
+//    FileUtil.verify( f, vFacPgp, false, true );
+//    assertTrue( new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/"+repo.getMetadataName()+".sha1").exists() );
+//    FileUtil.verify( f, vFacSha1, false, true );
     
     assertTrue( af.exists() );
     assertEquals( binarySize, af.length() );
