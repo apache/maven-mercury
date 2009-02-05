@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.apache.maven.mercury</groupId>
+  <artifactId>mercury-repo-virtual</artifactId>
+  <version>1.0.0-alpha-2</version>
+  <versioning>
+     <version>1.0.0-alpha-2</version>
+    <lastUpdated>20081014022719</lastUpdated>
+  </versioning>
+</metadata>

@@ -31,25 +31,27 @@ import java.util.regex.Pattern;
 public interface Artifact
 extends Comparable<Artifact>
 {
-    String LATEST_VERSION = "LATEST";
+    static final String LATEST_VERSION = "LATEST";
 
-    String SNAPSHOT_VERSION = "SNAPSHOT";
+    static final String SNAPSHOT_VERSION = "SNAPSHOT";
 
-    String RELEASE_VERSION = "RELEASE";
+    static final String RELEASE_VERSION = "RELEASE";
 
-    Pattern VERSION_FILE_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$" );
+    static final String  SNAPSHOT_TS_REGEX = ".+-\\d{8}\\.\\d{6}-\\d+";
+
+    static final Pattern VERSION_FILE_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$" );
 
     // TODO: into artifactScope handler
 
-    String SCOPE_COMPILE = ArtifactScopeEnum.compile.toString();
+    static final String SCOPE_COMPILE = ArtifactScopeEnum.compile.toString();
 
-    String SCOPE_TEST = ArtifactScopeEnum.test.toString();
+    static final String SCOPE_TEST = ArtifactScopeEnum.test.toString();
 
-    String SCOPE_RUNTIME = ArtifactScopeEnum.runtime.toString();
+    static final String SCOPE_RUNTIME = ArtifactScopeEnum.runtime.toString();
 
-    String SCOPE_PROVIDED = ArtifactScopeEnum.provided.toString();
+    static final String SCOPE_PROVIDED = ArtifactScopeEnum.provided.toString();
 
-    String SCOPE_SYSTEM = ArtifactScopeEnum.system.toString();
+    static final String SCOPE_SYSTEM = ArtifactScopeEnum.system.toString();
 
     String getGroupId();
 

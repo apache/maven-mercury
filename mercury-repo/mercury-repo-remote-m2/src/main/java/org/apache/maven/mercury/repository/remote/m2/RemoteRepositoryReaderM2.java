@@ -174,7 +174,7 @@ implements RepositoryReader, MetadataReader
     Collection<String> versions = null;
     try
     {
-      versions = getCachedVersions( loc, bmd );
+      versions = getCachedVersions( loc, bmd, res );
     }
     catch( MetadataCacheException e )
     {
@@ -441,7 +441,7 @@ implements RepositoryReader, MetadataReader
     return ror;
   }
   //---------------------------------------------------------------------------------------------------------------
-  private Collection<String> getCachedVersions( ArtifactLocation loc, ArtifactBasicMetadata bmd )
+  private Collection<String> getCachedVersions( ArtifactLocation loc, ArtifactBasicMetadata bmd, AbstractRepOpResult res )
   throws MetadataException, MetadataReaderException, MetadataCacheException
   {
     RepositoryGAMetadata gam = null;
@@ -491,13 +491,48 @@ implements RepositoryReader, MetadataReader
       LOG.warn( LANG.getMessage( "maven.metadata.no.versions", loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName(), _repo.getId() ) );
       return null;
     }
+
+    Collection<String> vList = (Collection<String>) gam.getVersions();
+    List<String> vRes = new ArrayList<String>( vList.size() );
+    vRes.addAll( vList );
+    
+    gam.getVersions().clear();
+    
+    for( String v : vRes )
+    {
+        String toAdd;
+        
+        if( v.endsWith( Artifact.SNAPSHOT_VERSION )  )
+        {
+            boolean snFound = false;
+            ArtifactBasicMetadata snMd = new ArtifactBasicMetadata( bmd.toString() );
+            snMd.setVersion( v );
+            ArtifactLocation snLoc = new ArtifactLocation( loc.getPrefix(), snMd );
+            try
+            {
+                snFound = findLatestSnapshot( snMd, snLoc, res );
+            }
+            catch ( Exception e )
+            {
+                throw new MetadataException(e);
+            }
+            if( snFound ) 
+                toAdd = snLoc.getVersion();
+            else
+                continue;
+        }
+        else
+            toAdd = v;
+        
+        gam.getVersions().add( toAdd );
+    }
     
     // cache it
     if( _mdCache != null )
     {
       _mdCache.updateGA( _repo.getId(), gam );
     }
-    
+
     return gam.getVersions();
   }
   //---------------------------------------------------------------------------------------------------------------
@@ -522,7 +557,7 @@ implements RepositoryReader, MetadataReader
       
       try
       {
-        versions = getCachedVersions( loc, bmd );
+        versions = getCachedVersions( loc, bmd, res );
         
         if( Util.isEmpty( versions ) )
           continue;

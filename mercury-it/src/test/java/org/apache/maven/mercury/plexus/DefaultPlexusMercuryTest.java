@@ -40,6 +40,7 @@ import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
+import org.apache.maven.mercury.spi.http.server.HttpTestServer;
 import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
 import org.codehaus.plexus.PlexusContainer;
@@ -69,9 +70,6 @@ extends PlexusTestCase
   protected static final String publicKeyFile = "/pgp/pubring.gpg";
   protected static final String secretKeyPass = "testKey82";
   
-//  public static final String SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_URL = "plexus.mercury.test.url";
-//  private String remoteServerUrl = System.getProperty( SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_URL, null );
-  static String remoteServerUrl = "http://people.apache.org/~ogusakov/repos/test";
   String artifactCoord = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-SNAPSHOT";
 
   private File localRepoDir;
@@ -91,6 +89,10 @@ extends PlexusTestCase
   VirtualRepositoryReader vrr;
   
   PlexusContainer plexus;
+  
+  HttpTestServer _jetty;
+  String _port;
+  File _remoteRepoBase = new File("./target/test-classes/remoteRepo");
   
   //-------------------------------------------------------------------------------------
 //  @Override
@@ -116,6 +118,11 @@ extends PlexusTestCase
     
     sha1F = new SHA1VerifierFactory( true, false );
     
+    _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
+    _jetty.start();
+    _port = String.valueOf( _jetty.getPort() );
+
+    String remoteServerUrl = "http://localhost:"+_port+"/repo";
     remoteRepo = pm.constructRemoteRepositoryM2( "testRepo"
                         , new URL(remoteServerUrl), remoteServerUser, remoteServerPass
                         , null, null, null
@@ -125,8 +132,8 @@ extends PlexusTestCase
     
 //    localRepoDir = File.createTempFile( "local-", "-repo" );
     localRepoDir = new File( "./target/local" );
-    localRepoDir.delete();
-    localRepoDir.mkdir();
+    FileUtil.delete( localRepoDir );
+    localRepoDir.mkdirs();
     
     localRepo = new LocalRepositoryM2( "testLocalRepo", localRepoDir, pm.findDependencyProcessor() );
     
@@ -142,10 +149,18 @@ extends PlexusTestCase
   protected void tearDown()
   throws Exception
   {
-    if( remoteServerUrl == null )
-      return;
-    
     super.tearDown();
+    
+    if( _jetty != null )
+        try
+        {
+            _jetty.stop();
+            _jetty.destroy();
+        }
+        finally
+        {
+            _jetty = null;
+        }
   }
   //----------------------------------------------------------------------------------------------
   private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )

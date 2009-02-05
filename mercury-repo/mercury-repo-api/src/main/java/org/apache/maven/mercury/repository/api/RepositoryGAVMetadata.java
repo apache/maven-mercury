@@ -23,10 +23,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactCoordinates;
 import org.apache.maven.mercury.artifact.version.VersionComparator;
 import org.apache.maven.mercury.repository.metadata.Metadata;
 import org.apache.maven.mercury.repository.metadata.MetadataException;
+import org.apache.maven.mercury.repository.metadata.Snapshot;
 import org.apache.maven.mercury.util.TimeUtil;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -63,23 +65,6 @@ public class RepositoryGAVMetadata
   }
 
   /**
-   * initialization of md object from scratch
-   * 
-   * @param versions
-   * @param lastCheck
-   */
-  public RepositoryGAVMetadata( ArtifactCoordinates gav, Collection<String> snapshots, Collection<String> classifiers )
-  {
-    this.gav = gav;
-
-    if( !Util.isEmpty( snapshots ) )
-      this.snapshots.addAll( snapshots );
-    
-    this.classifiers = classifiers;
-    this.lastCheck = TimeUtil.getUTCTimestampAsLong();
-  }
-  
-  /**
    * construct from maven 2.x maven-metadata.xml object
    * 
    * @param md
@@ -99,8 +84,21 @@ public class RepositoryGAVMetadata
       versions = md.getVersioning().getVersions(); 
       
     if( !Util.isEmpty( versions ) )
-      this.snapshots.addAll( versions );
-    
+        this.snapshots.addAll( versions );
+
+    String version = md.getVersion();
+
+    if( version != null && version.endsWith( Artifact.SNAPSHOT_VERSION ) )
+    {
+        Snapshot sn = md.getVersioning().getSnapshot();
+        
+        if( sn != null && !Util.isEmpty( sn.getTimestamp() ) &&  !Util.isEmpty( sn.getBuildNumber() ) )
+        {
+            String ts = version.replaceAll( Artifact.SNAPSHOT_VERSION, sn.getTimestamp()+'-'+sn.getBuildNumber() );
+            snapshots.add( ts );
+        }
+    }
+
     this.lastCheck = TimeUtil.getUTCTimestampAsLong();
   }
 

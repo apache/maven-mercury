@@ -40,6 +40,7 @@ import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
+import org.apache.maven.mercury.spi.http.server.HttpTestServer;
 import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
 
@@ -55,11 +56,10 @@ extends TestCase
 {
   File             _testBase;
   LocalRepository  _localRepo;
-  Server           _server;
   RemoteRepository _remoteRepo;
   VirtualRepositoryReader _vr;
   
-  String _remoteUrl = "http://people.apache.org/~ogusakov/repos/test";
+//  String _remoteUrl; // = "http://people.apache.org/~ogusakov/repos/test";
   String _artifactCoordSn = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-SNAPSHOT";
   String _artifactCoordLatest = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-LATEST";
   String _artifactCoordRelease = "ant:ant:1.6.5";
@@ -67,12 +67,24 @@ extends TestCase
   String _localRepoId = "localRepo";
   String _remoteRepoId = "remoteRepo";
   
+  HttpTestServer _jetty;
+  String _port;
+  File _remoteRepoBase = new File("./target/test-classes/remoteRepo");
+  
   @Override
   protected void setUp()
   throws Exception
   {
+      _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
+      _jetty.start();
+      _port = String.valueOf( _jetty.getPort() );
+
     _testBase = new File( "./target/repo" );
     FileUtil.delete( _testBase );
+    
+    if( _testBase.exists() )
+        throw new Exception( "cannot clean folder " + _testBase.getAbsolutePath() );
+    
     _testBase.mkdirs();
     FileUtil.copy( new File("./src/test/resources/repo"), _testBase, false );
     
@@ -81,9 +93,9 @@ extends TestCase
     
     _localRepo = new LocalRepositoryM2( _localRepoId, _testBase, new MetadataProcessorMock() );
     
-    _server = new Server( _remoteRepoId, new URL(_remoteUrl) );
+    Server server = new Server( _remoteRepoId, new URL("http://localhost:"+_port+"/repo") );
     
-    _remoteRepo = new RemoteRepositoryM2( _server.getId(), _server, new MetadataProcessorMock() );
+    _remoteRepo = new RemoteRepositoryM2( server.getId(), server, new MetadataProcessorMock() );
     
     List<Repository> rl = new ArrayList<Repository>();
     rl.add( _localRepo );
@@ -91,6 +103,16 @@ extends TestCase
      
     _vr = new VirtualRepositoryReader( rl );
   }
+  
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        if( _jetty != null )
+        {
+        }
+    }
   
   public void testReadSnapshot()
   throws Exception
@@ -117,7 +139,8 @@ extends TestCase
     
     assertTrue( bmd.getGroupId().equals( a.getGroupId() ) );
     assertTrue( bmd.getArtifactId().equals( a.getArtifactId() ) );
-    assertTrue( bmd.getVersion().equals( a.getVersion() ) );
+    
+    assertTrue( a.getVersion().matches( Artifact.SNAPSHOT_TS_REGEX ) );
     
     byte [] pomBytes = a.getPomBlob(); 
     

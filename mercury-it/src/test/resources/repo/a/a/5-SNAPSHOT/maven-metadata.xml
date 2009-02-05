@@ -7,6 +7,10 @@
       <version>5-20080807.234713-11</version>
       <version>5-SNAPSHOT</version>
      </versions>
+    <snapshot>
+      <timestamp>20080807.234713</timestamp>
+      <buildNumber>11</buildNumber>
+    </snapshot>
     <lastUpdated>20080424212921</lastUpdated>
   </versioning>
 </metadata>

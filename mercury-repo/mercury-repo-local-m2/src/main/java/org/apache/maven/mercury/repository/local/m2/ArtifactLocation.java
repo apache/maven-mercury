@@ -151,7 +151,7 @@ public class ArtifactLocation
       if( ver == null )
           return ver;
       
-      if( ver.matches( ".+-\\d{8}\\.\\d{6}-\\d+" ) )
+      if( ver.matches( Artifact.SNAPSHOT_TS_REGEX ) )
           return stripTS( ver )+FileUtil.DASH+Artifact.SNAPSHOT_VERSION;
       
       return ver;
