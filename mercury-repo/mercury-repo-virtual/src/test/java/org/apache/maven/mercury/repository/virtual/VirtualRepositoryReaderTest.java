@@ -43,6 +43,7 @@ import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.spi.http.server.HttpTestServer;
 import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
+import org.apache.maven.mercury.util.Util;
 
 /**
  *
@@ -75,9 +76,9 @@ extends TestCase
   protected void setUp()
   throws Exception
   {
-      _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
-      _jetty.start();
-      _port = String.valueOf( _jetty.getPort() );
+    
+      if( Util.isWindows() )
+          Thread.sleep( 2000L );
 
     _testBase = new File( "./target/repo" );
     FileUtil.delete( _testBase );
@@ -93,9 +94,16 @@ extends TestCase
     
     _localRepo = new LocalRepositoryM2( _localRepoId, _testBase, new MetadataProcessorMock() );
     
+    
+    _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
+    _jetty.start();
+    _port = String.valueOf( _jetty.getPort() );
     Server server = new Server( _remoteRepoId, new URL("http://localhost:"+_port+"/repo") );
     
     _remoteRepo = new RemoteRepositoryM2( server.getId(), server, new MetadataProcessorMock() );
+
+    if( Util.isWindows() )
+        Thread.sleep( 2000L );
     
     List<Repository> rl = new ArrayList<Repository>();
     rl.add( _localRepo );
