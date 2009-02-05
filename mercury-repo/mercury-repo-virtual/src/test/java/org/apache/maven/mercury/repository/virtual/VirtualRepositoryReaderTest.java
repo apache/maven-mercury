@@ -82,8 +82,9 @@ extends TestCase
 
     _testBase = new File( "./target/repo" );
     FileUtil.delete( _testBase );
-    
-    if( _testBase.exists() )
+
+// windows does not like it     
+    if( ! Util.isWindows() && _testBase.exists() )
         throw new Exception( "cannot clean folder " + _testBase.getAbsolutePath() );
     
     _testBase.mkdirs();
