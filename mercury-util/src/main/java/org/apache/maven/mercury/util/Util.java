@@ -31,6 +31,13 @@ import java.util.Map;
  */
 public class Util
 {
+    public static final boolean bWindows = File.pathSeparatorChar == ';';
+    
+    public static final boolean isWindows()
+    {
+      return bWindows;
+    }
+    
    @SuppressWarnings("unchecked")
   public static final boolean isEmpty( Collection o )
    {
