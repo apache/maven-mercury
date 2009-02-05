@@ -66,8 +66,11 @@ public abstract class FilePutExchange extends FileExchange
     public FilePutExchange( Server server, String batchId, Binding binding, File localFile, Set<StreamObserver> observers, HttpClient client )
     {
         super( server, binding, localFile, client );
-        _observers.addAll(observers);
+        
         _batchId = batchId;
+        
+        if( observers != null && ! observers.isEmpty() )
+            _observers.addAll(observers);
     }
 
 

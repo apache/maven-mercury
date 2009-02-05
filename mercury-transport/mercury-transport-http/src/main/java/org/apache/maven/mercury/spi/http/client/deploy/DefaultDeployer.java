@@ -191,7 +191,9 @@ public class DefaultDeployer implements Deployer
             try
             {
                 Server server = resolveServer(binding);
-                Set<StreamObserver> observers = createStreamObservers(server);
+                
+                Set<StreamObserver> observers = createStreamObservers( server, binding.isExempt() );
+                
                 target = new DeploymentTarget( server, _httpClient, batchId, binding, request.getValidators(), observers )
                 {
                     public void onComplete()
@@ -329,7 +331,7 @@ public class DefaultDeployer implements Deployer
         return server;
     }
     
-    private Set<StreamObserver> createStreamObservers( Server server )
+    private Set<StreamObserver> createStreamObservers( Server server, boolean exempt )
     throws StreamObserverException
     {
         HashSet<StreamObserver> observers = new HashSet<StreamObserver>();
@@ -337,7 +339,7 @@ public class DefaultDeployer implements Deployer
         if( server == null )
           return observers;
         
-        if( server.hasWriterStreamVerifierFactories() )
+        if( (!exempt) && server.hasWriterStreamVerifierFactories() )
         {
           Set<StreamVerifierFactory> factories = server.getWriterStreamVerifierFactories();
           for (StreamVerifierFactory f:factories)

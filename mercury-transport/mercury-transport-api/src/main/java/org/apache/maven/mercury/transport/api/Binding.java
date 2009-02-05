@@ -38,16 +38,22 @@ public class Binding
   private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Binding.class );
   
   protected URL                 remoteResource;
+
   protected File                localFile;
+
   /** 
    * inbound in-memory binding for reading remote content.
    * It is created by the constructor
    */
   protected ByteArrayOutputStream localOS;
+
   /**
    * this is outbound in-memory binding. IS is passed by the client
    */
   protected InputStream         localIS;
+  
+  /** indicates that this transfer is exempt from stream verification */
+  boolean exempt = false;
 
   protected Exception error;
 
@@ -59,7 +65,12 @@ public class Binding
   {
     this.remoteResource = remoteUrl;
     this.localFile = localFile;
+  }
 
+  public Binding( URL remoteUrl, File localFile, boolean exempt )
+  {
+      this( remoteUrl,localFile );
+      this.exempt = exempt;
   }
 
   /** 
@@ -75,6 +86,12 @@ public class Binding
     this.localOS = new ByteArrayOutputStream( 4*1024 );
   }
 
+  public Binding( URL remoteUrl, boolean exempt )
+  {
+    this( remoteUrl );
+    this.exempt = exempt;
+  }
+
   /**
    * outbound constructor - send contents of the stream to remoteUrl
    * 
@@ -85,6 +102,11 @@ public class Binding
   {
     this.remoteResource = remoteUrl;
     this.localIS = is;
+  }
+  public Binding( URL remoteUrl, InputStream is, boolean exempt )
+  {
+    this( remoteUrl, is );
+    this.exempt = exempt;
   }
 
   /**
@@ -97,6 +119,12 @@ public class Binding
   {
     this.remoteResource = remoteUrl;
     this.localOS = os;
+  }
+
+  public Binding( URL remoteUrl, ByteArrayOutputStream os, boolean exempt  )
+  {
+    this( remoteUrl, os );
+    this.exempt = exempt;
   }
 
   public URL getRemoteResource()
@@ -129,6 +157,16 @@ public class Binding
     return localFile != null;
   }
   
+  public boolean isExempt()
+  {
+      return exempt;
+  }
+  
+  public void setExempt( boolean exempt )
+  {
+      this.exempt = exempt;
+  }
+  
   public byte [] getInboundContent()
   {
     if( localOS != null )
@@ -156,12 +194,11 @@ public class Binding
   public String toString()
   {
     return '['
+            + (exempt ? "(exempt)" : "")
             + (remoteResource == null ? "null URL" : remoteResource.toString() )+" <=> "
             + (localFile == null ?  ( localIS == null ? (localOS == null ? "null local Res" : localOS) : "localIS" ) : localFile.getAbsolutePath() )
             +']'
     ;
   }
-  
-  
 
 }

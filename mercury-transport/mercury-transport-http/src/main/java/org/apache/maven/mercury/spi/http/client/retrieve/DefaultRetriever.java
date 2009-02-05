@@ -173,7 +173,7 @@ public class DefaultRetriever implements Retriever
             try
             {
                 Server server = resolveServer(binding);
-                Set<StreamObserver> observers = createStreamObservers(server);
+                Set<StreamObserver> observers = createStreamObservers( server, binding.isExempt() );
                 
                 target = new RetrievalTarget( server, DefaultRetriever.this, binding, request.getValidators(), observers )
                 {
@@ -310,7 +310,7 @@ public class DefaultRetriever implements Retriever
         return server;
     }
     
-    private Set<StreamObserver> createStreamObservers (Server server)
+    private Set<StreamObserver> createStreamObservers (Server server, boolean exempt )
     throws StreamObserverException
     {
         HashSet<StreamObserver> observers = new HashSet<StreamObserver>();
@@ -318,7 +318,7 @@ public class DefaultRetriever implements Retriever
         if( server == null )
           return observers;
         
-        if ( server.hasReaderStreamVerifierFactories() )
+        if ( (!exempt) && server.hasReaderStreamVerifierFactories() )
         {
             Set<StreamVerifierFactory> factories = server.getReaderStreamVerifierFactories();
             for( StreamVerifierFactory f:factories )
