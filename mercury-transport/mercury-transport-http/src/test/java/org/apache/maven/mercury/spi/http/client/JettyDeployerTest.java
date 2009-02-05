@@ -169,7 +169,7 @@ public class JettyDeployerTest extends TestCase
         System.err.println("Destroyed "+_baseDir.getAbsolutePath());
         super.tearDown();
     }
-    
+
     public void testUploadOKWithChecksums () throws Exception
     {
         HashSet<Binding> bindings = new HashSet<Binding>();
@@ -237,6 +237,76 @@ public class JettyDeployerTest extends TestCase
         File f6cs = new File (_putServer.getPutDir(), "file6.gif.asc");
         assertTrue (f6.exists());
         assertTrue (f6cs.exists());
+        
+    }
+
+    public void testUploadOKWithExemptChecksums () throws Exception
+    {
+        HashSet<Binding> bindings = new HashSet<Binding>();
+        DeployRequestImpl request = new DeployRequestImpl();
+        factories.add( new SHA1VerifierFactory(false, true) ); //!lenient, sufficient
+        factories.add( 
+            new PgpStreamVerifierFactory(
+                    new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
+                    , getClass().getResourceAsStream( secretKeyFile )
+                    , keyId, secretKeyPass
+                                        )
+                      );
+        remoteServerType.setWriterStreamVerifierFactories(factories);
+        
+        System.err.println("Basedir = "+_baseDir.getAbsolutePath());
+        
+        _file0 = new File(_baseDir, "file0.txt");
+        _file1 = new File(_baseDir, "file1.txt");
+        _file2 = new File(_baseDir, "file2.txt");
+        _file3 = new File(_baseDir, "file3.jar");
+        _file4 = new File(_baseDir, "file4.so");
+        _file5 = new File(_baseDir, "file5.jpg");
+        _file6 = new File(_baseDir, "file6.gif");
+        Binding binding0 = new Binding(new URL(_HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), _file0);
+        Binding binding3 = new Binding(new URL(_HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), _file3);
+        Binding binding4 = new Binding(new URL(_HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), _file4);
+        Binding binding5 = new Binding(new URL(_HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), _file5);      
+        Binding binding6 = new Binding(new URL(_HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file6.gif"), _file6, true ); // exempt      
+
+        bindings.add(binding0);
+        bindings.add(binding3);
+        bindings.add(binding4);
+        bindings.add(binding5);
+        bindings.add(binding6);
+          
+        request.setBindings(bindings);
+        
+        DeployResponse response = _deployer.deploy(request);
+
+        for (HttpClientException t:response.getExceptions())
+            t.printStackTrace();
+        
+        assertEquals(0, response.getExceptions().size());
+        File f0 = new File(_putServer.getPutDir(), "file0.txt");
+        File f0cs = new File (_putServer.getPutDir(), "file0.txt.sha1");
+        assertTrue (f0.exists());
+        assertTrue (f0cs.exists());
+      
+        File f3 = new File(_putServer.getPutDir(), "file3.jar");
+        File f3cs = new File (_putServer.getPutDir(), "file3.jar.sha1");
+        assertTrue(f3.exists());
+        assertTrue(f3cs.exists());
+        
+        File f4 = new File(_putServer.getPutDir(), "file4.so");
+        File f4cs = new File (_putServer.getPutDir(), "file4.so.sha1");
+        assertTrue (f4.exists());
+        assertTrue (f4cs.exists());
+        
+        File f5 = new File(_putServer.getPutDir(), "file5.jpg");
+        File f5cs = new File (_putServer.getPutDir(), "file5.jpg.sha1");
+        assertTrue (f5.exists());
+        assertTrue (f5cs.exists());
+        
+        File f6 = new File(_putServer.getPutDir(), "file6.gif");
+        File f6cs = new File (_putServer.getPutDir(), "file6.gif.asc");
+        assertTrue (f6.exists());
+        assertFalse (f6cs.exists());
         
     }
     /* This test duplicates the one above unless we allow for checksum files to
