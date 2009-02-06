@@ -425,24 +425,24 @@ public class LocalRepositoryReaderM2
         
         final int pos = bmd.getArtifactId().length() + 1;
         
-        File[] files = gavDir.listFiles( new FilenameFilter()
-                                        {
-                                            public boolean accept( File dir, String name )
-                                            {
-                                                if( name.matches( regEx ) )
-                                                {
-                                                    String ver = name.substring( pos, name.lastIndexOf( '.' ) );
-                                                    
-                                                    ts.add( ver );
-                                                    
-                                                    return true;
-                                                }
-
-                                                return false;
-                                            }
-                                            
-                                        }
-                                      );
+        gavDir.listFiles( new FilenameFilter()
+                            {
+                                public boolean accept( File dir, String name )
+                                {
+                                    if( name.matches( regEx ) )
+                                    {
+                                        String ver = name.substring( pos, name.lastIndexOf( '.' ) );
+                                        
+                                        ts.add( ver );
+                                        
+                                        return true;
+                                    }
+    
+                                    return false;
+                                }
+                                
+                            }
+                          );
         
         if( ts.isEmpty() )
         {
