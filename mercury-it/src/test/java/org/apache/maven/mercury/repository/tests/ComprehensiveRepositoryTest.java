@@ -82,6 +82,8 @@ extends PlexusTestCase
     protected void setUp()
         throws Exception
     {
+        
+        Thread.sleep( 2000L );
         super.setUp();
         
         DependencyProcessor dp = new MavenDependencyProcessor();
