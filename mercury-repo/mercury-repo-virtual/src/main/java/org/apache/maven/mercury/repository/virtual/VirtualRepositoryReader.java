@@ -656,19 +656,29 @@ public class VirtualRepositoryReader
     // MetadataReader implementation
     // ----------------------------------------------------------------------------------------------------------------------------
     public byte[] readMetadata( ArtifactBasicMetadata bmd )
-        throws MetadataReaderException
+    throws MetadataReaderException
+    {
+        return readMetadata( bmd, false );
+    }
+    public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt  )
+    throws MetadataReaderException
     {
         if ( LOG.isDebugEnabled() )
             LOG.debug( "Asking for pom: " + bmd );
 
-        return readRawData( bmd, "", "pom" );
+        return readRawData( bmd, "", "pom", exempt );
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
     // MetadataReader implementation
     // ----------------------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
-        throws MetadataReaderException
+    throws MetadataReaderException
+    {
+        return readRawData( bmd, classifier, type, false );
+    }
+    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt  )
+    throws MetadataReaderException
     {
 
         GenericEvent event = null;
@@ -760,7 +770,7 @@ public class VirtualRepositoryReader
                             new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_RAW_FROM_REPO,
                                               rr.getRepository().getId() + ": " + eventTag );
 
-                    res = rr.readRawData( bmdQuery, classifier, type );
+                    res = rr.readRawData( bmdQuery, classifier, type, false );
                     if ( res != null )
                     {
                         if ( LOG.isDebugEnabled() )

@@ -142,7 +142,7 @@ extends AbstractRepositoryReaderM2Test
   throws FileNotFoundException, IOException, XmlPullParserException, RepositoryException, MetadataReaderException
   {
     
-    byte [] mmBuf = reader.readRawData( "a/a/maven-metadata.xml" );
+    byte [] mmBuf = reader.readRawData( "a/a/maven-metadata.xml", false );
     
     assertNotNull( mmBuf );
     assertTrue( mmBuf.length > 1 );

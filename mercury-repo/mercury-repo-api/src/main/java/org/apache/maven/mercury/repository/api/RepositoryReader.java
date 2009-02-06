@@ -106,6 +106,9 @@ extends RepositoryOperator, MetadataReader
    * @return byte [] of the resource content, pointed by the path
    * @throws MetadataReaderException 
    */
+  public byte [] readRawData( String path, boolean exempt )
+  throws MetadataReaderException;
+
   public byte [] readRawData( String path )
   throws MetadataReaderException;
   
@@ -138,8 +141,14 @@ extends RepositoryOperator, MetadataReader
         return null;
       }
 
-      public byte[] readRawData( String path )
-          throws MetadataReaderException
+      public byte[] readRawData( String path, boolean exempt )
+      throws MetadataReaderException
+      {
+        return null;
+      }
+      
+      public byte[] readRawData( String path  )
+      throws MetadataReaderException
       {
         return null;
       }
@@ -172,7 +181,13 @@ extends RepositoryOperator, MetadataReader
         return null;
       }
 
-      public byte[] readMetadata( ArtifactBasicMetadata bmd )
+      public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt  )
+      throws MetadataReaderException
+      {
+        return null;
+      }
+
+      public byte[] readMetadata( ArtifactBasicMetadata bmd  )
       throws MetadataReaderException
       {
         return null;
@@ -181,7 +196,19 @@ extends RepositoryOperator, MetadataReader
       public byte[] readRawData(
           ArtifactBasicMetadata bmd,
           String classifier,
-          String type )
+          String type,
+          boolean exempt 
+          )
+          throws MetadataReaderException
+      {
+        return null;
+      }
+
+      public byte[] readRawData(
+          ArtifactBasicMetadata bmd,
+          String classifier,
+          String type
+          )
           throws MetadataReaderException
       {
         return null;

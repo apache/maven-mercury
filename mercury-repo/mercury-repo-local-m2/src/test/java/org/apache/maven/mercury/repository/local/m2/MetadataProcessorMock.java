@@ -50,7 +50,7 @@ implements DependencyProcessor
     
     try
     {
-      byte [] pomBytes = mdReader.readMetadata( bmd );
+      byte [] pomBytes = mdReader.readMetadata( bmd, false );
       if( pomBytes == null )
       {
         throw new MetadataReaderException("no metadata found for "+bmd);

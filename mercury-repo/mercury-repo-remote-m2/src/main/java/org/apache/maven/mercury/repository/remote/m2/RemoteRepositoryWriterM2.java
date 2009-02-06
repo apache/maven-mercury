@@ -214,10 +214,10 @@ implements RepositoryWriter
       
       // read metadata
       String gaMdUrl    = url+'/'+relGroupPath+'/'+_repo.getMetadataName();
-      byte [] gaMdBytes = _reader.readRawData( gaMdUrl );
+      byte [] gaMdBytes = _reader.readRawData( gaMdUrl, true );
       
       String gavMdUrl = url+'/'+relVersionPath+'/'+_repo.getMetadataName();
-      byte [] gavMdBytes = _reader.readRawData( gavMdUrl );
+      byte [] gavMdBytes = _reader.readRawData( gavMdUrl, true );
 
       HashSet<Binding> bindings = new HashSet<Binding>(4);
       

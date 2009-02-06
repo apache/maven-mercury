@@ -558,7 +558,13 @@ public class LocalRepositoryReaderM2
     public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
-        return readRawData( relPathOf( bmd, classifier, type ) );
+        return readRawData( bmd, classifier, type, false );
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt )
+        throws MetadataReaderException
+    {
+        return readRawData( relPathOf( bmd, classifier, type ), exempt );
     }
 
     // ---------------------------------------------------------------------------------------------------------------
@@ -569,15 +575,21 @@ public class LocalRepositoryReaderM2
 
         String path = bmdPath + '/' + bmd.getBaseName( classifier ) + '.' + ( type == null ? bmd.getType() : type );
         
-if( LOG.isDebugEnabled() )
-    LOG.debug( bmd.toString()+" path is "+ path);
+        if( LOG.isDebugEnabled() )
+            LOG.debug( bmd.toString()+" path is "+ path);
 
         return path;
     }
 
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( String path )
-        throws MetadataReaderException
+    throws MetadataReaderException
+    {
+        return readRawData( path, false );
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public byte[] readRawData( String path, boolean exempt )
+    throws MetadataReaderException
     {
         File file = new File( _repoDir, path );
 
@@ -615,7 +627,7 @@ if( LOG.isDebugEnabled() )
     public String readStringData( String path )
         throws MetadataReaderException
     {
-        byte[] data = readRawData( path );
+        byte[] data = readRawData( path, false );
         if ( data == null )
             return null;
 

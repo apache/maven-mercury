@@ -204,68 +204,15 @@ public class JettyRetrieverTest extends TestCase
 //        for (HttpClientException t:response.getExceptions())
 //            t.printStackTrace();
 //        System.err.println("-------------------------------------------------");
-        assertEquals( 2,response.getExceptions().size() );
+        assertEquals( 2, response.getExceptions().size() );
         assertTrue(!file0.exists());
         assertTrue(!file1.exists());
         assertTrue(!file2.exists());
         assertTrue(!file3.exists());
         assertTrue(!file4.exists());
         assertTrue(!file5.exists());
-
     }
 
-
-    public void testSyncRetrievalAllGoodExempt()
-    throws Exception
-    {
-        factories.add( new SHA1VerifierFactory(false, true) ); //!lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
-        dir = mkTempDir();
-        DefaultRetrievalRequest request = new DefaultRetrievalRequest();
-        HashSet<Binding> bindings = new HashSet<Binding>();
-
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
-
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
-        
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"),file1, true ); //has no sha file
-        bindings.add(binding1);
-       
-        Binding binding2 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file2.txt"), file2, true ); //has wrong sha file
-        bindings.add(binding2);
-      
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), file3);
-        bindings.add(binding3);
-        
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
-       
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
-          
-        request.setBindings(bindings);
-        
-        RetrievalResponse response = retriever.retrieve(request);
-        
-//  because bad files are exempt - should be no exceptions
-        assertEquals( 0, response.getExceptions().size() );
-        
-        assertTrue(!file0.exists());
-        assertTrue(!file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(!file3.exists());
-        assertTrue(!file4.exists());
-        assertTrue(!file5.exists());
-
-    }
     
     public void testSyncRetrievalPgpGood()
     throws Exception
@@ -291,10 +238,65 @@ public class JettyRetrieverTest extends TestCase
         
         RetrievalResponse response = retriever.retrieve(request);
         
-//        System.err.println("--------- testSyncRetrievalPgpGood --------------");
-//        for (HttpClientException t:response.getExceptions())
-//            t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        assertEquals( 0, response.getExceptions().size() );
+        assertTrue( file6.exists() );
+       
+    }
+
+    
+    public void testSyncRetrievalPgpBad()
+    throws Exception
+    {
+      factories.add( 
+          new PgpStreamVerifierFactory(
+                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
+                  , getClass().getResourceAsStream( publicKeyFile )
+                                      )
+                    );
+        remoteServerType.setReaderStreamVerifierFactories(factories);
+        
+        //make local dir to put stuff in
+        dir = mkTempDir();
+        DefaultRetrievalRequest request = new DefaultRetrievalRequest();
+        HashSet<Binding> bindings = new HashSet<Binding>();
+
+        file6 = new File( dir, "file5.jpg" );
+        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file6);
+        bindings.add(binding0);
+          
+        request.setBindings(bindings);
+        
+        RetrievalResponse response = retriever.retrieve(request);
+        
+        assertEquals( 1, response.getExceptions().size() );
+        assertFalse( file6.exists() );
+       
+    }
+    
+    public void testSyncRetrievalPgpBadExempt()
+    throws Exception
+    {
+      factories.add( 
+          new PgpStreamVerifierFactory(
+                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
+                  , getClass().getResourceAsStream( publicKeyFile )
+                                      )
+                    );
+        remoteServerType.setReaderStreamVerifierFactories(factories);
+        
+        //make local dir to put stuff in
+        dir = mkTempDir();
+        DefaultRetrievalRequest request = new DefaultRetrievalRequest();
+        HashSet<Binding> bindings = new HashSet<Binding>();
+
+        file6 = new File( dir, "file5.jpg" );
+        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file6, true );
+        bindings.add(binding0);
+          
+        request.setBindings(bindings);
+        
+        RetrievalResponse response = retriever.retrieve(request);
+        
         assertEquals( 0, response.getExceptions().size() );
         assertTrue( file6.exists() );
        

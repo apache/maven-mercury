@@ -129,6 +129,12 @@ public class LocalRepositoryReaderMap
     public byte[] readRawData( String path )
     throws MetadataReaderException
     {
+        return readRawData( path, false );
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public byte[] readRawData( String path, boolean exempt )
+    throws MetadataReaderException
+    {
         try
         {
             return _repo._storage.findRaw( path );
@@ -142,6 +148,12 @@ public class LocalRepositoryReaderMap
     public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
+        return readRawData( bmd, classifier, type, false );
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt )
+        throws MetadataReaderException
+    {
         
         String key =  bmd.getGroupId()
             + ":"+bmd.getArtifactId()
@@ -150,7 +162,7 @@ public class LocalRepositoryReaderMap
             + ":"+ (type == null ? bmd.getType() : type)
         ;
         
-        return readRawData( key );
+        return readRawData( key, exempt );
     }
     // ---------------------------------------------------------------------------------------------------------------
     public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )

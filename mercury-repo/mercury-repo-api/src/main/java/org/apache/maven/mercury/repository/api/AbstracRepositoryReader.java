@@ -75,10 +75,16 @@ implements RepositoryReader, MetadataReader
     return _mdCache != null;
   }
   
-  public byte[] readMetadata( ArtifactBasicMetadata bmd  )
+  public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt  )
   throws MetadataReaderException
   {
-    return readRawData( bmd, "", "pom" );
+    return readRawData( bmd, "", "pom", exempt );
+  }
+  
+  public byte[] readMetadata( ArtifactBasicMetadata bmd )
+  throws MetadataReaderException
+  {
+    return readMetadata( bmd, false );
   }
   
 }

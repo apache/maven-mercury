@@ -258,7 +258,7 @@ implements RepositoryReader, MetadataReader
     
     String mdPath = loc.getGavPath()+'/'+_repo.getMetadataName();
 
-    byte [] mdBytes = readRawData( mdPath );
+    byte [] mdBytes = readRawData( mdPath, true );
     if( mdBytes == null )
     {
       throw new RepositoryException( LANG.getMessage( "no.gav.md", _repo.getServer().getURL().toString(), mdPath ) ) ;
@@ -471,7 +471,7 @@ implements RepositoryReader, MetadataReader
 
     // no cached data, or it has expired - read from repository
     String mdPath = loc.getGaPath()+FileUtil.SEP+_repo.getMetadataName();
-    byte[] mavenMetadata = readRawData( mdPath );
+    byte[] mavenMetadata = readRawData( mdPath, true );
     
     if( mavenMetadata == null )
       throw new MetadataReaderException( LANG.getMessage( "no.group.md", _repo.getServer().getURL().toString(), mdPath ) );
@@ -640,6 +640,12 @@ implements RepositoryReader, MetadataReader
   public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
   throws MetadataReaderException
   {
+      return readRawData( bmd, classifier, type, false );
+  }
+  //---------------------------------------------------------------------------------------------------------------
+  public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt  )
+  throws MetadataReaderException
+  {
     byte [] res = null;
     ArtifactBasicMetadata mod = null;
     
@@ -691,7 +697,7 @@ if( LOG.isDebugEnabled() )
 if( LOG.isDebugEnabled() )
     LOG.debug( "calculated raw path as "+bmdPath );
     
-    res = readRawData( bmdPath );
+    res = readRawData( bmdPath, exempt );
     
     if( _mdCache != null && res != null && mod != null )
     {
@@ -711,6 +717,12 @@ if( LOG.isDebugEnabled() )
   public byte[] readRawData( String path )
   throws MetadataReaderException
   {
+      return readRawData( path, false );
+  }
+  //---------------------------------------------------------------------------------------------------------------
+  public byte[] readRawData( String path, boolean exempt )
+  throws MetadataReaderException
+  {
     if( path == null || path.length() < 1 )
       return null;
     
@@ -725,7 +737,7 @@ if( LOG.isDebugEnabled() )
       
       String url = (path.startsWith( "http" ) ? "" : _repo.getServer().getURL().toString() + separator) + path;
       
-      Binding binding = new Binding( new URL( url ) , baos );
+      Binding binding = new Binding( new URL( url ) , baos, exempt );
       DefaultRetrievalRequest request = new DefaultRetrievalRequest();
       request.addBinding( binding );
       
