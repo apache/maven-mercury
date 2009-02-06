@@ -57,6 +57,7 @@ import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.util.FileUtil;
+import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -406,7 +407,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static boolean findLatestSnapshot( ArtifactBasicMetadata bmd, final ArtifactLocation loc, AbstractRepOpResult res )
+    private static boolean findLatestSnapshot( final ArtifactBasicMetadata bmd, final ArtifactLocation loc, AbstractRepOpResult res )
     {
         File binary = new File( loc.getAbsPath() );
 
@@ -416,9 +417,13 @@ public class LocalRepositoryReaderM2
         // no real SNAPSHOT file, let's try to find one
         File gavDir = new File( loc.getAbsGavPath() );
         
-        final String regEx = Artifact.SNAPSHOT_TS_REGEX+"\\."+bmd.getCheckedType();
+        String classifier = Util.isEmpty( bmd.getClassifier() ) ? "" : '-'+bmd.getClassifier();
+        
+        final String regEx = Artifact.SNAPSHOT_TS_REGEX + classifier + "\\."+bmd.getCheckedType();
         
         final TreeSet<String> ts = new TreeSet<String>( new VersionComparator() );
+        
+        final int pos = bmd.getArtifactId().length() + 1;
         
         File[] files = gavDir.listFiles( new FilenameFilter()
                                         {
@@ -426,9 +431,7 @@ public class LocalRepositoryReaderM2
                                             {
                                                 if( name.matches( regEx ) )
                                                 {
-                                                    int pos = loc.getBaseName().length();
-                                                    
-                                                    String ver = name.substring( pos+1, name.lastIndexOf( '.' ) );
+                                                    String ver = name.substring( pos, name.lastIndexOf( '.' ) );
                                                     
                                                     ts.add( ver );
                                                     
