@@ -145,6 +145,24 @@ public class ArtifactLocation
     
     return ver;
   }
+  
+  public static String getTS( String ver  )
+  {
+    if( ver == null )
+      return null;
+    
+    int li = ver.lastIndexOf( '-' );
+    
+    if( li < 1 )
+        return ver;
+    
+    int li2 = ver.substring( 0, li ).lastIndexOf( '-' );
+    
+    if( li2 > 0 )
+        return ver.substring( li2+1 );
+    
+    return ver;
+  }
   //---------------------------------------------------------------------------------------------------------------
   public static String calculateVersionDir( String ver )
   {

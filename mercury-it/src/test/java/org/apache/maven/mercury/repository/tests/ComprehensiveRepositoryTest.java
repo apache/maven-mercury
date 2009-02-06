@@ -348,7 +348,101 @@ extends PlexusTestCase
         assertFalse( localRepo2Jar.exists() );
     }
     
+    public void testWriteReadSnapshotLocal()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar");
+        File aJar2 = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _lr2 );
+        
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _lrs );
+
+        assertTrue( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+    }
+    
     public void testWriteTimestampReadSnapshotSingleRepo()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _rr2 );
+        writeArtifact( nameTS2, af, ap, _rr2 );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testWriteTimestampReadSnapshotSingleRepoSN()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _rr2 );
+        writeArtifact( nameTS2, af, ap, _rr2 );
+        writeArtifact( nameSN, af, ap, _rr2 );
+        
+        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        
+        System.out.println(vl);
+        
+        assertNotNull( vl );
+        
+        assertEquals( 1, vl.size() );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-SNAPSHOT", aSN.getVersion() );
+    }
+    
+    public void testWriteTimestampReadSnapshot2Repos()
     throws Exception
     {
         String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
@@ -382,5 +476,173 @@ extends PlexusTestCase
         assertNotNull( aSN.getFile() );
         
         assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testWriteTimestampReadSnapshot2ReposReversed()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _rr1 );
+        writeArtifact( nameTS2, af, ap, _rr2 );
+        
+        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        
+        System.out.println(vl);
+        
+        assertNotNull( vl );
+        
+        assertEquals( 1, vl.size() );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testLatest()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String nameLT = "org.apache.maven:maven-core:LATEST";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _rr2 );
+        writeArtifact( nameTS2, af, ap, _rr1 );
+        writeArtifact( nameRL, af, ap, _rr2 );
+        
+        List<Artifact> al = readArtifact( nameLT, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testLatestLocal()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String nameLT = "org.apache.maven:maven-core:LATEST";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _lr2 );
+        writeArtifact( nameTS2, af, ap, _lr1 );
+        writeArtifact( nameRL, af, ap, _lr2 );
+        
+        List<Artifact> al = readArtifact( nameLT, _lrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testRelease()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String name = "org.apache.maven:maven-core:RELEASE";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _rr2 );
+        writeArtifact( nameTS2, af, ap, _rr1 );
+        writeArtifact( nameRL, af, ap, _rr2 );
+        
+        List<Artifact> al = readArtifact( name, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.8", aSN.getVersion() );
+    }
+    
+    public void testReleaseLocal()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String name = "org.apache.maven:maven-core:RELEASE";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        writeArtifact( nameTS1, af, ap, _lr2 );
+        writeArtifact( nameTS2, af, ap, _lr1 );
+        writeArtifact( nameRL, af, ap, _lr2 );
+        
+        List<Artifact> al = readArtifact( name, _lrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.8", aSN.getVersion() );
     }
 }

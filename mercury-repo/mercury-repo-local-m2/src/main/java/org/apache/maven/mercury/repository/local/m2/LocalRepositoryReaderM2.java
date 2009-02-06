@@ -19,18 +19,22 @@
 package org.apache.maven.mercury.repository.local.m2;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.artifact.Quality;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
+import org.apache.maven.mercury.artifact.version.VersionComparator;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
 import org.apache.maven.mercury.artifact.version.VersionRangeFactory;
@@ -118,46 +122,34 @@ public class LocalRepositoryReaderM2
         // RELEASE = LATEST - SNAPSHOTs
         if ( Artifact.RELEASE_VERSION.equals( loc.getVersion() ) || Artifact.LATEST_VERSION.equals( loc.getVersion() ) )
         {
-            boolean noSnapshots = Artifact.RELEASE_VERSION.equals( loc.getVersion() );
+            final boolean noSnapshots = Artifact.RELEASE_VERSION.equals( loc.getVersion() );
             loc.setVersion( null );
-            DefaultArtifactVersion tempDav = null;
-            DefaultArtifactVersion tempDav2 = null;
+            
+            final TreeSet<String> ts = new TreeSet<String>( new VersionComparator() );
 
-            File[] files = gaDir.listFiles();
-
-            if( files != null && files.length > 0 )
-                // find latest
-                for ( File vf : files )
-                {
-                    if ( vf.isFile() )
-                        continue;
-    
-                    String vn = vf.getName();
-    
-                    // RELEASE?
-                    if ( noSnapshots && vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
-                        continue;
-    
-                    if ( loc.getVersion() == null )
-                    {
-                        loc.setVersion( vn );
-                        tempDav = new DefaultArtifactVersion( vn );
-                        continue;
-                    }
-    
-                    tempDav2 = new DefaultArtifactVersion( vn );
-                    if ( tempDav2.compareTo( tempDav ) > 0 )
-                    {
-                        loc.setVersion( vn );
-                        tempDav = tempDav2;
-                    }
-    
-                }
-
-            if ( loc.getVersion() == null )
+            gaDir.listFiles(
+                     new FilenameFilter()
+                     {
+                        public boolean accept( File dir, String name )
+                        {   
+                            if( new File(dir,name).isDirectory() )
+                            {
+                                if( noSnapshots && name.endsWith( Artifact.SNAPSHOT_VERSION ) )
+                                    return false;
+                                
+                                ts.add( name );
+                                return true;
+                            }
+                            return false;
+                        }
+                         
+                     }
+                           );
+            
+            if( !ts.isEmpty() )
+                loc.setVersion( ts.last() );
+            else
             {
-//                res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(),
-//                                                                             loc.getGaPath() ) ) );
                 if( LOG.isErrorEnabled() )
                     LOG.error( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
                 return null;
@@ -414,7 +406,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static boolean findLatestSnapshot( ArtifactBasicMetadata bmd, ArtifactLocation loc, AbstractRepOpResult res )
+    private static boolean findLatestSnapshot( ArtifactBasicMetadata bmd, final ArtifactLocation loc, AbstractRepOpResult res )
     {
         File binary = new File( loc.getAbsPath() );
 
@@ -423,51 +415,41 @@ public class LocalRepositoryReaderM2
 
         // no real SNAPSHOT file, let's try to find one
         File gavDir = new File( loc.getAbsGavPath() );
-        File[] files = gavDir.listFiles();
-        loc.setVersion( null );
-        DefaultArtifactVersion tempDav = null;
-        DefaultArtifactVersion tempDav2 = null;
+        
+        final String regEx = Artifact.SNAPSHOT_TS_REGEX+"\\."+bmd.getCheckedType();
+        
+        final TreeSet<String> ts = new TreeSet<String>( new VersionComparator() );
+        
+        File[] files = gavDir.listFiles( new FilenameFilter()
+                                        {
+                                            public boolean accept( File dir, String name )
+                                            {
+                                                if( name.matches( regEx ) )
+                                                {
+                                                    int pos = loc.getBaseName().length();
+                                                    
+                                                    String ver = name.substring( pos+1, name.lastIndexOf( '.' ) );
+                                                    
+                                                    ts.add( ver );
+                                                    
+                                                    return true;
+                                                }
 
-        int aLen = loc.getBaseName().length();
-
-        if( files != null && files.length > 0 )
-            // find latest
-            for ( File vf : files )
-            {
-                if ( vf.isFile() )
-                    continue;
-    
-                String vn = vf.getName().substring( aLen + 1 );
-    
-                // no snapshots
-                if ( vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
-                    continue;
-    
-                if ( loc.getVersion() == null )
-                {
-                    loc.setVersion( vn );
-                    tempDav = new DefaultArtifactVersion( vn );
-                    continue;
-                }
-    
-                tempDav2 = new DefaultArtifactVersion( vn );
-                if ( tempDav2.compareTo( tempDav ) > 0 )
-                {
-                    loc.setVersion( vn );
-                    tempDav = tempDav2;
-                }
-    
-            }
-
-        if ( loc.getVersion() == null )
+                                                return false;
+                                            }
+                                            
+                                        }
+                                      );
+        
+        if( ts.isEmpty() )
         {
-//            res.addError( bmd, new RepositoryException( LANG.getMessage( "snapshot.not.found", bmd.toString(),
-//                                                                         gavDir.getAbsolutePath() ) ) );
             if( LOG.isErrorEnabled() )
                 LOG.error( LANG.getMessage( "snapshot.not.found", bmd.toString(), gavDir.getAbsolutePath() )  );
-                
+            
             return false;
         }
+        
+        loc.setVersion( ts.last() );
 
         return true;
     }
