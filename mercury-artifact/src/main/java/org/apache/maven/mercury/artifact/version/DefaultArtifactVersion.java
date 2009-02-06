@@ -17,6 +17,7 @@ package org.apache.maven.mercury.artifact.version;
 
 import java.util.StringTokenizer;
 
+import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.Quality;
 
 
@@ -112,6 +113,20 @@ public class DefaultArtifactVersion
   public String getQualifier()
   {
       return qualifier;
+  }
+
+  public static boolean isVirtual( String version )
+  {
+      if( version== null )
+          return false;
+      
+      if( version.endsWith( Artifact.LATEST_VERSION )
+          || version.endsWith( Artifact.RELEASE_VERSION )
+          || version.endsWith( Artifact.SNAPSHOT_VERSION )
+        )
+          return true;
+      
+      return false;
   }
 
   public final void parseVersion( String version )

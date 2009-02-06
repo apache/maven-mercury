@@ -22,9 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.maven.mercury.artifact.Artifact;
@@ -33,6 +36,7 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.Quality;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessorException;
+import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.artifact.version.MetadataVersionComparator;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
@@ -245,7 +249,7 @@ public class VirtualRepositoryReader
 
     // ----------------------------------------------------------------------------------------------------------------------------
     public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
-        throws IllegalArgumentException, RepositoryException
+    throws IllegalArgumentException, RepositoryException
     {
         if ( query == null )
             throw new IllegalArgumentException( "null bmd supplied" );
@@ -318,7 +322,7 @@ public class VirtualRepositoryReader
 
                             if ( res == null )
                                 res = new ArtifactBasicResults( key, rorRes );
-                            else
+                            else 
                                 res.add( key, rorRes );
 
                             String keyVersion = key.getVersion();
@@ -336,7 +340,7 @@ public class VirtualRepositoryReader
                             if ( keyVersionRange.isSingleton() )
                             {
                                 Quality keyQuality = new Quality( keyVersion );
-                                if ( keyQuality.compareTo( Quality.RELEASE_QUALITY ) == 0 )
+                                if( keyQuality.compareTo( Quality.RELEASE_QUALITY ) == 0 )
                                     // fixed release is found - no more scanning
                                     qList.remove( key );
                             }
@@ -354,6 +358,9 @@ public class VirtualRepositoryReader
                         _eventManager.fireEvent( eventRead );
                     }
                 }
+                
+            if( res != null && res.hasResults() )
+                processSingletons( res );
 
             return res;
         }
@@ -367,7 +374,45 @@ public class VirtualRepositoryReader
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------------------------
+    private void processSingletons( ArtifactBasicResults res )
+    {
+        if( ! res.hasResults() )
+            return;
+        
+        Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata> > m = res.getResults();
+        
+        for( ArtifactBasicMetadata key : m.keySet() )
+            processSingletons( key, res.getResult( key ) );
+    }
+    
+    private void processSingletons( ArtifactBasicMetadata key, List<ArtifactBasicMetadata> res )
+    {
+        if( Util.isEmpty( res ) || !DefaultArtifactVersion.isVirtual( key.getVersion() ) )
+            return;
+        
+        TreeSet<ArtifactBasicMetadata> ts = new TreeSet<ArtifactBasicMetadata>(
+                        new Comparator<ArtifactBasicMetadata>()
+                        {
+                            public int compare( ArtifactBasicMetadata o1, ArtifactBasicMetadata o2 )
+                            {
+                                  DefaultArtifactVersion av1 = new DefaultArtifactVersion( o1.getVersion() );
+                                  DefaultArtifactVersion av2 = new DefaultArtifactVersion( o2.getVersion() );
+
+                                  return av1.compareTo( av2 );
+                            }
+                            
+                        }
+                                                                              );
+        ts.addAll( res );
+        
+        ArtifactBasicMetadata single = ts.last();
+        
+        res.clear();
+        
+        res.add( single );
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------
     public ArtifactMetadata readDependencies( ArtifactBasicMetadata bmd )
         throws IllegalArgumentException, RepositoryException
     {
@@ -524,7 +569,7 @@ public class VirtualRepositoryReader
 
             Map<RepositoryReader, List<ArtifactBasicMetadata>> buckets = sortByRepo( query );
 
-            List<ArtifactBasicMetadata> rejects = buckets == null ? null : buckets.get( RepositoryReader.NULL_READER );
+            List<ArtifactBasicMetadata> leftovers = buckets == null ? null : buckets.get( RepositoryReader.NULL_READER );
 
             if ( buckets == null )
                 throw new RepositoryException( LANG.getMessage( "internal.error.sorting.query", query.toString() ) );
@@ -583,13 +628,77 @@ public class VirtualRepositoryReader
                     }
                 }
             }
+            
+            // then process unqualified virtuals
+            if ( !Util.isEmpty( leftovers ) )
+            {
+                List<ArtifactBasicMetadata> virtuals = null;
+                
+                for( ArtifactBasicMetadata md : leftovers )
+                    if( DefaultArtifactVersion.isVirtual( md.getVersion() ) )
+                    {
+                        if( virtuals == null )
+                            virtuals = new ArrayList<ArtifactBasicMetadata>();
+                        
+                        virtuals.add( md );
+                    }
+                
+                
+                if( virtuals != null )
+                {
+                    ArtifactBasicResults virtRes = readVersions( virtuals );
+                    
+                    leftovers.removeAll( virtuals );
+                    
+                    virtuals.clear();
+                    
+                    if( virtRes != null )
+                    {
+                        if( virtRes.hasResults() )
+                        {
+                            Map<ArtifactBasicMetadata, ArtifactBasicMetadata> sMap = new HashMap<ArtifactBasicMetadata, ArtifactBasicMetadata>();
+                            
+                            for( ArtifactBasicMetadata md : virtRes.getResults().keySet() )
+                            {
+                                ArtifactBasicMetadata v = virtRes.getResult( md ).get( 0 ); 
+                                virtuals.add( v );
+                                sMap.put( v, md );
+                            }
+                            
+                            ArtifactResults ares = readArtifacts( virtuals );
+                            
+                            if( ares != null )
+                            {
+                                if( ares.hasResults() )
+                                {
+                                    Map<ArtifactBasicMetadata, List<Artifact>> aresMap = ares.getResults();
+                                    
+                                    // remap
+                                    for( ArtifactBasicMetadata md : aresMap.keySet() )
+                                        res.add( sMap.get( md ), aresMap.get( md ).get( 0 ) );
+                                }
+                                
+                                if( ares.hasExceptions() )
+                                    res.getExceptions().putAll( ares.getExceptions() );
+                            }
+                            
+                            if( virtRes.hasExceptions() )
+                                res.addError( virtRes.getExceptions() );
+                        }
+                        
+                        if( virtRes.hasExceptions() )
+                            res.addError( virtRes.getExceptions() );
+                    }
+                }
+                
+            }
 
             // then search all repos for unqualified Artifacts
-            if ( !Util.isEmpty( rejects ) )
+            if ( !Util.isEmpty( leftovers ) )
             {
                 for ( RepositoryReader rr : _repositoryReaders )
                 {
-                    if ( rejects.isEmpty() )
+                    if ( leftovers.isEmpty() )
                         break;
 
                     String repoId = rr.getRepository().getId();
@@ -603,7 +712,7 @@ public class VirtualRepositoryReader
                                 new GenericEvent( EventTypeEnum.virtualRepositoryReader,
                                                   EVENT_READ_ARTIFACTS_FROM_REPO_UNQUALIFIED, repoId );
 
-                        ArtifactResults rrRes = rr.readArtifacts( rejects );
+                        ArtifactResults rrRes = rr.readArtifacts( leftovers );
 
                         if ( rrRes.hasExceptions() )
                         {
@@ -617,7 +726,7 @@ public class VirtualRepositoryReader
 
                                 res.addAll( bm, al );
 
-                                rejects.remove( bm );
+                                leftovers.remove( bm );
 
                                 // don't write local artifacts back to the same repo
                                 if ( _localRepository != null && repoId.equals( _localRepository.getId() ) )

@@ -82,8 +82,6 @@ extends PlexusTestCase
     protected void setUp()
         throws Exception
     {
-        
-        Thread.sleep( 2000L );
         super.setUp();
         
         DependencyProcessor dp = new MavenDependencyProcessor();
@@ -360,41 +358,29 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar");
-        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar");
-        
-        assertFalse( aJar1.exists() );
-        assertFalse( aJar2.exists() );
-        
         writeArtifact( nameTS1, af, ap, _rr2 );
         writeArtifact( nameTS2, af, ap, _rr1 );
-        
-//        assertFalse( aJar1.exists() );
-//        assertTrue( aJar2.exists() );
         
         List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         
+        assertNotNull( vl );
+        
+        assertEquals( 1, vl.size() );
+        
         List<Artifact> al = readArtifact( nameSN, _rrs );
         
         System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
         
         Artifact aSN = al.get( 0 );
         
         assertNotNull( aSN.getFile() );
         
         assertTrue( aSN.getFile().exists() );
-        
-//        File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar" );
-//        File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar" );
-//        
-//        assertFalse( localRepo1Jar.exists() );
-//        assertFalse( localRepo2Jar.exists() );
-//        
-//        al = readArtifact( name, _repos );
-//        
-//        assertTrue( localRepo1Jar.exists() );
-//        assertFalse( localRepo2Jar.exists() );
     }
 }

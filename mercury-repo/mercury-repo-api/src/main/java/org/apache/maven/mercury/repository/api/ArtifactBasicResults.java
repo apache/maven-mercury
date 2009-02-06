@@ -114,6 +114,7 @@ extends AbstractRepOpResult
     {
       if( res.contains( r ) )
         continue;
+
       res.add( r );
     }
   }

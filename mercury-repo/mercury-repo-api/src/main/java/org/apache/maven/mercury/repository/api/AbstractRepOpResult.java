@@ -59,6 +59,14 @@ public abstract class AbstractRepOpResult
         _exceptions.put( key, error );
     }
 
+    public void addError( Map<ArtifactBasicMetadata, Exception> error )
+    {
+        if ( _exceptions == null )
+            _exceptions = new HashMap<ArtifactBasicMetadata, Exception>( 8 );
+
+        _exceptions.putAll( error );
+    }
+
     public void addError( ArtifactResults res )
     {
         if ( res == null || !res.hasExceptions() )
