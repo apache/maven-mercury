@@ -19,6 +19,18 @@ under the License.
 
 package org.apache.maven.mercury.all.it;
 
+import org.apache.maven.mercury.dependency.tests.DependencyTreeBuilderTest;
+import org.apache.maven.mercury.plexus.DefaultPlexusMercuryTest;
+import org.apache.maven.mercury.repository.tests.ComprehensiveRepositoryTest;
+import org.apache.maven.mercury.repository.tests.DavServerTest;
+import org.apache.maven.mercury.repository.tests.LocalRepositoryReaderM2Test;
+import org.apache.maven.mercury.repository.tests.LocalRepositoryWriterM2Test;
+import org.apache.maven.mercury.repository.tests.ReadWriteTest;
+import org.apache.maven.mercury.repository.tests.RemoteRepositoryCachingReaderM2Test;
+import org.apache.maven.mercury.repository.tests.RemoteRepositoryReaderM2Test;
+import org.apache.maven.mercury.repository.tests.RemoteRepositoryWriterM2Test;
+import org.apache.maven.mercury.repository.tests.VirtualRepositoryReaderIntegratedTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -58,7 +70,7 @@ public class AllTestCases
         /*
          * This must be the first one to ensure the local repository is properly setup.
          */
-//        suite.addTestSuite( MercuryITBootstrapTest.class );
+        suite.addTestSuite( DavServerTest.class );
 
         /*
          * Add tests in reverse alpha order by number below. This makes testing new
@@ -66,6 +78,16 @@ public class AllTestCases
          * the tests are to finishing. Newer tests are also more likely to fail, so this is
          * a fail fast technique as well.
          */
+        suite.addTestSuite( LocalRepositoryReaderM2Test.class );
+        suite.addTestSuite( LocalRepositoryWriterM2Test.class );
+        suite.addTestSuite( ReadWriteTest.class );
+        suite.addTestSuite( RemoteRepositoryCachingReaderM2Test.class );
+        suite.addTestSuite( RemoteRepositoryReaderM2Test.class );
+        suite.addTestSuite( RemoteRepositoryWriterM2Test.class );
+        suite.addTestSuite( DependencyTreeBuilderTest.class );
+        suite.addTestSuite( VirtualRepositoryReaderIntegratedTest.class );
+        suite.addTestSuite( DefaultPlexusMercuryTest.class );
+        suite.addTestSuite( ComprehensiveRepositoryTest.class );
 
 
         /*
