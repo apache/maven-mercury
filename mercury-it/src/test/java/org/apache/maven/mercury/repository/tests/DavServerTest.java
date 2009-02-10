@@ -51,12 +51,14 @@ extends PlexusTestCase
     
     static final String _pass = "bar";
     
+    // repo1
     WebDavServer _dav;
     
     File _base;
     
     RemoteRepositoryM2 _davRepo;
     
+    // repo2
     WebDavServer _dav2;
     
     File _base2;
@@ -73,6 +75,14 @@ extends PlexusTestCase
     {
         super.setUp();
         
+        setUp1();
+        
+        setUp2();
+    }
+    //---------------------------------------------------------------------------------------------
+    protected void setUp1()
+    throws Exception
+    {
         _base = new File( "./target", _davContext );
         
         FileUtil.delete( _base );
@@ -92,8 +102,6 @@ extends PlexusTestCase
         System.out.println("URL: "+server.getURL() );
         
         _davRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
-        
-        setUp2();
     }
     //---------------------------------------------------------------------------------------------
     protected void setUp2()
