@@ -20,6 +20,7 @@ under the License.
 package org.apache.maven.mercury.repository.tests;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,23 +85,32 @@ extends PlexusTestCase
     {
         super.setUp();
         
+        String prefix = "-t-";
+        String suffix = "-t";
+        File temp = File.createTempFile( prefix, suffix );
+        
         DependencyProcessor dp = new MavenDependencyProcessor();
         Credentials user = new Credentials("foo","bar");
         
-        _base1 = new File( "./target/webdav1" );
-        FileUtil.delete( _base1 );
+        _base1 = new File( "./target/webdav1" + temp.getName() );
+//        FileUtil.delete( _base1 );
+        assertFalse( _base1.exists() );
         _base1.mkdirs();
-        _server1 = new WebDavServer( 0, _base1, _context1, getContainer(), 9, "mercury-test-1" );
+        _base1.deleteOnExit();
+        _server1 = new WebDavServer( 0, _base1, _context1, getContainer(), 9, null, _base1.getCanonicalPath() );
         _server1.start();
         _port1 = _server1.getPort();
         
         Server server = new Server("rr1", new URL("http://localhost:"+_port1+_context1), false, false, user );
         _rr1 = new RemoteRepositoryM2( server, dp );
         
-        _base2 = new File( "./target/webdav2" );
-        FileUtil.delete( _base2 );
+        temp = File.createTempFile( prefix, suffix );
+        _base2 = new File( "./target/webdav2" + temp.getName() );
+//        FileUtil.delete( _base2 );
+        assertFalse( _base2.exists() );
         _base2.mkdirs();
-        _server2 = new WebDavServer( 0, _base2, _context2, getContainer(), 9, "mercury-test-2" );
+        _base2.deleteOnExit();
+        _server2 = new WebDavServer( 0, _base2, _context2, getContainer(), 9, null, _base2.getCanonicalPath() );
         _server2.start();
         _port2 = _server2.getPort();
         
@@ -111,14 +121,20 @@ extends PlexusTestCase
         _rrs.add( _rr1 );
         _rrs.add( _rr2 );
         
-        _lbase1 = new File( _local1 );
-        FileUtil.delete( _lbase1 );
-        _lbase1.mkdirs();
+        temp = File.createTempFile( prefix, suffix );
+        _lbase1 = new File( _local1 + temp.getName() );
+//        FileUtil.delete( _lbase1 );
+        assertFalse( _lbase1.exists() );
+        _lbase1.mkdirs() ;
+        _lbase1.deleteOnExit();
         _lr1 = new LocalRepositoryM2( "lr1", _lbase1, dp );
         
-        _lbase2 = new File( _local2 );
-        FileUtil.delete( _lbase2 );
+        temp = File.createTempFile( prefix, suffix );
+        _lbase2 = new File( _local2 + temp.getName() );
+//        FileUtil.delete( _lbase2 );
+        assertFalse( _lbase2.exists() );
         _lbase2.mkdirs();
+        _lbase2.deleteOnExit();
         _lr2 = new LocalRepositoryM2( "lr2", _lbase2, dp );
         
         _lrs = new ArrayList<Repository>(2);
@@ -153,6 +169,24 @@ extends PlexusTestCase
             }
             catch( Exception e ) {}
             finally { _server2 = null; }
+            
+       File target = new File( "target" );
+       File [] files = target.listFiles(
+                           new FilenameFilter()
+                           {
+
+                            public boolean accept( File dir, String name )
+                            {
+                                if( name.startsWith( "webdav" ))
+                                    return true;
+                                return false;
+                            }
+                               
+                           }
+                                       );
+       
+       for( File f : files )
+           FileUtil.delete( f );
     }
     
     public void writeArtifact( String name, File af, File ap, Repository repo )
