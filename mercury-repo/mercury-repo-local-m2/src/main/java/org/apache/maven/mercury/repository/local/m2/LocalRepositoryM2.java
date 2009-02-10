@@ -28,11 +28,15 @@ import org.apache.maven.mercury.repository.api.NonExistentProtocolException;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
 import org.apache.maven.mercury.transport.api.Server;
+import org.codehaus.plexus.lang.DefaultLanguage;
+import org.codehaus.plexus.lang.Language;
 
 public class LocalRepositoryM2
 extends AbstractRepository
 implements LocalRepository
 {
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryM2.class );
+
     private File directory;
     
     public static final String METADATA_FILE_NAME = "maven-metadata-local.xml";
@@ -41,11 +45,14 @@ implements LocalRepository
     private void setDirectory( File directory )
     {
       if( directory == null )
-        throw new IllegalArgumentException( "null.directory" );
+        throw new IllegalArgumentException( LANG.getMessage( "null.directory" ) );
       
       if( !directory.exists() )
         directory.mkdirs();
 
+      if( !directory.isDirectory() )
+          throw new IllegalArgumentException( LANG.getMessage( "file.directory", directory.getAbsolutePath() ) );
+        
       this.directory = directory;
     }
     //----------------------------------------------------------------------------------
