@@ -18,8 +18,10 @@
  */
 package org.apache.maven.mercury.repository.metadata;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.maven.mercury.artifact.version.VersionComparator;
 import org.apache.maven.mercury.util.TimeUtil;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -94,8 +96,35 @@ public class AddVersionOperation
         }
 
         vs.addVersion( version );
+        
+        List<String> versions = vs.getVersions();
+        
+        Collections.sort( versions, new VersionComparator() );
+        
+        vs.setLatest( getLatestVersion(versions) );
+        
+        vs.setRelease( getReleaseVersion(versions) );
+        
         vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
 
         return true;
+    }
+    
+    private String getLatestVersion( List<String> orderedVersions )
+    {
+    	return orderedVersions.get( orderedVersions.size() - 1 );
+    }
+    
+    private String getReleaseVersion( List<String> orderedVersions )
+    {
+        for (int i = orderedVersions.size() - 1; i >= 0; i--) 
+        {
+			if (!orderedVersions.get(i).endsWith("SNAPSHOT")) 
+			{
+				return orderedVersions.get(i);
+			}
+		}
+        
+        return "";
     }
 }
