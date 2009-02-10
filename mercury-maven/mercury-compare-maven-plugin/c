@@ -1,1 +1,2 @@
-mvn -e -s s.xml org.sonatype.maven.plugins:mercury-compare-maven-plugin:1.0:deps -DtargetDir=../deps -DlistFile=../list.txt -DlocalRepo=../localRepoMaven
+mvn -e -s s.xml org.sonatype.maven.plugins:mercury-compare-maven-plugin:1.0-alpha-5-SNAPSHOT:deps -DtargetDir=../deps -DlistFile=../list.txt -DlocalRepo=../localRepoMaven
+#mvn -e -s s.xml org.sonatype.maven.plugins:mercury-compare-maven-plugin:1.0-alpha-5-SNAPSHOT:deps -DtargetDir=../deps -DlistFile=../list.txt -DlocalRepo=/app/maven.repo
