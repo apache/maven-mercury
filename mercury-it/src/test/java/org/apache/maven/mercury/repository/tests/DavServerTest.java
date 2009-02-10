@@ -87,8 +87,6 @@ extends PlexusTestCase
         
         FileUtil.delete( _base );
         
-        assertFalse( _base.exists() );
-        
         _base.mkdirs();
         
         _dav = new WebDavServer( 0, _base, _davContext, getContainer(), 9, "mercury-test", null );
