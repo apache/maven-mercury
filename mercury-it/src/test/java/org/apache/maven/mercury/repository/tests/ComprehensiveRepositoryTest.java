@@ -194,7 +194,7 @@ extends PlexusTestCase
        }
     }
     
-    public void writeArtifact( String name, File af, File ap, Repository repo )
+    public void writeArtifact( String name, File af, File ap, Repository repo, File expectedFile )
     throws Exception
     {
         DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata(name) );
@@ -206,8 +206,17 @@ extends PlexusTestCase
         
         repo.getWriter().writeArtifacts( al );
         
-        if( isWindows )
-            Thread.sleep( 2000L );
+        int count = 10;
+        
+        if( expectedFile != null )
+        {
+            while( ! expectedFile.exists() && count > 0 )
+            {
+//                if( isWindows )
+                    Thread.sleep( 1000L );
+                    count--;
+            }
+        }
     }
     
     public List<Artifact> readArtifact( String name , List<Repository> repos )
@@ -268,7 +277,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _rr2 );
+        writeArtifact( name, af, ap, _rr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -303,7 +312,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _rr2 );
+        writeArtifact( name, af, ap, _rr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -339,7 +348,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _lr2 );
+        writeArtifact( name, af, ap, _lr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -369,7 +378,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _rr2 );
+        writeArtifact( name, af, ap, _rr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -404,7 +413,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _lr2 );
+        writeArtifact( name, af, ap, _lr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -425,8 +434,12 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr2 );
-        writeArtifact( nameTS2, af, ap, _rr2 );
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr2, aJar );
         
         List<Artifact> al = readArtifact( nameSN, _rrs );
         
@@ -455,9 +468,10 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr2 );
-        writeArtifact( nameTS2, af, ap, _rr2 );
-        writeArtifact( nameSN, af, ap, _rr2 );
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        writeArtifact( nameTS2, af, ap, _rr2, null );
+        writeArtifact( nameSN, af, ap, _rr2, null );
         
         List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
         
@@ -494,8 +508,11 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr2 );
-        writeArtifact( nameTS2, af, ap, _rr1 );
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+
+        aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr1, aJar );
         
         List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
         
@@ -532,8 +549,11 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr1 );
-        writeArtifact( nameTS2, af, ap, _rr2 );
+        File aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr1, aJar );
+
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr2, aJar );
         
         List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
         
@@ -571,9 +591,14 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr2 );
-        writeArtifact( nameTS2, af, ap, _rr1 );
-        writeArtifact( nameRL, af, ap, _rr2 );
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        
+        aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr1, aJar );
+        
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL,  af, ap, _rr2, aJar );
         
         List<Artifact> al = readArtifact( nameLT, _rrs );
         
@@ -603,9 +628,14 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _lr2 );
-        writeArtifact( nameTS2, af, ap, _lr1 );
-        writeArtifact( nameRL, af, ap, _lr2 );
+        File aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _lr2, aJar );
+        
+        aJar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _lr1, aJar );
+        
+        aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL, af, ap, _lr2, aJar );
         
         List<Artifact> al = readArtifact( nameLT, _lrs );
         
@@ -635,9 +665,14 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr2 );
-        writeArtifact( nameTS2, af, ap, _rr1 );
-        writeArtifact( nameRL, af, ap, _rr2 );
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        
+        aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr1, aJar );
+        
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL, af, ap, _rr2, aJar );
         
         List<Artifact> al = readArtifact( name, _rrs );
         
@@ -667,10 +702,15 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _lr2 );
-        writeArtifact( nameTS2, af, ap, _lr1 );
-        writeArtifact( nameRL, af, ap, _lr2 );
+        File aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _lr2, aJar );
         
+        aJar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _lr1, aJar );
+        
+        aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL, af, ap, _lr2, aJar );
+
         List<Artifact> al = readArtifact( name, _lrs );
         
         System.out.println(al);
