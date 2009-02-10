@@ -83,9 +83,15 @@ extends Server
         context.setResourceBase( base.getCanonicalPath() );
         
         if( fileCollectionBase != null )
+        {
             context.setAttribute( "resourceCollectionBase", fileCollectionBase );
+            System.out.println("webDav resource base: "+fileCollectionBase);
+        }
         else
+        {
             context.setAttribute( "resourceCollectionHint", fileCollectionHint );
+            System.out.println("webDav resource hint: "+fileCollectionHint);
+        }
 
         context.setAttribute( "debug", debugLevel+"" );
 

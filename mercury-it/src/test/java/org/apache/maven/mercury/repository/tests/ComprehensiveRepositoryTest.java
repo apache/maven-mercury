@@ -78,6 +78,8 @@ extends PlexusTestCase
     List<Repository> _lrs;
     List<Repository> _repos;
     
+    private static final boolean isWindows = File.pathSeparatorChar == ';';
+    
     
     @Override
     protected void setUp()
@@ -200,6 +202,9 @@ extends PlexusTestCase
         al.add( da );
         
         repo.getWriter().writeArtifacts( al );
+        
+        if( isWindows )
+            Thread.sleep( 2000L );
     }
     
     public List<Artifact> readArtifact( String name , List<Repository> repos )
