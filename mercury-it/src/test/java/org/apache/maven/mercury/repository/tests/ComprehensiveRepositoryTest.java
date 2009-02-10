@@ -188,7 +188,10 @@ extends PlexusTestCase
                                        );
        
        for( File f : files )
+       {
            FileUtil.delete( f );
+           System.out.println("dropping "+f.getAbsolutePath() );
+       }
     }
     
     public void writeArtifact( String name, File af, File ap, Repository repo )
