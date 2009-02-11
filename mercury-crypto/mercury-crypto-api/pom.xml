@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-crypto</artifactId>
-    <version>1.0-alpha-5</version>
+    <version>1.0-alpha-6-SNAPSHOT</version>
   </parent>
 
   <artifactId>mercury-crypto-api</artifactId>
