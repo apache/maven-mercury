@@ -51,6 +51,7 @@ extends Server
                          , PlexusContainer container
                          , int debugLevel
                          , String fileCollectionHint
+                         , String fileCollectionBase
                          )
     throws Exception
     {
@@ -81,7 +82,17 @@ extends Server
         context.setAttribute( PlexusConstants.PLEXUS_KEY, container );
         context.setResourceBase( base.getCanonicalPath() );
         
-        context.setAttribute( "resourceCollectionHint", fileCollectionHint );
+        if( fileCollectionBase != null )
+        {
+            context.setAttribute( "resourceCollectionBase", fileCollectionBase );
+            System.out.println("webDav resource base: "+fileCollectionBase);
+        }
+        else
+        {
+            context.setAttribute( "resourceCollectionHint", fileCollectionHint );
+            System.out.println("webDav resource hint: "+fileCollectionHint);
+        }
+
         context.setAttribute( "debug", debugLevel+"" );
 
 //        Map<String,String> initParams = new HashMap<String, String>(8);

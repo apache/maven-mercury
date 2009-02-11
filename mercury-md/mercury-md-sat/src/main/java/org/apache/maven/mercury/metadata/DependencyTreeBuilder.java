@@ -185,6 +185,32 @@ class DependencyTreeBuilder
         // build all trees
         for ( ArtifactBasicMetadata bmd : startMDs )
         {
+            if( inclusions != null )
+            {
+                List<ArtifactBasicMetadata> inc = inclusions.getMetadataList();
+                
+                if( ! inc.contains( bmd ) )
+                    continue;
+                
+                if( bmd.hasInclusions() )
+                    bmd.getInclusions().addAll( inc );
+                else
+                    bmd.setInclusions( inc );
+            }
+            
+            if( exclusions != null )
+            {
+                List<ArtifactBasicMetadata> excl = exclusions.getMetadataList();
+                
+                if( excl.contains( bmd ) )
+                    continue;
+                
+                if( bmd.hasExclusions() )
+                    bmd.getExclusions().addAll( excl );
+                else
+                    bmd.setExclusions( excl );
+            }
+            
             MetadataTreeNode rooty = buildTree( bmd, scope );
 
             deps.add( rooty );
@@ -206,7 +232,6 @@ class DependencyTreeBuilder
 
         return res;
     }
-
     // -----------------------------------------------------
     private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent
                                          , ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope

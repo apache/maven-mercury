@@ -498,11 +498,18 @@ implements RepositoryReader, MetadataReader
     
     gam.getVersions().clear();
     
+    boolean requestRelease = bmd.getVersion().endsWith( Artifact.RELEASE_VERSION );
+    // GA metadata version scan
     for( String v : vRes )
     {
         String toAdd;
         
-        if( v.endsWith( Artifact.SNAPSHOT_VERSION )  )
+        boolean foundSnapshot = v.endsWith( Artifact.SNAPSHOT_VERSION );
+        
+        if( requestRelease && foundSnapshot )
+            continue;
+        
+        if( foundSnapshot )
         {
             boolean snFound = false;
             ArtifactBasicMetadata snMd = new ArtifactBasicMetadata( bmd.toString() );

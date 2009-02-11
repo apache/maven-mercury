@@ -55,8 +55,8 @@ public class MercuryResolve
 implements IDepResolver
 {
   static final String SYSTEM_PROPERTY_LOCAL_REPO = "localRepo";
-  static final String localRepoDir = System.getProperty( SYSTEM_PROPERTY_LOCAL_REPO, "../localRepoMercury" );
-//  static final String localRepoDir = System.getProperty( SYSTEM_PROPERTY_LOCAL_REPO, "../localRepoMaven" );
+//  static final String localRepoDir = System.getProperty( SYSTEM_PROPERTY_LOCAL_REPO, "../localRepoMercury" );
+  static final String localRepoDir = System.getProperty( SYSTEM_PROPERTY_LOCAL_REPO, "/app/maven.repo" );
   static final File   localRepoDirFile = new File( localRepoDir );
   
   static final String SYSTEM_PROPERTY_LIST_FILE = "list";
@@ -121,6 +121,7 @@ implements IDepResolver
       }
       
       depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+//      depBuilder.register( new DumbListener() );
   
     
       DataBuilder.visitDeps( listFile, mc );
@@ -162,10 +163,18 @@ implements IDepResolver
     MetadataTreeNode.showNode( root, 0 );
     
     long ll = System.currentTimeMillis();
-    System.out.println("BuildTree: " + (ll - start) );
+    long interval = ll - start;
+    int  count = root.countNodes();
+    long timePerNode = count == 0L ? 0 :  interval / count;  
+        
+    System.out.println("BuildTree: " + (ll - start)+" ms, " + count + " nodes, " + timePerNode+ " ms per node" );
     
     List<ArtifactMetadata> dl = depBuilder.resolveConflicts( root );
-    System.out.println("resolveDeps: " + (System.currentTimeMillis() - ll) );
+    interval = System.currentTimeMillis() - ll;
+    count =  dl == null ? 0 : dl.size();
+    timePerNode = count == 0L ? 0 :  interval / count;  
+    
+    System.out.println("resolveDeps: " + interval+ " ms, "+ count+" nodes, "+ timePerNode+" ms per node" );
     
     File df = DataBuilder.getFile( targetDirFile, bmd.getGroupId(), bmd.getArtifactId(), bmd.getVersion(), bmd.getType() );
     
@@ -176,7 +185,9 @@ implements IDepResolver
     if( df.exists() )
     {
       deps = DataBuilder.read( df );
+      
       List l = deps.getMercury();
+      
       if( !Util.isEmpty( l ) )
         l.clear();
     }
@@ -192,17 +203,18 @@ implements IDepResolver
     
     deps.setMercuryMillis( System.currentTimeMillis() - start );
     
-    for( ArtifactMetadata am : dl )
-    {
-      Dependency dep = new Dependency();
-      dep.setGroupId( am.getGroupId() );
-      dep.setArtifactId( am.getArtifactId() );
-      dep.setVersion( am.getVersion() );
-      dep.setType( am.getType() );
-      dep.setScope( am.getScope() );
-      
-      deps.addMercury( dep );
-    }
+    if(dl != null)
+        for( ArtifactMetadata am : dl )
+        {
+          Dependency dep = new Dependency();
+          dep.setGroupId( am.getGroupId() );
+          dep.setArtifactId( am.getArtifactId() );
+          dep.setVersion( am.getVersion() );
+          dep.setType( am.getType() );
+          dep.setScope( am.getScope() );
+          
+          deps.addMercury( dep );
+        }
     
     DataBuilder.write( deps, df );
     

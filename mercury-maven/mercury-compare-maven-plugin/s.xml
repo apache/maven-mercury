@@ -22,7 +22,12 @@
 
 <settings>
 
+<!--
   <localRepository>/app/src/asf/maven/mercury/trunk/mercury-maven/localRepoMaven</localRepository>
+  <localRepository>/app/maven.repo</localRepository>
+-->
+  <localRepository>/app/src/asf/maven/mercury/trunk/mercury-maven/localRepoMaven</localRepository>
+
 
 <profiles>
 

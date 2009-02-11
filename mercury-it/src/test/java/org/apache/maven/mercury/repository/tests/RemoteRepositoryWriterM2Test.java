@@ -79,7 +79,7 @@ extends AbstractRepositoryWriterM2Test
 
       targetDirectory.mkdirs();
       
-      _dav = new WebDavServer( 0, targetDirectory, _davContext, getContainer(), 9, baseHint );
+      _dav = new WebDavServer( 0, targetDirectory, _davContext, getContainer(), 9, baseHint, null );
       
       _dav.start();
       

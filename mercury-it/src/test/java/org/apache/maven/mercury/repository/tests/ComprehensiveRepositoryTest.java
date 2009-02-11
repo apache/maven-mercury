@@ -20,6 +20,7 @@ under the License.
 package org.apache.maven.mercury.repository.tests;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,8 @@ extends PlexusTestCase
     List<Repository> _lrs;
     List<Repository> _repos;
     
+    private static final boolean isWindows = File.pathSeparatorChar == ';';
+    
     
     @Override
     protected void setUp()
@@ -84,23 +87,32 @@ extends PlexusTestCase
     {
         super.setUp();
         
+        String prefix = "-t-";
+        String suffix = "-t";
+        File temp = File.createTempFile( prefix, suffix );
+        
         DependencyProcessor dp = new MavenDependencyProcessor();
         Credentials user = new Credentials("foo","bar");
         
-        _base1 = new File( "./target/webdav1" );
-        FileUtil.delete( _base1 );
+        _base1 = new File( "./target/webdav1" + temp.getName() );
+//        FileUtil.delete( _base1 );
+        assertFalse( _base1.exists() );
         _base1.mkdirs();
-        _server1 = new WebDavServer( 0, _base1, _context1, getContainer(), 9, "mercury-test-1" );
+        _base1.deleteOnExit();
+        _server1 = new WebDavServer( 0, _base1, _context1, getContainer(), 9, null, _base1.getCanonicalPath() );
         _server1.start();
         _port1 = _server1.getPort();
         
         Server server = new Server("rr1", new URL("http://localhost:"+_port1+_context1), false, false, user );
         _rr1 = new RemoteRepositoryM2( server, dp );
         
-        _base2 = new File( "./target/webdav2" );
-        FileUtil.delete( _base2 );
+        temp = File.createTempFile( prefix, suffix );
+        _base2 = new File( "./target/webdav2" + temp.getName() );
+//        FileUtil.delete( _base2 );
+        assertFalse( _base2.exists() );
         _base2.mkdirs();
-        _server2 = new WebDavServer( 0, _base2, _context2, getContainer(), 9, "mercury-test-2" );
+        _base2.deleteOnExit();
+        _server2 = new WebDavServer( 0, _base2, _context2, getContainer(), 9, null, _base2.getCanonicalPath() );
         _server2.start();
         _port2 = _server2.getPort();
         
@@ -111,14 +123,20 @@ extends PlexusTestCase
         _rrs.add( _rr1 );
         _rrs.add( _rr2 );
         
-        _lbase1 = new File( _local1 );
-        FileUtil.delete( _lbase1 );
-        _lbase1.mkdirs();
+        temp = File.createTempFile( prefix, suffix );
+        _lbase1 = new File( _local1 + temp.getName() );
+//        FileUtil.delete( _lbase1 );
+        assertFalse( _lbase1.exists() );
+        _lbase1.mkdirs() ;
+        _lbase1.deleteOnExit();
         _lr1 = new LocalRepositoryM2( "lr1", _lbase1, dp );
         
-        _lbase2 = new File( _local2 );
-        FileUtil.delete( _lbase2 );
+        temp = File.createTempFile( prefix, suffix );
+        _lbase2 = new File( _local2 + temp.getName() );
+//        FileUtil.delete( _lbase2 );
+        assertFalse( _lbase2.exists() );
         _lbase2.mkdirs();
+        _lbase2.deleteOnExit();
         _lr2 = new LocalRepositoryM2( "lr2", _lbase2, dp );
         
         _lrs = new ArrayList<Repository>(2);
@@ -153,9 +171,30 @@ extends PlexusTestCase
             }
             catch( Exception e ) {}
             finally { _server2 = null; }
+            
+       File target = new File( "target" );
+       File [] files = target.listFiles(
+                           new FilenameFilter()
+                           {
+
+                            public boolean accept( File dir, String name )
+                            {
+                                if( name.startsWith( "webdav" ))
+                                    return true;
+                                return false;
+                            }
+                               
+                           }
+                                       );
+       
+       for( File f : files )
+       {
+           FileUtil.delete( f );
+           System.out.println("dropping "+f.getAbsolutePath() );
+       }
     }
     
-    public void writeArtifact( String name, File af, File ap, Repository repo )
+    public void writeArtifact( String name, File af, File ap, Repository repo, File expectedFile )
     throws Exception
     {
         DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata(name) );
@@ -166,6 +205,18 @@ extends PlexusTestCase
         al.add( da );
         
         repo.getWriter().writeArtifacts( al );
+        
+        int count = 10;
+        
+        if( expectedFile != null )
+        {
+            while( ! expectedFile.exists() && count > 0 )
+            {
+//                if( isWindows )
+                    Thread.sleep( 1000L );
+                    count--;
+            }
+        }
     }
     
     public List<Artifact> readArtifact( String name , List<Repository> repos )
@@ -226,7 +277,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _rr2 );
+        writeArtifact( name, af, ap, _rr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -261,7 +312,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _rr2 );
+        writeArtifact( name, af, ap, _rr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -297,7 +348,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _lr2 );
+        writeArtifact( name, af, ap, _lr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -327,7 +378,7 @@ extends PlexusTestCase
         assertFalse( aJar1.exists() );
         assertFalse( aJar2.exists() );
         
-        writeArtifact( name, af, ap, _rr2 );
+        writeArtifact( name, af, ap, _rr2, aJar2 );
         
         assertFalse( aJar1.exists() );
         assertTrue( aJar2.exists() );
@@ -348,6 +399,31 @@ extends PlexusTestCase
         assertFalse( localRepo2Jar.exists() );
     }
     
+    public void testWriteReadSnapshotLocal()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar");
+        File aJar2 = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-SNAPSHOT.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _lr2, aJar2 );
+        
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _lrs );
+
+        assertTrue( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+    }
+    
     public void testWriteTimestampReadSnapshotSingleRepo()
     throws Exception
     {
@@ -358,8 +434,44 @@ extends PlexusTestCase
         File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
         File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
         
-        writeArtifact( nameTS1, af, ap, _rr2 );
-        writeArtifact( nameTS2, af, ap, _rr1 );
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr2, aJar );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testWriteTimestampReadSnapshotSingleRepoSN()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        writeArtifact( nameTS2, af, ap, _rr2, null );
+        writeArtifact( nameSN, af, ap, _rr2, null );
         
         List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
         
@@ -382,5 +494,237 @@ extends PlexusTestCase
         assertNotNull( aSN.getFile() );
         
         assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-SNAPSHOT", aSN.getVersion() );
+    }
+    
+    public void testWriteTimestampReadSnapshot2Repos()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+
+        aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr1, aJar );
+        
+        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        
+        System.out.println(vl);
+        
+        assertNotNull( vl );
+        
+        assertEquals( 1, vl.size() );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testWriteTimestampReadSnapshot2ReposReversed()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr1, aJar );
+
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr2, aJar );
+        
+        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        
+        System.out.println(vl);
+        
+        assertNotNull( vl );
+        
+        assertEquals( 1, vl.size() );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testLatest()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String nameLT = "org.apache.maven:maven-core:LATEST";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        
+        aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr1, aJar );
+        
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL,  af, ap, _rr2, aJar );
+        
+        List<Artifact> al = readArtifact( nameLT, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testLatestLocal()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String nameLT = "org.apache.maven:maven-core:LATEST";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _lr2, aJar );
+        
+        aJar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _lr1, aJar );
+        
+        aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL, af, ap, _lr2, aJar );
+        
+        List<Artifact> al = readArtifact( nameLT, _lrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testRelease()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String name = "org.apache.maven:maven-core:RELEASE";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr2, aJar );
+        
+        aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr1, aJar );
+        
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL, af, ap, _rr2, aJar );
+        
+        List<Artifact> al = readArtifact( name, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.8", aSN.getVersion() );
+    }
+    
+    public void testReleaseLocal()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameRL = "org.apache.maven:maven-core:2.0.8";
+        String name = "org.apache.maven:maven-core:RELEASE";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _lr2, aJar );
+        
+        aJar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _lr1, aJar );
+        
+        aJar = new File( _lbase2, "org/apache/maven/maven-core/2.0.8/maven-core-2.0.8.jar");
+        writeArtifact( nameRL, af, ap, _lr2, aJar );
+
+        List<Artifact> al = readArtifact( name, _lrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        assertEquals( "2.0.8", aSN.getVersion() );
     }
 }
