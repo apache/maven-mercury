@@ -1,0 +1,124 @@
+<project name="build" default="default" xmlns:mercury="urn:mercury">
+  
+  <target name="initialize">
+    <path id="boot.classpath" path="mercury-all-1.0.jar" />
+    <typedef resource="org/apache/maven/mercury/ant/antlib.xml" uri="urn:mercury" classpathref="boot.classpath"/>
+  </target>
+
+  <!--
+   | These are the things the user may want to control, for which we will provide defaults where possible:
+   |
+   | a) Remote artifact repositories for retrieval
+   |   1) Repository layout
+   |   2) Repository authentication
+   |   3) Checksum validation
+   |      i) When on allow exclusions so that you don't get blocked by one bad checksum
+   |   4) PGP key validation
+   |      i) When on allow exclusions so that you don't get blocked by one bad PGP key
+   |     ii) Location of keyring
+   | b) Local artifact repository for storage
+   |   1) Repository layout
+   | c) Classpath for runtime scoped artifacts
+   | d) Classpath for runtime scoped artifacts
+   | e) Classpath for test scoped artifacts (yes, i know this is mavenesque)
+   | f) Classpath for compile scoped artifacts (yes, i know this is mavenesqe)
+   | g) Fileset for runtime scoped artifacts
+   | h) Fileset for runtime scoped artifacts
+   | i) Fileset for test scoped artifacts (yes, i know this is mavenesque)
+   | j) Fileset for compile scoped artifacts (yes, i know this is mavenesqe)
+   | k) transitivity
+   |
+   | authentication
+   | keystore
+   -->
+  
+  <target name="download">
+    
+    <!--
+     | a) Maven Central
+     |   1) Maven 2.x layout
+     |   2) none
+     |   3) warn
+     |   4) none
+     | b) ~/.m2/repository
+     | c) mercury.classpath
+     | d) mercury.classpath.runtime
+     | e) mercury.classpath.test
+     | f) mercury.classpath.compile
+     | g) mercury.fileset
+     | h) mercury.fileset.runtime
+     | i) mercury.fileset.test
+     | j) mercury.fileset.compile
+     |
+     -->
+     
+    <!-- (1) -->
+    <!--
+     |
+     | This is the most basic use of the tasks where you specify dependencies with their GAV and all the defaults
+     | are setup for you.
+     |
+     -->
+    <mercury:resolve-dependencies>
+      <mercury:dependency id="g0:a0:v0"/>
+      <mercury:dependency id="g1:a1:v1"/>
+      <mercury:dependency id="g2:a2:v2"/>
+    </mercury:resolve-dependencies>
+
+    <!-- (2) -->
+    <!--
+     |
+     | This is the most basic use of the tasks where you specify dependencies with a POM and all the defaults
+     | are setup for you.
+     |
+     | NOTE: You will notice that the source is of the form <processor>:<resource>. So in this case we're going
+     |       to use the Maven dependency processor and a local pom.xml file.
+     |
+     -->
+    <mercury:resolve-dependencies source="maven:pom.xml"/>
+
+    <mercury:resolve-dependencies source="maven:pom.xml" transitive="false"/>
+    
+    <mercury:resolve-dependencies source="maven:pom.xml">
+      <mercury:local-repository location="${basedir}/lib" layout="flat"/>
+      <!-- Control checksum and pgp globally for all remote repositories used -->
+      <mercury:remote-repositories checksum-validation="true" pgp-key-validation="true">
+        <mercury:remote-repository location="http://repository.sonatype.com/groups/public"/>
+        <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
+      </mercury:remote-repositories>
+    </mercury:resolve-dependencies>
+    
+    <mercury:resolve-dependencies source="maven:pom.xml">
+      <mercury:local-repository location="${basedir}/lib" layout="flat"/>
+      <mercury:remote-repositories checksum-validation="true">
+        <!-- The presence of this element says we want this feature turned on, and allow some configuration -->
+        <mercury:pgp-key-validation keyring-location="${basedir}/pgp/project-keyring.gpg"/>
+        <mercury:remote-repository location="http://repository.sonatype.com/groups/public">
+          <!-- Here we can have pluggable providers and we can probably just leverage JSecurity -->
+          <mercury:authentication source="basic:username:password"/>
+        </mercury:remote-repository>
+        <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
+      </mercury:remote-repositories>
+    </mercury:resolve-dependencies>
+
+    <mercury:resolve-dependencies source="maven:pom.xml">
+      <mercury:local-repository location="${basedir}/lib" layout="flat"/>
+      <mercury:remote-repositories checksum-validation="true">
+        <!-- The presence of this element says we want this feature turned on, and allow some configuration -->
+        <mercury:pgp-key-validation keyring-location="${basedir}/pgp/project-keyring.gpg">
+          <exclude id="g0:a0:v0"/>
+        </mercury:pgp-key-validation>
+        <mercury:remote-repository location="http://repository.sonatype.com/groups/public"/>
+        <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
+      </mercury:remote-repositories>
+    </mercury:resolve-dependencies>
+        
+  </target>
+  
+  <target name="build">
+    <javac srcdir="src/main/java" destdir="target/classes">
+      <classpath refid="mercury.classpath.compile"/>
+    </javac>      
+  </target>
+
+</project>
