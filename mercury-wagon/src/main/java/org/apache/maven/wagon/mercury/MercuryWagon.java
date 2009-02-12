@@ -354,9 +354,9 @@ implements Wagon
 
       if( pi != null && pi.getHost() != null )
       {
-        String proxyType = pi.getType().toLowerCase();
+        String proxyType = pi.getType();
         
-        if( !httpProxyType.equals( proxyType ) )
+        if( !httpProxyType.equalsIgnoreCase( proxyType ) )
         {
           throw new ConnectionException( "Mercury wagon does not support "+proxyType+" proxies at this point. Only "+httpProxyType+" proxy is supported" );
         }
