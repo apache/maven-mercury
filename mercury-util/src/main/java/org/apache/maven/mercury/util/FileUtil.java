@@ -87,7 +87,9 @@ public class FileUtil
   public static final int    K = 1024;
   public static final int    DEFAULT_BUFFER_SIZE = 10 * K;
   
-  public static final String [] URL_PROTOCOLS = new String [] {"http://","https://","file://","dav://","davs://","webdav://","webdavs://","dav+http://","dav+https://"};
+  public static final String PROTOCOL_DELIM = "://";
+  public static final int    PROTOCOL_DELIM_LEN = PROTOCOL_DELIM.length();
+  public static final String [] URL_PROTOCOLS = new String [] {"http","https","dav","file","davs","webdav","webdavs","dav+http","dav+https"};
   //---------------------------------------------------------------------------------------------------------------
   private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( FileUtil.class );
   private static final Language LANG = new DefaultLanguage( FileUtil.class );
@@ -981,14 +983,24 @@ public class FileUtil
   public static InputStream toStream( String resource )
   throws MalformedURLException, IOException
   {
-    if( Util.isEmpty( resource ) )
+    if( resource == null )
       return null;
     
-    String lowerRes = resource.toLowerCase();
+    int ind = resource.indexOf( PROTOCOL_DELIM );
     
-    for( String p : URL_PROTOCOLS )
-        if( lowerRes.startsWith( p ) )
-          return new URL(resource).openStream();
+    if( ind > 1 )
+    {
+        String protocol = resource.substring( 0, ind );
+        resource = resource.substring( ind + PROTOCOL_DELIM_LEN );
+
+        for( int i=0; i<URL_PROTOCOLS.length; i++ )
+        {
+            String p = URL_PROTOCOLS[i];
+            
+            if( protocol.regionMatches( true, 0, p, 0, p.length() ) )
+              return new URL( p+PROTOCOL_DELIM+resource).openStream();
+        }
+    }
 
     return new FileInputStream( new File(resource) );
   }
