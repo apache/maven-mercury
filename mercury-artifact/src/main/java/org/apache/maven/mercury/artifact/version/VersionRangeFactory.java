@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,58 +28,60 @@ import org.apache.maven.mercury.artifact.QualityRange;
  *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class VersionRangeFactory
 {
-  
-  public static VersionRange create( final String version )
-  throws VersionException
-  {
-    return new MavenVersionRange( version );
-  }
-  
-  public static VersionRange create( final String version, final QualityRange qRange )
-  throws VersionException
-  {
-    return new MavenVersionRange( version, qRange );
-  }
-  //--------------------------------------------------------------------------------------------
-  /**
-   * helpful latest version calculator
-   * 
-   * @param versions
-   * @param noSnapshots
-   * @return
-   */
-  public static final String findLatest( final Collection<String> versions, final boolean noSnapshots )
-  {
-    DefaultArtifactVersion tempDav = null;
-    DefaultArtifactVersion tempDav2 = null;
-    String version = null;
 
-    // find latest
-    for( String vn : versions )
+    public static VersionRange create( final String version )
+        throws VersionException
     {
-      // RELEASE?
-      if( noSnapshots && vn.endsWith( Artifact.SNAPSHOT_VERSION ))
-        continue;
-      
-      if( version == null )
-      {
-        version = vn;
-        tempDav = new DefaultArtifactVersion( vn );
-        continue;
-      }
-      
-      tempDav2 = new DefaultArtifactVersion( vn );
-      if( tempDav2.compareTo( tempDav ) > 0 )
-      {
-        version = vn;
-        tempDav = tempDav2;
-      }
+        return new MavenVersionRange( version );
     }
-    return version;
-  }
+
+    public static VersionRange create( final String version, final QualityRange qRange )
+        throws VersionException
+    {
+        return new MavenVersionRange( version, qRange );
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /**
+     * helpful latest version calculator
+     *
+     * @param versions
+     * @param noSnapshots
+     * @return
+     */
+    public static final String findLatest( final Collection<String> versions, final boolean noSnapshots )
+    {
+        DefaultArtifactVersion tempDav = null;
+        DefaultArtifactVersion tempDav2 = null;
+        String version = null;
+
+        // find latest
+        for ( String vn : versions )
+        {
+            // RELEASE?
+            if ( noSnapshots && vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
+            {
+                continue;
+            }
+
+            if ( version == null )
+            {
+                version = vn;
+                tempDav = new DefaultArtifactVersion( vn );
+                continue;
+            }
+
+            tempDav2 = new DefaultArtifactVersion( vn );
+            if ( tempDav2.compareTo( tempDav ) > 0 )
+            {
+                version = vn;
+                tempDav = tempDav2;
+            }
+        }
+        return version;
+    }
 
 }

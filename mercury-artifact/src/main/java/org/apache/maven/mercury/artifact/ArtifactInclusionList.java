@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,38 +21,35 @@ package org.apache.maven.mercury.artifact;
 import java.util.Collection;
 
 /**
- * 
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class ArtifactInclusionList
     extends ArtifactMetadataList
 {
 
-  /**
-   * @param md
-   */
-  public ArtifactInclusionList( ArtifactBasicMetadata... md )
-  {
-    super( md );
-  }
+    /**
+     * @param md
+     */
+    public ArtifactInclusionList( ArtifactBasicMetadata... md )
+    {
+        super( md );
+    }
 
-  /**
-   * @param md
-   */
-  public ArtifactInclusionList( Collection<ArtifactBasicMetadata> md )
-  {
-    super( md );
-  }
+    /**
+     * @param md
+     */
+    public ArtifactInclusionList( Collection<ArtifactBasicMetadata> md )
+    {
+        super( md );
+    }
 
-  /**
-   * @param mds
-   */
-  public ArtifactInclusionList( String... mds )
-  {
-    super( mds );
-  }
+    /**
+     * @param mds
+     */
+    public ArtifactInclusionList( String... mds )
+    {
+        super( mds );
+    }
 
 }

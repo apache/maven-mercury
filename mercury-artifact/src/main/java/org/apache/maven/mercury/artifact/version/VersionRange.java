@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,20 +25,20 @@ import org.apache.maven.mercury.artifact.api.Configurable;
  *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface VersionRange
-extends Configurable
+    extends Configurable
 {
-  /**
-   * returns true if the supplied version fits into the range
-   * 
-   * @param version to test
-   * @return 
-   */
-  public boolean includes( String version );
-  /**
-   * @return true if the range is good old single version, not a true range
-   */
-  public boolean isSingleton();
+    /**
+     * returns true if the supplied version fits into the range
+     *
+     * @param version to test
+     * @return
+     */
+    public boolean includes( String version );
+
+    /**
+     * @return true if the range is good old single version, not a true range
+     */
+    public boolean isSingleton();
 }

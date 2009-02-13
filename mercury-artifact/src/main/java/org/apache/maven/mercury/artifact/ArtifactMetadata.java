@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,25 +21,21 @@ package org.apache.maven.mercury.artifact;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
- * Artifact Metadata that is resolved independent of Artifact itself. It's
- * built on top of ArtifactBasicMetadata
- * 
+ * Artifact Metadata that is resolved independent of Artifact itself. It's built on top of ArtifactBasicMetadata
+ *
  * @author Oleg Gusakov
  * @version $Id$
  */
 public class ArtifactMetadata
-extends ArtifactBasicMetadata
+    extends ArtifactBasicMetadata
 {
     // in addition to basic coordinates
 
     private boolean release;
 
-    /** 
-     * explanation: why this MD was chosen over it's siblings
-     * in the resulting structure (classpath for now) 
+    /**
+     * explanation: why this MD was chosen over it's siblings in the resulting structure (classpath for now)
      */
     protected String why;
 
@@ -55,7 +51,7 @@ extends ArtifactBasicMetadata
     /** artifact URI */
     protected String artifactUri;
 
-    /** error message  */
+    /** error message */
     private String error;
 
     /**
@@ -64,20 +60,12 @@ extends ArtifactBasicMetadata
     public ArtifactMetadata()
     {
     }
-    //------------------------------------------------------------------
 
-    public ArtifactMetadata( String groupId
-                             , String name
-                             , String version
-                             , String type
-                             , ArtifactScopeEnum artifactScope
-                             , String classifier
-                             , String artifactUri
-                             , String why
-                             , boolean resolved
-                             , String error
-                             , Map<String, String> attributes
-                             )
+    // ------------------------------------------------------------------
+
+    public ArtifactMetadata( String groupId, String name, String version, String type, ArtifactScopeEnum artifactScope,
+                             String classifier, String artifactUri, String why, boolean resolved, String error,
+                             Map<String, String> attributes )
     {
         this.groupId = groupId;
         this.artifactId = name;
@@ -94,7 +82,8 @@ extends ArtifactBasicMetadata
 
     public ArtifactMetadata( ArtifactBasicMetadata bmd )
     {
-      this( bmd.getGroupId(), bmd.getArtifactId(), bmd.getVersion(), bmd.getType(), null, bmd.getClassifier(), null, null, true, null, bmd.getAttributes() );
+        this( bmd.getGroupId(), bmd.getArtifactId(), bmd.getVersion(), bmd.getType(), null, bmd.getClassifier(), null,
+              null, true, null, bmd.getAttributes() );
     }
 
     public ArtifactMetadata( Artifact af )
@@ -103,7 +92,7 @@ extends ArtifactBasicMetadata
 
     public ArtifactMetadata( String gav )
     {
-        this( new ArtifactBasicMetadata(gav) );
+        this( new ArtifactBasicMetadata( gav ) );
     }
 
     public boolean isResolved()
@@ -180,6 +169,5 @@ extends ArtifactBasicMetadata
     {
         return release;
     }
-    
-    
+
 }

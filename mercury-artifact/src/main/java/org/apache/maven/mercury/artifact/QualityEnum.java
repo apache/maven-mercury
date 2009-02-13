@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,34 +19,26 @@
 package org.apache.maven.mercury.artifact;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public enum QualityEnum
 {
-    unknown(-1)
-  , snapshot(1)
-  , alpha(2)
-  , beta(3)
-  , release(10)
-  ;
+    unknown( -1 ), snapshot( 1 ), alpha( 2 ), beta( 3 ), release( 10 );
 
-  public static final QualityEnum DEFAULT_QUALITY = unknown;
+    public static final QualityEnum DEFAULT_QUALITY = unknown;
 
-  private int id;
+    private int id;
 
-  // Constructor
-  QualityEnum( int id )
-  {
-      this.id = id;
-  }
+    // Constructor
+    QualityEnum( int id )
+    {
+        this.id = id;
+    }
 
-  int getId()
-  {
-      return id;
-  }
+    int getId()
+    {
+        return id;
+    }
 
 }

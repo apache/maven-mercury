@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,13 +21,12 @@ package org.apache.maven.mercury.artifact;
 /**
  * Type safe reincarnation of Artifact scope. Also supplies the <code>DEFAULT_SCOPE<code> as well
  * as convenience method to deal with scope relationships.
- * 
- * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>
  *
+ * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>
  */
 public enum ArtifactScopeEnum
 {
-    compile( 1 ), test( 2 ), runtime( 3 ), provided( 4 ), system( 5 ), none(-1);
+    compile( 1 ), test( 2 ), runtime( 3 ), provided( 4 ), system( 5 ), none( -1 );
 
     public static final ArtifactScopeEnum DEFAULT_SCOPE = compile;
 
@@ -44,19 +43,17 @@ public enum ArtifactScopeEnum
         return id;
     }
 
-
     /**
      * Helper method to simplify null processing
-     * 
-     * @return 
+     *
+     * @return
      */
     public static final ArtifactScopeEnum checkScope( ArtifactScopeEnum scope )
     {
-    	return scope == null ? DEFAULT_SCOPE : scope;
+        return scope == null ? DEFAULT_SCOPE : scope;
     }
-    
+
     /**
-     * 
      * @return unsafe String representation of this scope.
      */
     public String getScope()
@@ -68,12 +65,10 @@ public enum ArtifactScopeEnum
         else if ( id == 2 )
         {
             return Artifact.SCOPE_TEST;
-
         }
         else if ( id == 3 )
         {
             return Artifact.SCOPE_RUNTIME;
-
         }
         else if ( id == 4 )
         {
@@ -88,40 +83,41 @@ public enum ArtifactScopeEnum
             return Artifact.SCOPE_SYSTEM;
         }
     }
-    
-    private static final ArtifactScopeEnum [][][] _compliancySets = {
-    	  { { compile  }, { compile,                provided, system } }
-    	, { { test     }, { compile, test,          provided, system } }
-    	, { { runtime  }, { compile,       runtime,           system } }
-    	, { { provided }, { compile, test,          provided         } }
-    };
-    
+
+    private static final ArtifactScopeEnum[][][] _compliancySets =
+        { { { compile }, { compile, provided, system } }, { { test }, { compile, test, provided, system } },
+            { { runtime }, { compile, runtime, system } }, { { provided }, { compile, test, provided } } };
+
     /**
      * scope relationship function. Used by the graph conflict resolution policies
-     * 
+     *
      * @param scope
      * @return true is supplied scope is an inclusive sub-scope of current one.
      */
     public boolean encloses( ArtifactScopeEnum scope )
     {
-    	final ArtifactScopeEnum s = checkScope(scope);
-    	
-    	// system scope is historic only - and simple
-    	if( id == system.id )
-    		return scope.id == system.id;
+        final ArtifactScopeEnum s = checkScope( scope );
 
-    	for( ArtifactScopeEnum[][] set : _compliancySets  )
-    	{
-    		if( id == set[0][0].id )
-    		{
-    			for( ArtifactScopeEnum ase : set[1] )
-    			{
-    				if( s.id == ase.id )
-    					return true;
-    			}
-    			break;
-    		}
-    	}
-    	return false;
+        // system scope is historic only - and simple
+        if ( id == system.id )
+        {
+            return scope.id == system.id;
+        }
+
+        for ( ArtifactScopeEnum[][] set : _compliancySets )
+        {
+            if ( id == set[0][0].id )
+            {
+                for ( ArtifactScopeEnum ase : set[1] )
+                {
+                    if ( s.id == ase.id )
+                    {
+                        return true;
+                    }
+                }
+                break;
+            }
+        }
+        return false;
     }
 }

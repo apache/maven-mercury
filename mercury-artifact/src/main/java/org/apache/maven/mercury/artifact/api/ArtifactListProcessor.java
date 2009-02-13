@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,28 +28,32 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
  *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface ArtifactListProcessor
 {
-  /** named functions - used to help processing in various parts of the system */
-  public static final String [] FUNCTIONS = new String [] 
-                         { 
-                            "tp" // transaction processing function, future use
-                         };
-  public static final String FUNCTION_TP = FUNCTIONS[0];
-  
-  /** initialize it if required 
-   * @throws ArtifactListProcessorException */
-  public void init( Map<String, String> env )
-  throws ArtifactListProcessorException;
-  
-  /** configure it if required */
-  public void configure( Object config )
-  throws ArtifactListProcessorException;
-  
-  /** actually do that 
-   * @throws ArtifactListProcessorException */
-  public List<ArtifactBasicMetadata> process( List<ArtifactBasicMetadata> artifacts )
-  throws ArtifactListProcessorException;
+    /** named functions - used to help processing in various parts of the system */
+    public static final String[] FUNCTIONS = new String[] { "tp" // transaction processing function, future use
+        };
+
+    public static final String FUNCTION_TP = FUNCTIONS[0];
+
+    /**
+     * initialize it if required
+     *
+     * @throws ArtifactListProcessorException
+     */
+    public void init( Map<String, String> env )
+        throws ArtifactListProcessorException;
+
+    /** configure it if required */
+    public void configure( Object config )
+        throws ArtifactListProcessorException;
+
+    /**
+     * actually do that
+     *
+     * @throws ArtifactListProcessorException
+     */
+    public List<ArtifactBasicMetadata> process( List<ArtifactBasicMetadata> artifacts )
+        throws ArtifactListProcessorException;
 }
