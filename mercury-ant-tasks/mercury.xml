@@ -1,4 +1,4 @@
-<project name="build" default="default" xmlns:mercury="urn:mercury">
+<project name="build" default="build" xmlns:mercury="urn:mercury">
   
   <target name="initialize">
     <path id="boot.classpath" path="mercury-all-1.0.jar" />
@@ -87,7 +87,7 @@
         <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
       </mercury:remote-repositories>
     </mercury:resolve-dependencies>
-    
+
     <mercury:resolve-dependencies source="maven:pom.xml">
       <mercury:local-repository location="${basedir}/lib" layout="flat"/>
       <mercury:remote-repositories checksum-validation="true">
@@ -112,9 +112,9 @@
         <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
       </mercury:remote-repositories>
     </mercury:resolve-dependencies>
-        
+
   </target>
-  
+
   <target name="build">
     <javac srcdir="src/main/java" destdir="target/classes">
       <classpath refid="mercury.classpath.compile"/>
