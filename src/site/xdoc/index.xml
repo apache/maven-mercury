@@ -41,7 +41,7 @@
         </script>
         <map name="Mercury_dependencies">
           <area shape="rect" coords="145,1,297,30" href="mercury-plexus/" />
-          <area shape="rect" coords="304,1,462,30" href="mercury-ant/mercury-ant-tasks/" />
+          <area shape="rect" coords="304,1,462,30" href="mercury-ant-tasks/" />
           <area shape="rect" coords="321,86,443,116" href="mercury-md/mercury-md-sat/" />
           <area shape="rect" coords="144,137,297,168" href="mercury-repo/mercury-repo-remote-m2/" />
           <area shape="rect" coords="321,137,443,168" href="mercury-repo/mercury-repo-virtual/" />
