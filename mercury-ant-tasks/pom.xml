@@ -33,59 +33,59 @@ under the License.
 
   <dependencies>
 
-      <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>bouncycastle</groupId>
-        <artifactId>bcprov-jdk15</artifactId>
-        <optional>true</optional>
-      </dependency>
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <optional>true</optional>
+    </dependency>
 
-      <dependency>
-        <groupId>bouncycastle</groupId>
-        <artifactId>bcpg-jdk15</artifactId>
-        <optional>true</optional>
-      </dependency>
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcpg-jdk15</artifactId>
+      <optional>true</optional>
+    </dependency>
 
-      <!-- Mercury deps -->
+    <!-- Mercury deps -->
 
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-artifact</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-artifact</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-external</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-external</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-virtual</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-virtual</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-m2</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-local-m2</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-map</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-local-map</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-remote-m2</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-remote-m2</artifactId>
+    </dependency>
 
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-md-sat</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-md-sat</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -93,16 +93,16 @@ under the License.
       <classifier>assembly</classifier>
       <exclusions>
         <exclusion>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty</artifactId>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>jetty</artifactId>
         </exclusion>
         <exclusion>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty-sslengine</artifactId>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>jetty-sslengine</artifactId>
         </exclusion>
         <exclusion>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty-util</artifactId>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -112,34 +112,33 @@ under the License.
       <artifactId>jetty-util5</artifactId>
     </dependency>
 
-      <!-- Maven dependencies -->
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-mercury</artifactId>
-        <version>${maven.version}</version>
-      </dependency>
+    <!-- Maven dependencies -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-mercury</artifactId>
+      <version>${maven.version}</version>
+    </dependency>
 
-      <!-- Test dependencies -->
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-http</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-transport-http</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
 
-      <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant-testutil</artifactId>
-        <version>${ant.version}</version>
-        <scope>test</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-testutil</artifactId>
+      <version>${ant.version}</version>
+      <scope>test</scope>
+    </dependency>
 
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <scope>test</scope>
-      </dependency>
-
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
