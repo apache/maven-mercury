@@ -57,6 +57,36 @@ public class Dep
     private LocalRepositoryMap _pomRepo;
 
     private Storage _pomStorage;
+    
+    private Dependency _sourceDependency;
+    
+
+    /**
+     * @param vr
+     * @throws MavenEmbedderException 
+     */
+//    private MavenEmbedder createEmbedder( VirtualRepositoryReader vr )
+//    throws MavenEmbedderException
+//    {
+//        Configuration configuration = new DefaultConfiguration()
+//            .setUserSettingsFile( MavenEmbedder.DEFAULT_USER_SETTINGS_FILE )
+//            .setGlobalSettingsFile( MavenEmbedder.DEFAULT_GLOBAL_SETTINGS_FILE )
+//            .setClassLoader( Thread.currentThread().getContextClassLoader() )
+//        ;
+//
+//        ConfigurationValidationResult validationResult = MavenEmbedder.validateConfiguration( configuration );
+//
+//        if ( validationResult.isValid() )
+//        {
+//            // If the configuration is valid then do your thang ...
+//        }
+//
+//        MavenEmbedder embedder = new MavenEmbedder( configuration );
+//
+//        PlexusContainer container = embedder.getPlexusContainer();
+//        
+//        return embedder;
+//    }
 
     private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
         throws RepositoryException
@@ -70,6 +100,7 @@ public class Dep
 
         for ( Dependency d : _dependencies )
         {
+            
             if ( d._amd == null )
             {
                 throw new IllegalArgumentException( LANG.getMessage( "dep.dependency.name.mandatory" ) );
@@ -133,6 +164,31 @@ public class Dep
         return resolve( config, _scope );
     }
     //----------------------------------------------------------------------------------------
+//    protected ArtifactRepository getLocalRepository( String path )
+//    throws Exception
+//    {
+//        ArtifactRepositoryLayout repoLayout = new DefaultRepositoryLayout();
+//    
+//        ArtifactRepository r = new DefaultArtifactRepository( "local",
+//                                                              "file://" + path,
+//                                                              repoLayout );
+//    
+//        return r;
+//    }
+    
+//    protected MavenProject getProject( File pom, ArtifactRepository localRepo )
+//        throws Exception
+//    {
+//        Properties props = System.getProperties();
+//        ProfileActivationContext ctx = new DefaultProfileActivationContext( props, false );
+//
+//        ProjectBuilderConfiguration pbc = new DefaultProjectBuilderConfiguration();
+//        pbc.setLocalRepository( localRepo );
+//        pbc.setGlobalProfileManager( new DefaultProfileManager( getContainer(), ctx ) );
+//
+//        return projectBuilder.build( pom, pbc );
+//    }
+    //----------------------------------------------------------------------------------------
     protected List<Artifact> resolve( Config config, ArtifactScopeEnum scope )
         throws Exception
     {
@@ -160,8 +216,9 @@ public class Dep
 
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
 
-        List<ArtifactMetadata> res =
-            db.resolveConflicts( scope, new ArtifactQueryList( getDependencies( vr ) ), null, null );
+        List<ArtifactBasicMetadata> depList = getDependencies( vr );
+        
+        List<ArtifactMetadata> res = db.resolveConflicts( scope, new ArtifactQueryList( depList ), null, null );
 
         if ( Util.isEmpty( res ) )
         {
@@ -230,6 +287,25 @@ public class Dep
     public void setScope( ArtifactScopeEnum scope )
     {
         this._scope = scope;
+    }
+    
+    @Override
+    public void setId( String id )
+    {
+        super.setId( id );
+        
+        if( _sourceDependency != null )
+            _sourceDependency.setId( id );
+    }
+
+    public void setSource( String pom )
+    {
+        _sourceDependency = createDependency();
+        
+        if( getId() != null  )
+            _sourceDependency.setId( getId() );
+        
+        _sourceDependency.setPom( pom );
     }
 
     public void setTransitive( boolean val )

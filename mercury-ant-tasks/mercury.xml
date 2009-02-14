@@ -1,8 +1,11 @@
-<project name="build" default="build" xmlns:mercury="urn:mercury">
+<project name="build" default="build" xmlns:mercury="antlib:org.apache.maven.mercury.ant.tasks">
   
   <target name="initialize">
-    <path id="boot.classpath" path="mercury-all-1.0.jar" />
-    <typedef resource="org/apache/maven/mercury/ant/antlib.xml" uri="urn:mercury" classpathref="boot.classpath"/>
+<!--    <path id="boot.classpath" path="target/mercury-all-1.0.jar" />
+    <taskdef resource="org/apache/maven/mercury/ant/antlib.xml" uri="urn:mercury" classpathref="boot.classpath"/>
+    <taskdef resource="org/apache/maven/mercury/ant/antlib.xml" uri="urn:mercury"/>
+-->
+  	
   </target>
 
   <!--
@@ -59,11 +62,24 @@
      | are setup for you.
      |
      -->
+  	
+    <!-- redefine local and central for testing -->
+    <mercury:local-repository location="${localRepo}"/>
+    <mercury:remote-repository url="${remoteRepo}"/>
+  	
     <mercury:resolve-dependencies>
       <mercury:dependency id="g0:a0:v0"/>
       <mercury:dependency id="g1:a1:v1"/>
       <mercury:dependency id="g2:a2:v2"/>
     </mercury:resolve-dependencies>
+
+  </target>
+    
+  <target name="download-pom" depends="initialize">
+      
+    <!-- redefine local and central for testing -->
+    <mercury:local-repository location="${localRepo}"/>
+    <mercury:remote-repository url="${remoteRepo}"/>
 
     <!-- (2) -->
     <!--
@@ -75,9 +91,24 @@
      |       to use the Maven dependency processor and a local pom.xml file.
      |
      -->
-    <mercury:resolve-dependencies source="maven:pom.xml"/>
+    <mercury:resolve-dependencies id="g:a:1::pom" source="maven:${basedir}/target/test-classes/pom.xml"/>
 
-    <mercury:resolve-dependencies source="maven:pom.xml" transitive="false"/>
+  </target>
+	
+        
+  <target name="download-pom-transtive-false">
+    
+  <!-- redefine local and central for testing -->
+  <mercury:local-repository location="${localRepo}"/>
+  <mercury:remote-repository url="${remoteRepo}"/>
+        
+  <mercury:resolve-dependencies source="maven:pom.xml"/>
+  <mercury:resolve-dependencies  transitive="false" source="maven:${basedir}/target/test-classes/pom.xml"  id="g:a:1::pom" />
+
+ </target>
+    
+          
+  <target name="download-repos">
     
     <mercury:resolve-dependencies source="maven:pom.xml">
       <mercury:local-repository location="${basedir}/lib" layout="flat"/>
@@ -115,7 +146,7 @@
 
   </target>
 
-  <target name="build">
+  <target name="build" depends="initialize">
     <javac srcdir="src/main/java" destdir="target/classes">
       <classpath refid="mercury.classpath.compile"/>
     </javac>      

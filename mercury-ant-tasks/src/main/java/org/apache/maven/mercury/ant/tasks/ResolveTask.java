@@ -37,9 +37,13 @@ public class ResolveTask
 
     private String _depId;
 
+    private String _id;
+
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private List<Dependency> _dependencies;
+    
+    private Dependency _sourceDependency;
 
     // ----------------------------------------------------------------------------------------
     @Override
@@ -245,6 +249,29 @@ public class ResolveTask
     public void setScope( ArtifactScopeEnum scope )
     {
         this._scope = scope;
+    }
+
+    public void setName( String name )
+    {
+        setId( name );
+    }
+
+    public void setId( String id )
+    {
+        this._id = id;
+        
+        if( _sourceDependency != null )
+            _sourceDependency.setId( id );
+    }
+
+    public void setSource( String pom )
+    {
+        _sourceDependency = createDependency();
+        
+        if( _id != null )
+            _sourceDependency.setId( _id );
+        
+        _sourceDependency.setPom( pom );
     }
 
     public Dependency createDependency(  )

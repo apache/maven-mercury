@@ -144,6 +144,12 @@ public class Repo
         setDir( path );
     }
 
+    // alternative - Jason's - syntax
+    public void setLocation( String path )
+    {
+        setDir( path );
+    }
+
     public void setType( String type )
     {
         this._type = type;

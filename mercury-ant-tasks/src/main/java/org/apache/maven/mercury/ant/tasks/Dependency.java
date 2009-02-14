@@ -21,12 +21,20 @@ public class Dependency
     String _pom;
 
     boolean _optional = false;
+    
+    /** dependency processor type, if any */
+    String _processor;
 
     public void setName( String name )
     {
         _amd = new ArtifactBasicMetadata( name );
 
         _amd.setOptional( _optional );
+    }
+
+    public void setId( String name )
+    {
+        setName( name );
     }
 
     public void setOptional( boolean optional )
@@ -41,12 +49,20 @@ public class Dependency
 
     public void setPom( String pom )
     {
-        this._pom = pom;
-
-        if ( _amd == null )
+        int pos = pom.indexOf( ':' );
+        
+        if( pos != -1 )
         {
-            throw new UnsupportedOperationException( LANG.getMessage( "dep.dependency.pom.needs.name", pom ) );
+            this._processor = pom.substring( 0, pos );
+            this._pom = pom.substring( pos+1 );
         }
+        else
+            this._pom = pom;
+
+if ( _amd == null )
+{
+    throw new UnsupportedOperationException( LANG.getMessage( "dep.dependency.pom.needs.name", pom ) );
+}
     }
 
     public void setGroupId( String groupId )

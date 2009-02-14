@@ -22,7 +22,7 @@
 
   <!--  good old syntax -->
   <taskdef name="dependencies"     classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
-  <taskdef name="resolve-dependencies"     classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
+  <taskdef name="resolve-dependencies"  classname="org.apache.maven.mercury.ant.tasks.ResolveTask"/>
 
   <typedef name="localRepository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>
   <typedef name="local-repository"  classname="org.apache.maven.mercury.ant.tasks.Repo"/>

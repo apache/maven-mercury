@@ -19,11 +19,12 @@ public class Config
     extends AbstractDataType
 {
     private static final Language LANG = new DefaultLanguage( Config.class );
+    
+    public static final String SYSTEM_PROPERTY_CENTRAL_URL = "mercury.central.url";
+    
+    public static final String SYSTEM_PROPERTY_LOCAL_DIR_NAME = "mercury.repo.local";
 
-    public static final String DEFAULT_LOCAL_DIR = System.getProperty( "user.home" ) + "/.m2/repository";
-
-    public static final String DEFAULT_CENTRAL_URL =
-        System.getProperty( "mercury.central.url", "http://repo1.maven.org/maven2" );
+    public static final String DEFAULT_LOCAL_DIR_NAME = "/.m2/repository";
 
     public static final String DEFAULT_CONFIG_ID =
         System.getProperty( "mercury.default.config.id", "mercury.default.config.id." + System.currentTimeMillis() );
@@ -44,11 +45,25 @@ public class Config
     {
         Repo local = createRepo();
         local.setId( "defaultLocalRepo" );
-        local.setDir( ( localDir == null ) ? DEFAULT_LOCAL_DIR : localDir );
+        
+        String localDirName = ( localDir == null )
+                                ? System.getProperty( SYSTEM_PROPERTY_LOCAL_DIR_NAME, 
+                                         System.getProperty( "user.home" ) + DEFAULT_LOCAL_DIR_NAME
+                                                    )
+                                : localDir
+                            ;
+            
+        local.setDir( localDirName );
 
         Repo central = createRepo();
         central.setId( "central" );
-        central.setUrl( ( remoteUrl == null ) ? DEFAULT_CENTRAL_URL : remoteUrl );
+        
+        String centralUrl = ( remoteUrl == null )
+                                ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, "http://repo1.maven.org/maven2" )
+                                : remoteUrl
+                        ;
+
+        central.setUrl( centralUrl );
     }
 
     public List<Repository> getRepositories()
