@@ -20,6 +20,7 @@ package org.apache.maven.mercury.ant.tasks;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +30,10 @@ import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.FileList.FileName;
+import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -41,6 +45,9 @@ public class ResolveTask
     extends AbstractAntTask
 {
     private static final Language LANG = new DefaultLanguage( ResolveTask.class );
+
+    ArtifactScopeEnum[] SCOPES =
+        new ArtifactScopeEnum[] { ArtifactScopeEnum.compile, ArtifactScopeEnum.test, ArtifactScopeEnum.runtime };
 
     public static final String TASK_NAME = LANG.getMessage( "resolve.task.name" );
 
@@ -60,7 +67,7 @@ public class ResolveTask
 
     private boolean _transitive = true;
 
-    private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
+    private ArtifactScopeEnum _scope;
 
     private List<Dependency> _dependencies;
 
@@ -153,58 +160,133 @@ public class ResolveTask
 
             dep.setTransitive( _transitive );
 
-            Collection<Artifact> artifacts = dep.resolve( config, _scope );
+            ArtifactScopeEnum[] scopes = _scope == null ? SCOPES : new ArtifactScopeEnum[] { _scope };
 
-            if ( artifacts == null )
+            for ( ArtifactScopeEnum sc : scopes )
             {
-                return;
-            }
+                Collection<Artifact> artifacts = dep.resolve( config, sc );
 
-            FileList pathFileList = new FileList();
-
-            File dir = null;
-
-            for ( Artifact a : artifacts )
-            {
-                if ( dir == null )
+                if ( Util.isEmpty( artifacts ) )
                 {
-                    dir = a.getFile().getParentFile();
+                    continue;
                 }
 
-                String aPath = a.getFile().getCanonicalPath();
+                if ( ArtifactScopeEnum.compile.equals( sc ) )
+                {
+                    createPath( Config.DEFAULT_PATH_ID, Config.DEFAULT_FILESET_ID, artifacts );
+                }
 
-                FileList.FileName fn = new FileList.FileName();
-
-                fn.setName( aPath );
-
-                pathFileList.addConfiguredFile( fn );
+                createPath( Config.DEFAULT_PATH_ID + "." + sc.getScope(), Config.DEFAULT_FILESET_ID + "."
+                    + sc.getScope(), artifacts );
             }
 
-            pathFileList.setDir( dir );
-
-            // now - the path
-            if ( path == null )
-            {
-                path = new Path( getProject(), _pathId );
-
-                path.addFilelist( pathFileList );
-
-                getProject().addReference( _pathId, path );
-            }
-            else
-            {
-                Path newPath = new Path( getProject() );
-
-                newPath.addFilelist( pathFileList );
-
-                path.append( newPath );
-            }
+            // FileList pathFileList = new FileList();
+            //
+            // File dir = null;
+            //
+            // for ( Artifact a : artifacts )
+            // {
+            // if ( dir == null )
+            // {
+            // dir = a.getFile().getParentFile();
+            // }
+            //
+            // String aPath = a.getFile().getCanonicalPath();
+            //
+            // FileList.FileName fn = new FileList.FileName();
+            //
+            // fn.setName( aPath );
+            //
+            // pathFileList.addConfiguredFile( fn );
+            // }
+            //
+            // pathFileList.setDir( dir );
+            //
+            // // now - the path
+            // if ( path == null )
+            // {
+            // path = new Path( getProject(), _pathId );
+            //
+            // path.addFilelist( pathFileList );
+            //
+            // getProject().addReference( _pathId, path );
+            // }
+            // else
+            // {
+            // Path newPath = new Path( getProject() );
+            //
+            // newPath.addFilelist( pathFileList );
+            //
+            // path.append( newPath );
+            // }
 
         }
         catch ( Exception e )
         {
             throwIfEnabled( e );
         }
+    }
+
+    private void createPath( String pathId, String filesetId, Collection<Artifact> artifacts )
+        throws IOException
+    {
+
+        if ( Util.isEmpty( artifacts ) )
+        {
+            return;
+        }
+
+        FileList pathFileList = new FileList();
+
+        FileList fList = (FileList) getProject().getReference( filesetId );
+
+        if ( fList == null )
+        {
+            fList = pathFileList;
+
+            getProject().addReference( filesetId, pathFileList );
+        }
+
+        File dir = null;
+
+        for ( Artifact a : artifacts )
+        {
+            if ( dir == null )
+            {
+                dir = a.getFile().getParentFile();
+            }
+
+            String aPath = a.getFile().getCanonicalPath();
+
+            FileList.FileName fn = new FileList.FileName();
+
+            fn.setName( aPath );
+
+            pathFileList.addConfiguredFile( fn );
+        }
+
+        pathFileList.setDir( dir );
+
+        Path path = (Path) getProject().getReference( pathId );
+
+        // now - the path
+        if ( path == null )
+        {
+            path = new Path( getProject(), _pathId );
+
+            path.addFilelist( pathFileList );
+
+            getProject().addReference( _pathId, path );
+        }
+        else
+        {
+            Path newPath = new Path( getProject() );
+
+            newPath.addFilelist( pathFileList );
+
+            path.append( newPath );
+        }
+
     }
 
     // attributes

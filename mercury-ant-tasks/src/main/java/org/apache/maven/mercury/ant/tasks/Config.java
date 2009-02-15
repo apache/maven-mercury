@@ -45,10 +45,12 @@ public class Config
 
     public static final String DEFAULT_LOCAL_DIR_NAME = "/.m2/repository";
 
+    public static final String DEFAULT_PATH_ID = "mercury.classpath";
+
+    public static final String DEFAULT_FILESET_ID = "mercury.fileset";
+
     public static final String DEFAULT_CONFIG_ID =
         System.getProperty( "mercury.default.config.id", "mercury.default.config.id." + System.currentTimeMillis() );
-
-    public static final String DEFAULT_PATH_ID = System.getProperty( "mercury.default.path.id", "mercury.path" );
 
     Collection<Repo> _repos;
 

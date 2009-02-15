@@ -49,7 +49,7 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * repository data type
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */

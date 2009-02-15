@@ -328,7 +328,7 @@
     
     <javac srcdir="${basedir}/src/test/compile"
            destdir="${basedir}/target/compile-classes"
-    	     classpathref="mercury.path"
+    	     classpathref="mercury.classpath"
            source="1.5"
            target="1.5"
     />
