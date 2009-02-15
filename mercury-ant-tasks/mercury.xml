@@ -65,7 +65,7 @@
   	
     <!-- redefine local and central for testing -->
     <mercury:local-repository location="${localRepo}"/>
-    <mercury:remote-repository url="${remoteRepo}"/>
+    <mercury:remote-repository location="${remoteRepo}"/>
   	
     <mercury:resolve-dependencies>
       <mercury:dependency id="g0:a0:v0"/>
@@ -79,7 +79,7 @@
       
     <!-- redefine local and central for testing -->
     <mercury:local-repository location="${localRepo}"/>
-    <mercury:remote-repository url="${remoteRepo}"/>
+    <mercury:remote-repository location="${remoteRepo}"/>
 
     <!-- (2) -->
     <!--
@@ -100,7 +100,7 @@
     
     <!-- redefine local and central for testing -->
     <mercury:local-repository location="${localRepo}"/>
-    <mercury:remote-repository url="${remoteRepo}"/>
+    <mercury:remote-repository location="${remoteRepo}"/>
           
     <mercury:resolve-dependencies 
                    transitive="false"
