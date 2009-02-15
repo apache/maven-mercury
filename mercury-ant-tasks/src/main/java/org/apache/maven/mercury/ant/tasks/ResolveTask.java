@@ -203,14 +203,7 @@ public class ResolveTask
         }
         catch ( Exception e )
         {
-            if ( _failOnError )
-            {
-                throw new BuildException( e.getMessage() );
-            }
-            else
-            {
-                return;
-            }
+            throwIfEnabled( e );
         }
     }
 

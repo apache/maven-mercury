@@ -52,6 +52,15 @@ public class AbstractAntTask
         }
     }
 
+    protected void throwIfEnabled( Throwable t )
+        throws BuildException
+    {
+        if ( _failOnError )
+        {
+            throw new BuildException( t );
+        }
+    }
+
     // ----------------------------------------------------------------------------------------
     public static final Config findConfig( Project project, String configId )
         throws Exception

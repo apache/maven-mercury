@@ -405,7 +405,7 @@ public class Dep
         }
         catch ( Exception e )
         {
-            LOG.error( e.getMessage() );
+            LOG.error( "unable to create dependencies iterator", e );
 
             return null;
         }
@@ -427,7 +427,7 @@ public class Dep
         }
         catch ( Exception e )
         {
-            LOG.error( e.getMessage() );
+            LOG.error( "unable to count dependencies", e );
 
             return 0;
         }

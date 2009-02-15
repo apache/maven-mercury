@@ -200,7 +200,7 @@ public class WriteTask
         }
         catch ( Exception e )
         {
-            throwIfEnabled( e.getMessage() );
+            throwIfEnabled( e );
         }
     }
 
