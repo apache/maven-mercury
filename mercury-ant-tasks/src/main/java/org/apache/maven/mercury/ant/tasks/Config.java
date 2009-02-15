@@ -19,9 +19,9 @@ public class Config
     extends AbstractDataType
 {
     private static final Language LANG = new DefaultLanguage( Config.class );
-    
+
     public static final String SYSTEM_PROPERTY_CENTRAL_URL = "mercury.central.url";
-    
+
     public static final String SYSTEM_PROPERTY_LOCAL_DIR_NAME = "mercury.repo.local";
 
     public static final String DEFAULT_LOCAL_DIR_NAME = "/.m2/repository";
@@ -45,23 +45,19 @@ public class Config
     {
         Repo local = createRepo();
         local.setId( "defaultLocalRepo" );
-        
-        String localDirName = ( localDir == null )
-                                ? System.getProperty( SYSTEM_PROPERTY_LOCAL_DIR_NAME, 
-                                         System.getProperty( "user.home" ) + DEFAULT_LOCAL_DIR_NAME
-                                                    )
-                                : localDir
-                            ;
-            
+
+        String localDirName =
+            ( localDir == null ) ? System.getProperty( SYSTEM_PROPERTY_LOCAL_DIR_NAME, System.getProperty( "user.home" )
+                + DEFAULT_LOCAL_DIR_NAME ) : localDir;
+
         local.setDir( localDirName );
 
         Repo central = createRepo();
         central.setId( "central" );
-        
-        String centralUrl = ( remoteUrl == null )
-                                ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, "http://repo1.maven.org/maven2" )
-                                : remoteUrl
-                        ;
+
+        String centralUrl =
+            ( remoteUrl == null ) ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, "http://repo1.maven.org/maven2" )
+                            : remoteUrl;
 
         central.setUrl( centralUrl );
     }
@@ -91,14 +87,14 @@ public class Config
 
     private void init()
     {
-        if( getId() != null )
+        if ( getId() != null )
         {
             return;
         }
 
-        setId(DEFAULT_CONFIG_ID);
+        setId( DEFAULT_CONFIG_ID );
 
-        if( getProject() != null )
+        if ( getProject() != null )
         {
             getProject().addReference( DEFAULT_CONFIG_ID, this );
         }
@@ -108,7 +104,7 @@ public class Config
     {
         init();
 
-        Repo r = new Repo(true);
+        Repo r = new Repo( true );
 
         listRepo( r );
 
@@ -177,7 +173,6 @@ public class Config
         return a;
     }
 
-    //======================================================================================
-
+    // ======================================================================================
 
 }

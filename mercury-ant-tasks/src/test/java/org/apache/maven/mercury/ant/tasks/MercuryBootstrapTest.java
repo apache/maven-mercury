@@ -37,7 +37,9 @@ public class MercuryBootstrapTest
     AuthenticatingTestServer _jetty;
 
     int _port;
+
     static final int DEFAULT_PORT = 22883;
+
     // -----------------------------------
     public MercuryBootstrapTest( String name )
     {
@@ -47,7 +49,7 @@ public class MercuryBootstrapTest
     // -----------------------------------
     @Override
     protected void setUp()
-    throws Exception
+        throws Exception
     {
         _localRepoDirFile = new File( _localRepoDir );
         FileUtil.delete( _localRepoDirFile );
@@ -64,11 +66,11 @@ public class MercuryBootstrapTest
 
         configureProject( "mercury.xml" );
 
-//        System.setProperty( Config.SYSTEM_PROPERTY_LOCAL_DIR_NAME, _localRepoDir );
+        // System.setProperty( Config.SYSTEM_PROPERTY_LOCAL_DIR_NAME, _localRepoDir );
         getProject().setProperty( "localRepo", _localRepoDir );
 
-//        System.setProperty( Config.SYSTEM_PROPERTY_CENTRAL_URL, _remoteRepoUrlPrefix+_port+_remoteRepoUrlSufix );
-        getProject().setProperty( "remoteRepo", _remoteRepoUrlPrefix+_port+_remoteRepoUrlSufix );
+        // System.setProperty( Config.SYSTEM_PROPERTY_CENTRAL_URL, _remoteRepoUrlPrefix+_port+_remoteRepoUrlSufix );
+        getProject().setProperty( "remoteRepo", _remoteRepoUrlPrefix + _port + _remoteRepoUrlSufix );
     }
 
     // -----------------------------------
@@ -88,7 +90,7 @@ public class MercuryBootstrapTest
     protected void tearDown()
         throws Exception
     {
-        if( _jetty != null )
+        if ( _jetty != null )
         {
             _jetty.stop();
             _jetty.destroy();
@@ -97,7 +99,7 @@ public class MercuryBootstrapTest
         }
     }
 
-    //-----------------------------------
+    // -----------------------------------
     public void testDownload()
     {
         String title = "download";
@@ -119,7 +121,7 @@ public class MercuryBootstrapTest
         assertTrue( a2.exists() );
     }
 
-    //-----------------------------------
+    // -----------------------------------
     public void testDownloadPom()
     {
         String title = "download-pom";
@@ -141,7 +143,7 @@ public class MercuryBootstrapTest
         assertTrue( a2.exists() );
     }
 
-    //-----------------------------------
+    // -----------------------------------
     public void testDownloadPomNonTransitive()
     {
         String title = "download-pom-non-transtive";
@@ -162,6 +164,6 @@ public class MercuryBootstrapTest
         assertTrue( a1.exists() );
         assertFalse( a2.exists() );
     }
-    //-----------------------------------
-    //-----------------------------------
+    // -----------------------------------
+    // -----------------------------------
 }

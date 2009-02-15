@@ -40,6 +40,7 @@ public class Dep
     implements ResourceCollection
 {
     private static final Language LANG = new DefaultLanguage( Dep.class );
+
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Dep.class );
 
     private List<Dependency> _dependencies;
@@ -57,37 +58,35 @@ public class Dep
     private LocalRepositoryMap _pomRepo;
 
     private Storage _pomStorage;
-    
+
     private Dependency _sourceDependency;
-    
 
     /**
      * @param vr
-     * @throws MavenEmbedderException 
+     * @throws MavenEmbedderException
      */
-//    private MavenEmbedder createEmbedder( VirtualRepositoryReader vr )
-//    throws MavenEmbedderException
-//    {
-//        Configuration configuration = new DefaultConfiguration()
-//            .setUserSettingsFile( MavenEmbedder.DEFAULT_USER_SETTINGS_FILE )
-//            .setGlobalSettingsFile( MavenEmbedder.DEFAULT_GLOBAL_SETTINGS_FILE )
-//            .setClassLoader( Thread.currentThread().getContextClassLoader() )
-//        ;
-//
-//        ConfigurationValidationResult validationResult = MavenEmbedder.validateConfiguration( configuration );
-//
-//        if ( validationResult.isValid() )
-//        {
-//            // If the configuration is valid then do your thang ...
-//        }
-//
-//        MavenEmbedder embedder = new MavenEmbedder( configuration );
-//
-//        PlexusContainer container = embedder.getPlexusContainer();
-//        
-//        return embedder;
-//    }
-
+    // private MavenEmbedder createEmbedder( VirtualRepositoryReader vr )
+    // throws MavenEmbedderException
+    // {
+    // Configuration configuration = new DefaultConfiguration()
+    // .setUserSettingsFile( MavenEmbedder.DEFAULT_USER_SETTINGS_FILE )
+    // .setGlobalSettingsFile( MavenEmbedder.DEFAULT_GLOBAL_SETTINGS_FILE )
+    // .setClassLoader( Thread.currentThread().getContextClassLoader() )
+    // ;
+    //
+    // ConfigurationValidationResult validationResult = MavenEmbedder.validateConfiguration( configuration );
+    //
+    // if ( validationResult.isValid() )
+    // {
+    // // If the configuration is valid then do your thang ...
+    // }
+    //
+    // MavenEmbedder embedder = new MavenEmbedder( configuration );
+    //
+    // PlexusContainer container = embedder.getPlexusContainer();
+    //        
+    // return embedder;
+    // }
     private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
         throws RepositoryException
     {
@@ -100,7 +99,7 @@ public class Dep
 
         for ( Dependency d : _dependencies )
         {
-            
+
             if ( d._amd == null )
             {
                 throw new IllegalArgumentException( LANG.getMessage( "dep.dependency.name.mandatory" ) );
@@ -115,11 +114,11 @@ public class Dep
                 String key = d._amd.getGAV();
 
                 ArtifactMetadata deps = null;
-                
+
                 File pomFile = new File( d._pom );
-                
-                if( !pomFile.exists() )
-                    throw new RepositoryException("pom file "+d._pom+" does not exist");
+
+                if ( !pomFile.exists() )
+                    throw new RepositoryException( "pom file " + d._pom + " does not exist" );
 
                 try
                 {
@@ -160,7 +159,8 @@ public class Dep
 
         return dep;
     }
-    //----------------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------------
     protected List<Artifact> resolve()
         throws Exception
     {
@@ -168,32 +168,33 @@ public class Dep
 
         return resolve( config, _scope );
     }
-    //----------------------------------------------------------------------------------------
-//    protected ArtifactRepository getLocalRepository( String path )
-//    throws Exception
-//    {
-//        ArtifactRepositoryLayout repoLayout = new DefaultRepositoryLayout();
-//    
-//        ArtifactRepository r = new DefaultArtifactRepository( "local",
-//                                                              "file://" + path,
-//                                                              repoLayout );
-//    
-//        return r;
-//    }
-    
-//    protected MavenProject getProject( File pom, ArtifactRepository localRepo )
-//        throws Exception
-//    {
-//        Properties props = System.getProperties();
-//        ProfileActivationContext ctx = new DefaultProfileActivationContext( props, false );
-//
-//        ProjectBuilderConfiguration pbc = new DefaultProjectBuilderConfiguration();
-//        pbc.setLocalRepository( localRepo );
-//        pbc.setGlobalProfileManager( new DefaultProfileManager( getContainer(), ctx ) );
-//
-//        return projectBuilder.build( pom, pbc );
-//    }
-    //----------------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------------
+    // protected ArtifactRepository getLocalRepository( String path )
+    // throws Exception
+    // {
+    // ArtifactRepositoryLayout repoLayout = new DefaultRepositoryLayout();
+    //    
+    // ArtifactRepository r = new DefaultArtifactRepository( "local",
+    // "file://" + path,
+    // repoLayout );
+    //    
+    // return r;
+    // }
+
+    // protected MavenProject getProject( File pom, ArtifactRepository localRepo )
+    // throws Exception
+    // {
+    // Properties props = System.getProperties();
+    // ProfileActivationContext ctx = new DefaultProfileActivationContext( props, false );
+    //
+    // ProjectBuilderConfiguration pbc = new DefaultProjectBuilderConfiguration();
+    // pbc.setLocalRepository( localRepo );
+    // pbc.setGlobalProfileManager( new DefaultProfileManager( getContainer(), ctx ) );
+    //
+    // return projectBuilder.build( pom, pbc );
+    // }
+    // ----------------------------------------------------------------------------------------
     protected List<Artifact> resolve( Config config, ArtifactScopeEnum scope )
         throws Exception
     {
@@ -222,11 +223,10 @@ public class Dep
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
 
         List<ArtifactBasicMetadata> depList = getDependencies( vr );
-        
-        List<ArtifactMetadata> res = _transitive
-                                        ? db.resolveConflicts( scope, new ArtifactQueryList( depList ), null, null )
-                                        : toArtifactMetadataList( depList )
-                                    ;
+
+        List<ArtifactMetadata> res =
+            _transitive ? db.resolveConflicts( scope, new ArtifactQueryList( depList ), null, null )
+                            : toArtifactMetadataList( depList );
 
         if ( Util.isEmpty( res ) )
         {
@@ -249,7 +249,6 @@ public class Dep
         {
             return null;
         }
-
 
         Map<ArtifactBasicMetadata, List<Artifact>> resMap = aRes.getResults();
 
@@ -292,14 +291,14 @@ public class Dep
      */
     private List<ArtifactMetadata> toArtifactMetadataList( List<ArtifactBasicMetadata> depList )
     {
-        if( Util.isEmpty( depList ) )
+        if ( Util.isEmpty( depList ) )
             return null;
-        
+
         List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( depList.size() );
-        
-        for( ArtifactBasicMetadata bmd : depList )
-            res.add( new ArtifactMetadata(bmd) );
-        
+
+        for ( ArtifactBasicMetadata bmd : depList )
+            res.add( new ArtifactMetadata( bmd ) );
+
         return res;
     }
 
@@ -313,23 +312,23 @@ public class Dep
     {
         this._scope = scope;
     }
-    
+
     @Override
     public void setId( String id )
     {
         super.setId( id );
-        
-        if( _sourceDependency != null )
+
+        if ( _sourceDependency != null )
             _sourceDependency.setId( id );
     }
 
     public void setSource( String pom )
     {
         _sourceDependency = createDependency();
-        
-        if( getId() != null  )
+
+        if ( getId() != null )
             _sourceDependency.setId( getId() );
-        
+
         _sourceDependency.setPom( pom );
     }
 
@@ -342,12 +341,14 @@ public class Dep
     {
         _dependencies = dependencies;
     }
-    //----------------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------------
     public boolean isFilesystemOnly()
     {
         return true;
     }
-    //----------------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------------
     public Iterator<File> iterator()
     {
         try
@@ -380,7 +381,8 @@ public class Dep
             return null;
         }
     }
-    //----------------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------------
     public int size()
     {
         try
@@ -401,6 +403,6 @@ public class Dep
             return 0;
         }
     }
-    //----------------------------------------------------------------------------------------
-    //----------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------
 }

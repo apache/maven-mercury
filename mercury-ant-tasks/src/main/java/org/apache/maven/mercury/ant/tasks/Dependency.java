@@ -5,11 +5,8 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 
 public class Dependency
@@ -21,7 +18,7 @@ public class Dependency
     String _pom;
 
     boolean _optional = false;
-    
+
     /** dependency processor type, if any */
     String _processor;
 
@@ -50,11 +47,11 @@ public class Dependency
     public void setPom( String pom )
     {
         int pos = pom.indexOf( ':' );
-        
-        if( pos != -1 )
+
+        if ( pos != -1 )
         {
             this._processor = pom.substring( 0, pos );
-            this._pom = pom.substring( pos+1 );
+            this._pom = pom.substring( pos + 1 );
         }
         else
             this._pom = pom;

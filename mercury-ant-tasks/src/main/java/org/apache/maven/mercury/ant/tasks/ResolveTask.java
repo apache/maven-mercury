@@ -44,7 +44,7 @@ public class ResolveTask
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private List<Dependency> _dependencies;
-    
+
     private Dependency _sourceDependency;
 
     // ----------------------------------------------------------------------------------------
@@ -92,7 +92,8 @@ public class ResolveTask
 
             dep = (Dep) d;
         }
-        else // inner dependency set
+        else
+        // inner dependency set
         {
             dep = new Dep();
 
@@ -110,7 +111,7 @@ public class ResolveTask
                 return;
             }
         }
-        else if( !Util.isEmpty( _refPathId ) )
+        else if ( !Util.isEmpty( _refPathId ) )
         {
             Object p = getProject().getReference( _refPathId );
 
@@ -130,7 +131,7 @@ public class ResolveTask
         try
         {
             Config config = AbstractAntTask.findConfig( getProject(), _configId );
-            
+
             dep.setTransitive( _transitive );
 
             Collection<Artifact> artifacts = dep.resolve( config, _scope );
@@ -263,18 +264,18 @@ public class ResolveTask
     public void setId( String id )
     {
         this._id = id;
-        
-        if( _sourceDependency != null )
+
+        if ( _sourceDependency != null )
             _sourceDependency.setId( id );
     }
 
     public void setSource( String pom )
     {
         _sourceDependency = createDependency();
-        
-        if( _id != null )
+
+        if ( _id != null )
             _sourceDependency.setId( _id );
-        
+
         _sourceDependency.setPom( pom );
     }
 
@@ -283,7 +284,7 @@ public class ResolveTask
         this._transitive = transitive;
     }
 
-    public Dependency createDependency(  )
+    public Dependency createDependency()
     {
         if ( Util.isEmpty( _dependencies ) )
         {

@@ -110,7 +110,7 @@
 
  </target>
           
-  <target name="download-repos">
+  <target name="download-repo-flat">
     
     <mercury:resolve-dependencies source="maven:pom.xml">
       <mercury:local-repository location="${basedir}/lib" layout="flat"/>
@@ -120,6 +120,10 @@
         <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
       </mercury:remote-repositories>
     </mercury:resolve-dependencies>
+
+  </target>
+  	          
+  <target name="download-repos-2">
 
     <mercury:resolve-dependencies source="maven:pom.xml">
       <mercury:local-repository location="${basedir}/lib" layout="flat"/>

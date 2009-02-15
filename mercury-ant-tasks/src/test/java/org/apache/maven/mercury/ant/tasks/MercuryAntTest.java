@@ -103,7 +103,7 @@ public class MercuryAntTest
     protected void tearDown()
         throws Exception
     {
-        if( _jetty != null )
+        if ( _jetty != null )
         {
             _jetty.stop();
             _jetty.destroy();
@@ -129,7 +129,7 @@ public class MercuryAntTest
 
             fail( title + " did not raise an exception" );
         }
-        catch( Throwable e )
+        catch ( Throwable e )
         {
             System.out.println( "Expected exception: " + e.getMessage() );
         }
@@ -193,7 +193,7 @@ public class MercuryAntTest
 
     // -----------------------------------
     public void testCompileThinPath3()
-    throws Exception
+        throws Exception
     {
         String title = "compile-thin-path-3";
         System.out.println( "========> start " + title );
@@ -222,7 +222,7 @@ public class MercuryAntTest
 
     // -----------------------------------
     public void testCompileThinPathPom()
-    throws Exception
+        throws Exception
     {
         String title = "compile-thin-path-pom";
         System.out.println( "========> start " + title );
@@ -248,9 +248,10 @@ public class MercuryAntTest
 
         assertTrue( asm.exists() );
     }
+
     // -----------------------------------
     public void testCompileOldSyntax()
-    throws Exception
+        throws Exception
     {
         String title = "compile-old-syntax";
         System.out.println( "========> start " + title );
@@ -274,9 +275,10 @@ public class MercuryAntTest
 
         assertTrue( asm.exists() );
     }
+
     // -----------------------------------
     public void testCompileOldSyntaxWithAuth()
-    throws Exception
+        throws Exception
     {
         String title = "compile-old-syntax-with-auth";
         System.out.println( "========> start " + title );
@@ -385,9 +387,10 @@ public class MercuryAntTest
         assertTrue( af.exists() );
         assertTrue( sig.exists() );
     }
-    //-----------------------------------
+
+    // -----------------------------------
     public void testVerifyReadBadPgp()
-    throws Exception
+        throws Exception
     {
         String title = "verify-read-bad-pgp";
         System.out.println( "========> start " + title );
@@ -409,17 +412,19 @@ public class MercuryAntTest
 
         assertFalse( af.exists() );
     }
-    //-----------------------------------
+
+    // -----------------------------------
     public void testVerifyReadGoodPgp()
-    throws Exception
+        throws Exception
     {
         String title = "verify-read-good-pgp";
         System.out.println( "========> start " + title );
         System.out.flush();
-        
-        if( File.pathSeparatorChar == ';' )
+
+        if ( File.pathSeparatorChar == ';' )
         {
-            System.out.println( "PGP test temporarily disabled under Windows,\nbecause all files were signed under Unix\nand SVN properties make checkout to convert EOL,\nbreaking signatures" + title );
+            System.out.println( "PGP test temporarily disabled under Windows,\nbecause all files were signed under Unix\nand SVN properties make checkout to convert EOL,\nbreaking signatures"
+                + title );
             return;
         }
 
@@ -430,10 +435,11 @@ public class MercuryAntTest
 
         assertTrue( af.exists() );
     }
+
     // -----------------------------------
     // -----------------------------------
     public void testDefaultPathId()
-    throws Exception
+        throws Exception
     {
         String title = "test-default-path-id";
         System.out.println( "========> start " + title );

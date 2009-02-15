@@ -30,7 +30,7 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * repository data type
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -68,6 +68,8 @@ public class Repo
     private transient boolean _managed = false;
 
     private transient boolean _registered = false;
+
+    private static final String[] SUPPORTED_LAYOUTS = new String[] { "m2", "flat" };
 
     public Repo()
     {
@@ -147,7 +149,10 @@ public class Repo
     // alternative - Jason's - syntax
     public void setLocation( String path )
     {
-        setDir( path );
+        if ( FileUtil.isLocalResource( path ) )
+            setDir( path );
+        else
+            setUrl( path );
     }
 
     public void setType( String type )
@@ -173,10 +178,24 @@ public class Repo
 
     public void setLayout( String layout )
     {
-        if ( !DEFAULT_LAYOUT.equals( layout ) )
+        if ( layout == null )
+            throw new IllegalArgumentException( LANG.getMessage( "repo.null.layout" ) );
+
+        boolean notSupported = true;
+
+        int len = layout.length();
+
+        for ( String l : SUPPORTED_LAYOUTS )
         {
-            throw new IllegalArgumentException( LANG.getMessage( "repo.layout.not.supported", layout ) );
+            if ( l.regionMatches( 0, layout, 0, len ) )
+            {
+                notSupported = false;
+                break;
+            }
         }
+
+        if ( notSupported )
+            throw new IllegalArgumentException( LANG.getMessage( "repo.layout.not.supported", layout ) );
 
         processDefaults();
     }
@@ -441,8 +460,8 @@ public class Repo
 
                     if ( ( keyId == null ) || ( keyId.length() != 16 ) )
                     {
-                        throw new BuildException( LANG.getMessage( "config.repo.verifier.pgp.bad.keyid", keyId,
-                                                                    keyRing ) );
+                        throw new BuildException(
+                                                  LANG.getMessage( "config.repo.verifier.pgp.bad.keyid", keyId, keyRing ) );
                     }
 
                     try

@@ -77,7 +77,7 @@ public class Auth
     {
         Object ao = ( authId == null ) ? project.getReference( DEFAULT_AUTH_ID ) : project.getReference( authId );
 
-        if( ao == null )
+        if ( ao == null )
         {
             return null;
         }
