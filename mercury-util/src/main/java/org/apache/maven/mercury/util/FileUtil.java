@@ -90,6 +90,7 @@ public class FileUtil
   public static final String PROTOCOL_DELIM = "://";
   public static final int    PROTOCOL_DELIM_LEN = PROTOCOL_DELIM.length();
   public static final String [] URL_PROTOCOLS = new String [] {"http","https","dav","file","davs","webdav","webdavs","dav+http","dav+https"};
+  public static final String [] LOCAL_PROTOCOLS = new String [] {"file"};
   //---------------------------------------------------------------------------------------------------------------
   private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( FileUtil.class );
   private static final Language LANG = new DefaultLanguage( FileUtil.class );
@@ -1003,6 +1004,31 @@ public class FileUtil
     }
 
     return new FileInputStream( new File(resource) );
+  }
+  //---------------------------------------------------------------------------------------------------------------
+  public static boolean isLocalResource( String resource )
+  {
+    if( resource == null )
+      return true;
+    
+    int ind = resource.indexOf( PROTOCOL_DELIM );
+    
+    if( ind > 1 )
+    {
+        String protocol = resource.substring( 0, ind );
+
+        for( int i=0; i<LOCAL_PROTOCOLS.length; i++ )
+        {
+            String p = LOCAL_PROTOCOLS[i];
+            
+            if( protocol.regionMatches( true, 0, p, 0, p.length() ) )
+              return true;
+        }
+    }
+    else
+        return true;
+
+    return false;
   }
   // -----------------------------------------------------
     public static final void unZip( InputStream zipInputStream, File destDir )
