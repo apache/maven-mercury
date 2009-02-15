@@ -1,5 +1,24 @@
 package org.apache.maven.mercury.ant.tasks;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,11 +40,11 @@ import org.codehaus.plexus.lang.Language;
 public class ResolveTask
     extends AbstractAntTask
 {
-    private static final Language _lang = new DefaultLanguage( ResolveTask.class );
+    private static final Language LANG = new DefaultLanguage( ResolveTask.class );
 
-    public static final String TASK_NAME = _lang.getMessage( "resolve.task.name" );
+    public static final String TASK_NAME = LANG.getMessage( "resolve.task.name" );
 
-    public static final String TASK_DESC = _lang.getMessage( "resolve.task.desc" );
+    public static final String TASK_DESC = LANG.getMessage( "resolve.task.desc" );
 
     private String _pathId;
 
@@ -70,7 +89,7 @@ public class ResolveTask
 
         if ( ( _depId == null ) && Util.isEmpty( _dependencies ) )
         {
-            throwIfEnabled( _lang.getMessage( "no.dep.id" ) );
+            throwIfEnabled( LANG.getMessage( "no.dep.id" ) );
             return;
         }
 
@@ -80,13 +99,13 @@ public class ResolveTask
 
             if ( d == null )
             {
-                throwIfEnabled( _lang.getMessage( "no.dep", _depId ) );
+                throwIfEnabled( LANG.getMessage( "no.dep", _depId ) );
                 return;
             }
 
             if ( !Dep.class.isAssignableFrom( d.getClass() ) )
             {
-                throwIfEnabled( _lang.getMessage( "bad.dep", _depId, d.getClass().getName(), Dep.class.getName() ) );
+                throwIfEnabled( LANG.getMessage( "bad.dep", _depId, d.getClass().getName(), Dep.class.getName() ) );
                 return;
             }
 
@@ -107,7 +126,7 @@ public class ResolveTask
         {
             if ( getProject().getReference( _pathId ) != null )
             {
-                throwIfEnabled( _lang.getMessage( "path.exists", _pathId ) );
+                throwIfEnabled( LANG.getMessage( "path.exists", _pathId ) );
                 return;
             }
         }
@@ -117,7 +136,7 @@ public class ResolveTask
 
             if ( p == null )
             {
-                throwIfEnabled( _lang.getMessage( "no.path.ref", _refPathId ) );
+                throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
                 return;
             }
 
@@ -266,7 +285,9 @@ public class ResolveTask
         this._id = id;
 
         if ( _sourceDependency != null )
+        {
             _sourceDependency.setId( id );
+        }
     }
 
     public void setSource( String pom )
@@ -274,7 +295,9 @@ public class ResolveTask
         _sourceDependency = createDependency();
 
         if ( _id != null )
+        {
             _sourceDependency.setId( _id );
+        }
 
         _sourceDependency.setPom( pom );
     }
