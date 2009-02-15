@@ -69,7 +69,7 @@ public class Repo
 
     private transient boolean _registered = false;
 
-    private static final String[] SUPPORTED_LAYOUTS = new String[] { "m2", "flat" };
+    private static final String[] SUPPORTED_LAYOUTS = new String[] { DEFAULT_LAYOUT, "m2", "flat" };
 
     public Repo()
     {
