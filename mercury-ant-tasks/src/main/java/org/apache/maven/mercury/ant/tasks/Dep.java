@@ -1,24 +1,5 @@
 package org.apache.maven.mercury.ant.tasks;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -80,32 +61,6 @@ public class Dep
 
     private Dependency _sourceDependency;
 
-    /**
-     * @param vr
-     * @throws MavenEmbedderException
-     */
-    // private MavenEmbedder createEmbedder( VirtualRepositoryReader vr )
-    // throws MavenEmbedderException
-    // {
-    // Configuration configuration = new DefaultConfiguration()
-    // .setUserSettingsFile( MavenEmbedder.DEFAULT_USER_SETTINGS_FILE )
-    // .setGlobalSettingsFile( MavenEmbedder.DEFAULT_GLOBAL_SETTINGS_FILE )
-    // .setClassLoader( Thread.currentThread().getContextClassLoader() )
-    // ;
-    //
-    // ConfigurationValidationResult validationResult = MavenEmbedder.validateConfiguration( configuration );
-    //
-    // if ( validationResult.isValid() )
-    // {
-    // // If the configuration is valid then do your thang ...
-    // }
-    //
-    // MavenEmbedder embedder = new MavenEmbedder( configuration );
-    //
-    // PlexusContainer container = embedder.getPlexusContainer();
-    //
-    // return embedder;
-    // }
     private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
         throws RepositoryException
     {
@@ -137,9 +92,7 @@ public class Dep
                 File pomFile = new File( d._pom );
 
                 if ( !pomFile.exists() )
-                {
                     throw new RepositoryException( "pom file " + d._pom + " does not exist" );
-                }
 
                 try
                 {
@@ -190,31 +143,6 @@ public class Dep
         return resolve( config, _scope );
     }
 
-    // ----------------------------------------------------------------------------------------
-    // protected ArtifactRepository getLocalRepository( String path )
-    // throws Exception
-    // {
-    // ArtifactRepositoryLayout repoLayout = new DefaultRepositoryLayout();
-    //
-    // ArtifactRepository r = new DefaultArtifactRepository( "local",
-    // "file://" + path,
-    // repoLayout );
-    //
-    // return r;
-    // }
-
-    // protected MavenProject getProject( File pom, ArtifactRepository localRepo )
-    // throws Exception
-    // {
-    // Properties props = System.getProperties();
-    // ProfileActivationContext ctx = new DefaultProfileActivationContext( props, false );
-    //
-    // ProjectBuilderConfiguration pbc = new DefaultProjectBuilderConfiguration();
-    // pbc.setLocalRepository( localRepo );
-    // pbc.setGlobalProfileManager( new DefaultProfileManager( getContainer(), ctx ) );
-    //
-    // return projectBuilder.build( pom, pbc );
-    // }
     // ----------------------------------------------------------------------------------------
     protected List<Artifact> resolve( Config config, ArtifactScopeEnum scope )
         throws Exception
@@ -313,16 +241,12 @@ public class Dep
     private List<ArtifactMetadata> toArtifactMetadataList( List<ArtifactBasicMetadata> depList )
     {
         if ( Util.isEmpty( depList ) )
-        {
             return null;
-        }
 
         List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( depList.size() );
 
         for ( ArtifactBasicMetadata bmd : depList )
-        {
             res.add( new ArtifactMetadata( bmd ) );
-        }
 
         return res;
     }
@@ -344,9 +268,7 @@ public class Dep
         super.setId( id );
 
         if ( _sourceDependency != null )
-        {
             _sourceDependency.setId( id );
-        }
     }
 
     public void setSource( String pom )
@@ -354,9 +276,7 @@ public class Dep
         _sourceDependency = createDependency();
 
         if ( getId() != null )
-        {
             _sourceDependency.setId( getId() );
-        }
 
         _sourceDependency.setPom( pom );
     }
@@ -405,7 +325,7 @@ public class Dep
         }
         catch ( Exception e )
         {
-            LOG.error( "unable to create dependencies iterator", e );
+            LOG.error( e.getMessage() );
 
             return null;
         }
@@ -427,7 +347,7 @@ public class Dep
         }
         catch ( Exception e )
         {
-            LOG.error( "unable to count dependencies", e );
+            LOG.error( e.getMessage() );
 
             return 0;
         }
