@@ -115,10 +115,15 @@ public class Dep
                 String key = d._amd.getGAV();
 
                 ArtifactMetadata deps = null;
+                
+                File pomFile = new File( d._pom );
+                
+                if( !pomFile.exists() )
+                    throw new RepositoryException("pom file "+d._pom+" does not exist");
 
                 try
                 {
-                    _pomStorage.add( key, new File( d._pom ) );
+                    _pomStorage.add( key, pomFile );
 
                     deps = vr.readDependencies( d._amd );
 
@@ -218,7 +223,10 @@ public class Dep
 
         List<ArtifactBasicMetadata> depList = getDependencies( vr );
         
-        List<ArtifactMetadata> res = db.resolveConflicts( scope, new ArtifactQueryList( depList ), null, null );
+        List<ArtifactMetadata> res = _transitive
+                                        ? db.resolveConflicts( scope, new ArtifactQueryList( depList ), null, null )
+                                        : toArtifactMetadataList( depList )
+                                    ;
 
         if ( Util.isEmpty( res ) )
         {
@@ -276,6 +284,23 @@ public class Dep
         }
 
         return _artifacts;
+    }
+
+    /**
+     * @param depList
+     * @return
+     */
+    private List<ArtifactMetadata> toArtifactMetadataList( List<ArtifactBasicMetadata> depList )
+    {
+        if( Util.isEmpty( depList ) )
+            return null;
+        
+        List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( depList.size() );
+        
+        for( ArtifactBasicMetadata bmd : depList )
+            res.add( new ArtifactMetadata(bmd) );
+        
+        return res;
     }
 
     // attributes

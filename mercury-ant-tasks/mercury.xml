@@ -91,22 +91,24 @@
      |       to use the Maven dependency processor and a local pom.xml file.
      |
      -->
-    <mercury:resolve-dependencies id="g:a:1::pom" source="maven:${basedir}/target/test-classes/pom.xml"/>
+    <mercury:resolve-dependencies source="maven:${basedir}/target/test-classes/pom.xml" id="g:a:1::pom"/>
 
   </target>
 	
         
-  <target name="download-pom-transtive-false">
+  <target name="download-pom-non-transtive">
     
-  <!-- redefine local and central for testing -->
-  <mercury:local-repository location="${localRepo}"/>
-  <mercury:remote-repository url="${remoteRepo}"/>
-        
-  <mercury:resolve-dependencies source="maven:pom.xml"/>
-  <mercury:resolve-dependencies  transitive="false" source="maven:${basedir}/target/test-classes/pom.xml"  id="g:a:1::pom" />
+    <!-- redefine local and central for testing -->
+    <mercury:local-repository location="${localRepo}"/>
+    <mercury:remote-repository url="${remoteRepo}"/>
+          
+    <mercury:resolve-dependencies 
+                   transitive="false"
+    	             source="maven:${basedir}/target/test-classes/pom-non-transitive.xml" 
+    	             id="g:a:1::pom"
+    />
 
  </target>
-    
           
   <target name="download-repos">
     

@@ -58,11 +58,6 @@ public class Dependency
         }
         else
             this._pom = pom;
-
-if ( _amd == null )
-{
-    throw new UnsupportedOperationException( LANG.getMessage( "dep.dependency.pom.needs.name", pom ) );
-}
     }
 
     public void setGroupId( String groupId )

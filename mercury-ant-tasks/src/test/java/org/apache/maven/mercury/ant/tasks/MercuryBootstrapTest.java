@@ -69,8 +69,6 @@ public class MercuryBootstrapTest
 
 //        System.setProperty( Config.SYSTEM_PROPERTY_CENTRAL_URL, _remoteRepoUrlPrefix+_port+_remoteRepoUrlSufix );
         getProject().setProperty( "remoteRepo", _remoteRepoUrlPrefix+_port+_remoteRepoUrlSufix );
-
-        getProject().setProperty( "repo.port", "" + _port );
     }
 
     // -----------------------------------
@@ -141,6 +139,28 @@ public class MercuryBootstrapTest
         assertTrue( a0.exists() );
         assertTrue( a1.exists() );
         assertTrue( a2.exists() );
+    }
+
+    //-----------------------------------
+    public void testDownloadPomNonTransitive()
+    {
+        String title = "download-pom-non-transtive";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File a0 = new File( _localRepoDirFile, "g0/a0/v0/a0-v0.jar" );
+        File a1 = new File( _localRepoDirFile, "g1/a1/v1/a1-v1.jar" );
+        File a2 = new File( _localRepoDirFile, "g2/a2/v2/a2-v2.jar" );
+
+        assertFalse( a0.exists() );
+        assertFalse( a1.exists() );
+        assertFalse( a2.exists() );
+
+        executeTarget( title );
+
+        assertTrue( a0.exists() );
+        assertTrue( a1.exists() );
+        assertFalse( a2.exists() );
     }
     //-----------------------------------
     //-----------------------------------

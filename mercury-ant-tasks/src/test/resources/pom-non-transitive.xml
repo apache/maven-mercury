@@ -39,7 +39,7 @@ under the License.
         <artifactId>a1</artifactId>
         <version>v1</version>
       </dependency>
-    
+
   </dependencies>
 
 </project>

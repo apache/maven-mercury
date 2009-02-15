@@ -49,43 +49,6 @@ public class MercuryAntTest
     AuthenticatingTestServer _jetty;
 
     int _port;
-    static final int DEFAULT_PORT = 22883;
-
-    Resolver _resolver;
-
-    Config _config;
-
-    Dep _dep;
-
-    Dependency _asm;
-
-    Dependency _ant;
-
-    // -----------------------------------
-    final class Resolver
-        extends ResolveTask
-    {
-        @SuppressWarnings( "deprecation" )
-        public Resolver()
-        {
-            project = new Project();
-            project.init();
-            target = new Target();
-        }
-    }
-
-    // -----------------------------------
-    final class Writer
-        extends WriteTask
-    {
-        @SuppressWarnings( "deprecation" )
-        public Writer()
-        {
-            project = new Project();
-            project.init();
-            target = new Target();
-        }
-    }
 
     // -----------------------------------
     public MercuryAntTest( String name )
@@ -98,47 +61,10 @@ public class MercuryAntTest
     protected void setUp()
         throws Exception
     {
-        _dep = new Dep();
-        _dep.setId( "my-lib" );
-
-        _asm = _dep.createDependency();
-        _asm.setName( "asm:asm-xml:3.0" );
-
-        _ant = _dep.createDependency();
-        _ant.setName( "ant:ant:1.6.5" );
-
-        _config = new Config();
-        _config.setId( "conf" );
-
-        _localRepoDirFile = new File( _localRepoDir );
-        FileUtil.delete( _localRepoDirFile );
-        _localRepoDirFile.mkdirs();
-
-        Repo localRepo = _config.createRepo();
-        localRepo.setId( "localRepo" );
-        localRepo.setDir( _localRepoDir );
-
         _remoteRepoDirFile = new File( _remoteRepoDir );
         _jetty = new AuthenticatingTestServer( 0, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
         _jetty.start();
         _port = _jetty.getPort();
-
-        Repo remoteRepo = _config.createRepo();
-        remoteRepo.setId( "remoteRepo" );
-        remoteRepo.setUrl( _remoteRepoUrlPrefix + _port + _remoteRepoUrlSufix );
-
-        _resolver = new Resolver();
-        _resolver.setDepid( _dep.getId() );
-        _resolver.setConfigid( _config.getId() );
-
-        _resolver.setPathid( _pathId );
-
-        Project project = _resolver.getProject();
-
-        project.addReference( _config.getId(), _config );
-        project.addReference( _dep.getId(), _dep );
-
-        System.setProperty( "ant.home", ".src/test/apache-ant-1.6.5" );
 
         _writeRepoDirFile = new File( _writeRepoDir );
         FileUtil.delete( _writeRepoDirFile );
@@ -184,44 +110,6 @@ public class MercuryAntTest
 
             System.out.println( "Jetty on :" + _port + " destroyed\n<========\n\n" );
         }
-    }
-
-    // -----------------------------------
-    public void testReadDependencies()
-    {
-        String title = "resolver";
-        System.out.println( "========> start " + title );
-        System.out.flush();
-
-        _resolver.execute();
-
-        Project pr = _resolver.getProject();
-
-        Path path = (Path) pr.getReference( _pathId );
-
-        assertNotNull( path );
-
-        String[] list = path.list();
-
-        assertNotNull( list );
-
-        assertEquals( 6, list.length );
-
-        File af = new File( _localRepoDir, "/ant/ant/1.6.5/ant-1.6.5.jar" );
-        assertTrue( af.exists() );
-
-        af = new File( _localRepoDir, "/asm/asm-util/3.0/asm-util-3.0.jar" );
-        assertTrue( af.exists() );
-
-        af = new File( _localRepoDir, "/asm/asm-xml/3.0/asm-xml-3.0.jar" );
-        assertTrue( af.exists() );
-
-        af = new File( _localRepoDir, "/asm/asm-tree/3.0/asm-tree-3.0.jar" );
-        assertTrue( af.exists() );
-
-        af = new File( _localRepoDir, "/asm/asm/3.0/asm-3.0.jar" );
-        assertTrue( af.exists() );
-
     }
 
     // -----------------------------------

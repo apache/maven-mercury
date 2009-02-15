@@ -39,6 +39,8 @@ public class ResolveTask
 
     private String _id;
 
+    private boolean _transitive = true;
+
     private ArtifactScopeEnum _scope = ArtifactScopeEnum.compile;
 
     private List<Dependency> _dependencies;
@@ -128,6 +130,8 @@ public class ResolveTask
         try
         {
             Config config = AbstractAntTask.findConfig( getProject(), _configId );
+            
+            dep.setTransitive( _transitive );
 
             Collection<Artifact> artifacts = dep.resolve( config, _scope );
 
@@ -272,6 +276,11 @@ public class ResolveTask
             _sourceDependency.setId( _id );
         
         _sourceDependency.setPom( pom );
+    }
+
+    public void setTransitive( boolean transitive )
+    {
+        this._transitive = transitive;
     }
 
     public Dependency createDependency(  )
