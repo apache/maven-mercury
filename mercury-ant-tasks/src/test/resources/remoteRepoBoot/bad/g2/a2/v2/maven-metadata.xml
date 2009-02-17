@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>g2</groupId>
+  <artifactId>a2</artifactId>
+  <version>v2</version>
+  <versioning>
+    <versions>
+      <version>v2</version>
+    </versions>
+  </versioning>
+</metadata>

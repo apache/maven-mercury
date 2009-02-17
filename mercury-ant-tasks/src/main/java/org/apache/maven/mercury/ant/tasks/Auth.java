@@ -21,6 +21,7 @@ package org.apache.maven.mercury.ant.tasks;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import org.apache.maven.mercury.transport.api.Credentials;
 import org.apache.maven.mercury.util.FileUtil;
@@ -40,12 +41,41 @@ public class Auth
 
     private static final String DEFAULT_AUTH_ID =
         System.getProperty( "mercury.default.auth.id", "mercury.default.auth.id." + System.currentTimeMillis() );
+    
+    public static final String METHOD_BASIC = "basic";
+
+    String _method;
 
     String _name;
 
     String _pass;
 
     String _certfile;
+    
+    public Auth()
+    {
+    }
+    
+    public Auth( String auth )
+    {
+        if( auth == null )
+            throw new IllegalArgumentException( LANG.getMessage( "auth.null.auth" ) );
+        
+        int colon = auth.indexOf( ':' );
+        
+        String paramStr = null;
+        
+        if( colon == -1 )
+        {
+            _method = METHOD_BASIC;
+            
+            paramStr = auth;
+        }
+        else
+            paramStr = auth.substring( colon+1 );
+        
+        StringTokenizer st = new StringTokenizer( paramStr, "," );
+    }
 
     public void setName( String name )
     {

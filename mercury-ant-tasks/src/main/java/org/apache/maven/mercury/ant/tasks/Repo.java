@@ -64,8 +64,6 @@ public class Repo
 
     private String _url;
 
-    private String _type;
-
     private String _authid;
 
     private String _layout = DEFAULT_LAYOUT;
@@ -89,14 +87,19 @@ public class Repo
     private transient boolean _registered = false;
 
     private static final String[] SUPPORTED_LAYOUTS = new String[] { DEFAULT_LAYOUT, "m2", "flat" };
+    
+    private Validation _validation;
+    
 
     public Repo()
     {
     }
 
-    public Repo( boolean managed )
+    public Repo( boolean managed, Validation validation )
     {
         _managed = managed;
+        
+        _validation = validation;
     }
 
     private void processDefaults()
@@ -177,14 +180,12 @@ public class Repo
             setUrl( path );
         }
     }
-
-    public void setType( String type )
+    
+    public void setAuthentication()
     {
-        this._type = type;
-
-        processDefaults();
+        
     }
-
+    
     public void setAuthid( String authid )
     {
         this._authid = authid;
@@ -232,33 +233,33 @@ public class Repo
         return ( _dir != null );
     }
 
-    public Verify createVerifywrite()
-    {
-        if ( _writeVerifiers == null )
-        {
-            _writeVerifiers = new ArrayList<Verify>( 2 );
-        }
+//    public Verify createVerifywrite()
+//    {
+//        if ( _writeVerifiers == null )
+//        {
+//            _writeVerifiers = new ArrayList<Verify>( 2 );
+//        }
+//
+//        Verify v = new Verify();
+//
+//        _writeVerifiers.add( v );
+//
+//        return v;
+//    }
 
-        Verify v = new Verify();
-
-        _writeVerifiers.add( v );
-
-        return v;
-    }
-
-    public Verify createVerifyread()
-    {
-        if ( _readVerifiers == null )
-        {
-            _readVerifiers = new ArrayList<Verify>( 2 );
-        }
-
-        Verify v = new Verify();
-
-        _readVerifiers.add( v );
-
-        return v;
-    }
+//    public Verify createVerifyread()
+//    {
+//        if ( _readVerifiers == null )
+//        {
+//            _readVerifiers = new ArrayList<Verify>( 2 );
+//        }
+//
+//        Verify v = new Verify();
+//
+//        _readVerifiers.add( v );
+//
+//        return v;
+//    }
 
     private Set<StreamVerifierFactory> getVerifiers( List<Verify> vlist )
     {
@@ -281,6 +282,10 @@ public class Repo
     public Repository getRepository()
     {
         Repository r = null;
+        
+        updateReadVerifiers( _validation );
+        
+        updateWriteVerifiers( _validation );
 
         if ( isLocal() )
         {
@@ -370,6 +375,78 @@ public class Repo
         return r;
     }
 
+    /**
+     * @param validation
+     */
+    private void updateReadVerifiers( Validation validation )
+    {
+        if( validation == null 
+            ||
+            (
+              validation._sha1Validation == false
+              && 
+              validation._pgpValidation == false
+            ) 
+        )
+            return;
+
+        if( _readVerifiers == null )
+            _readVerifiers = new ArrayList<Verify>(2);
+        
+        if( validation._sha1Validation )
+        {
+            Verify v = new Verify( Validation.TYPE_SHA1 );
+            
+            _readVerifiers.add( v );
+        }
+        
+        if( validation._pgpValidation )
+        {
+            Verify v = new Verify( Validation.TYPE_PGP, prop("keyring", validation._pgpPublicKeyring ) );
+            
+            _readVerifiers.add( v );
+        }
+            
+    }
+
+    /**
+     * @param validation
+     */
+    private void updateWriteVerifiers( Validation validation )
+    {
+        if( validation == null 
+            ||
+            (
+            validation._sha1Signature == false
+            &&
+            Util.isEmpty( validation._pgpSecretKeyPass ) 
+            ) 
+        )
+            return;
+
+        if( _writeVerifiers == null )
+            _writeVerifiers = new ArrayList<Verify>(2);
+        
+        if( validation._sha1Signature )
+        {
+            Verify v = new Verify( Validation.TYPE_SHA1 );
+            
+            _writeVerifiers.add( v );
+        }
+        
+        if( ! Util.isEmpty( validation._pgpSecretKeyPass ) )
+        {
+            Verify v = new Verify( Validation.TYPE_PGP
+                                   , prop( "keyring", validation._pgpSecretKeyring )
+                                   , prop( "pass",    validation._pgpSecretKeyPass )
+                                   , prop( "key",     validation._pgpSecretKey )
+                                 );
+            
+            _writeVerifiers.add( v );
+        }
+            
+    }
+
     public Auth createAuth()
     {
         _auth = new Auth();
@@ -398,14 +475,21 @@ public class Repo
     {
         return createProxyauth();
     }
+    
+    public static final Property prop( String name, String val )
+    {
+        Property prop = new Property();
+        
+        prop.setName( name );
+        
+        prop.setValue( val );
+        
+        return prop;
+    }
 
-    public class Verify
+    private class Verify
         extends AbstractDataType
     {
-        public static final String PGP = "pgp";
-
-        public static final String SHA1 = "sha1";
-
         String _type;
 
         boolean _lenient = true;
@@ -413,6 +497,23 @@ public class Repo
         boolean _sufficient = false;
 
         Map<String, String> _properties;
+        
+        public Verify( String type, Property... properties )
+        {
+            setType( type );
+            
+            if( properties != null )
+                for( Property p : properties )
+                    addConfiguredProperty( p );
+        }
+
+        /**
+         * 
+         */
+        public Verify()
+        {
+            // TODO Auto-generated constructor stub
+        }
 
         public void setType( String type )
         {
@@ -447,13 +548,14 @@ public class Repo
                 throw new BuildException( LANG.getMessage( "config.repo.verifier.no.type" ) );
             }
 
-            if ( ( _properties == null ) || _properties.isEmpty() )
+            if ( Validation.TYPE_PGP.equals( _type ) )
             {
-                throw new BuildException( LANG.getMessage( "config.repo.verifier.no.properties", _type ) );
-            }
 
-            if ( PGP.equals( _type ) )
-            {
+                if ( Util.isEmpty(  _properties ) )
+                {
+                    throw new BuildException( LANG.getMessage( "config.repo.verifier.no.properties", _type ) );
+                }
+
                 String keyRing = _properties.get( "keyring" );
 
                 if ( keyRing == null )
@@ -508,7 +610,7 @@ public class Repo
 
                 }
             }
-            else if ( SHA1.equals( _type ) )
+            else if ( Validation.TYPE_SHA1.equals( _type ) )
             {
                 SHA1VerifierFactory fac =
                     new SHA1VerifierFactory( new StreamVerifierAttributes( SHA1VerifierFactory.DEFAULT_EXTENSION,
@@ -519,6 +621,62 @@ public class Repo
 
             throw new BuildException( LANG.getMessage( "config.repo.verifier.bad.type", _type ) );
         }
+    }
+
+    public void setSha1Validation( boolean val )
+    {
+        _validation._sha1Validation = val;
+    }
+
+    public void setSha1validation( boolean val )
+    {
+        setSha1Validation( val );
+    }
+
+    public void setPgpValidation( boolean val )
+    {
+        _validation._pgpValidation = val;
+    }
+
+    public void setPgpKeyring( String val )
+    {
+        setPgpValidation( true );
+        _validation._pgpPublicKeyring = val;
+    }
+
+    public void setPgpkeyring( String val )
+    {
+        setPgpKeyring( val );
+    }
+
+    public void setPgpSecretKeyring( String val )
+    {
+        _validation._pgpSecretKeyring = val;
+    }
+
+    public void setPgpSecretkeyring( String val )
+    {
+        setPgpSecretKeyring( val );
+    }
+
+    public void setPgpSecretKey( String val )
+    {
+        _validation._pgpSecretKey = val;
+    }
+
+    public void setPgpSecretkey( String val )
+    {
+        setPgpSecretKey( val );
+    }
+
+    public void setPgpSecretKeyPass( String val )
+    {
+        _validation._pgpSecretKeyPass = val;
+    }
+
+    public void setPgpSecretKeypass( String val )
+    {
+        setPgpSecretKeyPass( val );
     }
 
 }

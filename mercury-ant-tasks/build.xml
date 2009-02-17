@@ -50,19 +50,12 @@
 
     <merc:config id="verification-conf">
       
-      <merc:repo id="localVerifyRepo" dir="${local.verify.dir}">
-        
-        <merc:verifywrite type="pgp">
-          <property name="keyring" value="${basedir}/target/test-classes/pgp/secring.gpg"/>
-          <property name="pass"    value="${secret.keyring.pass}"/>
-          <property name="key"     value="${secret.keyring.key}"/>
-        </merc:verifywrite>
-        
-        <merc:verifyread type="pgp">
-          <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
-        </merc:verifyread>
-
-      </merc:repo>
+      <merc:repo id="localVerifyRepo" dir="${local.verify.dir}"
+                 pgpKeyring="${basedir}/target/test-classes/pgp/pubring.gpg"
+      	         pgpSecretKeyring="${basedir}/target/test-classes/pgp/secring.gpg"
+      	         pgpSecretKey="${secret.keyring.key}"
+      	         pgpSecretKeyPass="${secret.keyring.pass}"
+      />
 
     </merc:config>
 
@@ -73,17 +66,16 @@
   </target>
 
   <target name="compile" depends="init">
-    <merc:resolve pathid="compile-path"
-                 depid="my-libs"
-                 configid="${config.name}"
+    <merc:resolve depid="my-libs"
+                  configid="${config.name}"
                  />
 
-    <property name="cp" refid="compile-path"/>
+    <property name="cp" refid="mercury.classpath.compile"/>
     <echo>path is ${cp}</echo>
 
     <javac srcdir="${src}"
            destdir="${target}"
-           classpathref="compile-path"
+           classpathref="mercury.classpath.compile"
            source="${compiler.version}"
            target="${compiler.version}"
     />
@@ -105,17 +97,16 @@
   
   <target name="compile-auth" depends="init">
 
-    <merc:resolve pathid="compile-path-auth"
-                 depid="my-libs"
+    <merc:resolve depid="my-libs"
                  configid="config-auth"
                  />
 
-    <property name="cpa" refid="compile-path-auth"/>
+    <property name="cpa" refid="mercury.classpath.compile"/>
     <echo>compile-path-auth is ${cpa}</echo>
 
     <javac srcdir="${src}"
            destdir="${target}"
-           classpathref="compile-path-auth"
+           classpathref="mercury.classpath.compile"
            source="${compiler.version}"
            target="${compiler.version}"
     />
@@ -152,11 +143,9 @@
   
     <merc:config id="pgp-conf">
       <merc:repo id="localPgpRepo"  dir="${local.verify.dir}"/>
-      <merc:repo id="remotePgpRepo" url="http://localhost:${repo.port}/maven2">
-        <merc:verifyread type="pgp">
-          <property name="keyring" value="${basedir}/target/test-classes/pgp/pubring.gpg"/>
-        </merc:verifyread>
-      </merc:repo>
+      <merc:repo id="remotePgpRepo" url="http://localhost:${repo.port}/maven2"
+      	         pgpKeyring="${basedir}/target/test-classes/pgp/pubring.gpg"
+      />
     </merc:config>
 
     <merc:dep id="t-good">
@@ -276,7 +265,7 @@
 
     <localRepository path="${basedir}/target/path-old" layout="default"/>
     
-    <dependencies pathId="dependency.classpath">
+    <dependencies>
       <dependency groupId="asm" artifactId="asm" version="3.0"/>
     </dependencies>
     
@@ -285,7 +274,7 @@
            source="${compiler.version}"
            target="${compiler.version}"
     >
-      <classpath refid="dependency.classpath"/> 
+      <classpath refid="mercury.classpath"/> 
     </javac>
 
   </target>
@@ -298,7 +287,7 @@
 
     <localRepository path="${basedir}/target/path-old-auth" layout="default"/>
     
-    <dependencies pathId="dependency.classpath">
+    <dependencies>
       <dependency groupId="asm" artifactId="asm" version="3.0"/>
     </dependencies>
     
@@ -307,7 +296,7 @@
            source="${compiler.version}"
            target="${compiler.version}"
     >
-      <classpath refid="dependency.classpath"/> 
+      <classpath refid="mercury.classpath"/> 
     </javac>
 
   </target>

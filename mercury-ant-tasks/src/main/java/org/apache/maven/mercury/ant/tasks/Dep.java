@@ -208,13 +208,16 @@ public class Dep
             throw new BuildException( LANG.getMessage( "resolve.cannot.read", config.getId(), res.toString() ) );
         }
 
-        if ( ( aRes == null ) || aRes.hasExceptions() )
+        if ( aRes == null )
         {
             throw new Exception( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
         }
 
         if ( !aRes.hasResults() )
         {
+            if( aRes.hasExceptions() )
+                throw new Exception( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
+            
             return null;
         }
 

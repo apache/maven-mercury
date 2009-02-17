@@ -1,7 +1,8 @@
-<project name="build" default="build" xmlns:mercury="antlib:org.apache.maven.mercury.ant.tasks">
+<project name="build" xmlns:mercury="antlib:org.apache.maven.mercury.ant.tasks">
   
   <target name="initialize">
-<!--    <path id="boot.classpath" path="target/mercury-all-1.0.jar" />
+<!-- 
+    <path id="boot.classpath" path="target/mercury-all-1.0.jar" />
     <taskdef resource="org/apache/maven/mercury/ant/antlib.xml" uri="urn:mercury" classpathref="boot.classpath"/>
     <taskdef resource="org/apache/maven/mercury/ant/antlib.xml" uri="urn:mercury"/>
 -->
@@ -107,23 +108,46 @@
     	             source="maven:${basedir}/target/test-classes/pom-non-transitive.xml" 
     	             id="g:a:1::pom"
     />
-
- </target>
-          
-  <target name="download-repo-flat">
     
-    <mercury:resolve-dependencies source="maven:pom.xml">
-      <mercury:local-repository location="${basedir}/lib" layout="flat"/>
+    <property name="cp"         refid="mercury.classpath"/>
+    <property name="cp.runtime" refid="mercury.classpath.runtime"/>
+    
+    <property name="cp.dir" location="${basedir}/target/test-copy"/>
+    <delete dir="${cp.dir}"/>
+    <mkdir dir="${cp.dir}"/>
+    <copy todir="${cp.dir}" flatten="true">
+      <fileset refid="mercury.fileset"/>
+    </copy>
+    
+    <property name="cpr.dir" location="${basedir}/target/test-copy-runtime"/>
+    <delete dir="${cpr.dir}"/>
+    <mkdir dir="${cpr.dir}"/>
+    <copy todir="${cpr.dir}" flatten="true">
+      <fileset refid="mercury.fileset"/>
+    </copy>
+  	
+ </target>
+
+  <target name="repo-pgp">
+    
+    <mercury:local-repository location="${localRepo}"/>
       <!-- Control checksum and pgp globally for all remote repositories used -->
-      <mercury:remote-repositories checksum-validation="true" pgp-key-validation="true">
-        <mercury:remote-repository location="http://repository.sonatype.com/groups/public"/>
-        <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
+      <mercury:remote-repositories sha1Validation="true" pgpValidation="true">
+        <mercury:repository location="${remoteRepo}/good"/>
+        <mercury:repository location="${remoteRepo}/bad"
+                                   sha1Validation="false"
+                                   pgpValidation="false"
+        />
       </mercury:remote-repositories>
-    </mercury:resolve-dependencies>
+  	
+      <mercury:resolve-dependencies id="g:a:1::pom" source="maven:${basedir}/target/test-classes/pom-non-transitive.xml"/>
 
   </target>
-  	          
-  <target name="download-repos-2">
+
+	
+	
+	
+  <target name="download-repos-pgp-2">
 
     <mercury:resolve-dependencies source="maven:pom.xml">
       <mercury:local-repository location="${basedir}/lib" layout="flat"/>
@@ -138,24 +162,22 @@
       </mercury:remote-repositories>
     </mercury:resolve-dependencies>
 
+    </target>
+                
+    <target name="download-repos-3">
+
     <mercury:resolve-dependencies source="maven:pom.xml">
       <mercury:local-repository location="${basedir}/lib" layout="flat"/>
       <mercury:remote-repositories checksum-validation="true">
         <!-- The presence of this element says we want this feature turned on, and allow some configuration -->
         <mercury:pgp-key-validation keyring-location="${basedir}/pgp/project-keyring.gpg">
-          <exclude id="g0:a0:v0"/>
+              <exclude id="g0:a0:v0"/>
         </mercury:pgp-key-validation>
         <mercury:remote-repository location="http://repository.sonatype.com/groups/public"/>
         <mercury:remote-repository location="http://repository.sonatype.com/groups/bad" checksum-validation="false" pgp-validation="false"/>
       </mercury:remote-repositories>
     </mercury:resolve-dependencies>
 
-  </target>
-
-  <target name="build" depends="initialize">
-    <javac srcdir="src/main/java" destdir="target/classes">
-      <classpath refid="mercury.classpath.compile"/>
-    </javac>      
   </target>
 
 </project>

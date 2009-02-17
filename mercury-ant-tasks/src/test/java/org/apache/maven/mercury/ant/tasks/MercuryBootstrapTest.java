@@ -20,10 +20,14 @@ package org.apache.maven.mercury.ant.tasks;
  */
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.mercury.spi.http.server.AuthenticatingTestServer;
 import org.apache.maven.mercury.util.FileUtil;
 import org.apache.tools.ant.BuildFileTest;
+import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.selectors.FileSelector;
 
 /**
  * @author Oleg Gusakov
@@ -50,6 +54,10 @@ public class MercuryBootstrapTest
 
     static final String _pathId = "class-path";
 
+    File _testCopyDir;
+
+    File _testCopyRuntimeDir;
+    
     AuthenticatingTestServer _jetty;
 
     int _port;
@@ -70,6 +78,14 @@ public class MercuryBootstrapTest
         _localRepoDirFile = new File( _localRepoDir );
         FileUtil.delete( _localRepoDirFile );
         _localRepoDirFile.mkdirs();
+        
+        _testCopyDir = new File( "target/test-copy" );
+        FileUtil.delete( _testCopyDir );
+        _testCopyDir.mkdirs();
+        
+        _testCopyRuntimeDir = new File( "target/test-copy-runtime" );
+        FileUtil.delete( _testCopyRuntimeDir );
+        _testCopyRuntimeDir.mkdirs();
 
         _remoteRepoDirFile = new File( _remoteRepoDir );
         _jetty = new AuthenticatingTestServer( 0, _remoteRepoDirFile, _remoteRepoUrlSufix, false );
@@ -161,8 +177,69 @@ public class MercuryBootstrapTest
 
     // -----------------------------------
     public void testDownloadPomNonTransitive()
+    throws IOException
     {
         String title = "download-pom-non-transtive";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        // mercury.classpath
+        File a0 = new File( _localRepoDirFile, "g0/a0/v0/a0-v0.jar" );
+        File a1 = new File( _localRepoDirFile, "g1/a1/v1/a1-v1.jar" );
+        File a2 = new File( _localRepoDirFile, "g2/a2/v2/a2-v2.jar" );
+
+        assertFalse( a0.exists() );
+        assertFalse( a1.exists() );
+        assertFalse( a2.exists() );
+
+        // mercury.fileset
+        File tc0 = new File( _testCopyDir, "a0-v0.jar" );
+        File tc1 = new File( _testCopyDir, "a1-v1.jar" );
+        File tc2 = new File( _testCopyDir, "a2-v2.jar" );
+        
+        assertFalse( tc0.exists() );
+        assertFalse( tc1.exists() );
+        assertFalse( tc2.exists() );
+
+        // mercury.fileset.runtime
+        File tcr0 = new File( _testCopyRuntimeDir, "a0-v0.jar" );
+        File tcr1 = new File( _testCopyRuntimeDir, "a1-v1.jar" );
+        File tcr2 = new File( _testCopyRuntimeDir, "a2-v2.jar" );
+        
+        assertFalse( tcr0.exists() );
+        assertFalse( tcr1.exists() );
+        assertFalse( tcr2.exists() );
+        
+        executeTarget( title );
+
+        assertTrue( a0.exists() );
+        assertTrue( a1.exists() );
+        assertFalse( a2.exists() );
+        
+        String cp = getProject().getProperty( "cp" );
+        
+//        System.out.println( "cp = " + cp );
+        
+        // mercury.classpath
+        assertTrue( cp.indexOf( a0.getCanonicalPath() ) != -1 );
+        assertTrue( cp.indexOf( a1.getCanonicalPath() ) != -1 );
+        assertTrue( cp.indexOf( a2.getCanonicalPath() ) == -1 );
+        
+        // mercury.fileset
+        assertTrue( tc0.exists() );
+        assertTrue( tc1.exists() );
+        assertFalse( tc2.exists() );
+        
+        // mercury.fileset.runtime
+        assertTrue( tcr0.exists() );
+        assertTrue( tcr1.exists() );
+        assertFalse( tcr2.exists() );
+    }
+
+    // -----------------------------------
+    public void testRepoPgp()
+    {
+        String title = "repo-pgp";
         System.out.println( "========> start " + title );
         System.out.flush();
 
@@ -175,10 +252,10 @@ public class MercuryBootstrapTest
         assertFalse( a2.exists() );
 
         executeTarget( title );
-
-        assertTrue( a0.exists() );
-        assertTrue( a1.exists() );
-        assertFalse( a2.exists() );
+//
+//        assertTrue( a0.exists() );
+//        assertTrue( a1.exists() );
+//        assertTrue( a2.exists() );
     }
     // -----------------------------------
     // -----------------------------------

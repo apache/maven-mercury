@@ -32,8 +32,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.FileList.FileName;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -55,8 +53,6 @@ public class ResolveTask
 
     private String _pathId;
 
-    private String _fileSetId;
-
     private String _refPathId;
 
     private String _configId;
@@ -72,7 +68,7 @@ public class ResolveTask
     private List<Dependency> _dependencies;
 
     private Dependency _sourceDependency;
-
+    
     // ----------------------------------------------------------------------------------------
     @Override
     public String getDescription()
@@ -167,9 +163,7 @@ public class ResolveTask
                 Collection<Artifact> artifacts = dep.resolve( config, sc );
 
                 if ( Util.isEmpty( artifacts ) )
-                {
                     continue;
-                }
 
                 if ( ArtifactScopeEnum.compile.equals( sc ) )
                 {
@@ -180,51 +174,21 @@ public class ResolveTask
                     + sc.getScope(), artifacts );
             }
 
-            // FileList pathFileList = new FileList();
-            //
-            // File dir = null;
-            //
-            // for ( Artifact a : artifacts )
-            // {
-            // if ( dir == null )
-            // {
-            // dir = a.getFile().getParentFile();
-            // }
-            //
-            // String aPath = a.getFile().getCanonicalPath();
-            //
-            // FileList.FileName fn = new FileList.FileName();
-            //
-            // fn.setName( aPath );
-            //
-            // pathFileList.addConfiguredFile( fn );
-            // }
-            //
-            // pathFileList.setDir( dir );
-            //
-            // // now - the path
-            // if ( path == null )
-            // {
-            // path = new Path( getProject(), _pathId );
-            //
-            // path.addFilelist( pathFileList );
-            //
-            // getProject().addReference( _pathId, path );
-            // }
-            // else
-            // {
-            // Path newPath = new Path( getProject() );
-            //
-            // newPath.addFilelist( pathFileList );
-            //
-            // path.append( newPath );
-            // }
-
         }
         catch ( Exception e )
         {
             throwIfEnabled( e );
         }
+    }
+
+    private File findRoot( File f )
+    {
+        File root = f;
+        
+        while( root.getParentFile() != null )
+            root = root.getParentFile();
+        
+        return root;
     }
 
     private void createPath( String pathId, String filesetId, Collection<Artifact> artifacts )
@@ -238,13 +202,15 @@ public class ResolveTask
 
         FileList pathFileList = new FileList();
 
-        FileList fList = (FileList) getProject().getReference( filesetId );
+        FileSet fSet = (FileSet) getProject().getReference( filesetId );
 
-        if ( fList == null )
+        if ( fSet == null )
         {
-            fList = pathFileList;
+            fSet = new FileSet();
 
-            getProject().addReference( filesetId, pathFileList );
+            fSet.setProject( getProject() );
+
+            getProject().addReference( filesetId, fSet );
         }
 
         File dir = null;
@@ -252,10 +218,8 @@ public class ResolveTask
         for ( Artifact a : artifacts )
         {
             if ( dir == null )
-            {
-                dir = a.getFile().getParentFile();
-            }
-
+                dir = findRoot( a.getFile() );
+                
             String aPath = a.getFile().getCanonicalPath();
 
             FileList.FileName fn = new FileList.FileName();
@@ -263,20 +227,34 @@ public class ResolveTask
             fn.setName( aPath );
 
             pathFileList.addConfiguredFile( fn );
+            
         }
 
         pathFileList.setDir( dir );
+        
+        
+        // fileset is trickier as it wants a dir
+        fSet.setDir( dir );
+        
+        String dirName = dir.getCanonicalPath(); 
+        
+        int dirLen = dirName.length();
+        
+        for( String fn : pathFileList.getFiles( getProject() ) )
+        {
+            fSet.createInclude().setName( fn.substring( dirLen ) );
+        }
 
         Path path = (Path) getProject().getReference( pathId );
 
         // now - the path
         if ( path == null )
         {
-            path = new Path( getProject(), _pathId );
+            path = new Path( getProject(), pathId );
 
             path.addFilelist( pathFileList );
 
-            getProject().addReference( _pathId, path );
+            getProject().addReference( pathId, path );
         }
         else
         {
@@ -303,21 +281,6 @@ public class ResolveTask
     public void setPathId( String pathId )
     {
         this._pathId = pathId;
-    }
-
-    public void setFilesetid( String fileSetIdId )
-    {
-        this._fileSetId = fileSetIdId;
-    }
-
-    public void setFilesetId( String fileSetIdId )
-    {
-        this._fileSetId = fileSetIdId;
-    }
-
-    public void setFileSetId( String fileSetIdId )
-    {
-        this._fileSetId = fileSetIdId;
     }
 
     public void setRefpathid( String refPathId )
@@ -395,4 +358,5 @@ public class ResolveTask
 
         return dependency;
     }
+
 }

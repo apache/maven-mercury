@@ -51,13 +51,22 @@ public class Config
 
     public static final String DEFAULT_CONFIG_ID =
         System.getProperty( "mercury.default.config.id", "mercury.default.config.id." + System.currentTimeMillis() );
+    
+    public static final String USER_HOME = System.getProperty( "user.home" );
+    
+    public static final String DEFAULT_PUBLIC_KEYRING = USER_HOME + "/.gnupg/pubring.gpg";
+    
+    public static final String DEFAULT_SECRET_KEYRING = USER_HOME + "/.gnupg/secring.gpg";
+    
+    private Collection<Repo> _repos;
 
-    Collection<Repo> _repos;
+    private Collection<Auth> _auths;
 
-    Collection<Auth> _auths;
-
-    List<Repository> _repositories;
-
+    private List<Repository> _repositories;
+    
+    private Validation _validation = new Validation();
+    
+    //------------------------------------------------------------------------------
     public Config()
     {
     }
@@ -125,9 +134,9 @@ public class Config
     {
         init();
 
-        Repo r = new Repo( true );
+        Repo r = new Repo( true, _validation );
 
-        listRepo( r );
+        registerRepo( r );
 
         return r;
     }
@@ -137,7 +146,7 @@ public class Config
         return createRepo();
     }
 
-    protected void listRepo( Repo repo )
+    protected void registerRepo( Repo repo )
     {
         if ( _repos == null )
         {
@@ -160,7 +169,7 @@ public class Config
 
         Config config = (Config) co;
 
-        config.listRepo( repo );
+        config.registerRepo( repo );
     }
 
     public static Config getDefaultConfig( Project project )
@@ -194,6 +203,74 @@ public class Config
         return a;
     }
 
-    // ======================================================================================
+    public void setSha1Validation( boolean val )
+    {
+        _validation._sha1Validation = val;
+    }
+
+    public void setSha1validation( boolean val )
+    {
+        setSha1Validation( val );
+    }
+
+    public void setSha1Signature( boolean val )
+    {
+        _validation._sha1Signature = val;
+    }
+
+    public void setSha1signature( boolean val )
+    {
+        setSha1Signature( val );
+    }
+
+    public void setPgpValidation( boolean val )
+    {
+        _validation._pgpValidation = val;
+    }
+
+    public void setPgpvalidation( boolean val )
+    {
+        setPgpValidation( val );
+    }
+
+    public void setPgpPublicKeyring( String val )
+    {
+        _validation._pgpPublicKeyring = val;
+    }
+
+    public void setPgpPublickeyring( String val )
+    {
+        setPgpPublicKeyring( val );
+    }
+
+    public void setPgpSecretKeyring( String val )
+    {
+        _validation._pgpSecretKeyring = val;
+    }
+
+    public void setPgpSecretkeyring( String val )
+    {
+        setPgpSecretKeyring( val );
+    }
+
+    public void setPgpSecretKey( String val )
+    {
+        _validation._pgpSecretKey = val;
+    }
+
+    public void setPgpSecretkey( String val )
+    {
+        setPgpSecretKey( val );
+    }
+
+    public void setPgpSecretKeyPass( String val )
+    {
+        _validation._pgpSecretKeyPass = val;
+    }
+
+    public void setPgpSecretKeypass( String val )
+    {
+        setPgpSecretKeyPass( val );
+    }
 
 }
