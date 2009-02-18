@@ -27,6 +27,9 @@ import java.util.List;
 
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.logging.IMercuryLogger;
+import org.apache.maven.mercury.logging.MercuryLoggerManager;
+import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileList;
@@ -43,6 +46,8 @@ public class ResolveTask
     extends AbstractAntTask
 {
     private static final Language LANG = new DefaultLanguage( ResolveTask.class );
+
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( ResolveTask.class );
 
     ArtifactScopeEnum[] SCOPES =
         new ArtifactScopeEnum[] { ArtifactScopeEnum.compile, ArtifactScopeEnum.test, ArtifactScopeEnum.runtime };
@@ -155,6 +160,12 @@ public class ResolveTask
         try
         {
             Config config = AbstractAntTask.findConfig( getProject(), _configId );
+            
+if( LOG.isDebugEnabled() )
+{
+    for( Repository r : config.getRepositories() )
+        LOG.debug( "Repository: " + (r.getServer() == null ? r.getClass().getName() : r.getServer().getURL()) );
+}
 
             dep.setTransitive( _transitive );
 

@@ -697,7 +697,7 @@ if( LOG.isDebugEnabled() )
     
     String bmdPath = bmd.getGroupId().replace( '.', '/' )
                     + '/'+bmd.getArtifactId()
-                    + '/'+bmd.getVersion()
+                    + '/'+ ArtifactLocation.calculateVersionDir( bmd.getVersion() )
                     + '/'+bmd.getBaseName(classifier)
                     + '.' + (type == null ? bmd.getType() : type )
                     ;
