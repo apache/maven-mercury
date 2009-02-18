@@ -29,7 +29,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
-import org.mortbay.log.Log;
 
 /**
  * @author Oleg Gusakov
