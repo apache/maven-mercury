@@ -53,6 +53,8 @@ public class ResolveTask
 
     private String _pathId;
 
+    private boolean _hasPathId = false;
+
     private String _refPathId;
 
     private String _configId;
@@ -168,6 +170,9 @@ public class ResolveTask
                 if ( ArtifactScopeEnum.compile.equals( sc ) )
                 {
                     createPath( Config.DEFAULT_PATH_ID, Config.DEFAULT_FILESET_ID, artifacts );
+                    
+                    if( _hasPathId && ! Config.DEFAULT_PATH_ID.equals( _pathId ) )
+                        createPath( _pathId, Config.DEFAULT_FILESET_ID, artifacts );
                 }
 
                 createPath( Config.DEFAULT_PATH_ID + "." + sc.getScope(), Config.DEFAULT_FILESET_ID + "."
@@ -275,12 +280,14 @@ public class ResolveTask
 
     public void setPathid( String pathId )
     {
-        this._pathId = pathId;
+        setPathId( pathId );
     }
 
     public void setPathId( String pathId )
     {
         this._pathId = pathId;
+        
+        _hasPathId = true;
     }
 
     public void setRefpathid( String refPathId )

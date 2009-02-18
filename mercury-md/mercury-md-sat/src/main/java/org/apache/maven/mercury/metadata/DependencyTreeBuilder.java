@@ -63,7 +63,7 @@ class DependencyTreeBuilder
 
     private static final Language _lang = new DefaultLanguage( DependencyTreeBuilder.class );
 
-    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
+    private static final IMercuryLogger _LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
 
     private Collection<MetadataTreeArtifactFilter> _filters;
 
@@ -287,8 +287,8 @@ class DependencyTreeBuilder
             for ( ArtifactBasicMetadata md : dependencies )
             {
 
-                if ( _log.isDebugEnabled() )
-                    _log.debug( "node " + nodeQuery + ", dep " + md );
+                if ( _LOG.isDebugEnabled() )
+                    _LOG.debug( "node " + nodeQuery + ", dep " + md );
 
                 List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
                 if ( versions == null || versions.size() < 1 )

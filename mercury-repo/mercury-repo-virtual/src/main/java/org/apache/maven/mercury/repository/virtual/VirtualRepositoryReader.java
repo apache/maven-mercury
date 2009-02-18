@@ -896,8 +896,10 @@ public class VirtualRepositoryReader
         {
             LOG.debug( "Asking for pom: " + bmd );
         }
+        
+        byte [] res = readRawData( bmd, "", "pom", exempt ); 
 
-        return readRawData( bmd, "", "pom", exempt );
+        return res; 
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -958,7 +960,13 @@ public class VirtualRepositoryReader
             if ( Quality.SNAPSHOT_QUALITY.equals( vq ) )
             {
                 List<ArtifactBasicMetadata> query = new ArrayList<ArtifactBasicMetadata>( 1 );
-                query.add( bmd );
+                
+                ArtifactBasicMetadata nBmd = new ArtifactBasicMetadata( bmd.toString() );
+                
+                if( !Util.isEmpty( type ))
+                    nBmd.setType( type );
+                
+                query.add( nBmd );
 
                 try
                 {
@@ -974,9 +982,9 @@ public class VirtualRepositoryReader
                                                                              classifier, type ) );
                     }
 
-                    if ( vRes.hasResults( bmd ) )
+                    if ( vRes.hasResults( nBmd ) )
                     {
-                        List<ArtifactBasicMetadata> versions = vRes.getResult( bmd );
+                        List<ArtifactBasicMetadata> versions = vRes.getResult( nBmd );
 
                         TreeSet<ArtifactBasicMetadata> snapshots =
                             new TreeSet<ArtifactBasicMetadata>( new MetadataVersionComparator() );

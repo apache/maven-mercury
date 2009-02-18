@@ -64,11 +64,11 @@ implements IMercuryLogger
 
   public void error( String message )
   {
+      if( isErrorEnabled() )
+          say( MercuryLoggingLevelEnum.error, message, null );
   }
 
-  public void error(
-      String message,
-      Throwable throwable )
+  public void error( String message, Throwable throwable )
   {
       if( isErrorEnabled() )
           say( MercuryLoggingLevelEnum.error, message, throwable );
@@ -86,20 +86,13 @@ implements IMercuryLogger
           say( MercuryLoggingLevelEnum.error, message, throwable );
   }
 
-  public int getThreshold()
-  {
-    return 0;
-  }
-
   public void info( String message )
   {
       if( isInfoEnabled() )
           say( MercuryLoggingLevelEnum.info, message, null );
   }
 
-  public void info(
-      String message,
-      Throwable throwable )
+  public void info( String message, Throwable throwable )
   {
       if( isInfoEnabled() )
           say( MercuryLoggingLevelEnum.info, message, throwable );

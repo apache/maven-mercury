@@ -29,10 +29,10 @@ import org.apache.maven.mercury.logging.console.MercuryConsoleLoggerFactory;
  */
 public class MercuryLoggerManager
 {
-  public static final String SYSTEM_PROPERTY_MERCURY_LOG_FACTORY = "maven.mercury.log.factory";
+  public static final String SYSTEM_PROPERTY_MERCURY_LOG_FACTORY = "mercury.log.factory";
   public static final String _loggerFactoryClassName = System.getProperty( SYSTEM_PROPERTY_MERCURY_LOG_FACTORY, MercuryConsoleLoggerFactory.class.getName() );
   
-  public static final String SYSTEM_PROPERTY_MERCURY_LOG_THRESHOLD = "maven.mercury.log.threshold";
+  public static final String SYSTEM_PROPERTY_MERCURY_LOG_THRESHOLD = "mercury.log.threshold";
   public static final String _loggerThresholdName = System.getProperty( SYSTEM_PROPERTY_MERCURY_LOG_THRESHOLD
                                                                         , MercuryLoggingLevelEnum.DEFAULT_LEVEL.name()
                                                                       );

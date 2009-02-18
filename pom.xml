@@ -94,7 +94,7 @@ under the License.
     <ant.version>1.7.1</ant.version>
     
     <!-- maven version: non-modules only !! Never use in Mercury modules!! -->
-    <maven.version>3.0-alpha-2</maven.version>
+    <maven.version>3.0-SNAPSHOT</maven.version>
     
     <!-- mercury-wagon -->
     <wagon.provider.api.version>1.0-beta-4</wagon.provider.api.version>

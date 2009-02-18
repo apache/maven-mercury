@@ -39,7 +39,9 @@ public class Config
 {
     private static final Language LANG = new DefaultLanguage( Config.class );
 
-    public static final String SYSTEM_PROPERTY_CENTRAL_URL = "mercury.central.url";
+    public static final String SYSTEM_PROPERTY_CENTRAL_URL = "mercury.repo.central";
+
+    public static final String DEFAULT_CENTRAL_URL = "http://repo1.maven.org/maven2";
 
     public static final String SYSTEM_PROPERTY_LOCAL_DIR_NAME = "mercury.repo.local";
 
@@ -73,6 +75,27 @@ public class Config
 
     private Config( String localDir, String remoteUrl )
     {
+        createDefaultLocalRepo( localDir );
+        
+        createDefaultRemoteRepo( remoteUrl );
+    }
+    
+    private Repo createDefaultRemoteRepo( String remoteUrl )
+    {
+        Repo central = createRepo();
+        central.setId( "central" );
+
+        String centralUrl =
+            ( remoteUrl == null ) ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, DEFAULT_CENTRAL_URL )
+                            : remoteUrl;
+
+        central.setUrl( centralUrl );
+        
+        return central;
+    }
+    
+    private Repo createDefaultLocalRepo( String localDir )
+    {
         Repo local = createRepo();
         local.setId( "defaultLocalRepo" );
 
@@ -81,29 +104,37 @@ public class Config
                 + DEFAULT_LOCAL_DIR_NAME ) : localDir;
 
         local.setDir( localDirName );
-
-        Repo central = createRepo();
-        central.setId( "central" );
-
-        String centralUrl =
-            ( remoteUrl == null ) ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, "http://repo1.maven.org/maven2" )
-                            : remoteUrl;
-
-        central.setUrl( centralUrl );
+        
+        return local;
     }
 
     public List<Repository> getRepositories()
         throws BuildException
     {
-        if ( Util.isEmpty( _repos ) )
-        {
-            return null;
-        }
-
         if ( _repositories != null )
         {
             return _repositories;
         }
+
+        if ( Util.isEmpty( _repos ) )
+        {
+            _repos = new ArrayList<Repo>(3);
+        }
+        
+        boolean localExists = false;
+        boolean remoteExists = false;
+        
+        for( Repo r : _repos )
+            if( r.isLocal() )
+                localExists = true;
+            else
+                remoteExists = true;
+        
+        if( ! localExists )
+            createDefaultLocalRepo( null );
+        
+        if( !remoteExists)
+            createDefaultRemoteRepo( null );
 
         _repositories = new ArrayList<Repository>( _repos.size() );
 

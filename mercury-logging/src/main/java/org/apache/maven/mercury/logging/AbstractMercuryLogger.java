@@ -40,26 +40,26 @@ public abstract class AbstractMercuryLogger
   
   public boolean isDebugEnabled()
   {
-    return MercuryLoggerManager._threshold.getId() <= MercuryLoggingLevelEnum.debug.getId();
+    return _threshold.getId() <= MercuryLoggingLevelEnum.debug.getId();
   }
 
   public boolean isErrorEnabled()
   {
-    return MercuryLoggerManager._threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
+    return _threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
   }
 
   public boolean isFatalEnabled()
   {
-    return MercuryLoggerManager._threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
+    return _threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
   }
 
   public boolean isInfoEnabled()
   {
-    return MercuryLoggerManager._threshold.getId() <= MercuryLoggingLevelEnum.info.getId();
+    return _threshold.getId() <= MercuryLoggingLevelEnum.info.getId();
   }
 
   public boolean isWarnEnabled()
   {
-    return MercuryLoggerManager._threshold.getId() <= MercuryLoggingLevelEnum.warn.getId();
+    return _threshold.getId() <= MercuryLoggingLevelEnum.warn.getId();
   }
 }

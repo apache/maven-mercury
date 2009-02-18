@@ -60,8 +60,8 @@ import org.sat4j.specs.TimeoutException;
 public class DefaultSatSolver
 implements SatSolver
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DefaultSatSolver.class ); 
-  private static final Language _lang = new DefaultLanguage( DefaultSatSolver.class );
+  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultSatSolver.class ); 
+  private static final Language LANG = new DefaultLanguage( DefaultSatSolver.class );
   
   protected SatContext _context;
   protected IPBSolver _solver = SolverFactory.newEclipseP2();
@@ -102,7 +102,7 @@ implements SatSolver
       
       int nNodes = tree.countDistinctNodes();
   
-      _log.debug( "SatContext: # of variables: "+nNodes );
+      LOG.debug( "SatContext: # of variables: "+nNodes );
   
       _context = new SatContext( nNodes );
       _solver.newVar( tree.countNodes() );
@@ -172,8 +172,8 @@ implements SatSolver
       
       boolean bigBucket = bucketSize > 1;
 
-if( _log.isDebugEnabled() )
-    _log.debug( "\n\nBucket "+key );
+if( LOG.isDebugEnabled() )
+    LOG.debug( "\n\nBucket "+key );
 
       IVecInt bucketVars = new VecInt( bucketSize );
       
@@ -181,8 +181,8 @@ if( _log.isDebugEnabled() )
       {
         MetadataTreeNode n  = bucket.get(i);
 
-if( _log.isDebugEnabled() )
-    _log.debug( n.toString() );
+if( LOG.isDebugEnabled() )
+    LOG.debug( n.toString() );
 
         SatVar var = _context.findOrAdd(n);
         int varLiteral = var.getLiteral(); 
@@ -197,8 +197,8 @@ if( _log.isDebugEnabled() )
           
           coeffs.push( BigInteger.valueOf( cf ) );
 
-if( _log.isDebugEnabled() )
-    _log.debug( "    "+cf+" x"+var.getLiteral() );
+if( LOG.isDebugEnabled() )
+    LOG.debug( "    "+cf+" x"+var.getLiteral() );
         }
 
       }
@@ -216,8 +216,8 @@ if( _log.isDebugEnabled() )
         throw new SatException(e);
       }
       
-if( _log.isDebugEnabled() )
-  _log.debug( "\n" );
+if( LOG.isDebugEnabled() )
+  LOG.debug( "\n" );
     }
 
     if( vars.isEmpty() )
@@ -391,8 +391,8 @@ if( _log.isDebugEnabled() )
   {
     _solver.addPseudoBoolean( lits, coeff, ge, cardinality );
     
-if( _log.isDebugEnabled() )
-  _log.debug("PB: ");
+if( LOG.isDebugEnabled() )
+  LOG.debug("PB: ");
     
     for( int i=0; i<lits.size(); i++ )
     {
@@ -401,11 +401,11 @@ if( _log.isDebugEnabled() )
       int    val = Math.abs(co);
       String space = val == 1 ? "" : " ";
       
-if( _log.isDebugEnabled() )
-  _log.debug( " " + sign + (val==1?"":val) + space  + "x"+lits.get(i) );
+if( LOG.isDebugEnabled() )
+  LOG.debug( " " + sign + (val==1?"":val) + space  + "x"+lits.get(i) );
     }
-if( _log.isDebugEnabled() )
-  _log.debug(( ge ? " >= " : " < ")+" "+cardinality );
+if( LOG.isDebugEnabled() )
+  LOG.debug(( ge ? " >= " : " < ")+" "+cardinality );
   }
   //-----------------------------------------------------------------------
   private final Map<ArtifactBasicMetadata, List<MetadataTreeNode>> processChildren(
@@ -527,23 +527,23 @@ if( _log.isDebugEnabled() )
     
     if( optional ) // Sxi >= 0
     {
-if( _log.isDebugEnabled() )
-  _log.debug( "optional range: atMost 1: "+ SatHelper.vectorToString( rangeVector) );
+if( LOG.isDebugEnabled() )
+  LOG.debug( "optional range: atMost 1: "+ SatHelper.vectorToString( rangeVector) );
     
       _solver.addAtMost( rangeVector, 1 );
     }
     else // Sxi = 1
     {
-if( _log.isDebugEnabled() )
-  _log.debug( "range: " + SatHelper.vectorToString( rangeVector) );
+if( LOG.isDebugEnabled() )
+  LOG.debug( "range: " + SatHelper.vectorToString( rangeVector) );
 
     IConstr atLeast = _solver.addAtLeast( rangeVector, 1 );
-    if( _log.isDebugEnabled() )
-      _log.debug( "atLeast: " + SatHelper.vectorToString( atLeast) );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "atLeast: " + SatHelper.vectorToString( atLeast) );
 
     IConstr atMost  = _solver.addAtMost( rangeVector, 1 );
-    if( _log.isDebugEnabled() )
-      _log.debug( "atMost: " + SatHelper.vectorToString( atMost) );
+    if( LOG.isDebugEnabled() )
+      LOG.debug( "atMost: " + SatHelper.vectorToString( atMost) );
 
     }
     
@@ -567,7 +567,7 @@ if( _log.isDebugEnabled() )
         
         int [] model = _solver.model();
 
-if( _log.isDebugEnabled() )
+if( LOG.isDebugEnabled() )
   if( model != null )
   {
     StringBuilder sb = new StringBuilder();
@@ -577,10 +577,10 @@ if( _log.isDebugEnabled() )
       sb.append( comma+m );
       comma = ", ";
     }
-    _log.debug( '['+sb.toString()+']' );
+    LOG.debug( '['+sb.toString()+']' );
   }
   else 
-    _log.debug( "model is null" );
+    LOG.debug( "model is null" );
 
         for( int i : model )
           if( i > 0 )
@@ -611,7 +611,7 @@ if( _log.isDebugEnabled() )
       {
         int [] model = _solver.model();
 
-if( _log.isDebugEnabled() )
+if( LOG.isDebugEnabled() )
   if( model != null )
   {
     StringBuilder sb = new StringBuilder();
@@ -621,10 +621,10 @@ if( _log.isDebugEnabled() )
       sb.append( comma+m );
       comma = ", ";
     }
-    _log.debug( '['+sb.toString()+']' );
+    LOG.debug( '['+sb.toString()+']' );
   }
   else 
-    _log.debug( "model is null" );
+    LOG.debug( "model is null" );
 
         return _context.getSolutionSubtree( _root, model );
       }

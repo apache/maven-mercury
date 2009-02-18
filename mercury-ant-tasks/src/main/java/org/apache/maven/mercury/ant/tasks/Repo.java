@@ -286,6 +286,11 @@ public class Repo
         updateReadVerifiers( _validation );
         
         updateWriteVerifiers( _validation );
+        
+        String id = getId();
+        
+        if( id == null )
+            setId( "temp."+System.currentTimeMillis()+"." + (int)( Math.random()*10000. ) );
 
         if ( isLocal() )
         {

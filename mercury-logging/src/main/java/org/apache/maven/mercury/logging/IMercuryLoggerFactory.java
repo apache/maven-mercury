@@ -30,6 +30,6 @@ public interface IMercuryLoggerFactory
   @SuppressWarnings("unchecked")
   IMercuryLogger getLogger( Class clazz );
   
+  /** is not used for now */
   void setThreshold( MercuryLoggingLevelEnum threshold );
-  
 }
