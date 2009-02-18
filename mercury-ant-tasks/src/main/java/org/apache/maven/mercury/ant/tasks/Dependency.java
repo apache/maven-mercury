@@ -41,6 +41,7 @@ public class Dependency
     /** dependency processor type, if any */
     String _processor;
 
+    
     public void setName( String name )
     {
         _amd = new ArtifactBasicMetadata( name );
@@ -76,6 +77,11 @@ public class Dependency
         {
             this._pom = pom;
         }
+    }
+
+    public void setSource( String pom )
+    {
+        setPom( pom );
     }
 
     public void setGroupId( String groupId )

@@ -33,7 +33,9 @@ public class MercuryLoggerManager
   public static final String _loggerFactoryClassName = System.getProperty( SYSTEM_PROPERTY_MERCURY_LOG_FACTORY, MercuryConsoleLoggerFactory.class.getName() );
   
   public static final String SYSTEM_PROPERTY_MERCURY_LOG_THRESHOLD = "maven.mercury.log.threshold";
-  public static final String _loggerThresholdName = System.getProperty( SYSTEM_PROPERTY_MERCURY_LOG_THRESHOLD, MercuryLoggingLevelEnum.error.name() );
+  public static final String _loggerThresholdName = System.getProperty( SYSTEM_PROPERTY_MERCURY_LOG_THRESHOLD
+                                                                        , MercuryLoggingLevelEnum.DEFAULT_LEVEL.name()
+                                                                      );
   
   static MercuryLoggingLevelEnum _threshold = MercuryLoggingLevelEnum.valueOf( _loggerThresholdName );
 
@@ -51,7 +53,7 @@ public class MercuryLoggerManager
       catch( Exception e )
       {
         _loggerFactory = new MercuryConsoleLoggerFactory();
-        _loggerFactory.getLogger( MercuryLoggerManager.class ).error( "cannot load logger for "+_loggerFactoryClassName, e );
+        _loggerFactory.getLogger( MercuryLoggerManager.class ).error( "cannot create logger factory "+_loggerFactoryClassName, e );
       }
     }
     

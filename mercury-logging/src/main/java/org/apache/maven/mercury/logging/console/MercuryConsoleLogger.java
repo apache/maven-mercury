@@ -66,23 +66,24 @@ implements IMercuryLogger
   {
   }
 
-  /* (non-Javadoc)
-   * @see org.apache.maven.mercury.logging.MercuryLogger#error(java.lang.String, java.lang.Throwable)
-   */
   public void error(
       String message,
       Throwable throwable )
   {
-    // TODO Auto-generated method stub
-
+      if( isErrorEnabled() )
+          say( MercuryLoggingLevelEnum.error, message, throwable );
   }
 
   public void fatal( String message )
   {
+      if( isErrorEnabled() )
+          say( MercuryLoggingLevelEnum.error, message, null );
   }
 
   public void fatal( String message, Throwable throwable )
   {
+      if( isErrorEnabled() )
+          say( MercuryLoggingLevelEnum.error, message, throwable );
   }
 
   public int getThreshold()
@@ -92,26 +93,28 @@ implements IMercuryLogger
 
   public void info( String message )
   {
+      if( isInfoEnabled() )
+          say( MercuryLoggingLevelEnum.info, message, null );
   }
 
   public void info(
       String message,
       Throwable throwable )
   {
-    // TODO Auto-generated method stub
-
+      if( isInfoEnabled() )
+          say( MercuryLoggingLevelEnum.info, message, throwable );
   }
 
   public void warn( String message )
   {
-    // TODO Auto-generated method stub
-
+      if( isWarnEnabled() )
+          say( MercuryLoggingLevelEnum.warn, message, null );
   }
 
   public void warn( String message, Throwable throwable )
   {
-    // TODO Auto-generated method stub
-
+      if( isWarnEnabled() )
+          say( MercuryLoggingLevelEnum.warn, message, throwable );
   }
 
 }

@@ -517,22 +517,33 @@ public class VirtualRepositoryReader
 
                     ArtifactBasicResults res = rr.readDependencies( query );
 
-                    if ( res != null && res.hasResults( bmd ) )
+                    if ( res != null )
                     {
-                        md.setDependencies( res.getResult( bmd ) );
-                        md.setTracker( rr );
-
-                        if ( _eventManager != null )
+                        if( res.hasExceptions() )
                         {
-                            eventRead.setInfo( eventRead.getInfo() + ", found: " + md.getDependencies() );
+                            if ( LOG.isWarnEnabled() )
+                            {
+                                LOG.warn( bmd + " dependecies: error : " + res.getExceptions().toString() );
+                            }
                         }
-
-                        if ( LOG.isDebugEnabled() )
+                        
+                        if( res.hasResults( bmd ) )
                         {
-                            LOG.debug( bmd + " dependecies found : " + md.getDependencies() );
+                            md.setDependencies( res.getResult( bmd ) );
+                            md.setTracker( rr );
+    
+                            if ( _eventManager != null )
+                            {
+                                eventRead.setInfo( eventRead.getInfo() + ", found: " + md.getDependencies() );
+                            }
+    
+                            if ( LOG.isDebugEnabled() )
+                            {
+                                LOG.debug( bmd + " dependecies found : " + md.getDependencies() );
+                            }
+    
+                            return md;
                         }
-
-                        return md;
                     }
                 }
                 finally
