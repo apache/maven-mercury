@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,39 +26,40 @@ package org.apache.maven.mercury.builder.api;
  *
  */
 public class DependencyProcessorException
-extends Exception
+    extends Exception
 {
+    private static final long serialVersionUID = -2956563106663149486L;
 
-  /**
-   * 
-   */
-  public DependencyProcessorException()
-  {
-  }
+    /**
+     *
+     */
+    public DependencyProcessorException()
+    {
+    }
 
-  /**
-   * @param message
-   */
-  public DependencyProcessorException( String message )
-  {
-    super( message );
-  }
+    /**
+     * @param message
+     */
+    public DependencyProcessorException( String message )
+    {
+        super( message );
+    }
 
-  /**
-   * @param cause
-   */
-  public DependencyProcessorException( Throwable cause )
-  {
-    super( cause );
-  }
+    /**
+     * @param cause
+     */
+    public DependencyProcessorException( Throwable cause )
+    {
+        super( cause );
+    }
 
-  /**
-   * @param message
-   * @param cause
-   */
-  public DependencyProcessorException( String message, Throwable cause )
-  {
-    super( message, cause );
-  }
+    /**
+     * @param message
+     * @param cause
+     */
+    public DependencyProcessorException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
 }

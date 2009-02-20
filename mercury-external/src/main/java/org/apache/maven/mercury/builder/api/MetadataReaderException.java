@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,37 +28,38 @@ package org.apache.maven.mercury.builder.api;
 public class MetadataReaderException
     extends Exception
 {
+    private static final long serialVersionUID = 3693299588183676110L;
 
-  /**
-   * 
-   */
-  public MetadataReaderException()
-  {
-  }
+    /**
+     *
+     */
+    public MetadataReaderException()
+    {
+    }
 
-  /**
-   * @param message
-   */
-  public MetadataReaderException( String message )
-  {
-    super( message );
-  }
+    /**
+     * @param message
+     */
+    public MetadataReaderException( String message )
+    {
+        super( message );
+    }
 
-  /**
-   * @param cause
-   */
-  public MetadataReaderException( Throwable cause )
-  {
-    super( cause );
-  }
+    /**
+     * @param cause
+     */
+    public MetadataReaderException( Throwable cause )
+    {
+        super( cause );
+    }
 
-  /**
-   * @param message
-   * @param cause
-   */
-  public MetadataReaderException( String message, Throwable cause )
-  {
-    super( message, cause );
-  }
+    /**
+     * @param message
+     * @param cause
+     */
+    public MetadataReaderException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
 }

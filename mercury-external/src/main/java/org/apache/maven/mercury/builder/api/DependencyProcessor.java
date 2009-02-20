@@ -6,9 +6,9 @@
  *  to you under the Apache License, Version 2.0 (the
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,21 +25,18 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 
 public interface DependencyProcessor
 {
-  
-  public static final DependencyProcessor NULL_PROCESSOR = 
-                        new DependencyProcessor() {
-                          public List<ArtifactBasicMetadata> getDependencies( 
-                                                                    ArtifactBasicMetadata bmd
-                                                                  , MetadataReader mdReader
-                                                                  , Map env
-                                                                  , Map sysProps
-                                                                            )
-                          throws MetadataReaderException, DependencyProcessorException
-                          {
-                            return null;
-                          }
-                        };
 
-  public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader, Map env, Map sysProps )
-  throws MetadataReaderException, DependencyProcessorException;
+    public static final DependencyProcessor NULL_PROCESSOR = new DependencyProcessor()
+    {
+        public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader,
+                                                            Map<String, String> env, Map<String, String> sysProps )
+            throws MetadataReaderException, DependencyProcessorException
+        {
+            return null;
+        }
+    };
+
+    public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader,
+                                                        Map<String, String> env, Map<String, String> sysProps )
+        throws MetadataReaderException, DependencyProcessorException;
 }
