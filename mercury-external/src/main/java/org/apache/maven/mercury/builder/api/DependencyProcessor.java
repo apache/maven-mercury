@@ -29,7 +29,7 @@ public interface DependencyProcessor
     public static final DependencyProcessor NULL_PROCESSOR = new DependencyProcessor()
     {
         public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader,
-                                                            Map<String, String> env, Map<Object, Object> sysProps )
+                                                            Map<String, String> env, Map<?, ?> sysProps )
             throws MetadataReaderException, DependencyProcessorException
         {
             return null;
@@ -38,6 +38,6 @@ public interface DependencyProcessor
 
     // TODO: shouldn't sysProps be changed to Properties because of System.getProperties() API?
     public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader,
-                                                        Map<String, String> env, Map<Object, Object> sysProps )
+                                                        Map<String, String> env, Map<?, ?> sysProps )
         throws MetadataReaderException, DependencyProcessorException;
 }
