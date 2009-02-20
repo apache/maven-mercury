@@ -66,12 +66,13 @@ under the License.
     </dependency>
 
     <!-- Test deps -->
+<!-- 
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-local-m2</artifactId>
       <scope>test</scope>
     </dependency>
-
+ -->
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-local-m2</artifactId>
@@ -97,8 +98,6 @@ under the License.
       <artifactId>mercury-repo-remote-m2</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    
     
   </dependencies>
 </project>

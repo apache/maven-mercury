@@ -40,10 +40,14 @@ public class Dependency
 
     /** dependency processor type, if any */
     String _processor;
-
+    
+    private static long _count = 0L;
     
     public void setName( String name )
     {
+        if( _pom != null )
+            throw new IllegalArgumentException( LANG.getMessage( "dependency.amd.pom.exists", _pom, name ) );
+        
         _amd = new ArtifactBasicMetadata( name );
 
         _amd.setOptional( _optional );
@@ -66,6 +70,11 @@ public class Dependency
 
     public void setPom( String pom )
     {
+        if( _amd != null )
+            throw new IllegalArgumentException( LANG.getMessage( "dependency.pom.amd.exists", _amd.toString(), pom ) );
+
+        setId( "__ant_fake:_ant_fake:" + (_count++)+"::pom" );
+        
         int pos = pom.indexOf( ':' );
 
         if ( pos != -1 )

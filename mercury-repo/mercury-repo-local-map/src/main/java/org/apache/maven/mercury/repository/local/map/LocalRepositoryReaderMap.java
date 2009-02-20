@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
+import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
@@ -164,7 +165,9 @@ public class LocalRepositoryReaderMap
         {
             try
             {
-                List<ArtifactBasicMetadata> deps = dp.getDependencies( bmd, this, System.getenv(), System.getProperties() );
+                MetadataReader mdr = _repo._mdReader == null ? this : _repo._mdReader;
+                
+                List<ArtifactBasicMetadata> deps = dp.getDependencies( bmd, mdr, System.getenv(), System.getProperties() );
                 
                 res.add( bmd, deps );
             }

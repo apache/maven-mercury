@@ -37,6 +37,8 @@ implements RemoteRepository
   public static final String METADATA_FILE_NAME = "maven-metadata.xml";
   
   private Server _server;
+  
+  protected boolean _goodWillEffort = true;
     
     /** default update policy */
     private RepositoryUpdatePolicy _updatePolicy = new RepositoryUpdateIntervalPolicy( RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY );

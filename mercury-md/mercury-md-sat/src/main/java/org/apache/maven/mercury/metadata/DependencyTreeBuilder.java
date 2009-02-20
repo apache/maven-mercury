@@ -61,9 +61,9 @@ class DependencyTreeBuilder
 {
     public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata( "__fake:__fake:1.0" );
 
-    private static final Language _lang = new DefaultLanguage( DependencyTreeBuilder.class );
+    private static final Language LANG = new DefaultLanguage( DependencyTreeBuilder.class );
 
-    private static final IMercuryLogger _LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
 
     private Collection<MetadataTreeArtifactFilter> _filters;
 
@@ -163,12 +163,12 @@ class DependencyTreeBuilder
     throws MetadataTreeException
     {
         if ( artifacts == null )
-            throw new MetadataTreeException( _lang.getMessage( "empty.md.collection" ) );
+            throw new MetadataTreeException( LANG.getMessage( "empty.md.collection" ) );
 
         List<ArtifactBasicMetadata> startMDs = artifacts.getMetadataList();
         
         if ( Util.isEmpty( startMDs ) )
-            throw new MetadataTreeException( _lang.getMessage( "empty.md.collection" ) );
+            throw new MetadataTreeException( LANG.getMessage( "empty.md.collection" ) );
 
         int nodeCount = startMDs.size();
 
@@ -257,7 +257,7 @@ class DependencyTreeBuilder
             mr = _reader.readDependencies( nodeMD );
 
             if ( mr == null )
-                throw new MetadataTreeException( _lang.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
+                throw new MetadataTreeException( LANG.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
 
             MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
 
@@ -281,14 +281,17 @@ class DependencyTreeBuilder
                 return node;
 
             ArtifactBasicResults res = _reader.readVersions( dependencies );
+            
+            if( res == null )
+                throw new MetadataTreeException( LANG.getMessage( "no.versions", dependencies.toString() ) );
 
             Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata>> expandedDeps = res.getResults();
 
             for ( ArtifactBasicMetadata md : dependencies )
             {
 
-                if ( _LOG.isDebugEnabled() )
-                    _LOG.debug( "node " + nodeQuery + ", dep " + md );
+                if ( LOG.isDebugEnabled() )
+                    LOG.debug( "node " + nodeQuery + ", dep " + md );
 
                 List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
                 if ( versions == null || versions.size() < 1 )
@@ -296,7 +299,7 @@ class DependencyTreeBuilder
                     if ( md.isOptional() )
                         continue;
 
-                    throw new MetadataTreeException( "did not find non-optional artifact for " + md + " <== "
+                    throw new MetadataTreeException( LANG.getMessage( "not.optional.missing" ) + md + " <== "
                         + showPath( node ) );
                 }
 
@@ -428,7 +431,7 @@ class DependencyTreeBuilder
         throws MetadataTreeException
     {
         if ( root == null )
-            throw new MetadataTreeException( _lang.getMessage( "empty.tree" ) );
+            throw new MetadataTreeException( LANG.getMessage( "empty.tree" ) );
 
         try
         {
@@ -452,7 +455,7 @@ class DependencyTreeBuilder
         throws MetadataTreeException
     {
         if ( root == null )
-            throw new MetadataTreeException( _lang.getMessage( "empty.tree" ) );
+            throw new MetadataTreeException( LANG.getMessage( "empty.tree" ) );
 
         try
         {

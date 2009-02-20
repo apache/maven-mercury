@@ -25,9 +25,6 @@ import java.io.IOException;
 import org.apache.maven.mercury.spi.http.server.AuthenticatingTestServer;
 import org.apache.maven.mercury.util.FileUtil;
 import org.apache.tools.ant.BuildFileTest;
-import org.apache.tools.ant.types.FileList;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.selectors.FileSelector;
 
 /**
  * @author Oleg Gusakov

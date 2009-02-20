@@ -92,7 +92,7 @@
      |       to use the Maven dependency processor and a local pom.xml file.
      |
      -->
-    <mercury:resolve-dependencies source="maven:${basedir}/target/test-classes/pom.xml" id="g:a:1::pom"/>
+    <mercury:resolve-dependencies source="maven:${basedir}/target/test-classes/pom.xml"/>
 
   </target>
 	
@@ -106,7 +106,6 @@
     <mercury:resolve-dependencies 
                    transitive="false"
     	             source="maven:${basedir}/target/test-classes/pom-non-transitive.xml" 
-    	             id="g:a:1::pom"
     />
     
     <property name="cp"         refid="mercury.classpath"/>
@@ -116,14 +115,14 @@
     <delete dir="${cp.dir}"/>
     <mkdir dir="${cp.dir}"/>
     <copy todir="${cp.dir}" flatten="true">
-      <fileset refid="mercury.fileset"/>
+      <fileset refid="mercury.classpath.fileset"/>
     </copy>
     
     <property name="cpr.dir" location="${basedir}/target/test-copy-runtime"/>
     <delete dir="${cpr.dir}"/>
     <mkdir dir="${cpr.dir}"/>
     <copy todir="${cpr.dir}" flatten="true">
-      <fileset refid="mercury.fileset"/>
+      <fileset refid="mercury.classpath.fileset"/>
     </copy>
   	
  </target>
@@ -140,7 +139,7 @@
         />
       </mercury:remote-repositories>
   	
-      <mercury:resolve-dependencies id="g:a:1::pom" source="maven:${basedir}/target/test-classes/pom-non-transitive.xml"/>
+      <mercury:resolve-dependencies source="maven:${basedir}/target/test-classes/pom-non-transitive.xml"/>
 
   </target>
 

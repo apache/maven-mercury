@@ -39,6 +39,7 @@ import org.apache.maven.mercury.repository.api.RepositoryGAMetadata;
 import org.apache.maven.mercury.repository.api.RepositoryGAVMetadata;
 import org.apache.maven.mercury.repository.api.RepositoryMetadataCache;
 import org.apache.maven.mercury.repository.api.RepositoryUpdatePolicy;
+import org.apache.maven.mercury.repository.local.m2.ArtifactLocation;
 import org.apache.maven.mercury.util.FileLockBundle;
 import org.apache.maven.mercury.util.FileUtil;
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -462,17 +463,9 @@ implements RepositoryMetadataCache
 
   private File getGAVDir( ArtifactCoordinates coord )
   {
-    String version = coord.getVersion();
+    String version = ArtifactLocation.calculateVersionDir( coord.getVersion() );
     
-    Quality q = new Quality( version );
-    
-    if( q.compareTo( Quality.SNAPSHOT_TS_QUALITY ) == 0 )
-    {
-      DefaultArtifactVersion dav = new DefaultArtifactVersion(version);
-      version = dav.getBase()+"-"+ Artifact.SNAPSHOT_VERSION;
-    }
-    
-    File dir = new File( getGADir( coord ), coord.getArtifactId()+FileUtil.DASH+version );
+    File dir = new File( getGADir( coord ), coord.getArtifactId() + FileUtil.DASH + version );
     
     if( ! dir.exists() )
       dir.mkdirs();

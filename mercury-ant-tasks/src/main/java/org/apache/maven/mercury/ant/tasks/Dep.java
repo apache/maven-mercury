@@ -116,6 +116,8 @@ public class Dep
                 try
                 {
                     _pomStorage.add( key, pomFile );
+                    
+                    d._amd.setTracker( _pomRepo.getReader() );
 
                     deps = vr.readDependencies( d._amd );
 
@@ -180,15 +182,17 @@ public class Dep
 
         DependencyProcessor dp = new MavenDependencyProcessor();
 
+        DependencyBuilder db = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
+
         _pomStorage = new DefaultStorage();
 
         _pomRepo = new LocalRepositoryMap( "inMemMdRepo", dp, _pomStorage );
 
         repos.add( 0, _pomRepo );
 
-        DependencyBuilder db = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
-
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
+        
+        _pomRepo.setMetadataReader( vr );
 
         List<ArtifactBasicMetadata> depList = getDependencies( vr );
 
@@ -284,23 +288,20 @@ public class Dep
         this._scope = scope;
     }
 
-    @Override
-    public void setId( String id )
-    {
-        super.setId( id );
-
-        if ( _sourceDependency != null )
-            _sourceDependency.setId( id );
-    }
+//    @Override
+//    public void setId( String id )
+//    {
+//        super.setId( id );
+//
+//        if ( _sourceDependency != null )
+//            _sourceDependency.setId( id );
+//    }
 
     public void setSource( String pom )
     {
         _sourceDependency = createDependency();
-
-        if ( getId() != null )
-            _sourceDependency.setId( getId() );
-
-        _sourceDependency.setPom( pom );
+        
+        _sourceDependency.setSource( pom );
     }
 
     public void setTransitive( boolean val )

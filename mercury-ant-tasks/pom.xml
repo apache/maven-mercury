@@ -29,6 +29,10 @@
   <artifactId>mercury-ant-tasks</artifactId>
   <name>Mercury Ant Tasks</name>
   <description>Maven Mercury Ant tasks code</description>
+  
+  <properties>
+    <maven.version>3.0-SNAPSHOT</maven.version>
+  </properties>
 
   <dependencies>
 
@@ -52,28 +56,18 @@
     <!-- Mercury deps -->
 
     <dependency>
-      <groupId>org.apache.maven.mercury
-      </groupId>
+      <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-artifact</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.maven.mercury
-      </groupId>
+      <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-external</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.maven.mercury
-      </groupId>
+      <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-virtual</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury
-      </groupId>
-      <artifactId>mercury-repo-local-m2
-      </artifactId>
     </dependency>
 
     <dependency>

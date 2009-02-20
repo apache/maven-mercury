@@ -21,6 +21,7 @@ package org.apache.maven.mercury.repository.local.map;
 import java.io.File;
 
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
+import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
 import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.NonExistentProtocolException;
@@ -40,6 +41,8 @@ implements LocalRepository
     public static final String FLAT_REPOSITORY_TYPE = "map";
     
     protected Storage _storage;
+    
+    protected MetadataReader _mdReader;
 
     // ----------------------------------------------------------------------------------
     public Storage getStorage()
@@ -53,6 +56,11 @@ implements LocalRepository
         setDependencyProcessor( dp );
         
         _storage = storage;
+    }
+    
+    public void setMetadataReader( MetadataReader reader )
+    {
+        _mdReader = reader;
     }
     // ----------------------------------------------------------------------------------
     public File getDirectory()

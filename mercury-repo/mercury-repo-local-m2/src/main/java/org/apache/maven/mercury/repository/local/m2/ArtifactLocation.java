@@ -146,6 +146,19 @@ public class ArtifactLocation
     return ver;
   }
   
+  public static String stripSN( String ver  )
+  {
+    if( ver == null )
+      return null;
+    
+    int li = ver.lastIndexOf( '-' );
+    
+    if( li < 1 )
+        return ver;
+    
+    return ver.substring( 0, li );
+  }
+  
   public static String getTS( String ver  )
   {
     if( ver == null )

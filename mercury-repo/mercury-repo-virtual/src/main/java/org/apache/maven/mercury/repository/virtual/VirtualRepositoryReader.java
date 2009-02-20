@@ -477,7 +477,6 @@ public class VirtualRepositoryReader
 
         try
         {
-
             if ( _eventManager != null )
             {
                 event =
@@ -507,7 +506,6 @@ public class VirtualRepositoryReader
             {
                 try
                 {
-
                     if ( _eventManager != null )
                     {
                         eventRead =
@@ -937,7 +935,7 @@ public class VirtualRepositoryReader
                         + ( Util.isEmpty( type ) ? "" : ", type=" + type );
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_RAW, eventTag );
             }
-
+            
             ArtifactBasicMetadata bmdQuery = bmd;
 
             try
@@ -954,7 +952,7 @@ public class VirtualRepositoryReader
 
             if ( LOG.isDebugEnabled() )
             {
-                LOG.debug( "quality calculated as " + vq.getQuality() == null ? "null" : vq.getQuality().name() );
+                LOG.debug( "quality calculated as " + (vq.getQuality() == null ? "null" : vq.getQuality().name()) );
             }
 
             if ( Quality.SNAPSHOT_QUALITY.equals( vq ) )

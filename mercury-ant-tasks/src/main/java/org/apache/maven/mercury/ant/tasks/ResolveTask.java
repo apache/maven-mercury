@@ -60,13 +60,11 @@ public class ResolveTask
 
     private boolean _hasPathId = false;
 
-    private String _refPathId;
+//    private String _refPathId;
 
     private String _configId;
 
     private String _depId;
-
-    private String _id;
 
     private boolean _transitive = true;
 
@@ -129,9 +127,6 @@ public class ResolveTask
             dep.setList( _dependencies );
         }
 
-        // Path
-        Path path = null;
-
         if ( !Util.isEmpty( _pathId ) )
         {
             if ( getProject().getReference( _pathId ) != null )
@@ -140,18 +135,16 @@ public class ResolveTask
                 return;
             }
         }
-        else if ( !Util.isEmpty( _refPathId ) )
-        {
-            Object p = getProject().getReference( _refPathId );
-
-            if ( p == null )
-            {
-                throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
-                return;
-            }
-
-            path = (Path) p;
-        }
+//        else if ( !Util.isEmpty( _refPathId ) )
+//        {
+//            Object p = getProject().getReference( _refPathId );
+//
+//            if ( p == null )
+//            {
+//                throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
+//                return;
+//            }
+//        }
         else
         {
             _pathId = Config.DEFAULT_PATH_ID;
@@ -178,16 +171,18 @@ if( LOG.isDebugEnabled() )
                 if ( Util.isEmpty( artifacts ) )
                     continue;
 
-                if ( ArtifactScopeEnum.compile.equals( sc ) )
+                if( _hasPathId && _scope != null )
                 {
-                    createPath( Config.DEFAULT_PATH_ID, Config.DEFAULT_FILESET_ID, artifacts );
-                    
-                    if( _hasPathId && ! Config.DEFAULT_PATH_ID.equals( _pathId ) )
-                        createPath( _pathId, Config.DEFAULT_FILESET_ID, artifacts );
+                    createPath( _pathId, _pathId+".fileset", artifacts );
+                    continue;
                 }
 
-                createPath( Config.DEFAULT_PATH_ID + "." + sc.getScope(), Config.DEFAULT_FILESET_ID + "."
-                    + sc.getScope(), artifacts );
+                if ( ArtifactScopeEnum.compile.equals( sc ) )
+                {
+                    createPath( _pathId, _pathId+".fileset", artifacts );
+                }
+
+                createPath( _pathId + "." + sc.getScope(), _pathId + ".fileset." + sc.getScope(), artifacts );
             }
 
         }
@@ -301,20 +296,20 @@ if( LOG.isDebugEnabled() )
         _hasPathId = true;
     }
 
-    public void setRefpathid( String refPathId )
-    {
-        this._refPathId = refPathId;
-    }
-
-    public void setRefpathId( String refPathId )
-    {
-        this._refPathId = refPathId;
-    }
-
-    public void setRefPathId( String refPathId )
-    {
-        this._refPathId = refPathId;
-    }
+//    public void setRefpathid( String refPathId )
+//    {
+//        this._refPathId = refPathId;
+//    }
+//
+//    public void setRefpathId( String refPathId )
+//    {
+//        this._refPathId = refPathId;
+//    }
+//
+//    public void setRefPathId( String refPathId )
+//    {
+//        this._refPathId = refPathId;
+//    }
 
     public void setDepid( String depid )
     {
@@ -338,24 +333,14 @@ if( LOG.isDebugEnabled() )
 
     public void setId( String id )
     {
-        this._id = id;
-
-        if ( _sourceDependency != null )
-        {
-            _sourceDependency.setId( id );
-        }
+        setPathid( id );
     }
 
     public void setSource( String pom )
     {
         _sourceDependency = createDependency();
 
-        if ( _id != null )
-        {
-            _sourceDependency.setId( _id );
-        }
-
-        _sourceDependency.setPom( pom );
+        _sourceDependency.setSource( pom );
     }
 
     public void setTransitive( boolean transitive )
