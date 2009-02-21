@@ -119,8 +119,10 @@ public class DefaultArtifactVersion
         if ( version == null )
             return false;
 
-        if ( version.endsWith( Artifact.LATEST_VERSION ) || version.endsWith( Artifact.RELEASE_VERSION )
-            || version.endsWith( Artifact.SNAPSHOT_VERSION ) )
+        if ( version.endsWith( Artifact.SNAPSHOT_VERSION ) 
+            || version.endsWith( Artifact.LATEST_VERSION )
+            || version.endsWith( Artifact.RELEASE_VERSION )
+        )
             return true;
 
         return false;

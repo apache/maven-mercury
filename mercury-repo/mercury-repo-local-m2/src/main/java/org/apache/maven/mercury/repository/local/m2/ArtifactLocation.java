@@ -64,12 +64,12 @@ public class ArtifactLocation
   
   public String getRelPath()
   {
-    return gaPath+FileUtil.SEP+versionDir+FileUtil.SEP+baseName+FileUtil.DASH+version+getDashedClassifier()+'.'+type;
+    return gaPath+FileUtil.SEP+calculateVersionDir( version )+FileUtil.SEP+baseName+FileUtil.DASH+version+getDashedClassifier()+'.'+type;
   }
   
   public String getRelPomPath()
   {
-    return gaPath+FileUtil.SEP+versionDir+FileUtil.SEP+baseName+FileUtil.DASH+version+POM_EXT;
+    return gaPath+FileUtil.SEP+calculateVersionDir( version )+FileUtil.SEP+baseName+FileUtil.DASH+version+POM_EXT;
   }
   
   public String getAbsPath()

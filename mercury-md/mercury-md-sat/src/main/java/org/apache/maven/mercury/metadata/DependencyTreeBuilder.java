@@ -76,6 +76,8 @@ class DependencyTreeBuilder
     private Map<String, MetadataTreeNode> _existingNodes;
 
     private EventManager _eventManager;
+    
+    private boolean _buildAllTrees = true;
 
     /**
      * creates an instance of MetadataTree. Use this instance to
@@ -180,55 +182,70 @@ class DependencyTreeBuilder
             return res;
         }
 
-        List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
-
-        // build all trees
-        for ( ArtifactBasicMetadata bmd : startMDs )
-        {
-            if( inclusions != null )
-            {
-                List<ArtifactBasicMetadata> inc = inclusions.getMetadataList();
-                
-                if( ! inc.contains( bmd ) )
-                    continue;
-                
-                if( bmd.hasInclusions() )
-                    bmd.getInclusions().addAll( inc );
-                else
-                    bmd.setInclusions( inc );
-            }
-            
-            if( exclusions != null )
-            {
-                List<ArtifactBasicMetadata> excl = exclusions.getMetadataList();
-                
-                if( excl.contains( bmd ) )
-                    continue;
-                
-                if( bmd.hasExclusions() )
-                    bmd.getExclusions().addAll( excl );
-                else
-                    bmd.setExclusions( excl );
-            }
-            
-            MetadataTreeNode rooty = buildTree( bmd, scope );
-
-            deps.add( rooty );
-        }
-
         DUMMY_ROOT.setDependencies( startMDs );
         DUMMY_ROOT.setInclusions( inclusions == null ? null : inclusions.getMetadataList() );
         DUMMY_ROOT.setExclusions( exclusions == null ? null : exclusions.getMetadataList() );
 
+        List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
+        
+        if( _buildAllTrees )
+        {
+            for ( ArtifactBasicMetadata bmd : startMDs )
+            {
+                try
+                {
+                    if( ! DUMMY_ROOT.allowDependency( bmd ) )
+                        continue;
+                }
+                catch ( VersionException e )
+                {
+                    throw new MetadataTreeException(e);
+                }
+           
+                if( inclusions != null )
+                {
+                    List<ArtifactBasicMetadata> inc = inclusions.getMetadataList();
+                    
+                    if( bmd.hasInclusions() )
+                        bmd.getInclusions().addAll( inc );
+                    else
+                        bmd.setInclusions( inc );
+                }
+                
+                if( exclusions != null )
+                {
+                    List<ArtifactBasicMetadata> excl = exclusions.getMetadataList();
+                    
+                    if( bmd.hasExclusions() )
+                        bmd.getExclusions().addAll( excl );
+                    else
+                        bmd.setExclusions( excl );
+                }
+                
+                MetadataTreeNode rooty = buildTree( bmd, scope );
+    
+                deps.add( rooty );
+            }
+            
+            if( Util.isEmpty( deps ) ) // all dependencies are filtered out 
+                return null;
+        }
+
         // combine into one tree
-        MetadataTreeNode root = new MetadataTreeNode( DUMMY_ROOT, null, null );
-
-        for ( MetadataTreeNode kid : deps )
-            root.addChild( kid );
-
+        MetadataTreeNode root = _buildAllTrees
+                                ? new MetadataTreeNode( DUMMY_ROOT, null, null ) 
+                                : buildTree( DUMMY_ROOT, scope )
+                                ;
+        if(_buildAllTrees)
+        {
+            for ( MetadataTreeNode kid : deps )
+                root.addChild( kid );
+        }
+    
         List<ArtifactMetadata> res = resolveConflicts( root );
 
-        res.remove( DUMMY_ROOT );
+        if( res != null )
+            res.remove( DUMMY_ROOT );
 
         return res;
     }
@@ -254,7 +271,10 @@ class DependencyTreeBuilder
             if ( existingNode != null )
                 return MetadataTreeNode.deepCopy( existingNode );
 
-            mr = _reader.readDependencies( nodeMD );
+            if( DUMMY_ROOT.equals( nodeMD ))
+                mr = DUMMY_ROOT;
+            else
+                mr = _reader.readDependencies( nodeMD );
 
             if ( mr == null )
                 throw new MetadataTreeException( LANG.getMessage( "artifact.md.not.found", nodeMD.toString() ) );
@@ -299,12 +319,12 @@ class DependencyTreeBuilder
                     if ( md.isOptional() )
                         continue;
 
-                    throw new MetadataTreeException( LANG.getMessage( "not.optional.missing" ) + md + " <== "
-                        + showPath( node ) );
+                    throw new MetadataTreeException( LANG.getMessage( "not.optional.missing" ) + md + " <== "+ showPath( node ) );
                 }
 
-                boolean noGoodVersions = true;
                 boolean noVersions = true;
+                boolean noGoodVersions = true;
+
                 for ( ArtifactBasicMetadata ver : versions )
                 {
                     if ( veto( ver, _filters ) || vetoInclusionsExclusions( node, ver ) )
@@ -331,7 +351,8 @@ class DependencyTreeBuilder
                 {
                     if ( md.isOptional() )
                         continue;
-                    throw new MetadataTreeException( "did not find non-optional artifact for " + md );
+                    
+                    throw new MetadataTreeException( LANG.getMessage( "not.optional.missing" ) + md + " <== "+ showPath( node ) );
                 }
                 else
                     node.addQuery( md );

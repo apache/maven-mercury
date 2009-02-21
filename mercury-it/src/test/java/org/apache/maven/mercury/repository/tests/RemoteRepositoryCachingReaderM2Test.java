@@ -86,6 +86,7 @@ extends AbstractRepositoryReaderM2Test
     
     repo = new RemoteRepositoryM2( "testRepo", server, new MavenDependencyProcessor() );
     ((RemoteRepository)repo).setUpdatePolicy( up );
+    ((RemoteRepositoryM2)repo).setWorkAroundBadMetadata( false );
     
     repo.setDependencyProcessor(  new MetadataProcessorMock() );
     reader = repo.getReader();

@@ -38,7 +38,7 @@ implements RemoteRepository
   
   private Server _server;
   
-  protected boolean _goodWillEffort = true;
+  protected boolean _workAroundBadMetadata = true;
     
     /** default update policy */
     private RepositoryUpdatePolicy _updatePolicy = new RepositoryUpdateIntervalPolicy( RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY );
@@ -99,6 +99,16 @@ implements RemoteRepository
     public boolean isWriteable()
     {
       return true;
+    }
+    //----------------------------------------------------------------------------------
+    public boolean isWorkAroundBadMetadata()
+    {
+        return _workAroundBadMetadata;
+    }
+    //----------------------------------------------------------------------------------
+    public void setWorkAroundBadMetadata( boolean aroundBadMetadata )
+    {
+        _workAroundBadMetadata = aroundBadMetadata;
     }
     //----------------------------------------------------------------------------------
     public String getType()

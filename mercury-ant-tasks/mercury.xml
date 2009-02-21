@@ -109,7 +109,6 @@
     />
     
     <property name="cp"         refid="mercury.classpath"/>
-    <property name="cp.runtime" refid="mercury.classpath.runtime"/>
     
     <property name="cp.dir" location="${basedir}/target/test-copy"/>
     <delete dir="${cp.dir}"/>
@@ -138,8 +137,23 @@
                                    pgpValidation="false"
         />
       </mercury:remote-repositories>
-  	
+    
       <mercury:resolve-dependencies source="maven:${basedir}/target/test-classes/pom-non-transitive.xml"/>
+
+  </target>
+
+  <target name="exclusions">
+    
+    <mercury:local-repository location="${localRepo}"/>
+    <mercury:repository location="${remoteRepo}"/>
+    
+    <mercury:resolve-dependencies source="maven:${basedir}/target/test-classes/pom.xml">
+      <mercury:exclusions>
+      	<mercury:exclusion id="g2:a2"/>
+      </mercury:exclusions>
+    </mercury:resolve-dependencies>
+
+  	<property name="cp" refid="mercury.classpath"/>
 
   </target>
 

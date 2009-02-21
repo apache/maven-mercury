@@ -28,6 +28,8 @@ import java.util.Map;
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactExclusionList;
+import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
@@ -79,6 +81,10 @@ public class Dep
     private Storage _pomStorage;
 
     private Dependency _sourceDependency;
+    
+    List<String> _inclusions;
+    
+    List<String> _exclusions;
 
     private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
         throws RepositoryException
@@ -92,7 +98,6 @@ public class Dep
 
         for ( Dependency d : _dependencies )
         {
-
             if ( d._amd == null )
             {
                 throw new IllegalArgumentException( LANG.getMessage( "dep.dependency.name.mandatory" ) );
@@ -100,7 +105,7 @@ public class Dep
 
             if ( Util.isEmpty( d._pom ) )
             {
-                res.add( d._amd );
+                res.add( d.getMetadata() );
             }
             else
             {
@@ -195,14 +200,20 @@ public class Dep
         _pomRepo.setMetadataReader( vr );
 
         List<ArtifactBasicMetadata> depList = getDependencies( vr );
+        
+        ArtifactQueryList aql = new ArtifactQueryList( depList );
+        
+        ArtifactInclusionList ail = getInclusions();
+        
+        ArtifactExclusionList ael = getExclusions();
 
         List<ArtifactMetadata> res =
-            _transitive ? db.resolveConflicts( scope, new ArtifactQueryList( depList ), null, null )
+            _transitive ? db.resolveConflicts( scope, aql, ail, ael )
                             : toArtifactMetadataList( depList );
 
         if ( Util.isEmpty( res ) )
         {
-            return null;
+            throw new BuildException( LANG.getMessage( "resolve.empty.classpath", scope.toString(), depList.toString() ) );
         }
 
         ArtifactResults aRes = vr.readArtifacts( res );
@@ -260,6 +271,22 @@ public class Dep
         return _artifacts;
     }
 
+    private ArtifactExclusionList getExclusions()
+    {
+        if( Util.isEmpty( _exclusions ) )
+            return null;
+        
+        return new ArtifactExclusionList( _exclusions.toArray( new String [_exclusions.size()] ) );
+    }
+
+    private ArtifactInclusionList getInclusions()
+    {
+        if( Util.isEmpty( _inclusions ) )
+            return null;
+        
+        return new ArtifactInclusionList( _inclusions.toArray( new String [_inclusions.size()] ) );
+    }
+
     /**
      * @param depList
      * @return
@@ -308,10 +335,36 @@ public class Dep
     {
         this._transitive = val;
     }
+    
+    public void addConfiguredExclusions( Exclusions ex )
+    {
+        _exclusions = ex._list;
+    }
+    
+    public void addConfiguredInclusions( Inclusions in )
+    {
+        _inclusions = in._list;
+    }
 
     protected void setList( List<Dependency> dependencies )
     {
         _dependencies = dependencies;
+    }
+
+    protected void setExclusions( List<String> exList )
+    {
+        if( _exclusions == null )
+            _exclusions = exList;
+        else
+            _exclusions.addAll( exList );
+    }
+
+    protected void setInclusions( List<String> inList )
+    {
+        if( _inclusions == null )
+            _inclusions = inList;
+        else
+            _inclusions.addAll( inList );
     }
 
     // ----------------------------------------------------------------------------------------

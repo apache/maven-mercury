@@ -71,9 +71,19 @@ extends TestCase
   throws Exception
   {
     String os = System.getProperty("os.name");
+    
     if( "Mac OS X".equals( os ) )
       goodOs = true;
+    
   }
+  
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        if( query != null )
+            query.clear();
+    }
   //------------------------------------------------------------------------------
   public void testReadReleaseVersion()
   throws IllegalArgumentException, RepositoryException
@@ -308,7 +318,7 @@ extends TestCase
     
     if( ror.hasExceptions() )
       System.out.println( ror.getExceptions() );
-    
+  
     assertFalse( ror.hasExceptions() );
     assertTrue( ror.hasResults() );
     

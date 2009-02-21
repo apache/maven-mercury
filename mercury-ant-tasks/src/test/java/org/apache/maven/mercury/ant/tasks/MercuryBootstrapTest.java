@@ -232,6 +232,37 @@ public class MercuryBootstrapTest
         assertTrue( tcr1.exists() );
         assertFalse( tcr2.exists() );
     }
+    // -----------------------------------
+    public void testExclusions()
+    {
+        String title = "exclusions";
+        System.out.println( "========> start " + title );
+        System.out.flush();
+
+        File a0 = new File( _localRepoDirFile, "g0/a0/v0/a0-v0.jar" );
+        File a1 = new File( _localRepoDirFile, "g1/a1/v1/a1-v1.jar" );
+        File a2 = new File( _localRepoDirFile, "g2/a2/v2/a2-v2.jar" );
+
+        assertFalse( a0.exists() );
+        assertFalse( a1.exists() );
+        assertFalse( a2.exists() );
+
+        executeTarget( title );
+
+        assertTrue( a0.exists() );
+        assertTrue( a1.exists() );
+        assertFalse( a2.exists() );
+
+        String cp = getProject().getProperty( "cp" );
+        assertNotNull( cp );
+        
+        // mercury.classpath
+        assertTrue( cp.indexOf( "a0" ) != -1 );
+        assertTrue( cp.indexOf( "a1" ) != -1 );
+        assertTrue( cp.indexOf( "a2" ) == -1 );
+        
+//        System.out.println( "cp = " + cp );
+    }
 
     // -----------------------------------
     public void testRepoPgp()
@@ -249,6 +280,8 @@ public class MercuryBootstrapTest
         assertFalse( a2.exists() );
 
         executeTarget( title );
+        
+        // TODO: prep. the test data to test pgp sigs
 //
 //        assertTrue( a0.exists() );
 //        assertTrue( a1.exists() );

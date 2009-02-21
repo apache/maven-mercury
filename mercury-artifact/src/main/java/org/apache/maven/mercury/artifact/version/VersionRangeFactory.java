@@ -62,8 +62,9 @@ public class VersionRangeFactory
         for ( String vn : versions )
         {
             // RELEASE?
-            if ( noSnapshots && vn.endsWith( Artifact.SNAPSHOT_VERSION ) )
+            if ( noSnapshots )
             {
+                if( vn.endsWith( Artifact.SNAPSHOT_VERSION ) || vn.matches( Artifact.SNAPSHOT_TS_REGEX ) )
                 continue;
             }
 

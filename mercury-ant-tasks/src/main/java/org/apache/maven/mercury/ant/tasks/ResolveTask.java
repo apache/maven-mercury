@@ -74,6 +74,10 @@ public class ResolveTask
 
     private Dependency _sourceDependency;
     
+    List<String> _inclusions;
+    
+    List<String> _exclusions;
+    
     // ----------------------------------------------------------------------------------------
     @Override
     public String getDescription()
@@ -161,6 +165,10 @@ if( LOG.isDebugEnabled() )
 }
 
             dep.setTransitive( _transitive );
+            
+            dep.setInclusions( _inclusions );
+            
+            dep.setExclusions( _exclusions );
 
             ArtifactScopeEnum[] scopes = _scope == null ? SCOPES : new ArtifactScopeEnum[] { _scope };
 
@@ -169,7 +177,9 @@ if( LOG.isDebugEnabled() )
                 Collection<Artifact> artifacts = dep.resolve( config, sc );
 
                 if ( Util.isEmpty( artifacts ) )
+                {
                     continue;
+                }
 
                 if( _hasPathId && _scope != null )
                 {
@@ -360,6 +370,16 @@ if( LOG.isDebugEnabled() )
         _dependencies.add( dependency );
 
         return dependency;
+    }
+    
+    public void addConfiguredExclusions( Exclusions ex )
+    {
+        _exclusions = ex._list;
+    }
+    
+    public void addConfiguredInclusions( Inclusions in )
+    {
+        _inclusions = in._list;
     }
 
 }

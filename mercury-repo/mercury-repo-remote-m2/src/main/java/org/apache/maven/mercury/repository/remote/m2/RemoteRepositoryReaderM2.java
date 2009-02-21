@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
@@ -37,6 +38,7 @@ import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.artifact.Quality;
 import org.apache.maven.mercury.artifact.QualityEnum;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
+import org.apache.maven.mercury.artifact.version.VersionComparator;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
 import org.apache.maven.mercury.artifact.version.VersionRangeFactory;
@@ -64,6 +66,7 @@ import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.metadata.Metadata;
 import org.apache.maven.mercury.repository.metadata.MetadataBuilder;
 import org.apache.maven.mercury.repository.metadata.MetadataException;
+import org.apache.maven.mercury.repository.metadata.Versioning;
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
 import org.apache.maven.mercury.spi.http.client.retrieve.DefaultRetrievalRequest;
 import org.apache.maven.mercury.spi.http.client.retrieve.DefaultRetriever;
@@ -327,7 +330,7 @@ public class RemoteRepositoryReaderM2
         }
 
         // nothing to do, but find latest
-        String ver = VersionRangeFactory.findLatest( versions, true );
+        String ver = VersionRangeFactory.findLatest( versions, false );
 
         if ( ver == null )
         {
@@ -465,7 +468,9 @@ public class RemoteRepositoryReaderM2
     {
         RepositoryGAMetadata gam = null;
         ArtifactCoordinates coord = null;
-
+        TreeSet<String> gaVersions = null;
+        String ver = bmd.getVersion();
+        
         // check the cache first
         if ( _mdCache != null )
         {
@@ -475,8 +480,48 @@ public class RemoteRepositoryReaderM2
                 coord.setVersion( loc.getVersion() );
 
                 gam = _mdCache.findGA( _repo.getId(), _repo.getUpdatePolicy(), coord );
+
                 if ( gam != null && !gam.isExpired() )
-                    return gam.getVersions();
+                {
+                    gaVersions = gam.getVersions();
+
+                    if ( !( (RemoteRepositoryM2) _repo )._workAroundBadMetadata )
+                        return gaVersions;
+
+                    if ( bmd.isVirtual() )
+                        return gaVersions;
+
+                    if ( gaVersions.contains( ver ) )
+                        return gaVersions;
+
+                    String versionDir = ArtifactLocation.calculateVersionDir( bmd.getVersion() );
+
+                    String binPath =
+                        loc.getGaPath() + FileUtil.SEP + versionDir + FileUtil.SEP + bmd.getArtifactId() + "-"
+                            + bmd.getVersion() + ".pom";
+                    
+                    byte [] pom = null;
+                    
+                    try
+                    {
+                        pom = readRawData( binPath, true );
+                    }
+                    catch( Exception e ) {}
+
+                    if ( pom != null && pom.length > 1 )
+                    {
+
+                        String oldSnapshot = findDuplicateSnapshot( ver, gaVersions );
+
+                        if ( oldSnapshot != null )
+                            gaVersions.remove( oldSnapshot );
+
+                        gaVersions.add( ver );
+
+                        _mdCache.updateGA( _repo.getId(), gam );
+                    }
+                    return gaVersions;
+                }
             }
             catch ( MetadataCorruptionException e )
             {
@@ -491,45 +536,59 @@ public class RemoteRepositoryReaderM2
         // no cached data, or it has expired - read from repository
         String mdPath = loc.getGaPath() + FileUtil.SEP + _repo.getMetadataName();
         byte[] mavenMetadata = readRawData( mdPath, true );
+
+        Metadata mmd = null;
         
-        if ( mavenMetadata == null )
+        if( mavenMetadata != null )
+            mmd = MetadataBuilder.getMetadata( mavenMetadata );
+
+        if ( mmd == null
+            || mmd.getVersioning() == null
+            || mmd.getVersioning().getVersions() == null
+            || ! mmd.getVersioning().getVersions().contains( ver )
+        )
         {
-            if( ((RemoteRepositoryM2)_repo)._goodWillEffort )
+            if ( ( (RemoteRepositoryM2) _repo )._workAroundBadMetadata )
             {
                 // check for the pom
                 String versionDir = ArtifactLocation.calculateVersionDir( bmd.getVersion() );
-                
-                String binPath = loc.getGaPath()
-                                    + FileUtil.SEP + versionDir
-                                    + FileUtil.SEP + bmd.getArtifactId() + "-" + bmd.getVersion() 
-                                        + ".pom"
-                                    ;
-                byte [] pom = readRawData( binPath, true );
-                
-                if( pom != null ) // version exists
-                    mavenMetadata = 
-(                    
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-+"<metadata>"
-+"<groupId>"+bmd.getGroupId()+"</groupId>"
-+"<artifactId>"+bmd.getGroupId()+"</artifactId>"
-+"<version>"+ArtifactLocation.calculateVersionDir( bmd.getVersion() )+"</version>"
-+"<versioning>"
-+"<versions>"
-+"<version>"+bmd.getVersion()+"</version>"
-+"</versions>"
-+"</versioning>"
-+"</metadata>"
-).getBytes()
-;
+
+                String binPath =
+                    loc.getGaPath() + FileUtil.SEP + versionDir + FileUtil.SEP + bmd.getArtifactId() + "-"
+                        + ver + ".pom";
+                byte[] pom = readRawData( binPath, true );
+
+                if ( pom != null ) // version exists
+                {
+                    if( mmd == null )
+                    {
+                        mavenMetadata =
+                            ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<metadata>" + "<groupId>" + bmd.getGroupId()
+                                + "</groupId>" + "<artifactId>" + bmd.getGroupId() + "</artifactId>" + "<version>"
+                                + ArtifactLocation.calculateVersionDir( ver ) + "</version>" + "<versioning>"
+                                + "<versions>" + "<version>" + ver + "</version>" + "</versions>"
+                                + "</versioning>" + "</metadata>" ).getBytes();
+                        mmd = MetadataBuilder.getMetadata( mavenMetadata );
+                    }
+                    else
+                    {
+                        Versioning v = mmd.getVersioning();
+                        
+                        if( v == null )
+                        {
+                            v = new Versioning();
+                            mmd.setVersioning( v );
+                        }
+                        
+                        v.addVersion( ver );
+                    }
+                }
             }
 
-            if ( mavenMetadata == null )
-                throw new MetadataReaderException( LANG.getMessage( "no.group.md", _repo.getServer().getURL().toString(),
-                                                                    mdPath ) );
+            if ( mmd == null )
+                throw new MetadataReaderException( LANG.getMessage( "no.group.md",
+                                                                    _repo.getServer().getURL().toString(), mdPath ) );
         }
-
-        Metadata mmd = MetadataBuilder.getMetadata( mavenMetadata );
 
         if ( mmd == null || mmd.getVersioning() == null )
         {
@@ -596,6 +655,36 @@ public class RemoteRepositoryReaderM2
         }
 
         return gam.getVersions();
+    }
+
+    /**
+     * clean the list of duplicate TSs of the same SN (if any)
+     * 
+     * @param gaVersions
+     */
+    private String findDuplicateSnapshot( String ver, TreeSet<String> versions )
+    {
+        if ( !ver.matches( Artifact.SNAPSHOT_TS_REGEX ) )
+            return null;
+
+        String base = ArtifactLocation.stripTS( ver );
+
+        for ( String v : versions )
+        {
+            if ( !v.startsWith( base ) )
+                continue;
+
+            if ( v.matches( Artifact.SNAPSHOT_TS_REGEX ) )
+            {
+                Comparator<String> vc = new VersionComparator();
+
+                if ( vc.compare( ver, v ) > 0 )
+                    return v;
+                else
+                    return null;
+            }
+        }
+        return null;
     }
 
     // ---------------------------------------------------------------------------------------------------------------
@@ -666,19 +755,19 @@ public class RemoteRepositoryReaderM2
                 else
                 {
                     String base = ArtifactLocation.stripSN( bmd.getVersion() );
-                    
-                    if( base != null )
+
+                    if ( base != null )
                     {
                         int len = base.length();
-                        
+
                         for ( String v : versions )
                         {
-                            if( ! base.regionMatches( 0, v, 0, len ) )
+                            if ( !base.regionMatches( 0, v, 0, len ) )
                                 continue;
-                            
+
                             Quality q = new Quality( v );
-                            
-                            if( q.equals( Quality.SNAPSHOT_TS_QUALITY) )
+
+                            if ( q.equals( Quality.SNAPSHOT_TS_QUALITY ) )
                             {
                                 found = v;
                                 break;

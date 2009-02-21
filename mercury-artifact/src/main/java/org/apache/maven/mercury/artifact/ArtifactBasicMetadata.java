@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
 import org.apache.maven.mercury.artifact.version.VersionRangeFactory;
@@ -441,6 +442,11 @@ public class ArtifactBasicMetadata
     public void setLocal( Boolean local )
     {
         this.local = local;
+    }
+
+    public boolean isVirtual()
+    {
+        return DefaultArtifactVersion.isVirtual( version );
     }
 
     public ArtifactCoordinates getEffectiveCoordinates()
