@@ -58,10 +58,9 @@ import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.transport.api.Credentials;
 import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.Util;
-import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Configuration;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -72,268 +71,288 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Oleg Gusakov
  */
 
-@Component( role=PlexusMercury.class )
+@Component( role = PlexusMercury.class )
 public class DefaultPlexusMercury
-extends AbstractLogEnabled
-implements PlexusMercury
+    extends AbstractLogEnabled
+    implements PlexusMercury
 {
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultPlexusMercury.class ); 
-  private static final Language LANG = new DefaultLanguage( DefaultPlexusMercury.class );
-  
-  @Requirement( hint="maven" )
-  DependencyProcessor dependencyProcessor;
-  
-  @Requirement
-  PlexusContainer plexus;
-  
-  //---------------------------------------------------------------
-  public DependencyProcessor findDependencyProcessor( String hint )
-  throws RepositoryException
-  {
-    if( dependencyProcessor != null )
-      return dependencyProcessor;
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultPlexusMercury.class );
+
+    private static final Language LANG = new DefaultLanguage( DefaultPlexusMercury.class );
     
-    if( plexus == null )
-      throw new RepositoryException( LANG.getMessage( "no.plexus.injected" ) );
+    private List<Repository> _repos;
     
-    DependencyProcessor dp = null;
-    
-    try
+    @Configuration(name="defaultDependencyProcessorHint",value="maven")
+    String _defaultDpHint = "maven";
+
+    @Requirement(role=DependencyProcessor.class)
+    private Map< String, DependencyProcessor > _dependencyProcessors;
+
+    // ---------------------------------------------------------------
+    public DependencyProcessor findDependencyProcessor( String hint )
+        throws RepositoryException
     {
-      dp = plexus.lookup( DependencyProcessor.class, hint );
-      
-      return dp;
+        DependencyProcessor dp = null;
+        
+        if ( _dependencyProcessors != null )
+            dp = _dependencyProcessors.get( hint );
+
+        if( dp == null)
+            throw new RepositoryException( LANG.getMessage( "no.dep.processor.injected", hint ) );
+
+            return dp;
     }
-    catch( ComponentLookupException e )
+
+    // ---------------------------------------------------------------
+    public DependencyProcessor findDependencyProcessor()
+        throws RepositoryException
     {
-      throw new RepositoryException( LANG.getMessage( "no.dep.processor.injected", hint, e.getMessage() ) );
+        return findDependencyProcessor( _defaultDpHint );
     }
-  }
-  //---------------------------------------------------------------
-  public DependencyProcessor findDependencyProcessor()
-  throws RepositoryException
-  {
-    return findDependencyProcessor( "default" );
-  }
-  //---------------------------------------------------------------
-  public RemoteRepositoryM2 constructRemoteRepositoryM2(
-                        String id
-                      , URL serverUrl, String serverUser, String serverPass 
-                      , URL proxyUrl,  String proxyUser,  String proxyPass
-                      , Set<StreamObserverFactory> readerStreamObservers
-                      , Set<StreamVerifierFactory> readerStreamVerifiers
-                      , Set<StreamObserverFactory> writerStreamObservers
-                      , Set<StreamVerifierFactory> writerStreamVerifiers
-                                                       )
-  throws RepositoryException
-  {
-    Server server = new Server( id, serverUrl );
-    
-    server.setReaderStreamObserverFactories( readerStreamObservers );
-    server.setReaderStreamVerifierFactories( readerStreamVerifiers );
-    server.setWriterStreamObserverFactories( writerStreamObservers );
-    server.setWriterStreamVerifierFactories( writerStreamVerifiers );
-    
-    if( serverUser != null )
+
+    // ---------------------------------------------------------------
+    public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
+                                                           String serverPass, URL proxyUrl, String proxyUser,
+                                                           String proxyPass,
+                                                           Set<StreamObserverFactory> readerStreamObservers,
+                                                           Set<StreamVerifierFactory> readerStreamVerifiers,
+                                                           Set<StreamObserverFactory> writerStreamObservers,
+                                                           Set<StreamVerifierFactory> writerStreamVerifiers )
+        throws RepositoryException
     {
-      Credentials cred = new Credentials( serverUser, serverPass );
-      server.setServerCredentials( cred );
+        Server server = new Server( id, serverUrl );
+
+        server.setReaderStreamObserverFactories( readerStreamObservers );
+        server.setReaderStreamVerifierFactories( readerStreamVerifiers );
+        server.setWriterStreamObserverFactories( writerStreamObservers );
+        server.setWriterStreamVerifierFactories( writerStreamVerifiers );
+
+        if ( serverUser != null )
+        {
+            Credentials cred = new Credentials( serverUser, serverPass );
+            server.setServerCredentials( cred );
+        }
+
+        if ( proxyUrl != null )
+        {
+            server.setProxy( proxyUrl );
+
+            if ( proxyUser != null )
+            {
+                Credentials cred = new Credentials( proxyUser, proxyPass );
+                server.setProxyCredentials( cred );
+            }
+        }
+
+        RemoteRepositoryM2 repo = new RemoteRepositoryM2( id, server, findDependencyProcessor() );
+
+        return repo;
     }
-    
-    if( proxyUrl != null )
+
+    // ---------------------------------------------------------------
+    public LocalRepositoryM2 constructLocalRepositoryM2( String id, File rootDir,
+                                                         Set<StreamObserverFactory> readerStreamObservers,
+                                                         Set<StreamVerifierFactory> readerStreamVerifiers,
+                                                         Set<StreamObserverFactory> writerStreamObservers,
+                                                         Set<StreamVerifierFactory> writerStreamVerifiers )
+        throws RepositoryException
     {
-      server.setProxy( proxyUrl );
-      
-      if( proxyUser != null )
-      {
-        Credentials cred = new Credentials( proxyUser, proxyPass );
-        server.setProxyCredentials( cred );
-      }
-    }
-    
-    RemoteRepositoryM2 repo = new RemoteRepositoryM2( id, server, findDependencyProcessor() );
+        Server server;
+        try
+        {
+            server = new Server( id, rootDir.toURL() );
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new RepositoryException( e );
+        }
 
-    return repo;
-  }
-  //---------------------------------------------------------------
-  public LocalRepositoryM2 constructLocalRepositoryM2(
-      String id,
-      File rootDir,
-      Set<StreamObserverFactory> readerStreamObservers,
-      Set<StreamVerifierFactory> readerStreamVerifiers,
-      Set<StreamObserverFactory> writerStreamObservers,
-      Set<StreamVerifierFactory> writerStreamVerifiers 
-                                                      )
-  throws RepositoryException
-  {
-    Server server;
-    try
+        server.setReaderStreamObserverFactories( readerStreamObservers );
+        server.setReaderStreamVerifierFactories( readerStreamVerifiers );
+        server.setWriterStreamObserverFactories( writerStreamObservers );
+        server.setWriterStreamVerifierFactories( writerStreamVerifiers );
+
+        LocalRepositoryM2 repo = new LocalRepositoryM2( server, findDependencyProcessor() );
+
+        return repo;
+    }
+
+    // ---------------------------------------------------------------
+    public void write( Repository repo, Artifact... artifacts )
+        throws RepositoryException
     {
-      server = new Server( id, rootDir.toURL() );
+        write( repo, Arrays.asList( artifacts ) );
     }
-    catch( MalformedURLException e )
+
+    public void write( Repository repo, Collection<Artifact> artifacts )
+        throws RepositoryException
     {
-      throw new RepositoryException(e);
+        if ( repo == null )
+            throw new RepositoryException( LANG.getMessage( "null.repo" ) );
+
+        RepositoryWriter wr = repo.getWriter();
+
+        wr.writeArtifacts( artifacts );
+
     }
-    
-    server.setReaderStreamObserverFactories( readerStreamObservers );
-    server.setReaderStreamVerifierFactories( readerStreamVerifiers );
-    server.setWriterStreamObserverFactories( writerStreamObservers );
-    server.setWriterStreamVerifierFactories( writerStreamVerifiers );
 
-    LocalRepositoryM2 repo = new LocalRepositoryM2( server, findDependencyProcessor() );
-
-    return repo;
-  }
-
-  //---------------------------------------------------------------
-  public void write( Repository repo, Artifact... artifacts )
-  throws RepositoryException
-  {
-    write( repo, Arrays.asList( artifacts ) );
-  }
-  
-  public void write(
-      Repository repo,
-      Collection<Artifact> artifacts )
-      throws RepositoryException
-  {
-    if( repo == null )
-      throw new RepositoryException( LANG.getMessage( "null.repo" ) );
-    
-    RepositoryWriter wr = repo.getWriter();
-    
-    wr.writeArtifacts( artifacts );
-    
-  }
-  //---------------------------------------------------------------
-  public List<Artifact> read( List<Repository> repos, ArtifactBasicMetadata... artifacts )
-  throws RepositoryException
-  {
-      return read( repos, Arrays.asList( artifacts ) );
-  }
-  //---------------------------------------------------------------
-  public List<Artifact> read( List<Repository> repos, List<? extends ArtifactBasicMetadata> artifacts )
-  throws RepositoryException
-  {
-    if( Util.isEmpty( repos ) )
-      throw new RepositoryException( LANG.getMessage( "null.repo" ) );
-    
-    VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-    
-    ArtifactResults ar = vr.readArtifacts( artifacts );
-    
-    if( ar == null || !ar.hasResults() )
-      return null;
-
-    if( ar.hasExceptions() && LOG.isWarnEnabled() )
-      LOG.info( ar.getExceptions().toString() );
-    
-    if( !ar.hasResults() )
-      return null;
-
-    Map<ArtifactBasicMetadata, List<Artifact>> am = ar.getResults();
-    
-    List<Artifact> al = new ArrayList<Artifact>();
-    for( Map.Entry<ArtifactBasicMetadata, List<Artifact>> e : am.entrySet() )
-      al.addAll( e.getValue() );
-
-    return al;
-    
-  }
-
-  public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
-      throws RepositoryException
-  {
-    return read( repo, Arrays.asList( artifacts ) );
-  }
-  //---------------------------------------------------------------
-  public PgpStreamVerifierFactory createPgpReaderFactory(
-      boolean lenient,
-      boolean sufficient,
-      InputStream pubRing )
-  throws StreamVerifierException
-  {
-    return new PgpStreamVerifierFactory(
-        new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION,lenient,sufficient )
-        , pubRing
-                                      );
-  }
-
-  //---------------------------------------------------------------
-  public PgpStreamVerifierFactory createPgpWriterFactory(
-      boolean lenient,
-      boolean sufficient,
-      InputStream secRing,
-      String keyId,
-      String keyPass )
-      throws StreamVerifierException
-  {
-    return new PgpStreamVerifierFactory(
-        new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION,lenient,sufficient )
-        , secRing , keyId, keyPass
-                                      );
-  }
-  
-  public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
-      throws RepositoryException  
-  {
-    return resolve( repos, scope, new ArtifactQueryList( metadata ), null, null );
-  }
-  
-  //---------------------------------------------------------------
-  public List<ArtifactMetadata> resolve( List<Repository> repos
-                                        , ArtifactScopeEnum   scope
-                                        , ArtifactQueryList artifacts
-                                        , ArtifactInclusionList inclusions
-                                        , ArtifactExclusionList exclusions
-                                        )
-  throws RepositoryException
-  {
-    if( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
-      throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
-    
-    try
+    // ---------------------------------------------------------------
+    public List<Artifact> read( List<Repository> repos, ArtifactBasicMetadata... artifacts )
+        throws RepositoryException
     {
-      DependencyBuilder depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
-
-      List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
-    
-      return res;
+        return read( repos, Arrays.asList( artifacts ) );
     }
-    catch( MetadataTreeException e )
+
+    // ---------------------------------------------------------------
+    public List<Artifact> read( List<Repository> repos, List<? extends ArtifactBasicMetadata> artifacts )
+        throws RepositoryException
     {
-      throw new RepositoryException( e );
+        if ( Util.isEmpty( repos ) )
+            throw new RepositoryException( LANG.getMessage( "null.repo" ) );
+
+        VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
+
+        ArtifactResults ar = vr.readArtifacts( artifacts );
+
+        if ( ar == null || !ar.hasResults() )
+            return null;
+
+        if ( ar.hasExceptions() && LOG.isWarnEnabled() )
+            LOG.info( ar.getExceptions().toString() );
+
+        if ( !ar.hasResults() )
+            return null;
+
+        Map<ArtifactBasicMetadata, List<Artifact>> am = ar.getResults();
+
+        List<Artifact> al = new ArrayList<Artifact>();
+        for ( Map.Entry<ArtifactBasicMetadata, List<Artifact>> e : am.entrySet() )
+            al.addAll( e.getValue() );
+
+        return al;
+
     }
-  }
-  //---------------------------------------------------------------
-  /**
-   * get all available versions of for the artifact query.
-   * 
-   * @param repo repository instance to search
-   * @param query metadata query to search by
-   * @return list of found version metadatas
-   * @throws PlexusMercuryException
-   */
-  public List<ArtifactBasicMetadata> readVersions( List<Repository> repos
-                                                   , ArtifactBasicMetadata query
-                                                  )
-  throws RepositoryException
-  {
-      VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-      List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>(1);
-      q.add( query );
-      
-      ArtifactBasicResults res = vr.readVersions( q );
-      
-      if( res == null )
-          return null;
 
-      if( res.hasExceptions() && LOG.isWarnEnabled() )
-          LOG.warn( res.getExceptions().toString() );
+    public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
+        throws RepositoryException
+    {
+        return read( repo, Arrays.asList( artifacts ) );
+    }
 
-      return res.getResult( query );
-  }
-  //---------------------------------------------------------------
-  //---------------------------------------------------------------
+    // ---------------------------------------------------------------
+    public PgpStreamVerifierFactory createPgpReaderFactory( boolean lenient, boolean sufficient, InputStream pubRing )
+        throws StreamVerifierException
+    {
+        return new PgpStreamVerifierFactory( new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                           lenient, sufficient ), pubRing );
+    }
+
+    // ---------------------------------------------------------------
+    public PgpStreamVerifierFactory createPgpWriterFactory( boolean lenient, boolean sufficient, InputStream secRing,
+                                                            String keyId, String keyPass )
+        throws StreamVerifierException
+    {
+        return new PgpStreamVerifierFactory( new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                           lenient, sufficient ), secRing, keyId,
+                                             keyPass );
+    }
+
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
+        throws RepositoryException
+    {
+        return resolve( repos, scope, new ArtifactQueryList( metadata ), null, null );
+    }
+
+    // ---------------------------------------------------------------
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions )
+        throws RepositoryException
+    {
+        if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
+            throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
+
+        try
+        {
+            DependencyBuilder depBuilder =
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
+
+            List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
+
+            return res;
+        }
+        catch ( MetadataTreeException e )
+        {
+            throw new RepositoryException( e );
+        }
+    }
+
+    // ---------------------------------------------------------------
+    /**
+     * get all available versions of for the artifact query.
+     * 
+     * @param repo repository instance to search
+     * @param query metadata query to search by
+     * @return list of found version metadatas
+     * @throws PlexusMercuryException
+     */
+    public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
+        throws RepositoryException
+    {
+        VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
+        List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>( 1 );
+        q.add( query );
+
+        ArtifactBasicResults res = vr.readVersions( q );
+
+        if ( res == null )
+            return null;
+
+        if ( res.hasExceptions() && LOG.isWarnEnabled() )
+            LOG.warn( res.getExceptions().toString() );
+
+        return res.getResult( query );
+    }
+    // ---------------------------------------------------------------
+    public List<Repository> constructRepositories( String localDir, String... urls )
+        throws RepositoryException
+    {
+        try
+        {
+            int nRemote = urls == null ? 0 : urls.length;
+            
+            List<Repository> repos = new ArrayList<Repository>( 1 + nRemote );
+            
+            DependencyProcessor dp = findDependencyProcessor();
+            
+            LocalRepositoryM2 lr = new LocalRepositoryM2( new File(localDir), dp );
+            
+            repos.add( lr );
+            
+            if( nRemote > 0 )
+                for( String url : urls )
+                {
+                    RemoteRepositoryM2 rr = new RemoteRepositoryM2( url, dp );
+                    
+                    repos.add( rr );
+                }
+            
+            return repos;
+                    
+        }
+        catch( Exception e )
+        {
+            throw new RepositoryException( e );
+        }
+    }
+    // ---------------------------------------------------------------
+    public PlexusMercury setRepositories( String localDir, String... urls )
+        throws RepositoryException
+    {
+        _repos = constructRepositories( localDir, urls );
+        
+        return this;
+    }
+    // ---------------------------------------------------------------
+    // ---------------------------------------------------------------
 }

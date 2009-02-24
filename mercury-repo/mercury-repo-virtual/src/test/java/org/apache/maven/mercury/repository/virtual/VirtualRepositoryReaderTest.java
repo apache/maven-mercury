@@ -66,10 +66,14 @@ public class VirtualRepositoryReaderTest
     String _artifactCoordLatest = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-LATEST";
 
     String _artifactCoordRelease = "ant:ant:1.6.5";
+    
+    String LOCAL_REPO_ID = "localRepo";
 
-    String _localRepoId = "localRepo";
+    String _localRepoId;
 
-    String _remoteRepoId = "remoteRepo";
+    String REMOTE_REPO_ID = "remoteRepo";
+
+    String _remoteRepoId;
 
     HttpTestServer _jetty;
 
@@ -104,14 +108,18 @@ public class VirtualRepositoryReaderTest
             throw new Exception( "cannot create clean folder " + _testBase.getAbsolutePath() );
         }
 
-        _localRepo = new LocalRepositoryM2( _localRepoId, _testBase, new MetadataProcessorMock() );
+        _localRepo = new LocalRepositoryM2( LOCAL_REPO_ID, _testBase, new MetadataProcessorMock() );
+        
+        _localRepoId = _localRepo.getId();
 
         _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
         _jetty.start();
         _port = String.valueOf( _jetty.getPort() );
-        Server server = new Server( _remoteRepoId, new URL( "http://localhost:" + _port + "/repo" ) );
+        Server server = new Server( REMOTE_REPO_ID, new URL( "http://localhost:" + _port + "/repo" ) );
 
-        _remoteRepo = new RemoteRepositoryM2( server.getId(), server, new MetadataProcessorMock() );
+        _remoteRepo = new RemoteRepositoryM2( server, new MetadataProcessorMock() );
+        
+        _remoteRepoId = _remoteRepo.getId();
 
         if ( Util.isWindows() )
         {
@@ -123,6 +131,8 @@ public class VirtualRepositoryReaderTest
         rl.add( _remoteRepo );
 
         _vr = new VirtualRepositoryReader( rl );
+        
+        
     }
 
     @Override

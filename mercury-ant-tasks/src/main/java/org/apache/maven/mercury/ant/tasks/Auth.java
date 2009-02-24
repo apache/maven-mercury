@@ -58,6 +58,11 @@ public class Auth
     
     public Auth( String auth )
     {
+        setSource( auth );
+    }
+
+    public void setSource( String auth )
+    {
         if( auth == null )
             throw new IllegalArgumentException( LANG.getMessage( "auth.null.auth" ) );
         
@@ -74,7 +79,17 @@ public class Auth
         else
             paramStr = auth.substring( colon+1 );
         
-        StringTokenizer st = new StringTokenizer( paramStr, "," );
+        if( METHOD_BASIC.regionMatches( 0, _method, 0, METHOD_BASIC.length() ) )
+        {
+            StringTokenizer st = new StringTokenizer( paramStr, "/" );
+            
+            if( st.countTokens() != 2 )
+                throw new IllegalArgumentException( LANG.getMessage( "auth.bad.basic.params" ) );
+            
+            _name = st.nextToken();
+            
+            _pass = st.nextToken();
+        }
     }
 
     public void setName( String name )

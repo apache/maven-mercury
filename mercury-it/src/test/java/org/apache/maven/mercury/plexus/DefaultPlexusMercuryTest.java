@@ -51,331 +51,346 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 /**
- * 
- * 
  * @author Oleg Gusakov
  * @version $Id: DefaultPlexusMercuryTest.java 723125 2008-12-03 23:19:50Z ogusakov $
  */
 public class DefaultPlexusMercuryTest
-extends PlexusTestCase
+    extends PlexusTestCase
 {
-  PlexusMercury pm;
+    PlexusMercury pm;
 
-  RemoteRepositoryM2 remoteRepo;
-  LocalRepositoryM2  localRepo;
-  
-  List<Repository>   repos;
-  
-  Artifact a;
-  
-  protected static final String keyId   = "0EDB5D91141BC4F2";
+    RemoteRepositoryM2 remoteRepo;
 
-  protected static final String secretKeyFile = "/pgp/secring.gpg";
-  protected static final String publicKeyFile = "/pgp/pubring.gpg";
-  protected static final String secretKeyPass = "testKey82";
-  
-  String artifactCoord = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-SNAPSHOT";
+    LocalRepositoryM2 localRepo;
 
-  private File localRepoDir;
-  
-  public static final String SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_USER = "plexus.mercury.test.user";
-  static String remoteServerUser = System.getProperty( SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_USER, "admin" );
+    List<Repository> repos;
 
-  public static final String SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_PASS = "plexus.mercury.test.pass";
-  static String remoteServerPass = System.getProperty( SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_PASS, "admin123" );
-  
-  PgpStreamVerifierFactory pgpRF;
-  PgpStreamVerifierFactory pgpWF;
-  
-  SHA1VerifierFactory      sha1F;
-  HashSet<StreamVerifierFactory> vFacSha1;
-  
-  VirtualRepositoryReader vrr;
-  
-  PlexusContainer plexus;
-  
-  HttpTestServer _jetty;
-  String _port;
-  File _remoteRepoBase = new File("./target/test-classes/remoteRepo");
-  
-  //-------------------------------------------------------------------------------------
-//  @Override
-  protected void setUp()
-  throws Exception
-  {
-    super.setUp();
+    Artifact a;
 
-    // prep. Artifact
-    File artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
-    FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
-    
-    a = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven.mercury:mercury-core:2.0.9") );
-    
-    a.setPomBlob( FileUtil.readRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ) ) );
-    a.setFile( artifactBinary );
-    
-    // prep Repository
-    pm = getContainer().lookup( PlexusMercury.class );
-    
-    pgpRF = pm.createPgpReaderFactory( true, true, getClass().getResourceAsStream( publicKeyFile ) );
-    pgpWF = pm.createPgpWriterFactory( true, true, getClass().getResourceAsStream( secretKeyFile ), keyId, secretKeyPass );
-    
-    sha1F = new SHA1VerifierFactory( true, false );
-    
-    _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
-    _jetty.start();
-    _port = String.valueOf( _jetty.getPort() );
+    protected static final String keyId = "0EDB5D91141BC4F2";
 
-    String remoteServerUrl = "http://localhost:"+_port+"/repo";
-    remoteRepo = pm.constructRemoteRepositoryM2( "testRepo"
-                        , new URL(remoteServerUrl), remoteServerUser, remoteServerPass
-                        , null, null, null
-                        , null, FileUtil.vSet( pgpRF, sha1F )
-                        , null, FileUtil.vSet( pgpWF, sha1F )
-                                        );
-    
-//    localRepoDir = File.createTempFile( "local-", "-repo" );
-    localRepoDir = new File( "./target/local" );
-    FileUtil.delete( localRepoDir );
-    localRepoDir.mkdirs();
-//    
-//    localRepo = new LocalRepositoryM2( "testLocalRepo", localRepoDir, pm.findDependencyProcessor() );
-    
-    localRepo = pm.constructLocalRepositoryM2( "testLocal", localRepoDir, null, null, null, null );
-    
-    repos = new ArrayList<Repository>();
-    repos.add( localRepo );
-    repos.add( remoteRepo );
-    
-    vrr = new VirtualRepositoryReader(repos);
-    
-  }
-  //-------------------------------------------------------------------------------------
-  @Override
-  protected void tearDown()
-  throws Exception
-  {
-    super.tearDown();
-    
-    if( _jetty != null )
+    protected static final String secretKeyFile = "/pgp/secring.gpg";
+
+    protected static final String publicKeyFile = "/pgp/pubring.gpg";
+
+    protected static final String secretKeyPass = "testKey82";
+
+    String artifactCoord = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-SNAPSHOT";
+
+    private File localRepoDir;
+
+    public static final String SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_USER = "plexus.mercury.test.user";
+
+    static String remoteServerUser = System.getProperty( SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_USER, "admin" );
+
+    public static final String SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_PASS = "plexus.mercury.test.pass";
+
+    static String remoteServerPass = System.getProperty( SYSTEM_PARAMETER_PLEXUS_MERCURY_TEST_PASS, "admin123" );
+
+    PgpStreamVerifierFactory pgpRF;
+
+    PgpStreamVerifierFactory pgpWF;
+
+    SHA1VerifierFactory sha1F;
+
+    HashSet<StreamVerifierFactory> vFacSha1;
+
+    VirtualRepositoryReader vrr;
+
+    PlexusContainer plexus;
+
+    HttpTestServer _jetty;
+
+    String _port;
+
+    File _remoteRepoBase = new File( "./target/test-classes/remoteRepo" );
+
+    // -------------------------------------------------------------------------------------
+    // @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        // prep. Artifact
+        File artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
+        FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
+
+        a = new DefaultArtifact( new ArtifactBasicMetadata( "org.apache.maven.mercury:mercury-core:2.0.9" ) );
+
+        a.setPomBlob( FileUtil.readRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ) ) );
+        a.setFile( artifactBinary );
+
+        // prep Repository
+        pm = getContainer().lookup( PlexusMercury.class );
+
+        pgpRF = pm.createPgpReaderFactory( true, true, getClass().getResourceAsStream( publicKeyFile ) );
+        pgpWF =
+            pm.createPgpWriterFactory( true, true, getClass().getResourceAsStream( secretKeyFile ), keyId,
+                                       secretKeyPass );
+
+        sha1F = new SHA1VerifierFactory( true, false );
+
+        _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
+        _jetty.start();
+        _port = String.valueOf( _jetty.getPort() );
+
+        String remoteServerUrl = "http://localhost:" + _port + "/repo";
+        remoteRepo =
+            pm.constructRemoteRepositoryM2( "testRepo", new URL( remoteServerUrl ), remoteServerUser, remoteServerPass,
+                                            null, null, null, null, FileUtil.vSet( pgpRF, sha1F ), null,
+                                            FileUtil.vSet( pgpWF, sha1F ) );
+
+        // localRepoDir = File.createTempFile( "local-", "-repo" );
+        localRepoDir = new File( "./target/local" );
+        FileUtil.delete( localRepoDir );
+        localRepoDir.mkdirs();
+        //    
+        // localRepo = new LocalRepositoryM2( "testLocalRepo", localRepoDir, pm.findDependencyProcessor() );
+
+        localRepo = pm.constructLocalRepositoryM2( "testLocal", localRepoDir, null, null, null, null );
+
+        repos = new ArrayList<Repository>();
+        repos.add( localRepo );
+        repos.add( remoteRepo );
+
+        vrr = new VirtualRepositoryReader( repos );
+
+    }
+
+    // -------------------------------------------------------------------------------------
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+
+        if ( _jetty != null )
+            try
+            {
+                _jetty.stop();
+                _jetty.destroy();
+            }
+            finally
+            {
+                _jetty = null;
+            }
+    }
+
+    // ----------------------------------------------------------------------------------------------
+    private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )
+    {
+        ArtifactMetadata gavMd = new ArtifactMetadata( gav );
+
+        for ( ArtifactBasicMetadata md : res )
+            if ( md.sameGAV( gavMd ) )
+                return true;
+
+        return false;
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testFindDepProcessorWithHint()
+        throws RepositoryException, ComponentLookupException
+    {
+        DependencyProcessor dp = null;
+
+        dp = pm.findDependencyProcessor( "default" );
+
+        assertNotNull( dp );
+
+        assertTrue( MavenDependencyProcessor.class.isAssignableFrom( dp.getClass() ) );
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testFindDepProcessor()
+        // should run after the previous one
+        throws RepositoryException, ComponentLookupException
+    {
+        DependencyProcessor dp = null;
+
+        dp = pm.findDependencyProcessor();
+
+        assertNotNull( dp );
+
+        assertTrue( MavenDependencyProcessor.class.isAssignableFrom( dp.getClass() ) );
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testWrite()
+        throws RepositoryException
+    {
+        pm.write( localRepo, a );
+
+        File af = new File( localRepoDir, "org/apache/maven/mercury/mercury-core/2.0.9/mercury-core-2.0.9.jar" );
+
+        assertTrue( af.exists() );
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testReadVersions()
+        throws RepositoryException
+    {
+        ArtifactMetadata bmd = new ArtifactMetadata( artifactCoord );
+
+        List<ArtifactBasicMetadata> res = pm.readVersions( repos, bmd );
+
+        assertNotNull( res );
+
+        assertFalse( res.isEmpty() );
+
+        ArtifactBasicMetadata a = res.get( 0 );
+
+        assertEquals( "1.0.0-alpha-2-20081104.001322-2", a.getVersion() );
+
+        List<Artifact> al = pm.read( repos, a );
+
+        assertNotNull( al );
+
+        assertFalse( al.isEmpty() );
+
+        assertEquals( 1, al.size() );
+
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testRead()
+        throws RepositoryException
+    {
+        ArtifactMetadata bmd = new ArtifactMetadata( artifactCoord );
+
+        Collection<Artifact> res = pm.read( repos, bmd );
+
+        assertNotNull( res );
+
+        assertFalse( res.isEmpty() );
+
+        Artifact a = res.toArray( new Artifact[1] )[0];
+
+        assertNotNull( a );
+
+        File fBin = a.getFile();
+
+        assertNotNull( fBin );
+
+        assertTrue( fBin.exists() );
+
+        byte[] pomBytes = a.getPomBlob();
+
+        assertNotNull( pomBytes );
+
+        assertTrue( pomBytes.length > 10 );
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testReadNonExistent()
+    {
+        ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+
+        Collection<Artifact> res = null;
         try
         {
-            _jetty.stop();
-            _jetty.destroy();
+            res = pm.read( repos, bmd );
         }
-        finally
+        catch ( RepositoryException e )
         {
-            _jetty = null;
+            fail( "reading non-existent artifact should not raise an exception, got " + e.getMessage() );
         }
-  }
-  //----------------------------------------------------------------------------------------------
-  private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )
-  {
-    ArtifactMetadata gavMd = new ArtifactMetadata(gav);
-    
-    for( ArtifactBasicMetadata md : res )
-      if( md.sameGAV( gavMd ) )
-        return true;
-    
-    return false;
-  }
-  //-------------------------------------------------------------------------------------
-  public void testFindDepProcessorWithHint()
-  throws RepositoryException, ComponentLookupException
-  {
-      DependencyProcessor dp = null;
 
-      dp = pm.findDependencyProcessor("default");
-      
-      assertNotNull( dp );
-      
-      assertTrue( MavenDependencyProcessor.class.isAssignableFrom( dp.getClass() ) );
-  }
-  //-------------------------------------------------------------------------------------
-  public void testFindDepProcessor() // should run after the previous one
-  throws RepositoryException, ComponentLookupException
-  {
-      DependencyProcessor dp = null;
-      
-      dp = pm.findDependencyProcessor();
-      
-      assertNotNull( dp );
-      
-      assertTrue( MavenDependencyProcessor.class.isAssignableFrom( dp.getClass() ) );
-  }
-  //-------------------------------------------------------------------------------------
-  public void testWrite()
-  throws RepositoryException
-  {
-    pm.write( localRepo, a );
-    
-    File af = new File( localRepoDir, "org/apache/maven/mercury/mercury-core/2.0.9/mercury-core-2.0.9.jar" );
-    
-    assertTrue( af.exists() );
-  }
-  //-------------------------------------------------------------------------------------
-  public void testReadVersions()
-  throws RepositoryException
-  {
-    ArtifactMetadata bmd = new ArtifactMetadata(artifactCoord);
-    
-    List<ArtifactBasicMetadata> res = pm.readVersions( repos, bmd );
-    
-    assertNotNull( res );
-    
-    assertFalse( res.isEmpty() );
-    
-    ArtifactBasicMetadata a = res.get( 0 );
-    
-    assertEquals( "1.0.0-alpha-2-20081104.001322-2", a.getVersion() );
-    
-    List<Artifact> al = pm.read( repos, a );
-    
-    assertNotNull( al );
-    
-    assertFalse( al.isEmpty() );
-    
-    assertEquals( 1, al.size() );
-    
-  }
-  //-------------------------------------------------------------------------------------
-  public void testRead()
-  throws RepositoryException
-  {
-    ArtifactMetadata bmd = new ArtifactMetadata(artifactCoord);
-    
-    Collection<Artifact> res = pm.read( repos, bmd );
-    
-    assertNotNull( res );
-    
-    assertFalse( res.isEmpty() );
-    
-    Artifact a = res.toArray( new Artifact[1] )[0];
-    
-    assertNotNull( a );
-    
-    File fBin = a.getFile();
-    
-    assertNotNull( fBin );
-
-    assertTrue( fBin.exists() );
-    
-    byte [] pomBytes = a.getPomBlob();
-    
-    assertNotNull( pomBytes );
-    
-    assertTrue( pomBytes.length > 10 );
-  }
-  //-------------------------------------------------------------------------------------
-  public void testReadNonExistent()
-  {
-    ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
-    
-    Collection<Artifact> res = null;
-    try
-    {
-        res = pm.read( repos, bmd );
+        assertNull( res );
     }
-    catch ( RepositoryException e )
+
+    // -------------------------------------------------------------------------------------
+    public void testResolveNonExistent()
     {
-        fail( "reading non-existent artifact should not raise an exception, got "+e.getMessage() );
+        ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+
+        Collection<ArtifactMetadata> res = null;
+        try
+        {
+            res = pm.resolve( repos, ArtifactScopeEnum.compile, bmd );
+        }
+        catch ( RepositoryException e )
+        {
+            fail( "reading non-existent artifact should not raise an exception, got " + e.getMessage() );
+        }
     }
-    
-    assertNull( res );
-  }
-  //-------------------------------------------------------------------------------------
-  public void testResolveNonExistent()
-  {
-    ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
-    
-    Collection<ArtifactMetadata> res = null;
-    try
+
+    // -------------------------------------------------------------------------------------
+    public void testResolve()
+        throws Exception
     {
-        res = pm.resolve( repos, ArtifactScopeEnum.compile, bmd );
+        Server central = new Server( "central", new URL( "http://repo1.maven.org/maven2" ) );
+        // Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
+
+        repos.add( new RemoteRepositoryM2( central, pm.findDependencyProcessor() ) );
+
+        String artifactId = "asm:asm-xml:3.0";
+
+        List<ArtifactMetadata> res =
+            pm.resolve( repos, ArtifactScopeEnum.compile, new ArtifactQueryList( artifactId ), null, null );
+
+        System.out.println( "Resolved as " + res );
+
+        assertEquals( 4, res.size() );
+
+        assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm:3.0" ) );
     }
-    catch ( RepositoryException e )
+
+    // -------------------------------------------------------------------------------------
+    @SuppressWarnings( "unchecked" )
+    public void testResolveWithExclusion()
+        throws Exception
     {
-        fail( "reading non-existent artifact should not raise an exception, got "+e.getMessage() );
+        // Server central = new Server( "central", new URL("http://repo1.maven.org/maven2") );
+        // Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
+
+        // repos.add( new RemoteRepositoryM2(central, pm.findDependencyProcessor()) );
+
+        String artifactId = "asm:asm-xml:3.0";
+
+        List<ArtifactMetadata> res =
+            pm.resolve( repos, ArtifactScopeEnum.compile, new ArtifactQueryList( artifactId ), null,
+                        new ArtifactExclusionList( "asm:asm:3.0" ) );
+
+        System.out.println( "Resolved as " + res );
+
+        assertEquals( 3, res.size() );
+
+        assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
+        assertFalse( assertHasArtifact( res, "asm:asm:3.0" ) );
     }
-  }
-  //-------------------------------------------------------------------------------------
-  public void testResolve()
-  throws Exception
-  {
-    Server central = new Server( "central", new URL("http://repo1.maven.org/maven2") );
-//    Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
-    
-    repos.add( new RemoteRepositoryM2(central, pm.findDependencyProcessor()) );
 
-    String artifactId = "asm:asm-xml:3.0";
+    // -------------------------------------------------------------------------------------
+    @SuppressWarnings( "unchecked" )
+    public void testResolveWithInclusion()
+        throws Exception
+    {
+        // Server central = new Server( "central", new URL("http://repo1.maven.org/maven2") );
+        // Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
 
-    List<ArtifactMetadata> res = pm.resolve( repos, ArtifactScopeEnum.compile, new ArtifactQueryList(artifactId), null, null );
-    
-    System.out.println("Resolved as "+res);
+        // repos.add( new RemoteRepositoryM2(central, pm.findDependencyProcessor()) );
 
-    assertEquals( 4, res.size() );
-    
-    assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm:3.0" ) );
-  }
-  //-------------------------------------------------------------------------------------
-  @SuppressWarnings("unchecked")
-  public void testResolveWithExclusion()
-  throws Exception
-  {
-//    Server central = new Server( "central", new URL("http://repo1.maven.org/maven2") );
-//    Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
-    
-//    repos.add( new RemoteRepositoryM2(central, pm.findDependencyProcessor()) );
+        String artifactId = "asm:asm-xml:3.0";
 
-    String artifactId = "asm:asm-xml:3.0";
+        List<ArtifactMetadata> res =
+            pm.resolve( repos, ArtifactScopeEnum.compile, new ArtifactQueryList( artifactId ),
+                        new ArtifactInclusionList( "asm:asm-xml:3.0", "asm:asm-util:3.0" ), null );
 
-    List<ArtifactMetadata> res = pm.resolve( repos
-                                            , ArtifactScopeEnum.compile
-                                            , new ArtifactQueryList(artifactId)
-                                            , null
-                                            , new ArtifactExclusionList("asm:asm:3.0")
-                                           );
-    
-    System.out.println("Resolved as "+res);
+        System.out.println( "Resolved as " + res );
 
-    assertEquals( 3, res.size() );
-    
-    assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
-    assertFalse( assertHasArtifact( res, "asm:asm:3.0" ) );
-  }
-  //-------------------------------------------------------------------------------------
-  @SuppressWarnings("unchecked")
-  public void testResolveWithInclusion()
-  throws Exception
-  {
-//    Server central = new Server( "central", new URL("http://repo1.maven.org/maven2") );
-//    Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
-    
-//    repos.add( new RemoteRepositoryM2(central, pm.findDependencyProcessor()) );
+        assertEquals( 2, res.size() );
 
-    String artifactId = "asm:asm-xml:3.0";
-
-    List<ArtifactMetadata> res = pm.resolve( repos
-                                            , ArtifactScopeEnum.compile
-                                            , new ArtifactQueryList(artifactId)
-                                            , new ArtifactInclusionList("asm:asm-xml:3.0","asm:asm-util:3.0")
-                                            , null
-                                           );
-    
-    System.out.println("Resolved as "+res);
-
-    assertEquals( 2, res.size() );
-    
-    assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
-    assertFalse( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
-    assertFalse( assertHasArtifact( res, "asm:asm:3.0" ) );
-  }
-  //-------------------------------------------------------------------------------------
-  //-------------------------------------------------------------------------------------
+        assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
+        assertFalse( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
+        assertFalse( assertHasArtifact( res, "asm:asm:3.0" ) );
+    }
+    // -------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------
 }

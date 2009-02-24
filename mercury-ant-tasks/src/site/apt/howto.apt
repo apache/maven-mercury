@@ -55,7 +55,7 @@ Examples
 >
   <classpath>
     <deps>
-      <dependency name="asm:asm:3.0"/>
+      <dependency id="asm:asm:3.0"/>
     </deps>
   </classpath>
 </javac>
@@ -71,7 +71,7 @@ Examples
 >
   <classpath>
     <deps>
-      <dependency name="t:t:1.0::pom" pom="${basedir}/t-1.0.pom"/>
+      <dependency source="${basedir}/t-1.0.pom"/>
     </deps>
   </classpath>
 </javac>

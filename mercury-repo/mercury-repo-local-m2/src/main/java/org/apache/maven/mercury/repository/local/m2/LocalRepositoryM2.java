@@ -19,6 +19,7 @@
 package org.apache.maven.mercury.repository.local.m2;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
@@ -65,6 +66,12 @@ implements LocalRepository
         setDependencyProcessor( dependencyProcessor );
     }
     //----------------------------------------------------------------------------------
+    public LocalRepositoryM2( File directory, DependencyProcessor dependencyProcessor )
+    throws IOException
+    {
+        this( directory.getCanonicalPath(), directory, DEFAULT_REPOSITORY_TYPE, dependencyProcessor );
+    }
+    //----------------------------------------------------------------------------------
     public LocalRepositoryM2( String id, File directory, DependencyProcessor dependencyProcessor )
     {
         this( id, directory, DEFAULT_REPOSITORY_TYPE, dependencyProcessor );
@@ -73,6 +80,7 @@ implements LocalRepository
     public LocalRepositoryM2( String id, File directory, String type, DependencyProcessor dependencyProcessor )
     {
         super( id, type );
+
         setDirectory( directory );
         
         setDependencyProcessor( dependencyProcessor );

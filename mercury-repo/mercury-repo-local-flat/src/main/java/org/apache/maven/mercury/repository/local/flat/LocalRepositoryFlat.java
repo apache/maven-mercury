@@ -19,6 +19,7 @@
 package org.apache.maven.mercury.repository.local.flat;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.mercury.repository.api.AbstractRepository;
 import org.apache.maven.mercury.repository.api.LocalRepository;
@@ -39,6 +40,18 @@ implements LocalRepository
     private boolean createPoms         = false;
     private boolean createGroupFolders = false;
 
+    //----------------------------------------------------------------------------------
+    public LocalRepositoryFlat( File directory )
+    throws IOException
+    {
+        this( directory, false, false );
+    }
+    //----------------------------------------------------------------------------------
+    public LocalRepositoryFlat( File directory, boolean createGroupFolders, boolean createPoms )
+    throws IOException
+    {
+        this( directory.getCanonicalPath(), directory, createGroupFolders, createPoms );
+    }
     //----------------------------------------------------------------------------------
     public LocalRepositoryFlat( String id, File directory, boolean createGroupFolders, boolean createPoms )
     {

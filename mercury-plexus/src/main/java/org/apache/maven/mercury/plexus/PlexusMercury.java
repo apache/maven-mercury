@@ -49,8 +49,6 @@ import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
  */
 public interface PlexusMercury
 {
-  public static String ROLE = PlexusMercury.class.getName();
-
   /**
    * lookup dependency processor in plexus and return the "default" implementation
    * 
@@ -153,6 +151,28 @@ public interface PlexusMercury
     , Set<StreamObserverFactory> writerStreamObservers
     , Set<StreamVerifierFactory> writerStreamVerifiers
                                      )
+  throws RepositoryException;
+  
+  /**
+   * construct a list of repositories from strings. First string is local dir, all others - remote URLs
+   * 
+   * @param localDir
+   * @param urls varargs list of urls for remote repos
+   * @return repository list
+   * @throws PlexusMercuryException
+   */
+  public List<Repository> constructRepositories( String localDir , String... urls )
+  throws RepositoryException;
+  
+  /**
+   * construct a list of repositories from strings and retains them for future use by this instance of PlexusMercury
+   * 
+   * @param localDir
+   * @param urls varargs list of urls for remote repos
+   * @return repository list
+   * @throws PlexusMercuryException
+   */
+  public PlexusMercury setRepositories( String localDir , String... urls )
   throws RepositoryException;
 
   /**

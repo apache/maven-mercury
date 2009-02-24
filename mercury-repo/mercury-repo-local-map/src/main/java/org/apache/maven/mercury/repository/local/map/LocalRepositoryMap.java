@@ -43,7 +43,7 @@ implements LocalRepository
     protected Storage _storage;
     
     protected MetadataReader _mdReader;
-
+    
     // ----------------------------------------------------------------------------------
     public Storage getStorage()
     {
@@ -56,6 +56,11 @@ implements LocalRepository
         setDependencyProcessor( dp );
         
         _storage = storage;
+    }
+    // ----------------------------------------------------------------------------------
+    public LocalRepositoryMap( DependencyProcessor dp, Storage storage )
+    {
+        this( "" + System.currentTimeMillis() + (int)(Math.random()*10000), dp, storage );
     }
     
     public void setMetadataReader( MetadataReader reader )

@@ -24,217 +24,255 @@ import java.util.Set;
 
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
+import org.codehaus.plexus.lang.DefaultLanguage;
+import org.codehaus.plexus.lang.Language;
 
 public class Server
 {
-  private String                      id;
-  
-  private URL                         url;
-  private Credentials                 serverCredentials;
-  
-  private URL                         proxy;
-  private Credentials                 proxyCredentials;
-  
-  private boolean                     requireEncryption = false;
-  private boolean                     requireTrustedServer = false;
+    private static final Language _LANG = new DefaultLanguage( Server.class );
 
-  private Set<StreamObserverFactory>  writerStreamObserverFactories;
-  private Set<StreamObserverFactory>  readerStreamObserverFactories;
+    private String id;
 
-  private Set<StreamVerifierFactory>  writerStreamVerifierFactories;
-  private Set<StreamVerifierFactory>  readerStreamVerifierFactories;
-  
-  private String                      userAgent;
-  
-  public Server( String id, URL url )
-  {
-    if( url == null )
-      throw new IllegalArgumentException( "URL: "+url );
-    
-    String ustr = url.toString();
-    
-    if( ustr.endsWith( "/" ) )
-      try
-      {
-        this.url = new URL( ustr.substring( 0, ustr.length()-1 ) );
-      }
-      catch( MalformedURLException e )
-      {
-        throw new IllegalArgumentException( e.getMessage() );
-      }
-    else
-      this.url = url;
-    
-    this.id = id;
-  }
+    private URL url;
 
-  public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer )
-  {
-    this( id, url );
-    
-    this.requireEncryption = requireEncryption;
-    this.requireTrustedServer = requireTrustedServer;
-  }
+    private Credentials serverCredentials;
 
-  public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer, Credentials serverCredentials )
-  {
-    this( id, url, requireEncryption, requireTrustedServer );
-    this.serverCredentials = serverCredentials;
-  }
+    private URL proxy;
 
-  public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer, Credentials serverCredentials, URL proxy )
-  {
-    this( id, url, requireEncryption, requireTrustedServer, serverCredentials );
-    this.proxy = proxy;
-  }
+    private Credentials proxyCredentials;
 
-  public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer, Credentials serverCredentials, URL proxy, Credentials proxyCredentials )
-  {
-    this( id, url, requireEncryption, requireTrustedServer, serverCredentials, proxy );
-    this.proxyCredentials = proxyCredentials;
-  }
+    private boolean requireEncryption = false;
 
-  public String getId()
-  {
-    return id;
-  }
+    private boolean requireTrustedServer = false;
 
-  public boolean hasUserAgent()
-  {
-    return userAgent != null;
-  }
+    private Set<StreamObserverFactory> writerStreamObserverFactories;
 
-  public String getUserAgent()
-  {
-    return userAgent;
-  }
+    private Set<StreamObserverFactory> readerStreamObserverFactories;
 
-  public void setUserAgent( String userAgent )
-  {
-    this.userAgent = userAgent;
-  }
+    private Set<StreamVerifierFactory> writerStreamVerifierFactories;
 
-  public void setURL( URL url )
-  {
-    this.url = url;
-  }
+    private Set<StreamVerifierFactory> readerStreamVerifierFactories;
 
-  public URL getURL()
-  {
-    return this.url;
-  }
+    private String userAgent;
 
-  public Credentials getServerCredentials()
-  {
-    return this.serverCredentials;
-  }
+    public static String normalizeUrl( String url )
+    {
+        if ( url == null )
+            throw new IllegalArgumentException( _LANG.getMessage( "repo.null.url.normalize" ) );
 
-  public void setServerCredentials( Credentials cred )
-  {
-    this.serverCredentials = cred;
-  }
+        int pos = url.indexOf( "://" );
 
-  public URL getProxy()
-  {
-    return this.proxy;
-  }
+        StringBuilder sb = new StringBuilder();
 
-  public boolean hasProxy()
-  {
-    return this.proxy != null;
-  }
-  
-  public void setProxy( URL proxy )
-  {
-    this.proxy = proxy;
-  }
+        if ( pos == -1 )
+            sb.append( url );
+        else
+            sb.append( url.substring( pos + 3 ) );
 
-  public Credentials getProxyCredentials()
-  {
-    return this.proxyCredentials;
-  }
+        int len = sb.length();
 
-  public void setProxyCredentials( Credentials user )
-  {
-    this.proxyCredentials = user;
-  }
+        if ( len > 0 && sb.charAt( len - 1 ) == '/' )
+            sb.deleteCharAt( len - 1 );
 
-  public boolean hasWriterStreamVerifierFactories()
-  {
-    return writerStreamVerifierFactories != null && writerStreamVerifierFactories.size() > 0;
-  }
+        return sb.toString();
+    }
 
-  public Set<StreamVerifierFactory> getWriterStreamVerifierFactories()
-  {
-    return writerStreamVerifierFactories;
-  }
+    public Server( URL url )
+    {
+        if ( url == null )
+            throw new IllegalArgumentException( "URL: " + url );
 
-  public void setWriterStreamVerifierFactories( Set<StreamVerifierFactory> factories )
-  {
-    writerStreamVerifierFactories = factories;
-  }
+        String ustr = url.toString();
 
-  public boolean hasReaderStreamVerifierFactories()
-  {
-    return readerStreamVerifierFactories != null && readerStreamVerifierFactories.size() > 0;
-  }
+        if ( ustr.endsWith( "/" ) )
+            try
+            {
+                this.url = new URL( ustr.substring( 0, ustr.length() - 1 ) );
+            }
+            catch ( MalformedURLException e )
+            {
+                throw new IllegalArgumentException( e.getMessage() );
+            }
+        else
+            this.url = url;
+        
+    }
 
-  public Set<StreamVerifierFactory> getReaderStreamVerifierFactories()
-  {
-    return readerStreamVerifierFactories;
-  }
+    public Server( String id, URL url )
+    {
+        this( url );
 
-  public void setReaderStreamVerifierFactories( Set<StreamVerifierFactory> factories )
-  {
-    readerStreamVerifierFactories = factories;
-  }
+        this.id = id;
+    }
 
-  public boolean hasWriterStreamObserverFactories()
-  {
-    return writerStreamObserverFactories != null && writerStreamObserverFactories.size() > 0;
-  }
+    public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer )
+    {
+        this( id, url );
 
-  public Set<StreamObserverFactory> getWriterStreamObserverFactories()
-  {
-    return writerStreamObserverFactories;
-  }
+        this.requireEncryption = requireEncryption;
+        this.requireTrustedServer = requireTrustedServer;
+    }
 
-  public void setWriterStreamObserverFactories( Set<StreamObserverFactory> factories )
-  {
-    writerStreamObserverFactories = factories;
-  }
+    public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer,
+                   Credentials serverCredentials )
+    {
+        this( id, url, requireEncryption, requireTrustedServer );
+        this.serverCredentials = serverCredentials;
+    }
 
-  public boolean hasReaderStreamObserverFactories()
-  {
-    return readerStreamObserverFactories != null && readerStreamObserverFactories.size() > 0;
-  }
+    public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer,
+                   Credentials serverCredentials, URL proxy )
+    {
+        this( id, url, requireEncryption, requireTrustedServer, serverCredentials );
+        this.proxy = proxy;
+    }
 
-  public Set<StreamObserverFactory> getReaderStreamObserverFactories()
-  {
-    return readerStreamObserverFactories;
-  }
+    public Server( String id, URL url, boolean requireEncryption, boolean requireTrustedServer,
+                   Credentials serverCredentials, URL proxy, Credentials proxyCredentials )
+    {
+        this( id, url, requireEncryption, requireTrustedServer, serverCredentials, proxy );
+        this.proxyCredentials = proxyCredentials;
+    }
 
-  public void setReaderStreamObserverFactories( Set<StreamObserverFactory> factories )
-  {
-    readerStreamObserverFactories = factories;
-  }
+    public String getId()
+    {
+        return id;
+    }
 
-  public boolean isRequireEncryption()
-  {
-    return requireEncryption;
-  }
-  
-  public boolean isRequireTrustedServer()
-  {
-    return requireTrustedServer;
-  }
+    public boolean hasUserAgent()
+    {
+        return userAgent != null;
+    }
 
-  @Override
-  public String toString()
-  {
-    return id+": "+url;
-  }
-  
-  
+    public String getUserAgent()
+    {
+        return userAgent;
+    }
+
+    public void setUserAgent( String userAgent )
+    {
+        this.userAgent = userAgent;
+    }
+
+    public void setURL( URL url )
+    {
+        this.url = url;
+    }
+
+    public URL getURL()
+    {
+        return this.url;
+    }
+
+    public Credentials getServerCredentials()
+    {
+        return this.serverCredentials;
+    }
+
+    public void setServerCredentials( Credentials cred )
+    {
+        this.serverCredentials = cred;
+    }
+
+    public URL getProxy()
+    {
+        return this.proxy;
+    }
+
+    public boolean hasProxy()
+    {
+        return this.proxy != null;
+    }
+
+    public void setProxy( URL proxy )
+    {
+        this.proxy = proxy;
+    }
+
+    public Credentials getProxyCredentials()
+    {
+        return this.proxyCredentials;
+    }
+
+    public void setProxyCredentials( Credentials user )
+    {
+        this.proxyCredentials = user;
+    }
+
+    public boolean hasWriterStreamVerifierFactories()
+    {
+        return writerStreamVerifierFactories != null && writerStreamVerifierFactories.size() > 0;
+    }
+
+    public Set<StreamVerifierFactory> getWriterStreamVerifierFactories()
+    {
+        return writerStreamVerifierFactories;
+    }
+
+    public void setWriterStreamVerifierFactories( Set<StreamVerifierFactory> factories )
+    {
+        writerStreamVerifierFactories = factories;
+    }
+
+    public boolean hasReaderStreamVerifierFactories()
+    {
+        return readerStreamVerifierFactories != null && readerStreamVerifierFactories.size() > 0;
+    }
+
+    public Set<StreamVerifierFactory> getReaderStreamVerifierFactories()
+    {
+        return readerStreamVerifierFactories;
+    }
+
+    public void setReaderStreamVerifierFactories( Set<StreamVerifierFactory> factories )
+    {
+        readerStreamVerifierFactories = factories;
+    }
+
+    public boolean hasWriterStreamObserverFactories()
+    {
+        return writerStreamObserverFactories != null && writerStreamObserverFactories.size() > 0;
+    }
+
+    public Set<StreamObserverFactory> getWriterStreamObserverFactories()
+    {
+        return writerStreamObserverFactories;
+    }
+
+    public void setWriterStreamObserverFactories( Set<StreamObserverFactory> factories )
+    {
+        writerStreamObserverFactories = factories;
+    }
+
+    public boolean hasReaderStreamObserverFactories()
+    {
+        return readerStreamObserverFactories != null && readerStreamObserverFactories.size() > 0;
+    }
+
+    public Set<StreamObserverFactory> getReaderStreamObserverFactories()
+    {
+        return readerStreamObserverFactories;
+    }
+
+    public void setReaderStreamObserverFactories( Set<StreamObserverFactory> factories )
+    {
+        readerStreamObserverFactories = factories;
+    }
+
+    public boolean isRequireEncryption()
+    {
+        return requireEncryption;
+    }
+
+    public boolean isRequireTrustedServer()
+    {
+        return requireTrustedServer;
+    }
+
+    @Override
+    public String toString()
+    {
+        return id + ": " + url;
+    }
 
 }

@@ -181,9 +181,15 @@ public class Repo
         }
     }
     
-    public void setAuthentication()
+    public void setAuthentication( String auth )
     {
+        Auth a = new Auth( auth );
         
+        String authId = "auth."+System.currentTimeMillis()+"." + (int)(Math.random()*10000);
+        
+        getProject().addReference( authId, a );
+        
+        setAuthid( authId );
     }
     
     public void setAuthid( String authid )
