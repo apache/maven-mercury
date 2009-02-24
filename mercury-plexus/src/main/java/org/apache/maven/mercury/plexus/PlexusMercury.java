@@ -43,196 +43,202 @@ import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 
 /**
- * 
  * @author Oleg Gusakov
- * 
  */
 public interface PlexusMercury
 {
-  /**
-   * lookup dependency processor in plexus and return the "default" implementation
-   * 
-   * @return the dependency processor
-   * @throws RepositoryException
-   */
-  public DependencyProcessor findDependencyProcessor()
-  throws RepositoryException
-  ;
+    /**
+     * lookup dependency processor in plexus and return the "default" implementation
+     * 
+     * @return the dependency processor
+     * @throws RepositoryException
+     */
+    public DependencyProcessor findDependencyProcessor()
+        throws RepositoryException;
 
-  /**
-   * lookup dependency processor in plexus and return the requested implementation
-   * 
-   * @param hint the plexus hint to lookup by
-   * @return the dependency processor
-   * @throws RepositoryException
-   */
-  public DependencyProcessor findDependencyProcessor( String hint )
-  throws RepositoryException
-  ;
-  
-  /**
-   * create PGP factory to configure into repository reader for signature verification
-   * 
-   * @param lenient
-   * @param sufficient
-   * @param pubRing - keyring with all acceptable public keys
-   * @return pgp verifier factory to be sent to Repository
-   * @throws PlexusMercuryException
-   */
-  public PgpStreamVerifierFactory createPgpReaderFactory( boolean lenient, boolean sufficient, InputStream pubRing )
-  throws StreamVerifierException;
+    /**
+     * lookup dependency processor in plexus and return the requested implementation
+     * 
+     * @param hint the plexus hint to lookup by
+     * @return the dependency processor
+     * @throws RepositoryException
+     */
+    public DependencyProcessor findDependencyProcessor( String hint )
+        throws RepositoryException;
 
-  /**
-   * create PGP factory to configure into repository writer for signature generation
-   * 
-   * @param lenient
-   * @param sufficient
-   * @param secRing
-   * @param keyId
-   * @param keyPass
-   * @return pgp verifier factory to be sent to Repository
-   * @throws PlexusMercuryException
-   */
-  public PgpStreamVerifierFactory createPgpWriterFactory( 
-                      boolean lenient
-                    , boolean sufficient
-                    , InputStream secRing
-                    , String keyId
-                    , String keyPass
-                                                        )
-  throws StreamVerifierException;
-  
-  /**
-   * construct remote M2 repository and configure it with supplied attributes
-   * 
-   * @param id
-   * @param serverUrl
-   * @param serverUser
-   * @param serverPass
-   * @param proxyUrl
-   * @param proxyUser
-   * @param proxyPass
-   * @param readerStreamObservers
-   * @param readerStreamVerifiers
-   * @param writerStreamObservers
-   * @param writerStreamVerifiers
-   * @return repository instance
-   * @throws PlexusMercuryException
-   */
-  public RemoteRepositoryM2 constructRemoteRepositoryM2(
-      String id
-    , URL serverUrl, String serverUser, String serverPass 
-    , URL proxyUrl,  String proxyUser,  String proxyPass
-    , Set<StreamObserverFactory> readerStreamObservers
-    , Set<StreamVerifierFactory> readerStreamVerifiers
-    , Set<StreamObserverFactory> writerStreamObservers
-    , Set<StreamVerifierFactory> writerStreamVerifiers
-                                     )
-  throws RepositoryException;
+    /**
+     * create PGP factory to configure into repository reader for signature verification
+     * 
+     * @param lenient
+     * @param sufficient
+     * @param pubRing - keyring with all acceptable public keys
+     * @return pgp verifier factory to be sent to Repository
+     * @throws PlexusMercuryException
+     */
+    public PgpStreamVerifierFactory createPgpReaderFactory( boolean lenient, boolean sufficient, InputStream pubRing )
+        throws StreamVerifierException;
 
-  
-  /**
-   * construct local M2 repository and configure it with supplied attributes
-   * 
-   * @param id
-   * @param rootDir
-   * @param readerStreamObservers
-   * @param readerStreamVerifiers
-   * @param writerStreamObservers
-   * @param writerStreamVerifiers
-   * @return repository instance
-   * @throws PlexusMercuryException
-   */
-  public LocalRepositoryM2 constructLocalRepositoryM2(
-      String id
-    , File rootDir
-    , Set<StreamObserverFactory> readerStreamObservers
-    , Set<StreamVerifierFactory> readerStreamVerifiers
-    , Set<StreamObserverFactory> writerStreamObservers
-    , Set<StreamVerifierFactory> writerStreamVerifiers
-                                     )
-  throws RepositoryException;
-  
-  /**
-   * construct a list of repositories from strings. First string is local dir, all others - remote URLs
-   * 
-   * @param localDir
-   * @param urls varargs list of urls for remote repos
-   * @return repository list
-   * @throws PlexusMercuryException
-   */
-  public List<Repository> constructRepositories( String localDir , String... urls )
-  throws RepositoryException;
-  
-  /**
-   * construct a list of repositories from strings and retains them for future use by this instance of PlexusMercury
-   * 
-   * @param localDir
-   * @param urls varargs list of urls for remote repos
-   * @return repository list
-   * @throws PlexusMercuryException
-   */
-  public PlexusMercury setRepositories( String localDir , String... urls )
-  throws RepositoryException;
+    /**
+     * create PGP factory to configure into repository writer for signature generation
+     * 
+     * @param lenient
+     * @param sufficient
+     * @param secRing
+     * @param keyId
+     * @param keyPass
+     * @return pgp verifier factory to be sent to Repository
+     * @throws PlexusMercuryException
+     */
+    public PgpStreamVerifierFactory createPgpWriterFactory( boolean lenient, boolean sufficient, InputStream secRing,
+                                                            String keyId, String keyPass )
+        throws StreamVerifierException;
 
-  /**
-   * write (deploy) given Artifact(s) to the repository
-   * 
-   * @param repo repository instance to search
-   * @param artfifacts to write
-   * @return
-   * @throws PlexusMercuryException
-   */
-  public void write( Repository repo, Artifact... artifacts )
-  throws RepositoryException;
-  public void write( Repository repo, Collection<Artifact> artifacts )
-  throws RepositoryException;
+    /**
+     * construct remote M2 repository and configure it with supplied attributes
+     * 
+     * @param id
+     * @param serverUrl
+     * @param serverUser
+     * @param serverPass
+     * @param proxyUrl
+     * @param proxyUser
+     * @param proxyPass
+     * @param readerStreamObservers
+     * @param readerStreamVerifiers
+     * @param writerStreamObservers
+     * @param writerStreamVerifiers
+     * @return repository instance
+     * @throws PlexusMercuryException
+     */
+    public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
+                                                           String serverPass, URL proxyUrl, String proxyUser,
+                                                           String proxyPass,
+                                                           Set<StreamObserverFactory> readerStreamObservers,
+                                                           Set<StreamVerifierFactory> readerStreamVerifiers,
+                                                           Set<StreamObserverFactory> writerStreamObservers,
+                                                           Set<StreamVerifierFactory> writerStreamVerifiers )
+        throws RepositoryException;
 
-  /**
-   * read given Artifact(s) from the repository
-   * 
-   * @param repo repository instance to search
-   * @param artfifacts to read
-   * @return
-   * @throws PlexusMercuryException
-   */
-  public List<Artifact> read( List<Repository> repo, List<? extends ArtifactBasicMetadata> artifacts )
-  throws RepositoryException;
-  public List<Artifact> read( List<Repository> repo, ArtifactBasicMetadata... artifacts )
-  throws RepositoryException;
+    /**
+     * construct local M2 repository and configure it with supplied attributes
+     * 
+     * @param id
+     * @param rootDir
+     * @param readerStreamObservers
+     * @param readerStreamVerifiers
+     * @param writerStreamObservers
+     * @param writerStreamVerifiers
+     * @return repository instance
+     * @throws PlexusMercuryException
+     */
+    public LocalRepositoryM2 constructLocalRepositoryM2( String id, File rootDir,
+                                                         Set<StreamObserverFactory> readerStreamObservers,
+                                                         Set<StreamVerifierFactory> readerStreamVerifiers,
+                                                         Set<StreamObserverFactory> writerStreamObservers,
+                                                         Set<StreamVerifierFactory> writerStreamVerifiers )
+        throws RepositoryException;
 
-  /**
-   * resolve Artifact dependencies. The inclusions and exclusions accept version ranges as parameters
-   * 
-   * @param repo repository instance to search
-   * @param scope scope enumeration member indication the scope to resolve for
-   * @param artfifacts list of artifact metadatas to resolve
-   * @param inclusions list of artifact metadatas to include - only these will be in the resolved classpath
-   * @param exclusions list of artifact metadatas to exclude - is applied after the inclusion, if one is present
-   * @return
-   * @throws PlexusMercuryException
-   */
-  public List<ArtifactMetadata> resolve( List<Repository> repos
-                                      , ArtifactScopeEnum   scope
-                                      , ArtifactQueryList artifacts
-                                      , ArtifactInclusionList inclusions
-                                      , ArtifactExclusionList exclusions
-                                      )
-  throws RepositoryException;
-  
-  public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
-  throws RepositoryException;  
-  
-  /**
-   * get all available versions of for the artifact query.
-   * 
-   * @param repo repository instance to search
-   * @param query metadata query to search by
-   * @return list of found version metadatas
-   * @throws PlexusMercuryException
-   */
-  public List<ArtifactBasicMetadata> readVersions( List<Repository> repos
-                                                   , ArtifactBasicMetadata query
-                                                  )
-  throws RepositoryException;
+    /**
+     * construct a list of repositories from strings. First string is local dir, all others - remote URLs
+     * 
+     * @param localDir
+     * @param urls varargs list of urls for remote repos
+     * @return repository list
+     * @throws PlexusMercuryException
+     */
+    public List<Repository> constructRepositories( String localDir, String... urls )
+        throws RepositoryException;
+
+    /**
+     * construct a list of repositories from strings and retains them for future use by this instance of PlexusMercury
+     * 
+     * @param localDir
+     * @param urls varargs list of urls for remote repos
+     * @return repository list
+     * @throws PlexusMercuryException
+     */
+    public PlexusMercury setRepositories( String localDir, String... urls )
+    throws RepositoryException;
+
+    public PlexusMercury setRepositories( List<Repository> repos )
+    throws RepositoryException;
+
+    public PlexusMercury setRepositories( Repository... repos )
+    throws RepositoryException;
+
+    /**
+     * write (deploy) given Artifact(s) to the repository
+     * 
+     * @param repo repository instance to search
+     * @param artfifacts to write
+     * @return
+     * @throws PlexusMercuryException
+     */
+    public void write( Repository repo, Artifact... artifacts )
+        throws RepositoryException;
+
+    public void write( Repository repo, Collection<Artifact> artifacts )
+        throws RepositoryException;
+
+    /**
+     * read given Artifact(s) from the repository
+     * 
+     * @param repo repository instance to search
+     * @param artfifacts to read
+     * @return
+     * @throws PlexusMercuryException
+     */
+    public List<Artifact> read( List<Repository> repo, List<? extends ArtifactBasicMetadata> artifacts )
+        throws RepositoryException;
+
+    public List<Artifact> read( List<Repository> repo, ArtifactBasicMetadata... artifacts )
+        throws RepositoryException;
+
+    /** use previously set repositories */
+    public List<Artifact> read( List<? extends ArtifactBasicMetadata> artifacts )
+        throws RepositoryException;
+
+    public List<Artifact> read( ArtifactBasicMetadata... artifacts )
+        throws RepositoryException;
+
+    /**
+     * resolve Artifact dependencies. The inclusions and exclusions accept version ranges as parameters
+     * 
+     * @param repo repository instance to search
+     * @param scope scope enumeration member indication the scope to resolve for
+     * @param artfifacts list of artifact metadatas to resolve
+     * @param inclusions list of artifact metadatas to include - only these will be in the resolved classpath
+     * @param exclusions list of artifact metadatas to exclude - is applied after the inclusion, if one is present
+     * @return
+     * @throws PlexusMercuryException
+     */
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions )
+        throws RepositoryException;
+
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
+        throws RepositoryException;
+
+    /** previously set repos now */
+    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactQueryList artifacts,
+                                           ArtifactInclusionList inclusions, ArtifactExclusionList exclusions )
+        throws RepositoryException;
+
+    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactMetadata metadata )
+        throws RepositoryException;
+
+    /**
+     * get all available versions of for the artifact query.
+     * 
+     * @param repo repository instance to search
+     * @param query metadata query to search by
+     * @return list of found version metadatas
+     * @throws PlexusMercuryException
+     */
+    public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
+        throws RepositoryException;
+    /** previously set repos now */
+    public List<ArtifactBasicMetadata> readVersions( ArtifactBasicMetadata query )
+    throws RepositoryException;
 }

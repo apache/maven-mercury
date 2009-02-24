@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,28 +80,28 @@ public class DefaultPlexusMercury
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultPlexusMercury.class );
 
     private static final Language LANG = new DefaultLanguage( DefaultPlexusMercury.class );
-    
+
     private List<Repository> _repos;
-    
-    @Configuration(name="defaultDependencyProcessorHint",value="maven")
+
+    @Configuration( name = "defaultDependencyProcessorHint", value = "maven" )
     String _defaultDpHint = "maven";
 
-    @Requirement(role=DependencyProcessor.class)
-    private Map< String, DependencyProcessor > _dependencyProcessors;
+    @Requirement( role = DependencyProcessor.class )
+    private Map<String, DependencyProcessor> _dependencyProcessors;
 
     // ---------------------------------------------------------------
     public DependencyProcessor findDependencyProcessor( String hint )
         throws RepositoryException
     {
         DependencyProcessor dp = null;
-        
+
         if ( _dependencyProcessors != null )
             dp = _dependencyProcessors.get( hint );
 
-        if( dp == null)
+        if ( dp == null )
             throw new RepositoryException( LANG.getMessage( "no.dep.processor.injected", hint ) );
 
-            return dp;
+        return dp;
     }
 
     // ---------------------------------------------------------------
@@ -196,13 +197,14 @@ public class DefaultPlexusMercury
 
     }
 
-    // ---------------------------------------------------------------
-    public List<Artifact> read( List<Repository> repos, ArtifactBasicMetadata... artifacts )
+    private void checkRepos()
         throws RepositoryException
     {
-        return read( repos, Arrays.asList( artifacts ) );
+        if ( Util.isEmpty( _repos ) )
+            throw new RepositoryException( LANG.getMessage( "no.repos.set" ) );
     }
 
+    // ---------------------------------------------------------------
     // ---------------------------------------------------------------
     public List<Artifact> read( List<Repository> repos, List<? extends ArtifactBasicMetadata> artifacts )
         throws RepositoryException
@@ -233,10 +235,26 @@ public class DefaultPlexusMercury
 
     }
 
-    public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
+    public List<Artifact> read( List<Repository> repos, ArtifactBasicMetadata... artifacts )
         throws RepositoryException
     {
-        return read( repo, Arrays.asList( artifacts ) );
+        return read( repos, Arrays.asList( artifacts ) );
+    }
+
+    public List<Artifact> read( ArtifactBasicMetadata... artifacts )
+        throws RepositoryException
+    {
+        checkRepos();
+
+        return read( _repos, Arrays.asList( artifacts ) );
+    }
+
+    public List<Artifact> read( List<? extends ArtifactBasicMetadata> artifacts )
+        throws RepositoryException
+    {
+        checkRepos();
+
+        return read( _repos, artifacts );
     }
 
     // ---------------------------------------------------------------
@@ -287,6 +305,23 @@ public class DefaultPlexusMercury
         }
     }
 
+    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactQueryList artifacts,
+                                           ArtifactInclusionList inclusions, ArtifactExclusionList exclusions )
+        throws RepositoryException
+    {
+        checkRepos();
+
+        return resolve( _repos, scope, artifacts, inclusions, exclusions );
+    }
+
+    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactMetadata metadata )
+        throws RepositoryException
+    {
+        checkRepos();
+
+        return resolve( _repos, scope, metadata );
+    }
+
     // ---------------------------------------------------------------
     /**
      * get all available versions of for the artifact query.
@@ -313,6 +348,15 @@ public class DefaultPlexusMercury
 
         return res.getResult( query );
     }
+
+    public List<ArtifactBasicMetadata> readVersions( ArtifactBasicMetadata query )
+        throws RepositoryException
+    {
+        checkRepos();
+
+        return readVersions( _repos, query );
+    }
+
     // ---------------------------------------------------------------
     public List<Repository> constructRepositories( String localDir, String... urls )
         throws RepositoryException
@@ -320,36 +364,56 @@ public class DefaultPlexusMercury
         try
         {
             int nRemote = urls == null ? 0 : urls.length;
-            
+
             List<Repository> repos = new ArrayList<Repository>( 1 + nRemote );
-            
+
             DependencyProcessor dp = findDependencyProcessor();
-            
-            LocalRepositoryM2 lr = new LocalRepositoryM2( new File(localDir), dp );
-            
+
+            LocalRepositoryM2 lr = new LocalRepositoryM2( new File( localDir ), dp );
+
             repos.add( lr );
-            
-            if( nRemote > 0 )
-                for( String url : urls )
+
+            if ( nRemote > 0 )
+                for ( String url : urls )
                 {
                     RemoteRepositoryM2 rr = new RemoteRepositoryM2( url, dp );
-                    
+
                     repos.add( rr );
                 }
-            
+
             return repos;
-                    
+
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             throw new RepositoryException( e );
         }
     }
+
     // ---------------------------------------------------------------
     public PlexusMercury setRepositories( String localDir, String... urls )
         throws RepositoryException
     {
         _repos = constructRepositories( localDir, urls );
+
+        return this;
+    }
+
+    public PlexusMercury setRepositories( List<Repository> repos )
+    throws RepositoryException
+    {
+        this._repos = repos;
+        
+        return this;
+    }
+
+    public PlexusMercury setRepositories( Repository... repos )
+    throws RepositoryException
+    {
+        if( repos != null )
+            this._repos = Arrays.asList( repos );
+        
+        checkRepos();
         
         return this;
     }
