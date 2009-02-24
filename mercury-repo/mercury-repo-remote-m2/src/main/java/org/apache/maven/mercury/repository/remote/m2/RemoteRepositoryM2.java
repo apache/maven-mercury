@@ -58,7 +58,7 @@ public class RemoteRepositoryM2
     // ----------------------------------------------------------------------------------
     public RemoteRepositoryM2( Server server, DependencyProcessor dependencyProcessor )
     {
-        this( server.getURL().toString(), server, dependencyProcessor );
+        this( server.getId(), server, dependencyProcessor );
     }
 
     // ----------------------------------------------------------------------------------

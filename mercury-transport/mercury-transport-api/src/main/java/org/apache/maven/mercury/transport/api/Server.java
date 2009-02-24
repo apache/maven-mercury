@@ -96,6 +96,8 @@ public class Server
         else
             this.url = url;
         
+        this.id = normalizeUrl( url.toString() );
+        
     }
 
     public Server( String id, URL url )
