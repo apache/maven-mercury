@@ -18,6 +18,9 @@
  */
 package org.apache.maven.mercury.repository.remote.m2;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
 import org.apache.maven.mercury.repository.api.NonExistentProtocolException;
@@ -49,10 +52,9 @@ public class RemoteRepositoryM2
 
     // ----------------------------------------------------------------------------------
     public RemoteRepositoryM2( String url, DependencyProcessor dependencyProcessor )
+    throws MalformedURLException
     {
-        super( Server.normalizeUrl( url ), DEFAULT_REPOSITORY_TYPE );
-        this._server = server;
-        setDependencyProcessor( dependencyProcessor );
+        this( new Server( new URL(url) ), dependencyProcessor );
     }
 
     // ----------------------------------------------------------------------------------

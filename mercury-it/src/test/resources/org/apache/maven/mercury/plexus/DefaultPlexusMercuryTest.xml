@@ -16,13 +16,6 @@
     </component>
 
     <component>
-      <role>org.apache.maven.mercury.builder.api.DependencyProcessor</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.mercury.MavenDependencyProcessor</implementation>
-      <isolated-realm>false</isolated-realm>
-    </component>
-
-    <component>
       <role>org.apache.maven.mercury.plexus.PlexusMercury</role>
       <role-hint>default</role-hint>
       <implementation>org.apache.maven.mercury.plexus.DefaultPlexusMercury</implementation>

@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +85,7 @@ public class DefaultPlexusMercury
     @Configuration( name = "defaultDependencyProcessorHint", value = "maven" )
     String _defaultDpHint = "maven";
 
-    @Requirement( role = DependencyProcessor.class )
+    @Requirement
     private Map<String, DependencyProcessor> _dependencyProcessors;
 
     // ---------------------------------------------------------------
@@ -110,7 +109,11 @@ public class DefaultPlexusMercury
     {
         return findDependencyProcessor( _defaultDpHint );
     }
-
+    // ---------------------------------------------------------------
+    public void setDefaultDependencyProcessorHint( String hint )
+    {
+        _defaultDpHint = hint;
+    }
     // ---------------------------------------------------------------
     public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
                                                            String serverPass, URL proxyUrl, String proxyUser,
