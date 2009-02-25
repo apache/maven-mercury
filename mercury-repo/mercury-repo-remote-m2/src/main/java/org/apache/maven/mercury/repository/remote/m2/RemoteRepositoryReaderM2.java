@@ -77,6 +77,7 @@ import org.apache.maven.mercury.util.FileUtil;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
+import org.mortbay.log.Log;
 
 /**
  * implementation of M2 remote repository reader. Actual Transport (protocol, URL) [should] come from RemoteRepository
@@ -424,6 +425,9 @@ public class RemoteRepositoryReaderM2
         }
         else
         {
+            if( LOG.isInfoEnabled() )
+                Log.info( loc.getAbsPath() );
+
             da.setFile( binFile );
             da.setPomBlob( FileUtil.readRawData( isPom ? binFile : pomFile ) );
             res.add( bmd, da );
@@ -936,9 +940,14 @@ public class RemoteRepositoryReaderM2
 
             if ( response.hasExceptions() )
             {
-                LOG.info( LANG.getMessage( "read.raw.exceptions", path, response.getExceptions().toString() ) );
+                if( LOG.isWarnEnabled() )
+                    LOG.warn( LANG.getMessage( "read.raw.exceptions", path, response.getExceptions().toString() ) );
+
                 return null;
             }
+            
+            if( LOG.isInfoEnabled() )
+                Log.info( url );
 
             return baos.toByteArray();
         }

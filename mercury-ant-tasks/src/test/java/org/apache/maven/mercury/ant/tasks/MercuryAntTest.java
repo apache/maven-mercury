@@ -369,7 +369,7 @@ public class MercuryAntTest
     // -----------------------------------
     public void testWriteToRepository()
     {
-        String title = "write";
+        String title = "deploy";
         System.out.println( "========> start " + title );
         System.out.flush();
 
@@ -379,7 +379,7 @@ public class MercuryAntTest
         File ap = new File( _writeRepoDirFile, "/t/t/1.0/t-1.0.pom" );
         assertFalse( ap.exists() );
 
-        executeTarget( "deploy" );
+        executeTarget( title );
 
         assertTrue( af.exists() );
         assertTrue( ap.exists() );

@@ -88,6 +88,9 @@ public abstract class AbstractRepository
     {
         try
         {
+            if( id == null || (id.indexOf('/') == -1 && id.indexOf('\\') == -1) )
+                return id;
+            
             MessageDigest digest = MessageDigest.getInstance( "SHA-1" );
 
             digest.update( id.getBytes() );

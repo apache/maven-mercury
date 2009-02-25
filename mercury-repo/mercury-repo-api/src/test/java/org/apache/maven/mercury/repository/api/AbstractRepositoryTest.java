@@ -35,6 +35,10 @@ public class AbstractRepositoryTest
     {
         String res = AbstractRepository.hashId( "central" );
         
-        assertEquals( "233ec5bda5fa468329234788b4ee61711ea3041e", res );
+        assertEquals( "central", res );
+
+        res = AbstractRepository.hashId( "http://central" );
+        
+        assertEquals( "3e447f03cb543932ff37403fe937841ff58ff788", res );
     }
 }

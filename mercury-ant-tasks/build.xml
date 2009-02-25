@@ -159,10 +159,7 @@
   </target>
 
   <target name="deploy" depends="compile">
-    <merc:write repoid="localRepo"
-                name="t:t:1.0"
-                file="${jar.target}/t.jar"
-      />
+    <merc:write repoid="localRepo" name="t:t:1.0" file="${jar.target}/t.jar"/>
   </target>
 
   <target name="deploy-verify" depends="compile">
