@@ -51,7 +51,7 @@ extends AbstractRepositoryReaderM2Test
   MetadataXpp3Reader _reader;
   File _testBase;
   DefaultRetriever _retriever;
-  public String _port;
+  String _port;
   HttpTestServer _server;
   DefaultRetrievalRequest _request;
 
