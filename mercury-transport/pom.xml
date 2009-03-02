@@ -34,7 +34,6 @@ under the License.
   <modules>
     <module>mercury-transport-api</module>
     <module>mercury-transport-http</module>
-    <module>mercury-transport-file</module>
   </modules>
 
   <dependencies>
