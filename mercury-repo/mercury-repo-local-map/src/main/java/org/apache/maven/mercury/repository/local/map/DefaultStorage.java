@@ -38,6 +38,7 @@ implements Storage
             try
             {
                 _dir = File.createTempFile( "temp-", "-mercury-default-storage" );
+                _dir.deleteOnExit();
             }
             catch ( IOException e )
             {
