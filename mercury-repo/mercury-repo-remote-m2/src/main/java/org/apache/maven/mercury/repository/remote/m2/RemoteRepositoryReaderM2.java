@@ -429,7 +429,7 @@ public class RemoteRepositoryReaderM2
         else
         {
             if( LOG.isInfoEnabled() )
-                LOG.info( LANG.getMessage( "read.artifact", loc.getAbsPath(), ""+binFile.length() ) );
+                LOG.info( LANG.getMessage( "read.artifact", loc.getAbsPath(), Util.convertLength( binFile.length() ) ) );
 
             da.setFile( binFile );
             da.setPomBlob( FileUtil.readRawData( isPom ? binFile : pomFile ) );
@@ -950,7 +950,7 @@ public class RemoteRepositoryReaderM2
             }
             
             if( LOG.isInfoEnabled() )
-                LOG.info( LANG.getMessage( "read.raw.length", url, ""+baos.size() ) );
+                LOG.info( LANG.getMessage( "read.raw.length", url, Util.convertLength( baos.size() ) ) );
 
             return baos.toByteArray();
         }
@@ -971,14 +971,11 @@ public class RemoteRepositoryReaderM2
         }
     }
 
-    // ---------------------------------------------------------------------------------------------------------------
     public boolean canHandle( String protocol )
     {
         return AbstractRepository.DEFAULT_REMOTE_READ_PROTOCOL.equals( protocol );
     }
 
-    // ---------------------------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------------------------
     public void close()
     {
         // TODO Auto-generated method stub

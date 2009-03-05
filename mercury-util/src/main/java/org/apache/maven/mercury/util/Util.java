@@ -79,4 +79,12 @@ public class Util
        if( monitor != null )
            monitor.message( msg );
    }
+   
+   public static final String convertLength( long sz )
+   {
+       if( sz < 5000L )
+           return sz+" bytes";
+       
+       return (int)(Math.round( sz / 1024.))+" kb";
+   }
 }

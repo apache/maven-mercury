@@ -35,7 +35,7 @@ public enum MercuryLoggingLevelEnum
   , disabled(5)
   ;
 
-  public static final MercuryLoggingLevelEnum DEFAULT_LEVEL = warn;
+  public static final MercuryLoggingLevelEnum DEFAULT_LEVEL = info;
 
   private int id;
 
