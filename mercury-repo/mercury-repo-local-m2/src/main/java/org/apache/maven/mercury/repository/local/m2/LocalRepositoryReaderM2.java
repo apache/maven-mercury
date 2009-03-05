@@ -113,8 +113,8 @@ public class LocalRepositoryReaderM2
 
         if ( !gaDir.exists() )
         {
-            if ( LOG.isWarnEnabled() )
-                LOG.warn( LANG.getMessage( "ga.not.found", bmd.toString(), loc.getGaPath() ) );
+            if ( LOG.isDebugEnabled() )
+                LOG.debug( LANG.getMessage( "ga.not.found", bmd.toString(), loc.getGaPath() ) );
             return null;
         }
 
@@ -151,8 +151,8 @@ public class LocalRepositoryReaderM2
                 loc.setVersion( ts.last() );
             else
             {
-                if( LOG.isErrorEnabled() )
-                    LOG.error( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
+                if( LOG.isDebugEnabled() )
+                    LOG.debug( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
                 return null;
             }
 
@@ -176,8 +176,8 @@ public class LocalRepositoryReaderM2
             {
 //                res.addError( bmd, new RepositoryException( LANG.getMessage( "gavdir.not.found", bmd.toString(),
 //                                                                             gavDir.getAbsolutePath() ) ) );
-                if( LOG.isErrorEnabled() )
-                    LOG.error( LANG.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) );
+                if( LOG.isDebugEnabled() )
+                    LOG.debug( LANG.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) );
                 return null;
             }
 
@@ -224,8 +224,8 @@ public class LocalRepositoryReaderM2
             {
 //                res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(),
 //                                                                             binary.getAbsolutePath() ) ) );
-                if( LOG.isErrorEnabled() )
-                    LOG.error( LANG.getMessage( "binary.not.found", bmd.toString(), binary.getAbsolutePath() ) );
+                if( LOG.isDebugEnabled() )
+                    LOG.debug( LANG.getMessage( "binary.not.found", bmd.toString(), binary.getAbsolutePath() ) );
 
                 continue;
             }
@@ -378,26 +378,26 @@ public class LocalRepositoryReaderM2
             pomFile = new File( _repoDir, pomPath );
             if ( !pomFile.exists() )
             {
-                LOG.warn( "file \"" + pomPath + "\" does not exist in local repo" );
+                if( LOG.isDebugEnabled() )
+                    LOG.debug( "file \"" + pomPath + "\" does not exist in local repo" );
                 continue;
             }
 
-            // TODO HIGH og: delegate POM processing to maven-project
-            // for testing purpose - I plug in my test processor
             try
             {
                 List<ArtifactBasicMetadata> deps =
                     _mdProcessor.getDependencies( bmd, _mdReader == null ? this : _mdReader, System.getenv(),
                                                   System.getProperties() );
-                // for(ArtifactBasicMetadata d : deps )
-                // {
-                // System.out.println("======> "+d.getScope() );
-                // }
+// for(ArtifactBasicMetadata d : deps )
+// {
+// System.out.println("======> "+d.getScope() );
+// }
                 ror = ArtifactBasicResults.add( ror, bmd, deps );
             }
             catch ( Exception e )
             {
-                LOG.warn( "error reading " + bmd.toString() + " dependencies", e );
+                if( LOG.isDebugEnabled() )
+                    LOG.debug( "error reading " + bmd.toString() + " dependencies", e );
                 continue;
             }
 

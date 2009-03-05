@@ -138,10 +138,13 @@ public class RemoteRepositoryReaderM2
 
         try
         {
-            File temp = File.createTempFile( "temp-", "-locator" );
-            _defaultRoot = new File( temp.getParentFile(), "repo" );
+            _defaultRoot = File.createTempFile( "mercury-", "-local" );
+            _defaultRoot.delete();
             _defaultRoot.mkdirs();
-            LOG.info( "temporary repository  folder set to " + _defaultRoot.getCanonicalPath() );
+            _defaultRoot.deleteOnExit();
+            
+            if( LOG.isWarnEnabled() )
+                LOG.warn( LANG.getMessage( "default.root", _defaultRoot.getCanonicalPath() ) );
         }
         catch ( IOException e )
         {
@@ -426,7 +429,7 @@ public class RemoteRepositoryReaderM2
         else
         {
             if( LOG.isInfoEnabled() )
-                Log.info( loc.getAbsPath() );
+                LOG.info( LANG.getMessage( "read.artifact", loc.getAbsPath(), ""+binFile.length() ) );
 
             da.setFile( binFile );
             da.setPomBlob( FileUtil.readRawData( isPom ? binFile : pomFile ) );
@@ -940,14 +943,14 @@ public class RemoteRepositoryReaderM2
 
             if ( response.hasExceptions() )
             {
-                if( LOG.isWarnEnabled() )
-                    LOG.warn( LANG.getMessage( "read.raw.exceptions", path, response.getExceptions().toString() ) );
+                if( LOG.isDebugEnabled() )
+                    LOG.debug( LANG.getMessage( "read.raw.exceptions", path, response.getExceptions().toString() ) );
 
                 return null;
             }
             
             if( LOG.isInfoEnabled() )
-                Log.info( url );
+                LOG.info( LANG.getMessage( "read.raw.length", url, ""+baos.size() ) );
 
             return baos.toByteArray();
         }

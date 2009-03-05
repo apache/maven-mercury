@@ -363,7 +363,7 @@ public class VirtualRepositoryReader
                             {
                                 res.add( key, rorRes );
                             }
-
+/*
                             String keyVersion = key.getVersion();
                             VersionRange keyVersionRange = null;
                             try
@@ -384,6 +384,12 @@ public class VirtualRepositoryReader
                                     // fixed release is found - no more scanning
                                     qList.remove( key );
                                 }
+                            }
+*/
+                            if ( !key.isVirtual() )
+                            {
+                                // fixed release is found - no more scanning
+                                qList.remove( key );
                             }
                         }
                     }

@@ -88,8 +88,12 @@ extends AbstractRepositoryReaderM2Test
   throws Exception
   {
       super.tearDown();
-      _server.stop();
-      _server.destroy();
+      if( _server != null )
+      {
+          _server.stop();
+          _server.destroy();
+      }
+      _server = null;
   }
   //-------------------------------------------------------------------------
   private void validateMmd( Metadata mmd )

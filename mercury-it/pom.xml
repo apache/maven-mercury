@@ -33,8 +33,8 @@ under the License.
 
   <properties>
     <maven.version>3.0-SNAPSHOT</maven.version>
-    <spice.model.builder.version>1.2</spice.model.builder.version>
-    <plexus.webdav.version>1.0-SNAPSHOT</plexus.webdav.version>
+    <spice.model.builder.version>1.5</spice.model.builder.version>
+    <plexus.webdav.version>1.0</plexus.webdav.version>
   </properties>
 
   <dependencies>
