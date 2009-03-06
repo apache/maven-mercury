@@ -17,20 +17,20 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-repo</artifactId>
     <version>1.0-alpha-6-SNAPSHOT</version>
   </parent>
-  
+
   <artifactId>mercury-repo-virtual</artifactId>
-  
+
   <name>Mercury Virtual Repository</name>
-  
-<!-- had to move all tests to IT: http://jira.codehaus.org/browse/MERCURY-47 
+
+<!-- had to move all tests to IT: http://jira.codehaus.org/browse/MERCURY-47
   <build>
     <plugins>
 
@@ -40,7 +40,7 @@ under the License.
         <configuration>
           <skip>true</skip>
         </configuration>
-        
+
         <executions>
           <execution>
             <id>test</id>
@@ -66,7 +66,7 @@ under the License.
     </dependency>
 
     <!-- Test deps -->
-<!-- 
+<!--
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-local-m2</artifactId>
@@ -86,7 +86,7 @@ under the License.
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-servlet-tester</artifactId>
@@ -98,6 +98,6 @@ under the License.
       <artifactId>mercury-repo-remote-m2</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
 </project>
