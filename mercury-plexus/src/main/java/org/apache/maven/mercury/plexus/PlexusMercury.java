@@ -149,22 +149,6 @@ public interface PlexusMercury
     public List<Repository> constructRepositories( String localDir, String... urls )
         throws RepositoryException;
 
-    /**
-     * construct a list of repositories from strings and retains them for future use by this instance of PlexusMercury
-     * 
-     * @param localDir
-     * @param urls varargs list of urls for remote repos
-     * @return repository list
-     * @throws PlexusMercuryException
-     */
-    public PlexusMercury setRepositories( String localDir, String... urls )
-    throws RepositoryException;
-
-    public PlexusMercury setRepositories( List<Repository> repos )
-    throws RepositoryException;
-
-    public PlexusMercury setRepositories( Repository... repos )
-    throws RepositoryException;
 
     /**
      * write (deploy) given Artifact(s) to the repository
@@ -194,13 +178,6 @@ public interface PlexusMercury
     public List<Artifact> read( List<Repository> repo, ArtifactBasicMetadata... artifacts )
         throws RepositoryException;
 
-    /** use previously set repositories */
-    public List<Artifact> read( List<? extends ArtifactBasicMetadata> artifacts )
-        throws RepositoryException;
-
-    public List<Artifact> read( ArtifactBasicMetadata... artifacts )
-        throws RepositoryException;
-
     /**
      * resolve Artifact dependencies. The inclusions and exclusions accept version ranges as parameters
      * 
@@ -220,14 +197,6 @@ public interface PlexusMercury
     public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
         throws RepositoryException;
 
-    /** previously set repos now */
-    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactQueryList artifacts,
-                                           ArtifactInclusionList inclusions, ArtifactExclusionList exclusions )
-        throws RepositoryException;
-
-    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactMetadata metadata )
-        throws RepositoryException;
-
     /**
      * get all available versions of for the artifact query.
      * 
@@ -238,7 +207,4 @@ public interface PlexusMercury
      */
     public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
         throws RepositoryException;
-    /** previously set repos now */
-    public List<ArtifactBasicMetadata> readVersions( ArtifactBasicMetadata query )
-    throws RepositoryException;
 }

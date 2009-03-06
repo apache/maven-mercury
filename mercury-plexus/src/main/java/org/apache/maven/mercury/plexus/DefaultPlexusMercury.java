@@ -80,8 +80,6 @@ public class DefaultPlexusMercury
 
     private static final Language LANG = new DefaultLanguage( DefaultPlexusMercury.class );
 
-    private List<Repository> _repos;
-
     @Configuration( name = "defaultDependencyProcessorHint", value = "maven" )
     String _defaultDpHint = "maven";
 
@@ -200,13 +198,6 @@ public class DefaultPlexusMercury
 
     }
 
-    private void checkRepos()
-        throws RepositoryException
-    {
-        if ( Util.isEmpty( _repos ) )
-            throw new RepositoryException( LANG.getMessage( "no.repos.set" ) );
-    }
-
     // ---------------------------------------------------------------
     // ---------------------------------------------------------------
     public List<Artifact> read( List<Repository> repos, List<? extends ArtifactBasicMetadata> artifacts )
@@ -242,22 +233,6 @@ public class DefaultPlexusMercury
         throws RepositoryException
     {
         return read( repos, Arrays.asList( artifacts ) );
-    }
-
-    public List<Artifact> read( ArtifactBasicMetadata... artifacts )
-        throws RepositoryException
-    {
-        checkRepos();
-
-        return read( _repos, Arrays.asList( artifacts ) );
-    }
-
-    public List<Artifact> read( List<? extends ArtifactBasicMetadata> artifacts )
-        throws RepositoryException
-    {
-        checkRepos();
-
-        return read( _repos, artifacts );
     }
 
     // ---------------------------------------------------------------
@@ -308,23 +283,6 @@ public class DefaultPlexusMercury
         }
     }
 
-    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactQueryList artifacts,
-                                           ArtifactInclusionList inclusions, ArtifactExclusionList exclusions )
-        throws RepositoryException
-    {
-        checkRepos();
-
-        return resolve( _repos, scope, artifacts, inclusions, exclusions );
-    }
-
-    public List<ArtifactMetadata> resolve( ArtifactScopeEnum scope, ArtifactMetadata metadata )
-        throws RepositoryException
-    {
-        checkRepos();
-
-        return resolve( _repos, scope, metadata );
-    }
-
     // ---------------------------------------------------------------
     /**
      * get all available versions of for the artifact query.
@@ -350,14 +308,6 @@ public class DefaultPlexusMercury
             LOG.warn( res.getExceptions().toString() );
 
         return res.getResult( query );
-    }
-
-    public List<ArtifactBasicMetadata> readVersions( ArtifactBasicMetadata query )
-        throws RepositoryException
-    {
-        checkRepos();
-
-        return readVersions( _repos, query );
     }
 
     // ---------------------------------------------------------------
@@ -393,33 +343,6 @@ public class DefaultPlexusMercury
         }
     }
 
-    // ---------------------------------------------------------------
-    public PlexusMercury setRepositories( String localDir, String... urls )
-        throws RepositoryException
-    {
-        _repos = constructRepositories( localDir, urls );
-
-        return this;
-    }
-
-    public PlexusMercury setRepositories( List<Repository> repos )
-    throws RepositoryException
-    {
-        this._repos = repos;
-        
-        return this;
-    }
-
-    public PlexusMercury setRepositories( Repository... repos )
-    throws RepositoryException
-    {
-        if( repos != null )
-            this._repos = Arrays.asList( repos );
-        
-        checkRepos();
-        
-        return this;
-    }
     // ---------------------------------------------------------------
     // ---------------------------------------------------------------
 }
