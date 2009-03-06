@@ -304,6 +304,11 @@ public class ArtifactBasicMetadata
         return groupId + ":" + artifactId;
     }
 
+    public String toManagementString()
+    {
+        return groupId + ":" + artifactId + ":" + type + ( classifier != null ? ":" + classifier : "" );
+    }
+
     public String getBaseName()
     {
         return artifactId + "-" + version + ( classifier == null ? "" : "-" + classifier );

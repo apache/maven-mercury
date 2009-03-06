@@ -260,9 +260,12 @@ public class DefaultPlexusMercury
     }
 
     // ---------------------------------------------------------------
-    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
-                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
-                                           ArtifactExclusionList exclusions )
+    public List<ArtifactMetadata> resolve( List<Repository> repos
+                                           , ArtifactScopeEnum scope
+                                           , ArtifactQueryList artifacts
+                                           , ArtifactInclusionList inclusions
+                                           , ArtifactExclusionList exclusions
+                                           )
         throws RepositoryException
     {
         if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
@@ -271,7 +274,7 @@ public class DefaultPlexusMercury
         try
         {
             DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos );
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
 

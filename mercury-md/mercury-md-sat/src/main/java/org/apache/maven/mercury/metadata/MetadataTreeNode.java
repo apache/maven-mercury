@@ -136,23 +136,16 @@ if( LOG.isDebugEnabled() )
   public MetadataTreeNode( ArtifactMetadata md
                            , MetadataTreeNode parent
                            , ArtifactBasicMetadata query
-                           , boolean resolved
                          )
   {
         if ( md != null )
         {
             md.setArtifactScope( ArtifactScopeEnum.checkScope(md.getArtifactScope()) );
-            md.setResolved(resolved);
         }
 
         this.md = md;
         this.parent = parent;
         this.query = query;
-  }
-  //------------------------------------------------------------------------
-  public MetadataTreeNode( ArtifactMetadata md, MetadataTreeNode parent, ArtifactBasicMetadata query )
-  {
-    this( md, parent, query, true );
   }
   //------------------------------------------------------------------------
   /**
@@ -278,7 +271,6 @@ if( LOG.isDebugEnabled() )
       MetadataTreeNode res = new MetadataTreeNode( node.getMd()
                                                   , node.getParent()
                                                   , node.getQuery()
-                                                  , true
                                                   );
       res.setId( node.getId() );
       

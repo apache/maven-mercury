@@ -33,16 +33,27 @@ public class ArtifactCoordinates
 
     protected String version;
 
-    /**
-     * @param groupId
-     * @param artifactId
-     * @param version
-     */
+    protected String classifier;
+
+    protected String type;
+
     public ArtifactCoordinates( String groupId, String artifactId, String version )
     {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
+    }
+
+    public ArtifactCoordinates( String groupId, String artifactId, String version, String type )
+    {
+        this( groupId, artifactId, version );
+        this.type = type;
+    }
+
+    public ArtifactCoordinates( String groupId, String artifactId, String version, String type, String classifier )
+    {
+        this( groupId, artifactId, version, type );
+        this.classifier = classifier;
     }
 
     public String getGroupId()
@@ -74,11 +85,27 @@ public class ArtifactCoordinates
     {
         this.version = version;
     }
+    
+    public String getClassifier()
+    {
+        return classifier;
+    }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
     @Override
     public String toString()
     {
