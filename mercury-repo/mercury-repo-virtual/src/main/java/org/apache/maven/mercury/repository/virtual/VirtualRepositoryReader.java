@@ -386,7 +386,7 @@ public class VirtualRepositoryReader
                                 }
                             }
 */
-                            if ( !key.isVirtual() )
+                            if ( !key.isVirtual() && key.isSingleton() )
                             {
                                 // fixed release is found - no more scanning
                                 qList.remove( key );

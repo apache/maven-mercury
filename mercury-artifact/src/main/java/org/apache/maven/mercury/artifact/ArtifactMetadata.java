@@ -69,7 +69,7 @@ public class ArtifactMetadata
     {
         this.groupId = groupId;
         this.artifactId = name;
-        this.version = version;
+        setVersion( version );
         this.type = type;
         this.artifactScope = artifactScope;
         this.classifier = classifier;

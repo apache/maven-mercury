@@ -495,7 +495,7 @@ public class RemoteRepositoryReaderM2
                     if ( !( (RemoteRepositoryM2) _repo )._workAroundBadMetadata )
                         return gaVersions;
 
-                    if ( bmd.isVirtual() )
+                    if ( bmd.isVirtual() || !bmd.isSingleton() )
                         return gaVersions;
 
                     if ( gaVersions.contains( ver ) )
@@ -552,7 +552,7 @@ public class RemoteRepositoryReaderM2
         if ( mmd == null
             || mmd.getVersioning() == null
             || mmd.getVersioning().getVersions() == null
-            || ! mmd.getVersioning().getVersions().contains( ver )
+            || ( bmd.isSingleton() && ! mmd.getVersioning().getVersions().contains( ver ) )
         )
         {
             if ( ( (RemoteRepositoryM2) _repo )._workAroundBadMetadata )
@@ -571,7 +571,7 @@ public class RemoteRepositoryReaderM2
                     {
                         mavenMetadata =
                             ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<metadata>" + "<groupId>" + bmd.getGroupId()
-                                + "</groupId>" + "<artifactId>" + bmd.getGroupId() + "</artifactId>" + "<version>"
+                                + "</groupId>" + "<artifactId>" + bmd.getArtifactId() + "</artifactId>" + "<version>"
                                 + ArtifactLocation.calculateVersionDir( ver ) + "</version>" + "<versioning>"
                                 + "<versions>" + "<version>" + ver + "</version>" + "</versions>"
                                 + "</versioning>" + "</metadata>" ).getBytes();

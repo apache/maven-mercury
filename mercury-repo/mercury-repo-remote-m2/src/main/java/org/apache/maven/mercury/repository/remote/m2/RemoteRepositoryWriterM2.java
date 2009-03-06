@@ -286,7 +286,8 @@ implements RepositoryWriter
       if( _mdCache != null )
       {
         // cache metadata
-        _mdCache.updateGA( _repo.getId(), new RepositoryGAMetadata(gaMd) );
+// don't cache a single version on the GA level !!
+//        _mdCache.updateGA( _repo.getId(), new RepositoryGAMetadata(gaMd) );
         _mdCache.updateGAV( _repo.getId(), new RepositoryGAVMetadata(gavMd) );
         if( hasPomBlob && DefaultArtifact.class.isAssignableFrom( artifact.getClass() ) )
           _mdCache.saveRaw( (DefaultArtifact)artifact, pomBlob );

@@ -28,6 +28,8 @@ import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
 import org.apache.maven.mercury.artifact.version.VersionRangeFactory;
+import org.codehaus.plexus.lang.DefaultLanguage;
+import org.codehaus.plexus.lang.Language;
 
 /**
  * this is the most primitive metadata there is, usually used to query repository for "real" metadata. It holds
@@ -40,6 +42,9 @@ public class ArtifactBasicMetadata
 {
     public static final String DEFAULT_ARTIFACT_TYPE = "jar";
 
+    private static final Language LANG = new DefaultLanguage( ArtifactBasicMetadata.class );
+
+
     /**
      * standard glorified artifact coordinates
      */
@@ -47,7 +52,9 @@ public class ArtifactBasicMetadata
 
     protected String artifactId;
 
-    protected String version;
+    private String version;
+    
+    private transient VersionRange versionRange;
 
     /**
      * relocation chain after processing by ProjectBuilder
@@ -352,6 +359,38 @@ public class ArtifactBasicMetadata
     public void setVersion( String version )
     {
         this.version = version;
+    }
+    
+    private void checkRangeExists()
+    {
+        if( versionRange == null )
+        {
+            if( version == null )
+                throw new IllegalArgumentException( LANG.getMessage( "artifact.metadata.no.version", toString() ) );
+            else
+            {
+                try
+                {
+                    versionRange = VersionRangeFactory.create( version );
+                }
+                catch ( VersionException e )
+                {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            }
+        }
+    }
+
+    public boolean isSingleton()
+    {
+        checkRangeExists();
+        
+        return versionRange.isSingleton();
+    }
+
+    public boolean isRange()
+    {
+        return !isSingleton();
     }
 
     public String getClassifier()

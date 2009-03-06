@@ -69,7 +69,7 @@ public class DefaultArtifact
         this.inheritedScope = inheritedScope;
         this.groupId = groupId;
         this.artifactId = artifactId;
-        this.version = version;
+        setVersion( version );
         // this.scope = scope;
         this.type = type;
         this.classifier = classifier;
@@ -135,7 +135,7 @@ public class DefaultArtifact
             throw new IllegalArgumentException( "The type cannot be empty." );
         }
 
-        if ( ( version == null ) )
+        if ( ( getVersion() == null ) )
         {
             throw new IllegalArgumentException( "The version cannot be empty." );
         }
@@ -241,9 +241,9 @@ public class DefaultArtifact
         result = 37 * result + groupId.hashCode();
         result = 37 * result + artifactId.hashCode();
         result = 37 * result + type.hashCode();
-        if ( version != null )
+        if ( getVersion() != null )
         {
-            result = 37 * result + version.hashCode();
+            result = 37 * result + getVersion().hashCode();
         }
         result = 37 * result + ( classifier != null ? classifier.hashCode() : 0 );
         return result;
@@ -272,7 +272,7 @@ public class DefaultArtifact
         {
             return false;
         }
-        else if ( !a.getVersion().equals( version ) )
+        else if ( !a.getVersion().equals( getVersion() ) )
         {
             return false;
         }
@@ -324,7 +324,7 @@ public class DefaultArtifact
                     if ( result == 0 )
                     {
                         // We don't consider the version range in the comparison, just the resolved version
-                        result = version.compareTo( a.getVersion() );
+                        result = getVersion().compareTo( a.getVersion() );
                     }
                 }
             }
@@ -344,7 +344,7 @@ public class DefaultArtifact
 
     public void setResolvedVersion( String version )
     {
-        this.version = version;
+        setVersion( version );
         // retain baseVersion
     }
 }
