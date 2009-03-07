@@ -25,15 +25,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
 import org.apache.maven.mercury.crypto.sha.SHA1VerifierFactory;
-import org.apache.maven.mercury.logging.IMercuryLogger;
-import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
@@ -63,9 +61,9 @@ extends PlexusTestCase
   RepositoryReader reader;
   RepositoryWriter writer;
 
-  List<ArtifactBasicMetadata> query;
+  List<ArtifactMetadata> query;
   
-  ArtifactBasicMetadata bmd;
+  ArtifactMetadata bmd;
   
   String pomBlob;
   
@@ -171,7 +169,7 @@ extends PlexusTestCase
     assertFalse( new File( targetDirectory, "/org/apache/maven/maven-core/2.0.9/"+repo.getMetadataName()+".sha1").exists() );
 
     Set<Artifact> artifacts = new HashSet<Artifact>(3);
-    DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9") );
+    DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-core:2.0.9") );
     
     da.setPomBlob( pomBytes );
     da.setFile( artifactBinary );
@@ -218,7 +216,7 @@ extends PlexusTestCase
     setSnapshots();
     
     Set<Artifact> artifacts = new HashSet<Artifact>(3);
-    DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9-20080805.215925-8") );
+    DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-core:2.0.9-20080805.215925-8") );
     da.setPomBlob( pomBytes );
     da.setFile( artifactBinary );
     artifacts.add( da );
@@ -240,7 +238,7 @@ extends PlexusTestCase
     setSnapshots();
     
     Set<Artifact> set = new HashSet<Artifact>(3);
-    DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9-SNAPSHOT") );
+    DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-core:2.0.9-SNAPSHOT") );
     da.setPomBlob( pomBytes );
     da.setFile( artifactBinary );
     set.add( da );
@@ -262,7 +260,7 @@ extends PlexusTestCase
     setSnapshots();
     
     Set<Artifact> set = new HashSet<Artifact>(3);
-    DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9:all") );
+    DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-core:2.0.9:all") );
     da.setFile( artifactBinary );
     set.add( da );
     
@@ -285,7 +283,7 @@ extends PlexusTestCase
     {
       String si = ""+i;
       
-      DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0.9-20080805.215925-"+si) );
+      DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-core:2.0.9-20080805.215925-"+si) );
       da.setPomBlob( pomBytes );
       File ab = File.createTempFile( "test-core-", "-bin" );
       FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), ab );
@@ -354,14 +352,14 @@ extends PlexusTestCase
     {
       String si = ""+i;
       
-      DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-core:2.0."+si+"-SNAPSHOT") );
+      DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-core:2.0."+si+"-SNAPSHOT") );
       da.setPomBlob( pomBytes );
       File ab = File.createTempFile( "test-core-", "-bin" );
       FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), ab );
       da.setFile( ab );
       set.add( da );
 
-      da = new DefaultArtifact( new ArtifactBasicMetadata("org.apache.maven:maven-mercury:2.0."+si+"-SNAPSHOT") );
+      da = new DefaultArtifact( new ArtifactMetadata("org.apache.maven:maven-mercury:2.0."+si+"-SNAPSHOT") );
       da.setPomBlob( pomBytes );
       ab = File.createTempFile( "test-mercury-", "-bin" );
       FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), ab );

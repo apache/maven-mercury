@@ -18,7 +18,7 @@
  */
 package org.apache.maven.mercury.builder.api;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * This interface implementation is supplied to MetadataProcessor to simplify it's access to remote repositories
@@ -41,10 +41,10 @@ public interface MetadataReader
      * @throws MetadataReaderException
      * @throws RepositoryException
      */
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
         throws MetadataReaderException;
 
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
         throws MetadataReaderException;
 
   /**
@@ -55,9 +55,9 @@ public interface MetadataReader
      * @return
      * @throws MetadataReaderException
      */
-    public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt )
+    public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt )
         throws MetadataReaderException;
 
-    public byte[] readMetadata( ArtifactBasicMetadata bmd )
+    public byte[] readMetadata( ArtifactMetadata bmd )
         throws MetadataReaderException;
 }

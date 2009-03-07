@@ -29,16 +29,12 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.Quality;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessorException;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.artifact.version.MetadataVersionComparator;
-import org.apache.maven.mercury.artifact.version.VersionException;
-import org.apache.maven.mercury.artifact.version.VersionRange;
-import org.apache.maven.mercury.artifact.version.VersionRangeFactory;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
 import org.apache.maven.mercury.event.EventGenerator;
@@ -270,7 +266,7 @@ public class VirtualRepositoryReader
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
-    public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
+    public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
         throws IllegalArgumentException, RepositoryException
     {
         if ( query == null )
@@ -295,7 +291,7 @@ public class VirtualRepositoryReader
 
             GenericEvent eventRead = null;
 
-            List<ArtifactBasicMetadata> qList = new ArrayList<ArtifactBasicMetadata>( query.size() );
+            List<ArtifactMetadata> qList = new ArrayList<ArtifactMetadata>( query.size() );
             qList.addAll( query );
 
             for ( RepositoryReader rr : _repositoryReaders )
@@ -327,9 +323,9 @@ public class VirtualRepositoryReader
 
                     if ( repoRes != null && repoRes.hasResults() )
                     {
-                        for ( ArtifactBasicMetadata key : repoRes.getResults().keySet() )
+                        for ( ArtifactMetadata key : repoRes.getResults().keySet() )
                         {
-                            List<ArtifactBasicMetadata> rorRes = repoRes.getResult( key );
+                            List<ArtifactMetadata> rorRes = repoRes.getResult( key );
 
                             if ( tp != null )
                             {
@@ -350,7 +346,7 @@ public class VirtualRepositoryReader
                                 continue;
                             }
 
-                            for ( ArtifactBasicMetadata bmd : rorRes )
+                            for ( ArtifactMetadata bmd : rorRes )
                             {
                                 bmd.setTracker( rr );
                             }
@@ -433,25 +429,25 @@ public class VirtualRepositoryReader
             return;
         }
 
-        Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata> > m = res.getResults();
+        Map<ArtifactMetadata, List<ArtifactMetadata> > m = res.getResults();
 
-        for ( ArtifactBasicMetadata key : m.keySet() )
+        for ( ArtifactMetadata key : m.keySet() )
         {
             processSingletons( key, res.getResult( key ) );
         }
     }
 
-    private void processSingletons( ArtifactBasicMetadata key, List<ArtifactBasicMetadata> res )
+    private void processSingletons( ArtifactMetadata key, List<ArtifactMetadata> res )
     {
         if ( Util.isEmpty( res ) || !DefaultArtifactVersion.isVirtual( key.getVersion() ) )
         {
             return;
         }
 
-        TreeSet<ArtifactBasicMetadata> ts = new TreeSet<ArtifactBasicMetadata>(
-                        new Comparator<ArtifactBasicMetadata>()
+        TreeSet<ArtifactMetadata> ts = new TreeSet<ArtifactMetadata>(
+                        new Comparator<ArtifactMetadata>()
                         {
-                            public int compare( ArtifactBasicMetadata o1, ArtifactBasicMetadata o2 )
+                            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
                             {
                                   DefaultArtifactVersion av1 = new DefaultArtifactVersion( o1.getVersion() );
                                   DefaultArtifactVersion av2 = new DefaultArtifactVersion( o2.getVersion() );
@@ -463,7 +459,7 @@ public class VirtualRepositoryReader
                                                                               );
         ts.addAll( res );
 
-        ArtifactBasicMetadata single = ts.last();
+        ArtifactMetadata single = ts.last();
 
         res.clear();
 
@@ -471,7 +467,7 @@ public class VirtualRepositoryReader
     }
 
     //----------------------------------------------------------------------------------------------------------------------------
-    public ArtifactMetadata readDependencies( ArtifactBasicMetadata bmd )
+    public ArtifactMetadata readDependencies( ArtifactMetadata bmd )
         throws IllegalArgumentException, RepositoryException
     {
         if ( bmd == null )
@@ -491,7 +487,7 @@ public class VirtualRepositoryReader
 
             init();
 
-            List<ArtifactBasicMetadata> query = new ArrayList<ArtifactBasicMetadata>( 1 );
+            List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
             query.add( bmd );
 
             ArtifactMetadata md = new ArtifactMetadata( bmd );
@@ -581,13 +577,13 @@ public class VirtualRepositoryReader
     /**
      * split query into repository buckets
      */
-    private Map<RepositoryReader, List<ArtifactBasicMetadata>> sortByRepo( Collection<? extends ArtifactBasicMetadata> query )
+    private Map<RepositoryReader, List<ArtifactMetadata>> sortByRepo( Collection<? extends ArtifactMetadata> query )
     {
-        HashMap<RepositoryReader, List<ArtifactBasicMetadata>> res = null;
+        HashMap<RepositoryReader, List<ArtifactMetadata>> res = null;
 
-        List<ArtifactBasicMetadata> rejects = null;
+        List<ArtifactMetadata> rejects = null;
 
-        for ( ArtifactBasicMetadata bmd : query )
+        for ( ArtifactMetadata bmd : query )
         {
             Object tracker = bmd.getTracker();
 
@@ -598,14 +594,14 @@ public class VirtualRepositoryReader
 
                 if ( res == null )
                 {
-                    res = new HashMap<RepositoryReader, List<ArtifactBasicMetadata>>();
+                    res = new HashMap<RepositoryReader, List<ArtifactMetadata>>();
                 }
 
-                List<ArtifactBasicMetadata> rl = res.get( rr );
+                List<ArtifactMetadata> rl = res.get( rr );
 
                 if ( rl == null )
                 {
-                    rl = new ArrayList<ArtifactBasicMetadata>();
+                    rl = new ArrayList<ArtifactMetadata>();
                     res.put( rr, rl );
                 }
 
@@ -616,7 +612,7 @@ public class VirtualRepositoryReader
             {
                 if ( rejects == null )
                 {
-                    rejects = new ArrayList<ArtifactBasicMetadata>();
+                    rejects = new ArrayList<ArtifactMetadata>();
                 }
 
                 rejects.add( bmd );
@@ -627,7 +623,7 @@ public class VirtualRepositoryReader
         {
             if ( res == null )
             {
-                res = new HashMap<RepositoryReader, List<ArtifactBasicMetadata>>();
+                res = new HashMap<RepositoryReader, List<ArtifactMetadata>>();
             }
 
             res.put( RepositoryReader.NULL_READER, rejects );
@@ -637,7 +633,7 @@ public class VirtualRepositoryReader
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
-    public ArtifactResults readArtifacts( Collection<? extends ArtifactBasicMetadata> query )
+    public ArtifactResults readArtifacts( Collection<? extends ArtifactMetadata> query )
         throws RepositoryException
     {
         GenericEvent event = null;
@@ -656,9 +652,9 @@ public class VirtualRepositoryReader
                 return res;
             }
 
-            Map<RepositoryReader, List<ArtifactBasicMetadata>> buckets = sortByRepo( query );
+            Map<RepositoryReader, List<ArtifactMetadata>> buckets = sortByRepo( query );
 
-            List<ArtifactBasicMetadata> leftovers = buckets == null ? null : buckets.get( RepositoryReader.NULL_READER );
+            List<ArtifactMetadata> leftovers = buckets == null ? null : buckets.get( RepositoryReader.NULL_READER );
 
             if ( buckets == null )
             {
@@ -690,7 +686,7 @@ public class VirtualRepositoryReader
                                               EVENT_READ_ARTIFACTS_FROM_REPO_QUALIFIED, repoId );
                     }
 
-                    List<ArtifactBasicMetadata> rrQuery = buckets.get( rr );
+                    List<ArtifactMetadata> rrQuery = buckets.get( rr );
 
                     ArtifactResults rrRes = rr.readArtifacts( rrQuery );
 
@@ -703,7 +699,7 @@ public class VirtualRepositoryReader
 
                     if ( rrRes.hasResults() )
                     {
-                        for ( ArtifactBasicMetadata bm : rrRes.getResults().keySet() )
+                        for ( ArtifactMetadata bm : rrRes.getResults().keySet() )
                         {
                             List<Artifact> al = rrRes.getResults( bm );
 
@@ -735,15 +731,15 @@ public class VirtualRepositoryReader
             // then process unqualified virtuals
             if ( !Util.isEmpty( leftovers ) )
             {
-                List<ArtifactBasicMetadata> virtuals = null;
+                List<ArtifactMetadata> virtuals = null;
 
-                for ( ArtifactBasicMetadata md : leftovers )
+                for ( ArtifactMetadata md : leftovers )
                 {
                     if ( DefaultArtifactVersion.isVirtual( md.getVersion() ) )
                     {
                         if ( virtuals == null )
                         {
-                            virtuals = new ArrayList<ArtifactBasicMetadata>();
+                            virtuals = new ArrayList<ArtifactMetadata>();
                         }
 
                         virtuals.add( md );
@@ -763,11 +759,11 @@ public class VirtualRepositoryReader
                     {
                         if ( virtRes.hasResults() )
                         {
-                            Map<ArtifactBasicMetadata, ArtifactBasicMetadata> sMap = new HashMap<ArtifactBasicMetadata, ArtifactBasicMetadata>();
+                            Map<ArtifactMetadata, ArtifactMetadata> sMap = new HashMap<ArtifactMetadata, ArtifactMetadata>();
 
-                            for ( ArtifactBasicMetadata md : virtRes.getResults().keySet() )
+                            for ( ArtifactMetadata md : virtRes.getResults().keySet() )
                             {
-                                ArtifactBasicMetadata v = virtRes.getResult( md ).get( 0 );
+                                ArtifactMetadata v = virtRes.getResult( md ).get( 0 );
                                 virtuals.add( v );
                                 sMap.put( v, md );
                             }
@@ -778,10 +774,10 @@ public class VirtualRepositoryReader
                             {
                                 if ( ares.hasResults() )
                                 {
-                                    Map<ArtifactBasicMetadata, List<Artifact>> aresMap = ares.getResults();
+                                    Map<ArtifactMetadata, List<Artifact>> aresMap = ares.getResults();
 
                                     // remap
-                                    for ( ArtifactBasicMetadata md : aresMap.keySet() )
+                                    for ( ArtifactMetadata md : aresMap.keySet() )
                                     {
                                         res.add( sMap.get( md ), aresMap.get( md ).get( 0 ) );
                                     }
@@ -839,7 +835,7 @@ public class VirtualRepositoryReader
                         }
                         else if ( rrRes.hasResults() )
                         {
-                            for ( ArtifactBasicMetadata bm : rrRes.getResults().keySet() )
+                            for ( ArtifactMetadata bm : rrRes.getResults().keySet() )
                             {
                                 List<Artifact> al = rrRes.getResults( bm );
 
@@ -887,13 +883,13 @@ public class VirtualRepositoryReader
     // ----------------------------------------------------------------------------------------------------------------------------
     // MetadataReader implementation
     // ----------------------------------------------------------------------------------------------------------------------------
-    public byte[] readMetadata( ArtifactBasicMetadata bmd )
+    public byte[] readMetadata( ArtifactMetadata bmd )
         throws MetadataReaderException
     {
         return readMetadata( bmd, false );
     }
 
-    public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt  )
+    public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt  )
         throws MetadataReaderException
     {
         if ( LOG.isDebugEnabled() )
@@ -909,13 +905,13 @@ public class VirtualRepositoryReader
     // ----------------------------------------------------------------------------------------------------------------------------
     // MetadataReader implementation
     // ----------------------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
         return readRawData( bmd, classifier, type, false );
     }
 
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
 
@@ -942,7 +938,7 @@ public class VirtualRepositoryReader
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_RAW, eventTag );
             }
             
-            ArtifactBasicMetadata bmdQuery = bmd;
+            ArtifactMetadata bmdQuery = bmd;
 
             try
             {
@@ -963,9 +959,9 @@ public class VirtualRepositoryReader
 
             if ( Quality.SNAPSHOT_QUALITY.equals( vq ) )
             {
-                List<ArtifactBasicMetadata> query = new ArrayList<ArtifactBasicMetadata>( 1 );
+                List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
                 
-                ArtifactBasicMetadata nBmd = new ArtifactBasicMetadata( bmd.toString() );
+                ArtifactMetadata nBmd = new ArtifactMetadata( bmd.toString() );
                 
                 if( !Util.isEmpty( type ))
                     nBmd.setType( type );
@@ -988,10 +984,10 @@ public class VirtualRepositoryReader
 
                     if ( vRes.hasResults( nBmd ) )
                     {
-                        List<ArtifactBasicMetadata> versions = vRes.getResult( nBmd );
+                        List<ArtifactMetadata> versions = vRes.getResult( nBmd );
 
-                        TreeSet<ArtifactBasicMetadata> snapshots =
-                            new TreeSet<ArtifactBasicMetadata>( new MetadataVersionComparator() );
+                        TreeSet<ArtifactMetadata> snapshots =
+                            new TreeSet<ArtifactMetadata>( new MetadataVersionComparator() );
                         snapshots.addAll( versions );
 
                         bmdQuery = snapshots.last();

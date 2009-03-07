@@ -20,7 +20,6 @@ package org.apache.maven.mercury.metadata;
 
 import java.util.List;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
@@ -49,7 +48,7 @@ public interface DependencyBuilder
    * @return the root of the tree built
    * @throws MetadataTreeException
    */
-  public abstract MetadataTreeNode buildTree( ArtifactBasicMetadata startMD, ArtifactScopeEnum scope )
+  public abstract MetadataTreeNode buildTree( ArtifactMetadata startMD, ArtifactScopeEnum scope )
   throws MetadataTreeException;
 
   /**

@@ -3,7 +3,7 @@ package org.apache.maven.mercury.repository.local.map;
 import java.io.File;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * storage for the repository
@@ -20,7 +20,7 @@ public interface Storage
      * @param bmd metadata
      * @param artifact artifact behind it
      */
-    public abstract void add( ArtifactBasicMetadata bmd, Artifact artifact );
+    public abstract void add( ArtifactMetadata bmd, Artifact artifact );
 
     /**
      * find an artifact by it's metadata
@@ -28,7 +28,7 @@ public interface Storage
      * @param bmd
      * @return
      */
-    public abstract Artifact findArtifact( ArtifactBasicMetadata bmd );
+    public abstract Artifact findArtifact( ArtifactMetadata bmd );
 
     /**
      * find raw data in this stotage

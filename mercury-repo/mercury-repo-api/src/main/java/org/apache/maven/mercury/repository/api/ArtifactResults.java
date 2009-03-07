@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  *
@@ -35,18 +35,18 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 public class ArtifactResults
 extends AbstractRepOpResult
 {
-  Map< ArtifactBasicMetadata, List<Artifact>> _result = new HashMap<ArtifactBasicMetadata, List<Artifact>>(8);
+  Map< ArtifactMetadata, List<Artifact>> _result = new HashMap<ArtifactMetadata, List<Artifact>>(8);
 
   public ArtifactResults()
   {
   }
   
-  public ArtifactResults( ArtifactBasicMetadata query, List<Artifact> result )
+  public ArtifactResults( ArtifactMetadata query, List<Artifact> result )
   {
     this._result.put( query, result );
   }
   
-  public void add( ArtifactBasicMetadata query, Artifact result )
+  public void add( ArtifactMetadata query, Artifact result )
   {
     List<Artifact> res = _result.get( query );
     if( res == null )
@@ -58,7 +58,7 @@ extends AbstractRepOpResult
     res.add( result );
   }
   
-  public void addAll( ArtifactBasicMetadata query, List<Artifact> result )
+  public void addAll( ArtifactMetadata query, List<Artifact> result )
   {
     List<Artifact> res = _result.get( query );
     if( res == null )
@@ -70,12 +70,12 @@ extends AbstractRepOpResult
     res.addAll( result );
   }
 
-  public Map< ArtifactBasicMetadata, List<Artifact>> getResults()
+  public Map< ArtifactMetadata, List<Artifact>> getResults()
   {
     return _result;
   }
 
-  public List<Artifact> getResults( ArtifactBasicMetadata query )
+  public List<Artifact> getResults( ArtifactMetadata query )
   {
     return _result.get( query );
   }
@@ -87,7 +87,7 @@ extends AbstractRepOpResult
   }
 
   @Override
-  public boolean hasResults( ArtifactBasicMetadata key )
+  public boolean hasResults( ArtifactMetadata key )
   {
     return ! _result.isEmpty() && _result.containsKey( key ) && ! _result.get( key ).isEmpty();
   }

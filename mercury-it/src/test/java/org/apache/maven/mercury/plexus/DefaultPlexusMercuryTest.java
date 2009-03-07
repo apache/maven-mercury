@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
@@ -116,7 +115,7 @@ public class DefaultPlexusMercuryTest
         File artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
         FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
 
-        a = new DefaultArtifact( new ArtifactBasicMetadata( "org.apache.maven.mercury:mercury-core:2.0.9" ) );
+        a = new DefaultArtifact( new ArtifactMetadata( "org.apache.maven.mercury:mercury-core:2.0.9" ) );
 
         a.setPomBlob( FileUtil.readRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ) ) );
         a.setFile( artifactBinary );
@@ -182,7 +181,7 @@ public class DefaultPlexusMercuryTest
     {
         ArtifactMetadata gavMd = new ArtifactMetadata( gav );
 
-        for ( ArtifactBasicMetadata md : res )
+        for ( ArtifactMetadata md : res )
             if ( md.sameGAV( gavMd ) )
                 return true;
 
@@ -233,13 +232,13 @@ public class DefaultPlexusMercuryTest
     {
         ArtifactMetadata bmd = new ArtifactMetadata( artifactCoord );
 
-        List<ArtifactBasicMetadata> res = pm.readVersions( repos, bmd );
+        List<ArtifactMetadata> res = pm.readVersions( repos, bmd );
 
         assertNotNull( res );
 
         assertFalse( res.isEmpty() );
 
-        ArtifactBasicMetadata a = res.get( 0 );
+        ArtifactMetadata a = res.get( 0 );
 
         assertEquals( "1.0.0-alpha-2-20081104.001322-2", a.getVersion() );
 

@@ -31,7 +31,6 @@ import junit.framework.TestCase;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.event.DumbListener;
@@ -184,7 +183,7 @@ extends TestCase
     
     List<Artifact> artifacts = new ArrayList<Artifact>();
     
-    for( ArtifactBasicMetadata abm : aRes.getResults().keySet() )
+    for( ArtifactMetadata abm : aRes.getResults().keySet() )
       artifacts.addAll(  aRes.getResults(abm) );
     
     localRepo.getWriter().writeArtifacts( artifacts );
@@ -265,7 +264,7 @@ extends TestCase
 
     assertTrue( ar.hasResults() );
     
-    Map<ArtifactBasicMetadata, List<Artifact>> arts = ar.getResults();
+    Map<ArtifactMetadata, List<Artifact>> arts = ar.getResults();
     
     for( List<Artifact> al : arts.values() )
     {

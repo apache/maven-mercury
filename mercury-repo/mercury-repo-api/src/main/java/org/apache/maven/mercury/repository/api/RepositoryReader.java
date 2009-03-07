@@ -20,7 +20,7 @@ package org.apache.maven.mercury.repository.api;
 
 import java.util.Collection;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
@@ -48,7 +48,7 @@ extends RepositoryOperator, MetadataReader
    * it with hasExceptions() 
    * @throws RepositoryException
    */
-  public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
+  public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
   throws RepositoryException;
   
   /**
@@ -60,7 +60,7 @@ extends RepositoryOperator, MetadataReader
    * @return result as a map GAV -> [GAV1, GAV2, ... GAVn]
    * @throws RepositoryException
    */
-  public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
+  public ArtifactBasicResults readDependencies( Collection<ArtifactMetadata> query )
   throws RepositoryException;
 
   /**
@@ -71,7 +71,7 @@ extends RepositoryOperator, MetadataReader
    * @return array of results - lists of available matches. Order is the same as in query list. null means not found or worse
    * @throws RepositoryException
    */
-  public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
+  public ArtifactResults readArtifacts( Collection<ArtifactMetadata> query )
   throws RepositoryException;
 
   /**
@@ -129,13 +129,13 @@ extends RepositoryOperator, MetadataReader
         return null;
       }
 
-      public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
+      public ArtifactResults readArtifacts( Collection<ArtifactMetadata> query )
       throws RepositoryException
       {
         return null;
       }
 
-      public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
+      public ArtifactBasicResults readDependencies( Collection<ArtifactMetadata> query )
           throws RepositoryException
       {
         return null;
@@ -153,7 +153,7 @@ extends RepositoryOperator, MetadataReader
         return null;
       }
 
-      public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
+      public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
           throws RepositoryException
       {
         return null;
@@ -181,20 +181,20 @@ extends RepositoryOperator, MetadataReader
         return null;
       }
 
-      public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt  )
+      public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt  )
       throws MetadataReaderException
       {
         return null;
       }
 
-      public byte[] readMetadata( ArtifactBasicMetadata bmd  )
+      public byte[] readMetadata( ArtifactMetadata bmd  )
       throws MetadataReaderException
       {
         return null;
       }
 
       public byte[] readRawData(
-          ArtifactBasicMetadata bmd,
+          ArtifactMetadata bmd,
           String classifier,
           String type,
           boolean exempt 
@@ -205,7 +205,7 @@ extends RepositoryOperator, MetadataReader
       }
 
       public byte[] readRawData(
-          ArtifactBasicMetadata bmd,
+          ArtifactMetadata bmd,
           String classifier,
           String type
           )

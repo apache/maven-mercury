@@ -18,8 +18,8 @@
  */
 package org.apache.maven.mercury.repository.api;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactCoordinates;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.event.EventGenerator;
 
 /**
@@ -86,7 +86,7 @@ extends EventGenerator
    * @return found bytes or null, if no data was cached for this coordinates before
    * @throws MetadataCacheException
    */
-  public byte [] findRaw( ArtifactBasicMetadata bmd )
+  public byte [] findRaw( ArtifactMetadata bmd )
   throws MetadataCacheException;
 
   /**
@@ -98,6 +98,6 @@ extends EventGenerator
    * @param rawBytes - bytes to cache
    * @throws MetadataCacheException
    */
-  public void saveRaw( ArtifactBasicMetadata bmd, byte [] rawBytes )
+  public void saveRaw( ArtifactMetadata bmd, byte [] rawBytes )
   throws MetadataCacheException;
 }

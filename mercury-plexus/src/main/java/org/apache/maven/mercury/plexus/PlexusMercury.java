@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
@@ -172,10 +171,10 @@ public interface PlexusMercury
      * @return
      * @throws PlexusMercuryException
      */
-    public List<Artifact> read( List<Repository> repo, List<? extends ArtifactBasicMetadata> artifacts )
+    public List<Artifact> read( List<Repository> repo, List<? extends ArtifactMetadata> artifacts )
         throws RepositoryException;
 
-    public List<Artifact> read( List<Repository> repo, ArtifactBasicMetadata... artifacts )
+    public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
         throws RepositoryException;
 
     /**
@@ -205,6 +204,6 @@ public interface PlexusMercury
      * @return list of found version metadatas
      * @throws PlexusMercuryException
      */
-    public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
+    public List<ArtifactMetadata> readVersions( List<Repository> repos, ArtifactMetadata query )
         throws RepositoryException;
 }

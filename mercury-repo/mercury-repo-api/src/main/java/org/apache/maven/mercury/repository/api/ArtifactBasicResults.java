@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  *
@@ -34,12 +34,12 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 public class ArtifactBasicResults
 extends AbstractRepOpResult
 {
-  Map< ArtifactBasicMetadata, List<ArtifactBasicMetadata>> _result = new HashMap<ArtifactBasicMetadata, List<ArtifactBasicMetadata>>(8);
+  Map< ArtifactMetadata, List<ArtifactMetadata>> _result = new HashMap<ArtifactMetadata, List<ArtifactMetadata>>(8);
 
   /**
    * first result is ready 
    */
-  public ArtifactBasicResults( ArtifactBasicMetadata query, List<ArtifactBasicMetadata> result )
+  public ArtifactBasicResults( ArtifactMetadata query, List<ArtifactMetadata> result )
   {
     this._result.put( query, result );
   }
@@ -57,7 +57,7 @@ extends AbstractRepOpResult
   {
   }
 
-  public static ArtifactBasicResults add( final ArtifactBasicResults res, final ArtifactBasicMetadata key, final Exception err )
+  public static ArtifactBasicResults add( final ArtifactBasicResults res, final ArtifactMetadata key, final Exception err )
   {
     ArtifactBasicResults ret = res;
     if( res == null )
@@ -68,7 +68,7 @@ extends AbstractRepOpResult
     return ret;
   }
 
-  public static ArtifactBasicResults add( final ArtifactBasicResults res, final ArtifactBasicMetadata key, final List<ArtifactBasicMetadata> result )
+  public static ArtifactBasicResults add( final ArtifactBasicResults res, final ArtifactMetadata key, final List<ArtifactMetadata> result )
   {
     ArtifactBasicResults ret = res;
     if( res == null )
@@ -79,7 +79,7 @@ extends AbstractRepOpResult
     return ret;
   }
 
-  public static ArtifactBasicResults add( final ArtifactBasicResults res, final ArtifactBasicMetadata key, final ArtifactBasicMetadata result )
+  public static ArtifactBasicResults add( final ArtifactBasicResults res, final ArtifactMetadata key, final ArtifactMetadata result )
   {
     ArtifactBasicResults ret = res;
     if( res == null )
@@ -90,12 +90,12 @@ extends AbstractRepOpResult
     return ret;
   }
   
-  private List<ArtifactBasicMetadata> getOrCreate( ArtifactBasicMetadata query )
+  private List<ArtifactMetadata> getOrCreate( ArtifactMetadata query )
   {
-    List<ArtifactBasicMetadata> res = _result.get( query );
+    List<ArtifactMetadata> res = _result.get( query );
     if( res == null )
     {
-      res = new ArrayList<ArtifactBasicMetadata>(8);
+      res = new ArrayList<ArtifactMetadata>(8);
       _result.put( query, res );
     }
     return res;
@@ -107,10 +107,10 @@ extends AbstractRepOpResult
    * @param query
    * @param result
    */
-  public void add( ArtifactBasicMetadata query, List<ArtifactBasicMetadata> result )
+  public void add( ArtifactMetadata query, List<ArtifactMetadata> result )
   {
-    List<ArtifactBasicMetadata> res = getOrCreate( query );
-    for( ArtifactBasicMetadata r : result )
+    List<ArtifactMetadata> res = getOrCreate( query );
+    for( ArtifactMetadata r : result )
     {
       if( res.contains( r ) )
         continue;
@@ -119,18 +119,18 @@ extends AbstractRepOpResult
     }
   }
   
-  public void add( ArtifactBasicMetadata query, ArtifactBasicMetadata result )
+  public void add( ArtifactMetadata query, ArtifactMetadata result )
   {
-    List<ArtifactBasicMetadata> res = getOrCreate( query );
+    List<ArtifactMetadata> res = getOrCreate( query );
     res.add( result );
   }
 
-  public Map< ArtifactBasicMetadata, List<ArtifactBasicMetadata>> getResults()
+  public Map< ArtifactMetadata, List<ArtifactMetadata>> getResults()
   {
     return _result;
   }
 
-  public List<ArtifactBasicMetadata> getResult( ArtifactBasicMetadata query )
+  public List<ArtifactMetadata> getResult( ArtifactMetadata query )
   {
     return _result.get( query );
   }
@@ -142,7 +142,7 @@ extends AbstractRepOpResult
   }
 
   @Override
-  public boolean hasResults( ArtifactBasicMetadata key )
+  public boolean hasResults( ArtifactMetadata key )
   {
     return ! _result.isEmpty() && _result.containsKey( key ) && ! _result.get( key ).isEmpty();
   }

@@ -23,8 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.apache.maven.mercury.MavenDependencyProcessor;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
@@ -128,7 +127,7 @@ System.out.println("Server: "+server.getURL() + " ==> " + basePath );
   {
     super.setUp();
 
-    query = new ArrayList<ArtifactBasicMetadata>();
+    query = new ArrayList<ArtifactMetadata>();
 
     startDavServer( _basePath, "mercury-test"  );
   }

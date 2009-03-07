@@ -22,7 +22,7 @@ package org.apache.maven.mercury.metadata;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.util.Util;
 
 /**
@@ -42,7 +42,7 @@ public class MetadataTreeArtifactFilterMap
         _vetos = vetos;
     }
     
-    public boolean veto( ArtifactBasicMetadata md )
+    public boolean veto( ArtifactMetadata md )
     {
         String key = md.toManagementString();
         

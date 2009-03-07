@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
@@ -118,7 +117,7 @@ class DependencyTreeBuilder
     }
 
     // ------------------------------------------------------------------------
-    public MetadataTreeNode buildTree( ArtifactBasicMetadata startMD, ArtifactScopeEnum treeScope )
+    public MetadataTreeNode buildTree( ArtifactMetadata startMD, ArtifactScopeEnum treeScope )
         throws MetadataTreeException
     {
         if ( startMD == null )
@@ -167,7 +166,7 @@ class DependencyTreeBuilder
         if ( artifacts == null )
             throw new MetadataTreeException( LANG.getMessage( "empty.md.collection" ) );
 
-        List<ArtifactBasicMetadata> startMDs = artifacts.getMetadataList();
+        List<ArtifactMetadata> startMDs = artifacts.getMetadataList();
         
         if ( Util.isEmpty( startMDs ) )
             throw new MetadataTreeException( LANG.getMessage( "empty.md.collection" ) );
@@ -176,7 +175,7 @@ class DependencyTreeBuilder
 
         if ( nodeCount == 1 && inclusions == null && exclusions == null )
         {
-            ArtifactBasicMetadata bmd = startMDs.get( 0 );
+            ArtifactMetadata bmd = startMDs.get( 0 );
             MetadataTreeNode rooty = buildTree( bmd, scope );
             List<ArtifactMetadata> res = resolveConflicts( rooty );
             return res;
@@ -190,7 +189,7 @@ class DependencyTreeBuilder
         
         if( _buildAllTrees )
         {
-            for ( ArtifactBasicMetadata bmd : startMDs )
+            for ( ArtifactMetadata bmd : startMDs )
             {
                 try
                 {
@@ -204,7 +203,7 @@ class DependencyTreeBuilder
            
                 if( inclusions != null )
                 {
-                    List<ArtifactBasicMetadata> inc = inclusions.getMetadataList();
+                    List<ArtifactMetadata> inc = inclusions.getMetadataList();
                     
                     if( bmd.hasInclusions() )
                         bmd.getInclusions().addAll( inc );
@@ -214,7 +213,7 @@ class DependencyTreeBuilder
                 
                 if( exclusions != null )
                 {
-                    List<ArtifactBasicMetadata> excl = exclusions.getMetadataList();
+                    List<ArtifactMetadata> excl = exclusions.getMetadataList();
                     
                     if( bmd.hasExclusions() )
                         bmd.getExclusions().addAll( excl );
@@ -250,8 +249,8 @@ class DependencyTreeBuilder
         return res;
     }
     // -----------------------------------------------------
-    private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent
-                                         , ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope
+    private MetadataTreeNode createNode( ArtifactMetadata nodeMD, MetadataTreeNode parent
+                                         , ArtifactMetadata nodeQuery, ArtifactScopeEnum globalScope
                                        )
         throws MetadataTreeException
     {
@@ -281,14 +280,14 @@ class DependencyTreeBuilder
 
             MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
 
-            List<ArtifactBasicMetadata> allDependencies = mr.getDependencies();
+            List<ArtifactMetadata> allDependencies = mr.getDependencies();
 
             if ( allDependencies == null || allDependencies.size() < 1 )
                 return node;
 
-            List<ArtifactBasicMetadata> dependencies = new ArrayList<ArtifactBasicMetadata>( allDependencies.size() );
+            List<ArtifactMetadata> dependencies = new ArrayList<ArtifactMetadata>( allDependencies.size() );
             if ( globalScope != null )
-                for ( ArtifactBasicMetadata md : allDependencies )
+                for ( ArtifactMetadata md : allDependencies )
                 {
                     ArtifactScopeEnum mdScope = md.getArtifactScope();
                     if ( globalScope.encloses( mdScope ) )
@@ -305,15 +304,15 @@ class DependencyTreeBuilder
             if( res == null )
                 throw new MetadataTreeException( LANG.getMessage( "no.versions", dependencies.toString() ) );
 
-            Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata>> expandedDeps = res.getResults();
+            Map<ArtifactMetadata, List<ArtifactMetadata>> expandedDeps = res.getResults();
 
-            for ( ArtifactBasicMetadata md : dependencies )
+            for ( ArtifactMetadata md : dependencies )
             {
 
                 if ( LOG.isDebugEnabled() )
                     LOG.debug( "node " + nodeQuery + ", dep " + md );
 
-                List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
+                List<ArtifactMetadata> versions = expandedDeps.get( md );
                 if ( versions == null || versions.size() < 1 )
                 {
                     if ( md.isOptional() )
@@ -325,7 +324,7 @@ class DependencyTreeBuilder
                 boolean noVersions = true;
                 boolean noGoodVersions = true;
 
-                for ( ArtifactBasicMetadata ver : versions )
+                for ( ArtifactMetadata ver : versions )
                 {
                     if ( veto( ver, _filters ) || vetoInclusionsExclusions( node, ver ) )
                     {
@@ -393,7 +392,7 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
-    private void checkForCircularDependency( ArtifactBasicMetadata md, MetadataTreeNode parent )
+    private void checkForCircularDependency( ArtifactMetadata md, MetadataTreeNode parent )
         throws MetadataTreeCircularDependencyException
     {
         MetadataTreeNode p = parent;
@@ -424,7 +423,7 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
-    private boolean veto( ArtifactBasicMetadata md, Collection<MetadataTreeArtifactFilter> filters )
+    private boolean veto( ArtifactMetadata md, Collection<MetadataTreeArtifactFilter> filters )
     {
         if ( filters != null && filters.size() > 1 )
             for ( MetadataTreeArtifactFilter filter : filters )
@@ -434,12 +433,12 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
-    private boolean vetoInclusionsExclusions( MetadataTreeNode node, ArtifactBasicMetadata ver )
+    private boolean vetoInclusionsExclusions( MetadataTreeNode node, ArtifactMetadata ver )
         throws VersionException
     {
         for ( MetadataTreeNode n = node; n != null; n = n.getParent() )
         {
-            ArtifactBasicMetadata md = n.getQuery();
+            ArtifactMetadata md = n.getQuery();
 
             if ( !md.allowDependency( ver ) ) // veto it
                 return true;

@@ -19,7 +19,6 @@
 package org.apache.maven.mercury.repository.local.m2;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -30,10 +29,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.artifact.Quality;
-import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.artifact.version.VersionComparator;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.artifact.version.VersionRange;
@@ -105,7 +103,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static ArtifactLocation calculateLocation( String root, ArtifactBasicMetadata bmd, AbstractRepOpResult res )
+    private static ArtifactLocation calculateLocation( String root, ArtifactMetadata bmd, AbstractRepOpResult res )
     {
         ArtifactLocation loc = new ArtifactLocation( root, bmd );
 
@@ -195,7 +193,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
+    public ArtifactResults readArtifacts( Collection<ArtifactMetadata> query )
         throws RepositoryException, IllegalArgumentException
     {
         if ( query == null || query.isEmpty() )
@@ -208,7 +206,7 @@ public class LocalRepositoryReaderM2
         if ( _repo.hasServer() && _repo.getServer().hasReaderStreamVerifierFactories() )
             vFacs = _repo.getServer().getReaderStreamVerifierFactories();
 
-        for ( ArtifactBasicMetadata bmd : query )
+        for ( ArtifactMetadata bmd : query )
         {
             DefaultArtifact da = bmd instanceof DefaultArtifact ? (DefaultArtifact) bmd : new DefaultArtifact( bmd );
 
@@ -360,7 +358,7 @@ public class LocalRepositoryReaderM2
     /**
    * 
    */
-    public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
+    public ArtifactBasicResults readDependencies( Collection<ArtifactMetadata> query )
         throws RepositoryException, IllegalArgumentException
     {
         if ( query == null || query.size() < 1 )
@@ -369,7 +367,7 @@ public class LocalRepositoryReaderM2
         ArtifactBasicResults ror = null;
 
         File pomFile = null;
-        for ( ArtifactBasicMetadata bmd : query )
+        for ( ArtifactMetadata bmd : query )
         {
             String pomPath =
                 bmd.getGroupId().replace( '.', '/' ) + "/" + bmd.getArtifactId() + "/" + ArtifactLocation.calculateVersionDir( bmd.getVersion() ) + "/"
@@ -385,7 +383,7 @@ public class LocalRepositoryReaderM2
 
             try
             {
-                List<ArtifactBasicMetadata> deps =
+                List<ArtifactMetadata> deps =
                     _mdProcessor.getDependencies( bmd, _mdReader == null ? this : _mdReader, System.getenv(),
                                                   System.getProperties() );
 // for(ArtifactBasicMetadata d : deps )
@@ -407,7 +405,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static boolean findLatestSnapshot( final ArtifactBasicMetadata bmd, final ArtifactLocation loc, AbstractRepOpResult res )
+    private static boolean findLatestSnapshot( final ArtifactMetadata bmd, final ArtifactLocation loc, AbstractRepOpResult res )
     {
         File binary = new File( loc.getAbsPath() );
 
@@ -461,7 +459,7 @@ public class LocalRepositoryReaderM2
     /**
      * direct disk search, no redirects - I cannot process pom files :(
      */
-    public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
+    public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
         throws RepositoryException, IllegalArgumentException
     {
         if ( query == null || query.size() < 1 )
@@ -470,7 +468,7 @@ public class LocalRepositoryReaderM2
         ArtifactBasicResults res = new ArtifactBasicResults( query.size() );
 
         File gaDir = null;
-        for ( ArtifactBasicMetadata bmd : query )
+        for ( ArtifactMetadata bmd : query )
         {
             gaDir = new File( _repoDir, bmd.getGroupId().replace( '.', '/' ) + "/" + bmd.getArtifactId() );
             if ( !gaDir.exists() )
@@ -499,7 +497,7 @@ public class LocalRepositoryReaderM2
                 if ( loc == null )
                     continue;
 
-                ArtifactBasicMetadata vmd = new ArtifactBasicMetadata();
+                ArtifactMetadata vmd = new ArtifactMetadata();
                 vmd.setGroupId( bmd.getGroupId() );
                 vmd.setArtifactId( bmd.getArtifactId() );
                 vmd.setClassifier( bmd.getClassifier() );
@@ -526,7 +524,7 @@ public class LocalRepositoryReaderM2
                 if ( !versionQuery.includes( vf.getName() ) )
                     continue;
 
-                ArtifactBasicMetadata vmd = new ArtifactBasicMetadata();
+                ArtifactMetadata vmd = new ArtifactMetadata();
                 vmd.setGroupId( bmd.getGroupId() );
                 vmd.setArtifactId( bmd.getArtifactId() );
                 vmd.setClassifier( bmd.getClassifier() );
@@ -540,20 +538,20 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
         return readRawData( bmd, classifier, type, false );
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
         return readRawData( relPathOf( bmd, classifier, type ), exempt );
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static String relPathOf( ArtifactBasicMetadata bmd, String classifier, String type )
+    private static String relPathOf( ArtifactMetadata bmd, String classifier, String type )
     {
         String bmdPath =
             bmd.getGroupId().replace( '.', '/' ) + '/' + bmd.getArtifactId() + '/' + ArtifactLocation.calculateVersionDir( bmd.getVersion() );

@@ -21,7 +21,7 @@ package org.apache.maven.mercury.artifact.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * generic interface to be implemented by helper components
@@ -54,6 +54,6 @@ public interface ArtifactListProcessor
      *
      * @throws ArtifactListProcessorException
      */
-    public List<ArtifactBasicMetadata> process( List<ArtifactBasicMetadata> artifacts )
+    public List<ArtifactMetadata> process( List<ArtifactMetadata> artifacts )
         throws ArtifactListProcessorException;
 }

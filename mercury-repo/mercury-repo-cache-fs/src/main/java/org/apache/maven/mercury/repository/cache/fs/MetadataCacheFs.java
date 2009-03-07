@@ -24,11 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactCoordinates;
-import org.apache.maven.mercury.artifact.Quality;
-import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.event.EventManager;
 import org.apache.maven.mercury.event.EventTypeEnum;
 import org.apache.maven.mercury.event.GenericEvent;
@@ -348,7 +345,7 @@ implements RepositoryMetadataCache
     }
   }
 
-  public byte[] findRaw( ArtifactBasicMetadata bmd )
+  public byte[] findRaw( ArtifactMetadata bmd )
   throws MetadataCacheException
   {
     GenericEvent event = null;
@@ -401,7 +398,7 @@ implements RepositoryMetadataCache
     }
   }
 
-  public void saveRaw( ArtifactBasicMetadata bmd, byte[] rawBytes )
+  public void saveRaw( ArtifactMetadata bmd, byte[] rawBytes )
   throws MetadataCacheException
   {
     GenericEvent event = null;

@@ -18,7 +18,7 @@
  */
 package org.apache.maven.mercury.repository.api;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
@@ -75,13 +75,13 @@ implements RepositoryReader, MetadataReader
     return _mdCache != null;
   }
   
-  public byte[] readMetadata( ArtifactBasicMetadata bmd, boolean exempt  )
+  public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt  )
   throws MetadataReaderException
   {
     return readRawData( bmd, "", "pom", exempt );
   }
   
-  public byte[] readMetadata( ArtifactBasicMetadata bmd )
+  public byte[] readMetadata( ArtifactMetadata bmd )
   throws MetadataReaderException
   {
     return readMetadata( bmd, false );

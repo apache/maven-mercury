@@ -28,15 +28,15 @@ import java.util.List;
  */
 public abstract class ArtifactMetadataList
 {
-    List<ArtifactBasicMetadata> _artifacts = new ArrayList<ArtifactBasicMetadata>( 8 );
+    List<ArtifactMetadata> _artifacts = new ArrayList<ArtifactMetadata>( 8 );
 
-    public ArtifactMetadataList( ArtifactBasicMetadata... md )
+    public ArtifactMetadataList( ArtifactMetadata... md )
     {
-        for ( ArtifactBasicMetadata m : md )
+        for ( ArtifactMetadata m : md )
             add( m );
     }
 
-    public ArtifactMetadataList( Collection<ArtifactBasicMetadata> md )
+    public ArtifactMetadataList( Collection<ArtifactMetadata> md )
     {
         add( md );
     }
@@ -44,33 +44,33 @@ public abstract class ArtifactMetadataList
     public ArtifactMetadataList( String... mds )
     {
         for ( String m : mds )
-            add( new ArtifactBasicMetadata( m ) );
+            add( new ArtifactMetadata( m ) );
     }
 
-    public void add( ArtifactBasicMetadata md )
+    public void add( ArtifactMetadata md )
     {
         _artifacts.add( md );
     }
 
-    public void add( Collection<ArtifactBasicMetadata> md )
+    public void add( Collection<ArtifactMetadata> md )
     {
         _artifacts.addAll( md );
     }
 
     public void addGav( String md )
     {
-        _artifacts.add( new ArtifactBasicMetadata( md ) );
+        _artifacts.add( new ArtifactMetadata( md ) );
     }
 
     public void addByGav( Collection<String> mds )
     {
         for ( String m : mds )
         {
-            _artifacts.add( new ArtifactBasicMetadata( m ) );
+            _artifacts.add( new ArtifactMetadata( m ) );
         }
     }
 
-    public List<ArtifactBasicMetadata> getMetadataList()
+    public List<ArtifactMetadata> getMetadataList()
     {
         return _artifacts;
     }

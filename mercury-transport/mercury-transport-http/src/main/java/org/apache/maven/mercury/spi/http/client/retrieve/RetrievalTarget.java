@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
-
 import org.apache.maven.mercury.crypto.api.StreamObserver;
 import org.apache.maven.mercury.crypto.api.StreamVerifier;
 import org.apache.maven.mercury.crypto.api.StreamVerifierException;
@@ -39,6 +37,7 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.spi.http.client.FileExchange;
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
+import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
 import org.apache.maven.mercury.spi.http.client.SecureSender;
 import org.apache.maven.mercury.spi.http.validate.Validator;
 import org.apache.maven.mercury.transport.api.Binding;

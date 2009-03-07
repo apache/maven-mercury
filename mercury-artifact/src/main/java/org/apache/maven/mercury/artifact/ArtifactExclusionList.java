@@ -31,7 +31,7 @@ public class ArtifactExclusionList
     /**
      * @param md
      */
-    public ArtifactExclusionList( ArtifactBasicMetadata... md )
+    public ArtifactExclusionList( ArtifactMetadata... md )
     {
         super( md );
     }
@@ -39,7 +39,7 @@ public class ArtifactExclusionList
     /**
      * @param md
      */
-    public ArtifactExclusionList( Collection<ArtifactBasicMetadata> md )
+    public ArtifactExclusionList( Collection<ArtifactMetadata> md )
     {
         super( md );
     }

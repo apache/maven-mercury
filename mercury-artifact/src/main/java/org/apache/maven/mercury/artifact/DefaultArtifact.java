@@ -36,18 +36,7 @@ public class DefaultArtifact
 
     private byte[] pomBlob;
 
-    public DefaultArtifact( String groupId, String artifactId, String version, String type, String classifier,
-                            boolean optional, String scope, String inheritedScope )
-    {
-        if ( version == null )
-        {
-            throw new IllegalArgumentException( "Version cannot be null." );
-        }
-
-        initialize( groupId, artifactId, version, type, classifier, optional, scope, inheritedScope );
-    }
-
-    public DefaultArtifact( ArtifactBasicMetadata bmd )
+    public DefaultArtifact( ArtifactMetadata bmd )
     {
         if ( bmd.getVersion() == null )
         {

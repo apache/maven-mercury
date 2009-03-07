@@ -25,7 +25,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.QualityRange;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
@@ -53,9 +53,9 @@ extends TestCase
   Repository repo;
   DependencyProcessor mdProcessor;
   RepositoryReader reader;
-  List<ArtifactBasicMetadata> query;
+  List<ArtifactMetadata> query;
   
-  ArtifactBasicMetadata bmd;
+  ArtifactMetadata bmd;
   
   private static final String publicKeyFile = "/pgp/pubring.gpg";
   private static final String secretKeyFile = "/pgp/secring.gpg";
@@ -88,7 +88,7 @@ extends TestCase
   public void testReadReleaseVersion()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:[3,3]");
+    bmd = new ArtifactMetadata("a:a:[3,3]");
     query.add( bmd );
     
     ArtifactBasicResults res = reader.readVersions( query );
@@ -99,7 +99,7 @@ extends TestCase
     
     assertEquals( 1, res.getResults().size() );
     
-    List<ArtifactBasicMetadata> ror = res.getResult( bmd );
+    List<ArtifactMetadata> ror = res.getResult( bmd );
     
     assertNotNull( ror );
     
@@ -116,7 +116,7 @@ extends TestCase
   {
     repo.setRepositoryQualityRange( QualityRange.RELEASES_ONLY );
   
-    bmd = new ArtifactBasicMetadata("a:a:[3,)");
+    bmd = new ArtifactMetadata("a:a:[3,)");
     query.add( bmd );
     
     ArtifactBasicResults res = reader.readVersions( query );
@@ -131,12 +131,12 @@ extends TestCase
     
     assertEquals( 1, res.getResults().size() );
     
-    List<ArtifactBasicMetadata> qr = res.getResult( bmd );
+    List<ArtifactMetadata> qr = res.getResult( bmd );
     
     assertNotNull( qr );
     assertTrue( qr.size() > 1 );
     
-    assertFalse( qr.contains( new ArtifactBasicMetadata("a:a:5-SNAPSHOT") ) );
+    assertFalse( qr.contains( new ArtifactMetadata("a:a:5-SNAPSHOT") ) );
     
     System.out.println("query "+bmd+"->"+qr);
     
@@ -146,25 +146,25 @@ extends TestCase
     assertFalse( depRes.hasExceptions() );
     assertTrue( depRes.hasResults() );
     
-    ArtifactBasicMetadata a3 = new ArtifactBasicMetadata("a:a:3");
+    ArtifactMetadata a3 = new ArtifactMetadata("a:a:3");
     
     assertTrue( depRes.hasResults( a3 ) );
     
-    List<ArtifactBasicMetadata> deps = depRes.getResult( a3 );
+    List<ArtifactMetadata> deps = depRes.getResult( a3 );
     assertNotNull( deps );
     assertFalse( deps.isEmpty() );
 
     System.out.println(deps);
 
-    assertTrue( deps.contains( new ArtifactBasicMetadata("b:b:2") ) );
-    assertTrue( deps.contains( new ArtifactBasicMetadata("c:c:(1,)") ) );
+    assertTrue( deps.contains( new ArtifactMetadata("b:b:2") ) );
+    assertTrue( deps.contains( new ArtifactMetadata("c:c:(1,)") ) );
     
   }
   //------------------------------------------------------------------------------
   public void testReadArtifacts()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:3");
+    bmd = new ArtifactMetadata("a:a:3");
     query.add( bmd );
 
     ArtifactResults ror = reader.readArtifacts( query );
@@ -193,7 +193,7 @@ extends TestCase
   public void testReadSnapshot()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:5-SNAPSHOT");
+    bmd = new ArtifactMetadata("a:a:5-SNAPSHOT");
     query.add( bmd );
 
     ArtifactResults ror = reader.readArtifacts( query );
@@ -223,7 +223,7 @@ extends TestCase
   public void testReadSnapshotTS()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:5-20080807.234713-11");
+    bmd = new ArtifactMetadata("a:a:5-20080807.234713-11");
     query.add( bmd );
 
     ArtifactResults ror = reader.readArtifacts( query );
@@ -253,7 +253,7 @@ extends TestCase
   public void testReadVersionsLatest()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:LATEST");
+    bmd = new ArtifactMetadata("a:a:LATEST");
     query.add( bmd );
 
     ArtifactBasicResults ror = reader.readVersions( query );
@@ -262,9 +262,9 @@ extends TestCase
     
     if( ror.hasExceptions() )
     {
-      Map<ArtifactBasicMetadata, Exception> exs = ror.getExceptions();
+      Map<ArtifactMetadata, Exception> exs = ror.getExceptions();
       
-      for( ArtifactBasicMetadata bmd : exs.keySet() )
+      for( ArtifactMetadata bmd : exs.keySet() )
       {
         System.out.println( "\n==========> "+bmd.toString());
         exs.get( bmd ).printStackTrace();
@@ -274,18 +274,18 @@ extends TestCase
     assertFalse( ror.hasExceptions() );
     assertTrue( ror.hasResults() );
     
-    List<ArtifactBasicMetadata> deps = ror.getResult(bmd);
+    List<ArtifactMetadata> deps = ror.getResult(bmd);
     
     assertNotNull( deps );
     assertEquals( 1, deps.size() );
-    assertTrue( deps.contains( new ArtifactBasicMetadata("a:a:5-SNAPSHOT") ) );
+    assertTrue( deps.contains( new ArtifactMetadata("a:a:5-SNAPSHOT") ) );
     
   }
   //------------------------------------------------------------------------------
   public void testReadVersionsRelease()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:RELEASE");
+    bmd = new ArtifactMetadata("a:a:RELEASE");
     query.add( bmd );
 
     ArtifactBasicResults ror = reader.readVersions( query );
@@ -298,18 +298,18 @@ extends TestCase
     assertFalse( ror.hasExceptions() );
     assertTrue( ror.hasResults() );
     
-    List<ArtifactBasicMetadata> deps = ror.getResult(bmd);
+    List<ArtifactMetadata> deps = ror.getResult(bmd);
     
     assertNotNull( deps );
     assertEquals( 1, deps.size() );
-    assertTrue( deps.contains( new ArtifactBasicMetadata("a:a:4") ) );
+    assertTrue( deps.contains( new ArtifactMetadata("a:a:4") ) );
     
   }
   //------------------------------------------------------------------------------
   public void testReadLatest()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:LATEST");
+    bmd = new ArtifactMetadata("a:a:LATEST");
     query.add( bmd );
 
     ArtifactResults ror = reader.readArtifacts( query );
@@ -342,7 +342,7 @@ extends TestCase
   public void testReadRelease()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:RELEASE");
+    bmd = new ArtifactMetadata("a:a:RELEASE");
     query.add( bmd );
 
     ArtifactResults ror = reader.readArtifacts( query );
@@ -387,7 +387,7 @@ extends TestCase
     if( goodOs )
       server.setReaderStreamVerifierFactories(factories);
 
-    bmd = new ArtifactBasicMetadata("a:a:4");
+    bmd = new ArtifactMetadata("a:a:4");
     query.add( bmd );
 
     ArtifactResults ror = reader.readArtifacts( query );
@@ -432,7 +432,7 @@ extends TestCase
     
     server.setReaderStreamVerifierFactories(factories);
 
-    bmd = new ArtifactBasicMetadata("a:a:3");
+    bmd = new ArtifactMetadata("a:a:3");
     query.add( bmd );
 
     ArtifactResults ror = null;
@@ -465,7 +465,7 @@ extends TestCase
                   );
     server.setReaderStreamVerifierFactories(factories);
 
-    bmd = new ArtifactBasicMetadata("a:a:2");
+    bmd = new ArtifactMetadata("a:a:2");
     query.add( bmd );
 
     ArtifactResults ror = null;
@@ -502,7 +502,7 @@ extends TestCase
       server.setReaderStreamVerifierFactories(factories);
     }
 
-    bmd = new ArtifactBasicMetadata("a:a:3");
+    bmd = new ArtifactMetadata("a:a:3");
     query.add( bmd );
 
     ArtifactResults ror = null;

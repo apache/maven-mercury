@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.logging.IMercuryLogger;
@@ -68,12 +67,12 @@ public class MetadataTreeNode
   /**
    * query node - the one that originated this actual node
    */
-  ArtifactBasicMetadata query;
+  ArtifactMetadata query;
 
   /**
    * queries - one per POM dependency
    */
-  List<ArtifactBasicMetadata> queries;
+  List<ArtifactMetadata> queries;
 
   /**
    * actual found versions
@@ -135,7 +134,7 @@ if( LOG.isDebugEnabled() )
    */
   public MetadataTreeNode( ArtifactMetadata md
                            , MetadataTreeNode parent
-                           , ArtifactBasicMetadata query
+                           , ArtifactMetadata query
                          )
   {
         if ( md != null )
@@ -172,7 +171,7 @@ if( LOG.isDebugEnabled() )
   /**
    * dependencies are ordered in the POM - they should be added in the POM order
    */
-  public MetadataTreeNode addQuery( ArtifactBasicMetadata query )
+  public MetadataTreeNode addQuery( ArtifactMetadata query )
   {
       if ( query == null )
       {
@@ -181,7 +180,7 @@ if( LOG.isDebugEnabled() )
 
       if( queries == null )
       {
-        queries = new ArrayList<ArtifactBasicMetadata>( DEFAULT_CHILDREN_COUNT );
+        queries = new ArrayList<ArtifactMetadata>( DEFAULT_CHILDREN_COUNT );
       }
               
       queries.add( query );
@@ -256,12 +255,12 @@ if( LOG.isDebugEnabled() )
         return optional;
     }
     
-    public ArtifactBasicMetadata getQuery()
+    public ArtifactMetadata getQuery()
     {
       return query;
     }
     
-    public List<ArtifactBasicMetadata> getQueries()
+    public List<ArtifactMetadata> getQueries()
     {
       return queries;
     }

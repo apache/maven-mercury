@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
@@ -69,9 +69,9 @@ extends TestCase
   File localRepoBase;
   RepositoryWriter writer;
 
-  List<ArtifactBasicMetadata> query;
+  List<ArtifactMetadata> query;
   
-  ArtifactBasicMetadata bmd;
+  ArtifactMetadata bmd;
   
   Server server;
   
@@ -100,7 +100,7 @@ extends TestCase
     lr = new LocalRepositoryM2( "lr", localRepoBase, new MavenDependencyProcessor() );
     writer = lr.getWriter(); 
 
-    query = new ArrayList<ArtifactBasicMetadata>();
+    query = new ArrayList<ArtifactMetadata>();
   }
 
   protected void tearDown()
@@ -114,7 +114,7 @@ extends TestCase
   public void testOneArtifact()
   throws IllegalArgumentException, RepositoryException
   {
-    bmd = new ArtifactBasicMetadata("a:a:4");
+    bmd = new ArtifactMetadata("a:a:4");
     query.add( bmd );
     
     ArtifactResults res = reader.readArtifacts( query );
@@ -123,7 +123,7 @@ extends TestCase
     assertFalse( res.hasExceptions() );
     assertTrue( res.hasResults() );
     
-    Map< ArtifactBasicMetadata, List<Artifact>> resMap = res.getResults();
+    Map< ArtifactMetadata, List<Artifact>> resMap = res.getResults();
     
     assertNotNull( resMap );
     assertFalse( resMap.isEmpty() );
@@ -151,7 +151,7 @@ extends TestCase
   public void testOneArtifactWithClassifier()
   throws IllegalArgumentException, RepositoryException
   {
-    ArtifactBasicMetadata bm = new ArtifactBasicMetadata("a:a:4:sources");
+    ArtifactMetadata bm = new ArtifactMetadata("a:a:4:sources");
     query.add( bm );
     
     ArtifactResults res = reader.readArtifacts( query );
@@ -160,7 +160,7 @@ extends TestCase
     assertFalse( res.hasExceptions() );
     assertTrue( res.hasResults() );
     
-    Map< ArtifactBasicMetadata, List<Artifact>> resMap = res.getResults();
+    Map< ArtifactMetadata, List<Artifact>> resMap = res.getResults();
     
     assertNotNull( resMap );
     assertFalse( resMap.isEmpty() );

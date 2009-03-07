@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
@@ -200,7 +199,7 @@ public class DefaultPlexusMercury
 
     // ---------------------------------------------------------------
     // ---------------------------------------------------------------
-    public List<Artifact> read( List<Repository> repos, List<? extends ArtifactBasicMetadata> artifacts )
+    public List<Artifact> read( List<Repository> repos, List<? extends ArtifactMetadata> artifacts )
         throws RepositoryException
     {
         if ( Util.isEmpty( repos ) )
@@ -219,17 +218,17 @@ public class DefaultPlexusMercury
         if ( !ar.hasResults() )
             return null;
 
-        Map<ArtifactBasicMetadata, List<Artifact>> am = ar.getResults();
+        Map<ArtifactMetadata, List<Artifact>> am = ar.getResults();
 
         List<Artifact> al = new ArrayList<Artifact>();
-        for ( Map.Entry<ArtifactBasicMetadata, List<Artifact>> e : am.entrySet() )
+        for ( Map.Entry<ArtifactMetadata, List<Artifact>> e : am.entrySet() )
             al.addAll( e.getValue() );
 
         return al;
 
     }
 
-    public List<Artifact> read( List<Repository> repos, ArtifactBasicMetadata... artifacts )
+    public List<Artifact> read( List<Repository> repos, ArtifactMetadata... artifacts )
         throws RepositoryException
     {
         return read( repos, Arrays.asList( artifacts ) );
@@ -295,11 +294,11 @@ public class DefaultPlexusMercury
      * @return list of found version metadatas
      * @throws PlexusMercuryException
      */
-    public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
+    public List<ArtifactMetadata> readVersions( List<Repository> repos, ArtifactMetadata query )
         throws RepositoryException
     {
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-        List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>( 1 );
+        List<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>( 1 );
         q.add( query );
 
         ArtifactBasicResults res = vr.readVersions( q );

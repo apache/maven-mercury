@@ -31,7 +31,7 @@ public class ArtifactInclusionList
     /**
      * @param md
      */
-    public ArtifactInclusionList( ArtifactBasicMetadata... md )
+    public ArtifactInclusionList( ArtifactMetadata... md )
     {
         super( md );
     }
@@ -39,7 +39,7 @@ public class ArtifactInclusionList
     /**
      * @param md
      */
-    public ArtifactInclusionList( Collection<ArtifactBasicMetadata> md )
+    public ArtifactInclusionList( Collection<ArtifactMetadata> md )
     {
         super( md );
     }

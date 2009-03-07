@@ -20,7 +20,7 @@ package org.apache.maven.mercury.artifact.version;
 
 import java.util.Comparator;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -31,11 +31,11 @@ import org.codehaus.plexus.lang.Language;
  * @version $Id$
  */
 public class MetadataVersionComparator
-    implements Comparator<ArtifactBasicMetadata>
+    implements Comparator<ArtifactMetadata>
 {
     private static final Language _lang = new DefaultLanguage( MetadataVersionComparator.class );
 
-    public int compare( ArtifactBasicMetadata v1, ArtifactBasicMetadata v2 )
+    public int compare( ArtifactMetadata v1, ArtifactMetadata v2 )
     {
         if ( v1 == null || v2 == null )
         {

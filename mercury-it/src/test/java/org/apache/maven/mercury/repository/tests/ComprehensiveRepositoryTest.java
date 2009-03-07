@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
@@ -197,7 +197,7 @@ extends PlexusTestCase
     public void writeArtifact( String name, File af, File ap, Repository repo, File expectedFile )
     throws Exception
     {
-        DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata(name) );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata(name) );
         
         da.setPomBlob( FileUtil.readRawData( ap ) );
         da.setFile( af );
@@ -222,9 +222,9 @@ extends PlexusTestCase
     public List<Artifact> readArtifact( String name , List<Repository> repos )
     throws Exception
     {
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata(name);
+        ArtifactMetadata bmd = new ArtifactMetadata(name);
         
-        List<ArtifactBasicMetadata> al = new ArrayList<ArtifactBasicMetadata>();
+        List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
         al.add( bmd );
         
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
@@ -241,12 +241,12 @@ extends PlexusTestCase
         return res.getResults( bmd );
     }
     
-    public List<ArtifactBasicMetadata> readVersions( String name , List<Repository> repos )
+    public List<ArtifactMetadata> readVersions( String name , List<Repository> repos )
     throws Exception
     {
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata(name);
+        ArtifactMetadata bmd = new ArtifactMetadata(name);
         
-        List<ArtifactBasicMetadata> al = new ArrayList<ArtifactBasicMetadata>();
+        List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
         al.add( bmd );
         
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
@@ -473,7 +473,7 @@ extends PlexusTestCase
         writeArtifact( nameTS2, af, ap, _rr2, null );
         writeArtifact( nameSN, af, ap, _rr2, null );
         
-        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         
@@ -514,7 +514,7 @@ extends PlexusTestCase
         aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
         writeArtifact( nameTS2, af, ap, _rr1, aJar );
         
-        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         
@@ -555,7 +555,7 @@ extends PlexusTestCase
         aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
         writeArtifact( nameTS2, af, ap, _rr2, aJar );
         
-        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         

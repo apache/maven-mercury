@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.util.FileUtil;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -67,7 +67,7 @@ implements Storage
         this( null );
     }
 
-    public void add( ArtifactBasicMetadata bmd, Artifact artifact )
+    public void add( ArtifactMetadata bmd, Artifact artifact )
     {
         if( _artifacts == null )
             _artifacts = new HashMap<String, Artifact>(32);
@@ -75,7 +75,7 @@ implements Storage
         _artifacts.put( bmd.toString(), artifact );
     }
 
-    public Artifact findArtifact( ArtifactBasicMetadata bmd )
+    public Artifact findArtifact( ArtifactMetadata bmd )
     {
         if( _artifacts == null )
             return null;
