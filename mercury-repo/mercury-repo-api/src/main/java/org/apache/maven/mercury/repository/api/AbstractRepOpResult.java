@@ -74,9 +74,9 @@ public abstract class AbstractRepOpResult
 
         if ( _exceptions == null )
             _exceptions = new HashMap<ArtifactMetadata, Exception>( 8 );
-        
-        for( ArtifactMetadata bmd : res.getExceptions().keySet() )
-           _exceptions.put( bmd, res.getError( bmd ) );
+
+        for ( ArtifactMetadata bmd : res.getExceptions().keySet() )
+            _exceptions.put( bmd, res.getError( bmd ) );
     }
 
     public Exception getError( ArtifactMetadata key )

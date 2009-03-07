@@ -46,7 +46,7 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.metadata.MetadataTreeException;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -301,7 +301,7 @@ public class DefaultPlexusMercury
         List<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>( 1 );
         q.add( query );
 
-        ArtifactBasicResults res = vr.readVersions( q );
+        MetadataResults res = vr.readVersions( q );
 
         if ( res == null )
             return null;

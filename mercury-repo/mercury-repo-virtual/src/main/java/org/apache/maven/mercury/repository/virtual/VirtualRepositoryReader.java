@@ -44,7 +44,7 @@ import org.apache.maven.mercury.event.GenericEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.RemoteRepository;
@@ -266,7 +266,7 @@ public class VirtualRepositoryReader
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
-    public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
+    public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws IllegalArgumentException, RepositoryException
     {
         if ( query == null )
@@ -286,7 +286,7 @@ public class VirtualRepositoryReader
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_VERSIONS );
             }
 
-            ArtifactBasicResults res = null;
+            MetadataResults res = null;
             ArtifactListProcessor tp = _processors == null ? null : _processors.get( ArtifactListProcessor.FUNCTION_TP );
 
             GenericEvent eventRead = null;
@@ -311,7 +311,7 @@ public class VirtualRepositoryReader
                                               rr.getRepository().getId() );
                     }
 
-                    ArtifactBasicResults repoRes = rr.readVersions( qList );
+                    MetadataResults repoRes = rr.readVersions( qList );
 
                     if ( repoRes != null && repoRes.hasExceptions() )
                     {
@@ -353,7 +353,7 @@ public class VirtualRepositoryReader
 
                             if ( res == null )
                             {
-                                res = new ArtifactBasicResults( key, rorRes );
+                                res = new MetadataResults( key, rorRes );
                             }
                             else
                             {
@@ -422,7 +422,7 @@ public class VirtualRepositoryReader
         }
     }
 
-    private void processSingletons( ArtifactBasicResults res )
+    private void processSingletons( MetadataResults res )
     {
         if ( !res.hasResults() )
         {
@@ -515,7 +515,7 @@ public class VirtualRepositoryReader
                                               rr.getRepository().getId() );
                     }
 
-                    ArtifactBasicResults res = rr.readDependencies( query );
+                    MetadataResults res = rr.readDependencies( query );
 
                     if ( res != null )
                     {
@@ -749,7 +749,7 @@ public class VirtualRepositoryReader
 
                 if ( virtuals != null )
                 {
-                    ArtifactBasicResults virtRes = readVersions( virtuals );
+                    MetadataResults virtRes = readVersions( virtuals );
 
                     leftovers.removeAll( virtuals );
 
@@ -970,7 +970,7 @@ public class VirtualRepositoryReader
 
                 try
                 {
-                    ArtifactBasicResults vRes = readVersions( query );
+                    MetadataResults vRes = readVersions( query );
                     if ( Util.isEmpty( vRes ) )
                     {
                         if ( LOG.isDebugEnabled() )

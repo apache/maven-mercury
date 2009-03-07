@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
@@ -114,7 +114,7 @@ extends TestCase
     ArtifactMetadata bmd = new ArtifactMetadata("a:a:[1,)");
     List<ArtifactMetadata> q = THelper.toList( bmd );
     
-    ArtifactBasicResults vres = _vr.readVersions( q );
+    MetadataResults vres = _vr.readVersions( q );
      
     assertNotNull( vres );
      
@@ -190,7 +190,7 @@ extends TestCase
     ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
     List<ArtifactMetadata> q = THelper.toList( bmd );
     
-    ArtifactBasicResults vres = null;
+    MetadataResults vres = null;
     try
     {
         vres = _vr.readVersions( q );

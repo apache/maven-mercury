@@ -48,7 +48,7 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.AbstracRepositoryReader;
 import org.apache.maven.mercury.repository.api.AbstractRepOpResult;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.Repository;
@@ -358,13 +358,13 @@ public class LocalRepositoryReaderM2
     /**
    * 
    */
-    public ArtifactBasicResults readDependencies( Collection<ArtifactMetadata> query )
+    public MetadataResults readDependencies( Collection<ArtifactMetadata> query )
         throws RepositoryException, IllegalArgumentException
     {
         if ( query == null || query.size() < 1 )
             return null;
 
-        ArtifactBasicResults ror = null;
+        MetadataResults ror = null;
 
         File pomFile = null;
         for ( ArtifactMetadata bmd : query )
@@ -390,7 +390,7 @@ public class LocalRepositoryReaderM2
 // {
 // System.out.println("======> "+d.getScope() );
 // }
-                ror = ArtifactBasicResults.add( ror, bmd, deps );
+                ror = MetadataResults.add( ror, bmd, deps );
             }
             catch ( Exception e )
             {
@@ -459,13 +459,13 @@ public class LocalRepositoryReaderM2
     /**
      * direct disk search, no redirects - I cannot process pom files :(
      */
-    public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
+    public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws RepositoryException, IllegalArgumentException
     {
         if ( query == null || query.size() < 1 )
             return null;
 
-        ArtifactBasicResults res = new ArtifactBasicResults( query.size() );
+        MetadataResults res = new MetadataResults( query.size() );
 
         File gaDir = null;
         for ( ArtifactMetadata bmd : query )
@@ -483,7 +483,7 @@ public class LocalRepositoryReaderM2
             }
             catch ( VersionException e )
             {
-                res = ArtifactBasicResults.add( res, bmd, new RepositoryException( e ) );
+                res = MetadataResults.add( res, bmd, new RepositoryException( e ) );
                 continue;
             }
 
@@ -504,7 +504,7 @@ public class LocalRepositoryReaderM2
                 vmd.setType( bmd.getType() );
                 vmd.setVersion( loc.getVersion() );
 
-                res = ArtifactBasicResults.add( res, bmd, vmd );
+                res = MetadataResults.add( res, bmd, vmd );
 
                 continue;
 
@@ -531,7 +531,7 @@ public class LocalRepositoryReaderM2
                 vmd.setType( bmd.getType() );
                 vmd.setVersion( vf.getName() );
 
-                res = ArtifactBasicResults.add( res, bmd, vmd );
+                res = MetadataResults.add( res, bmd, vmd );
             }
         }
         return res;

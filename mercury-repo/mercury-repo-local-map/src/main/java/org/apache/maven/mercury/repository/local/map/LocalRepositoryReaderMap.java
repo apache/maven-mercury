@@ -30,7 +30,7 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.AbstracRepositoryReader;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -151,7 +151,7 @@ public class LocalRepositoryReaderMap
         return readRawData( key, exempt );
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public ArtifactBasicResults readDependencies( Collection<ArtifactMetadata> query )
+    public MetadataResults readDependencies( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         if( Util.isEmpty( query ) )
@@ -159,7 +159,7 @@ public class LocalRepositoryReaderMap
         
         DependencyProcessor dp = _repo.getDependencyProcessor();
         
-        ArtifactBasicResults res = new ArtifactBasicResults( query.size() );
+        MetadataResults res = new MetadataResults( query.size() );
         
         for( ArtifactMetadata bmd : query )
         {
@@ -182,7 +182,7 @@ public class LocalRepositoryReaderMap
         return res;
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
+    public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         return null;

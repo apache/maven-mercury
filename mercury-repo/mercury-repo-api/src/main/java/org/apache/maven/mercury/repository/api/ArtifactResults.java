@@ -27,69 +27,67 @@ import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
  */
 public class ArtifactResults
-extends AbstractRepOpResult
+    extends AbstractRepOpResult
 {
-  Map< ArtifactMetadata, List<Artifact>> _result = new HashMap<ArtifactMetadata, List<Artifact>>(8);
+    Map<ArtifactMetadata, List<Artifact>> _result = new HashMap<ArtifactMetadata, List<Artifact>>( 8 );
 
-  public ArtifactResults()
-  {
-  }
-  
-  public ArtifactResults( ArtifactMetadata query, List<Artifact> result )
-  {
-    this._result.put( query, result );
-  }
-  
-  public void add( ArtifactMetadata query, Artifact result )
-  {
-    List<Artifact> res = _result.get( query );
-    if( res == null )
+    public ArtifactResults()
     {
-      res = new ArrayList<Artifact>(8);
-      _result.put( query, res );
     }
 
-    res.add( result );
-  }
-  
-  public void addAll( ArtifactMetadata query, List<Artifact> result )
-  {
-    List<Artifact> res = _result.get( query );
-    if( res == null )
+    public ArtifactResults( ArtifactMetadata query, List<Artifact> result )
     {
-      res = new ArrayList<Artifact>(8);
-      _result.put( query, res );
+        this._result.put( query, result );
     }
 
-    res.addAll( result );
-  }
+    public void add( ArtifactMetadata query, Artifact result )
+    {
+        List<Artifact> res = _result.get( query );
+        if ( res == null )
+        {
+            res = new ArrayList<Artifact>( 8 );
+            _result.put( query, res );
+        }
 
-  public Map< ArtifactMetadata, List<Artifact>> getResults()
-  {
-    return _result;
-  }
+        res.add( result );
+    }
 
-  public List<Artifact> getResults( ArtifactMetadata query )
-  {
-    return _result.get( query );
-  }
+    public void addAll( ArtifactMetadata query, List<Artifact> result )
+    {
+        List<Artifact> res = _result.get( query );
+        if ( res == null )
+        {
+            res = new ArrayList<Artifact>( 8 );
+            _result.put( query, res );
+        }
 
-  @Override
-  public boolean hasResults()
-  {
-    return ! _result.isEmpty();
-  }
+        res.addAll( result );
+    }
 
-  @Override
-  public boolean hasResults( ArtifactMetadata key )
-  {
-    return ! _result.isEmpty() && _result.containsKey( key ) && ! _result.get( key ).isEmpty();
-  }
-  
+    public Map<ArtifactMetadata, List<Artifact>> getResults()
+    {
+        return _result;
+    }
+
+    public List<Artifact> getResults( ArtifactMetadata query )
+    {
+        return _result.get( query );
+    }
+
+    @Override
+    public boolean hasResults()
+    {
+        return !_result.isEmpty();
+    }
+
+    @Override
+    public boolean hasResults( ArtifactMetadata key )
+    {
+        return !_result.isEmpty() && _result.containsKey( key ) && !_result.get( key ).isEmpty();
+    }
+
 }

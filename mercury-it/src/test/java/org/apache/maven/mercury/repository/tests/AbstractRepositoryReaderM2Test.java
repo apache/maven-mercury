@@ -33,7 +33,7 @@ import org.apache.maven.mercury.crypto.api.StreamVerifierException;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
 import org.apache.maven.mercury.crypto.sha.SHA1VerifierFactory;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -91,7 +91,7 @@ extends TestCase
     bmd = new ArtifactMetadata("a:a:[3,3]");
     query.add( bmd );
     
-    ArtifactBasicResults res = reader.readVersions( query );
+    MetadataResults res = reader.readVersions( query );
     
     assertNotNull( res );
     assertFalse( res.hasExceptions() );
@@ -119,7 +119,7 @@ extends TestCase
     bmd = new ArtifactMetadata("a:a:[3,)");
     query.add( bmd );
     
-    ArtifactBasicResults res = reader.readVersions( query );
+    MetadataResults res = reader.readVersions( query );
     
     assertNotNull( res );
     
@@ -140,7 +140,7 @@ extends TestCase
     
     System.out.println("query "+bmd+"->"+qr);
     
-    ArtifactBasicResults depRes = reader.readDependencies( qr );
+    MetadataResults depRes = reader.readDependencies( qr );
     
     assertNotNull( depRes );
     assertFalse( depRes.hasExceptions() );
@@ -256,7 +256,7 @@ extends TestCase
     bmd = new ArtifactMetadata("a:a:LATEST");
     query.add( bmd );
 
-    ArtifactBasicResults ror = reader.readVersions( query );
+    MetadataResults ror = reader.readVersions( query );
     
     assertNotNull( ror );
     
@@ -288,7 +288,7 @@ extends TestCase
     bmd = new ArtifactMetadata("a:a:RELEASE");
     query.add( bmd );
 
-    ArtifactBasicResults ror = reader.readVersions( query );
+    MetadataResults ror = reader.readVersions( query );
     
     assertNotNull( ror );
     

@@ -23,68 +23,66 @@ import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
 
-
 /**
  * This is to keep MetadataProcessor for all readers
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public abstract class AbstracRepositoryReader
-implements RepositoryReader, MetadataReader
+    implements RepositoryReader, MetadataReader
 {
-  protected DependencyProcessor    _mdProcessor;
-  
-  protected MetadataReader         _mdReader;
-  
-  protected RepositoryMetadataCache _mdCache;
-  
-  public void setDependencyProcessor( DependencyProcessor mdProcessor )
-  {
-    _mdProcessor = mdProcessor;
-  }
-  
-  public DependencyProcessor getDependencyProcessor()
-  {
-    return _mdProcessor;
-  }
-  
-  public void setMetadataReader( MetadataReader mdReader )
-  {
-    _mdReader = mdReader;
-  }
-  
-  public MetadataReader getMetadataReader()
-  {
-    return _mdReader;
-  }
-  
-  public void setMetadataCache( RepositoryMetadataCache mdCache )
-  {
-    this._mdCache = mdCache;
-  }
-  
-  public RepositoryMetadataCache getMetadataCache()
-  {
-    return _mdCache;
-  }
-  
-  public boolean hasMetadataCache()
-  {
-    return _mdCache != null;
-  }
-  
-  public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt  )
-  throws MetadataReaderException
-  {
-    return readRawData( bmd, "", "pom", exempt );
-  }
-  
-  public byte[] readMetadata( ArtifactMetadata bmd )
-  throws MetadataReaderException
-  {
-    return readMetadata( bmd, false );
-  }
-  
+    protected DependencyProcessor _mdProcessor;
+
+    protected MetadataReader _mdReader;
+
+    protected RepositoryMetadataCache _mdCache;
+
+    public void setDependencyProcessor( DependencyProcessor mdProcessor )
+    {
+        _mdProcessor = mdProcessor;
+    }
+
+    public DependencyProcessor getDependencyProcessor()
+    {
+        return _mdProcessor;
+    }
+
+    public void setMetadataReader( MetadataReader mdReader )
+    {
+        _mdReader = mdReader;
+    }
+
+    public MetadataReader getMetadataReader()
+    {
+        return _mdReader;
+    }
+
+    public void setMetadataCache( RepositoryMetadataCache mdCache )
+    {
+        this._mdCache = mdCache;
+    }
+
+    public RepositoryMetadataCache getMetadataCache()
+    {
+        return _mdCache;
+    }
+
+    public boolean hasMetadataCache()
+    {
+        return _mdCache != null;
+    }
+
+    public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt )
+        throws MetadataReaderException
+    {
+        return readRawData( bmd, "", "pom", exempt );
+    }
+
+    public byte[] readMetadata( ArtifactMetadata bmd )
+        throws MetadataReaderException
+    {
+        return readMetadata( bmd, false );
+    }
+
 }

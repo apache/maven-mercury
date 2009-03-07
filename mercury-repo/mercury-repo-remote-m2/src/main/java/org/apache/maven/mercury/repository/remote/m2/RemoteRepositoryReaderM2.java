@@ -50,7 +50,7 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.AbstracRepositoryReader;
 import org.apache.maven.mercury.repository.api.AbstractRepOpResult;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.MetadataCacheException;
@@ -440,13 +440,13 @@ public class RemoteRepositoryReaderM2
     /**
    * 
    */
-    public ArtifactBasicResults readDependencies( Collection<ArtifactMetadata> query )
+    public MetadataResults readDependencies( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         if ( query == null || query.size() < 1 )
             return null;
 
-        ArtifactBasicResults ror = new ArtifactBasicResults( 16 );
+        MetadataResults ror = new MetadataResults( 16 );
 
         for ( ArtifactMetadata bmd : query )
         {
@@ -697,13 +697,13 @@ public class RemoteRepositoryReaderM2
     /**
      * direct metadata search, no redirects, first attempt
      */
-    public ArtifactBasicResults readVersions( Collection<ArtifactMetadata> query )
+    public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         if ( query == null || query.size() < 1 )
             return null;
 
-        ArtifactBasicResults res = new ArtifactBasicResults( query.size() );
+        MetadataResults res = new MetadataResults( query.size() );
 
         String root = _repo.getServer().getURL().toString();
 
@@ -791,7 +791,7 @@ public class RemoteRepositoryReaderM2
                     vmd.setType( bmd.getType() );
                     vmd.setVersion( found );
 
-                    res = ArtifactBasicResults.add( res, bmd, vmd );
+                    res = MetadataResults.add( res, bmd, vmd );
                 }
 
                 continue;
@@ -825,7 +825,7 @@ public class RemoteRepositoryReaderM2
                 vmd.setType( bmd.getType() );
                 vmd.setVersion( version );
 
-                res = ArtifactBasicResults.add( res, bmd, vmd );
+                res = MetadataResults.add( res, bmd, vmd );
             }
 
         }

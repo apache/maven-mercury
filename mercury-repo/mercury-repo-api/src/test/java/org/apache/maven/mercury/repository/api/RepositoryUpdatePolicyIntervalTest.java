@@ -43,16 +43,16 @@ public class RepositoryUpdatePolicyIntervalTest
 
   public void testInterval()
   {
-    assertFalse( in.timestampExpired( now ) );
-    assertTrue( in.timestampExpired( now-80000L ) );
+    assertFalse( in.timestampExpired( now, null ) );
+    assertTrue( in.timestampExpired( now-80000L, null ) );
   }
 
   public void testDayly()
   {
     in = new RepositoryUpdateIntervalPolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NAME_DAILY );
 
-    assertFalse( in.timestampExpired( now ) );
-    assertFalse( in.timestampExpired( now-80000L ) );
-    assertTrue( in.timestampExpired( now - 24L*3600L*1000L - 80000L ) );
+    assertFalse( in.timestampExpired( now, null ) );
+    assertFalse( in.timestampExpired( now-80000L, null ) );
+    assertTrue( in.timestampExpired( now - 24L*3600L*1000L - 80000L, null ) );
   }
 }

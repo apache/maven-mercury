@@ -2,7 +2,6 @@ package org.apache.maven.mercury.repository.api;
 
 import org.apache.maven.mercury.transport.api.Server;
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,13 +24,13 @@ import org.apache.maven.mercury.transport.api.Server;
 /**
  */
 public interface RemoteRepository
-extends Repository
+    extends Repository
 {
-  /**
-   *  this is the Server with many useful fields to describe the home of this remote repo
-   */
+    /**
+     * this is the Server with many useful fields to describe the home of this remote repo
+     */
     Server getServer();
-    
+
     /**
      * get the update policy configured for this remote repository
      * 
@@ -41,7 +40,6 @@ extends Repository
 
     /**
      * set the update policy configured for this remote repository
-     * 
      */
     void setUpdatePolicy( RepositoryUpdatePolicy updatePolicy );
 }

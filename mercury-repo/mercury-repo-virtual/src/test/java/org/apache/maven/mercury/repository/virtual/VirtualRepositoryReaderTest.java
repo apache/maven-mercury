@@ -32,7 +32,7 @@ import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.event.MercuryEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.RemoteRepository;
@@ -220,7 +220,7 @@ public class VirtualRepositoryReaderTest
         Listener l = new Listener();
         _vr.register( l );
 
-        ArtifactBasicResults res = _vr.readVersions( q );
+        MetadataResults res = _vr.readVersions( q );
 
         assertNotNull( res );
 

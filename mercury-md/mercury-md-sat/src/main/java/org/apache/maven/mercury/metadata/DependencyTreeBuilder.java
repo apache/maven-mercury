@@ -41,7 +41,7 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.sat.DefaultSatSolver;
 import org.apache.maven.mercury.metadata.sat.SatException;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
@@ -299,7 +299,7 @@ class DependencyTreeBuilder
             if ( Util.isEmpty( dependencies ) )
                 return node;
 
-            ArtifactBasicResults res = _reader.readVersions( dependencies );
+            MetadataResults res = _reader.readVersions( dependencies );
             
             if( res == null )
                 throw new MetadataTreeException( LANG.getMessage( "no.versions", dependencies.toString() ) );

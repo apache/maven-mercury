@@ -30,7 +30,7 @@ import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
@@ -251,7 +251,7 @@ extends PlexusTestCase
         
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
         
-        ArtifactBasicResults  res = vr.readVersions( al );
+        MetadataResults  res = vr.readVersions( al );
         
         assertNotNull( res );
         

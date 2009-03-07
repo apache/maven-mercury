@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 import org.apache.maven.mercury.util.FileUtil;
@@ -88,7 +88,7 @@ public class LocalRepositoryMapTest
         
         query.add( bmd );
         
-        ArtifactBasicResults res = _rr.readDependencies( query  );
+        MetadataResults res = _rr.readDependencies( query  );
         
         assertNotNull( res );
         

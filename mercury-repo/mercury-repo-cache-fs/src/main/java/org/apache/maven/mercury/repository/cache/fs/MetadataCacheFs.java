@@ -132,7 +132,7 @@ implements RepositoryMetadataCache
       {
         long lastCheckMillis = inMem.getLastCheckMillis();
         
-        if( up.timestampExpired( lastCheckMillis ) )
+        if( up.timestampExpired( lastCheckMillis, null ) )
         {
           inMem.setExpired( true );
           gaCache.put( gaKey, inMem );
@@ -156,7 +156,7 @@ implements RepositoryMetadataCache
           
           long lastCheckMillis = md.getLastCheckMillis();
           
-          if( up != null && up.timestampExpired( lastCheckMillis ) )
+          if( up != null && up.timestampExpired( lastCheckMillis, null ) )
             md.setExpired( true );
 
           gaCache.put( gaKey, md );
@@ -205,7 +205,7 @@ implements RepositoryMetadataCache
       {
         long lastCheckMillis = inMem.getLastCheckMillis();
         
-        if( up.timestampExpired( lastCheckMillis ) )
+        if( up.timestampExpired( lastCheckMillis, null ) )
         {
           inMem.setExpired( true );
           gavCache.put( gavKey, inMem );
@@ -229,7 +229,7 @@ implements RepositoryMetadataCache
       {
           md = new CachedGAVMetadata( gavmF );
           
-          if( up != null && up.timestampExpired( md.getLastCheck() ) )
+          if( up != null && up.timestampExpired( md.getLastCheck(), null ) )
             md.setExpired( true );
 
           if( _eventManager != null )

@@ -22,6 +22,6 @@ import org.apache.maven.mercury.builder.api.DependencyProcessor;
 
 public interface RepositoryReaderFactory
 {
-  public RepositoryReader getReader( Repository repo, DependencyProcessor mdProcessor )
-  throws RepositoryException;
+    public RepositoryReader getReader( Repository repo, DependencyProcessor mdProcessor )
+        throws RepositoryException;
 }

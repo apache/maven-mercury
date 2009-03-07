@@ -22,64 +22,60 @@ import java.util.Collection;
 
 import org.apache.maven.mercury.artifact.Artifact;
 
-
 /**
- * Repository writer API to be implemented by any repo implementation that wishes 
- * to store artifacts for Maven. All operations are asynchronous and can generate
- * callback events
- *
- *
+ * Repository writer API to be implemented by any repo implementation that wishes to store artifacts for Maven. All
+ * operations are asynchronous and can generate callback events
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface RepositoryWriter
-extends RepositoryOperator
+    extends RepositoryOperator
 {
-  /**
-   * write (upload) given artifact to the repository
-   * 
-   * @param artifact to upload
-   * @throws RepositoryException
-   */
-  public void writeArtifacts( Collection<Artifact> artifact )
-  throws RepositoryException;
-  
-  public void setMetadataCache( RepositoryMetadataCache mdCache );
-  public RepositoryMetadataCache getMetadataCache();
-  
-  public static final RepositoryWriter NULL_WRITER =
-  new RepositoryWriter()
-  {
-
-    public RepositoryMetadataCache getMetadataCache()
-    {
-        return null;
-    }
-
-    public void setMetadataCache( RepositoryMetadataCache mdCache )
-    {
-    }
-
+    /**
+     * write (upload) given artifact to the repository
+     * 
+     * @param artifact to upload
+     * @throws RepositoryException
+     */
     public void writeArtifacts( Collection<Artifact> artifact )
-        throws RepositoryException
-    {
-    }
+        throws RepositoryException;
 
-    public boolean canHandle( String protocol )
-    {
-        return false;
-    }
+    public void setMetadataCache( RepositoryMetadataCache mdCache );
 
-    public void close()
-    {
-    }
+    public RepositoryMetadataCache getMetadataCache();
 
-    public String[] getProtocols()
+    public static final RepositoryWriter NULL_WRITER = new RepositoryWriter()
     {
-        return null;
-    }
-      
-  };
-          
+
+        public RepositoryMetadataCache getMetadataCache()
+        {
+            return null;
+        }
+
+        public void setMetadataCache( RepositoryMetadataCache mdCache )
+        {
+        }
+
+        public void writeArtifacts( Collection<Artifact> artifact )
+            throws RepositoryException
+        {
+        }
+
+        public boolean canHandle( String protocol )
+        {
+            return false;
+        }
+
+        public void close()
+        {
+        }
+
+        public String[] getProtocols()
+        {
+            return null;
+        }
+
+    };
+
 }
