@@ -65,7 +65,7 @@ public interface Repository
     public boolean isSnapshots();
 
     /**
-     * reserved
+     * indicates if the supplied code quality is served by this repository
      */
     public boolean isAcceptedQuality( Quality quality );
 

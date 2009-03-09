@@ -36,12 +36,11 @@ under the License.
 
   <dependencies>
 
-      <dependency><!-- temporary till 1.8 is put into maven trunk -->
+      <dependency><!-- somebody always trying to mess this one up. I need 1.8+  -->
         <groupId>org.sonatype.spice</groupId>
         <artifactId>model-builder</artifactId>
-        <version>1.8-SNAPSHOT</version>
       </dependency>
-
+ 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>

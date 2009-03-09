@@ -78,6 +78,8 @@ under the License.
     <plexus.utils.version>1.5.5</plexus.utils.version>
     <plexus.lang.version>1.1</plexus.lang.version>
 
+    <plexus.spice.model.builder.version>1.8</plexus.spice.model.builder.version>
+
     <emma4it.plugin.version>1.0</emma4it.plugin.version>
 
     <commons.digester.version>1.8</commons.digester.version>
@@ -264,6 +266,12 @@ under the License.
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-metadata</artifactId>
         <version>${plexus.component.metadata.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.sonatype.spice</groupId>
+        <artifactId>model-builder</artifactId>
+        <version>${plexus.spice.model.builder.version}</version>
       </dependency>
 
       <!-- Mercury deps -->

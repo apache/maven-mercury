@@ -39,6 +39,7 @@ import org.apache.maven.mercury.repository.api.RepositoryUpdatePolicy;
 import org.apache.maven.mercury.repository.local.m2.ArtifactLocation;
 import org.apache.maven.mercury.util.FileLockBundle;
 import org.apache.maven.mercury.util.FileUtil;
+import org.apache.maven.mercury.util.TimeUtil;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -126,6 +127,16 @@ implements RepositoryMetadataCache
       if( _eventManager != null )
         event = new GenericEvent( EventTypeEnum.fsCache, EVENT_FIND_GA, gaKey );
       
+      // don't mess with cache if we are past update threshold
+      long now = TimeUtil.getUTCTimestampAsLong();
+      if( up.timestampExpired( now, null ) )
+      {
+          if( event != null )
+              event.setResult( LANG.getMessage( "pass.update" ) );
+          
+          return null;
+      }
+      
       RepositoryGAMetadata inMem = gaCache.get( gaKey );
       
       if( inMem != null )
@@ -198,6 +209,16 @@ implements RepositoryMetadataCache
       
       if( _eventManager != null )
         event = new GenericEvent( EventTypeEnum.fsCache, EVENT_FIND_GAV, gavKey );
+      
+      // don't mess with cache if we are past update threshold
+      long now = TimeUtil.getUTCTimestampAsLong();
+      if( up.timestampExpired( now, null ) )
+      {
+          if( event != null )
+              event.setResult( LANG.getMessage( "pass.update" ) );
+          
+          return null;
+      }
       
       RepositoryGAVMetadata inMem = gavCache.get( gavKey );
       
