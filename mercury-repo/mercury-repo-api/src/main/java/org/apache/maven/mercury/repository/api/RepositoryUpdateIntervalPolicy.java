@@ -47,7 +47,7 @@ public class RepositoryUpdateIntervalPolicy
 
     private static final int UPDATE_POLICY_INTERVAL_LENGTH = UPDATE_POLICY_NAME_INTERVAL.length();
 
-    public static final String DEFAULT_UPDATE_POLICY = UPDATE_POLICY_NAME_DAILY;
+    public static final String DEFAULT_UPDATE_POLICY_NAME = UPDATE_POLICY_NAME_DAILY;
 
     public static final RepositoryUpdateIntervalPolicy UPDATE_POLICY_NEVER =
         new RepositoryUpdateIntervalPolicy( UPDATE_POLICY_NAME_NEVER );
@@ -55,8 +55,10 @@ public class RepositoryUpdateIntervalPolicy
     public static final RepositoryUpdateIntervalPolicy UPDATE_POLICY_ALWAYS =
         new RepositoryUpdateIntervalPolicy( UPDATE_POLICY_NAME_ALWAYS );
 
-    private static final long NEVER = -1L;
+    public static final RepositoryUpdateIntervalPolicy DEFAULT_UPDATE_POLICY = UPDATE_POLICY_NEVER;
 
+    private static final long NEVER = -1L;
+    
     private static final long DAYLY = 3600000L * 24L;
 
     protected long interval = DAYLY;
@@ -83,22 +85,27 @@ public class RepositoryUpdateIntervalPolicy
 
     public void init( String policy )
     {
+        interval = parsePolicy( policy );
+    }
+
+    public static long parsePolicy( String policy )
+    {
         if ( Util.isEmpty( policy ) )
             throw new IllegalArgumentException( _lang.getMessage( "empty.policy", policy ) );
 
         if ( policy.startsWith( UPDATE_POLICY_NAME_ALWAYS ) )
-            interval = 0L;
+            return 0L;
         else if ( policy.startsWith( UPDATE_POLICY_NAME_DAILY ) )
-            interval = DAYLY;
+            return DAYLY;
         else if ( policy.startsWith( UPDATE_POLICY_NAME_NEVER ) )
-            interval = NEVER;
+            return NEVER;
         else if ( policy.startsWith( UPDATE_POLICY_NAME_INTERVAL ) )
         {
             int len = policy.length();
             if ( len <= UPDATE_POLICY_INTERVAL_LENGTH )
                 throw new IllegalArgumentException( _lang.getMessage( "bad.interval.policy", policy ) );
 
-            interval = Integer.parseInt( policy.substring( len - 1 ) ) * 60000L;
+            return Integer.parseInt( policy.substring( len - 1 ) ) * 60000L;
         }
         else
             throw new IllegalArgumentException( _lang.getMessage( "bad.policy", policy ) );

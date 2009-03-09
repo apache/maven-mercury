@@ -36,6 +36,9 @@ import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
 import org.apache.maven.mercury.crypto.sha.SHA1VerifierFactory;
 import org.apache.maven.mercury.repository.api.Repository;
+import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
+import org.apache.maven.mercury.repository.api.RepositoryUpdatePolicy;
+import org.apache.maven.mercury.repository.api.RepositoryUpdatePolicyFactory;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.transport.api.Credentials;
@@ -69,6 +72,8 @@ public class Repo
     private String _layout = DEFAULT_LAYOUT;
 
     private String _proxyauthid;
+
+    private String _updatePolicy;
 
     private boolean _readable = true;
 
@@ -233,6 +238,11 @@ public class Repo
 
         processDefaults();
     }
+    
+    public void setUpdatePolicy( String updatePolicy )
+    {
+        this._updatePolicy = updatePolicy;
+    }
 
     boolean isLocal()
     {
@@ -309,6 +319,7 @@ public class Repo
 
                 server.setReaderStreamVerifierFactories( getVerifiers( _readVerifiers ) );
                 server.setWriterStreamVerifierFactories( getVerifiers( _writeVerifiers ) );
+                    
             }
             catch ( MalformedURLException e )
             {
@@ -381,6 +392,11 @@ public class Repo
             }
 
             r = new RemoteRepositoryM2( server, dp );
+            
+            _updatePolicy = System.getProperty( RepositoryUpdatePolicy.SYSTEM_PROPERTY_UPDATE_POLICY, _updatePolicy );
+            
+            if( !Util.isEmpty( _updatePolicy) )
+                ((RemoteRepositoryM2)r).setUpdatePolicy( RepositoryUpdatePolicyFactory.create( _updatePolicy ) );
         }
 
         return r;

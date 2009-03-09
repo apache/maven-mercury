@@ -117,9 +117,10 @@ public interface Repository
      * @param protocol
      * @return writer instance for the specified protocol
      * @throws NonExistentProtocolException if protocol not supported
+     * @throws RepositoryException 
      */
     RepositoryWriter getWriter( String protocol )
-        throws NonExistentProtocolException;
+        throws NonExistentProtocolException, RepositoryException;
 
     /**
      * server where this repo resides. For local repo - folder as URL and stream verifiers are important.
