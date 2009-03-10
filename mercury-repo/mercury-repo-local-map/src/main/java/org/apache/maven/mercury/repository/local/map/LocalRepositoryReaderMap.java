@@ -43,9 +43,9 @@ public class LocalRepositoryReaderMap
     extends AbstracRepositoryReader
     implements RepositoryReader
 {
-    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryReaderMap.class );
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryReaderMap.class );
 
-    private static final Language _lang = new DefaultLanguage( LocalRepositoryReaderMap.class );
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderMap.class );
 
     // ---------------------------------------------------------------------------------------------------------------
     private static final String[] _protocols = new String[] { "map" };
@@ -93,12 +93,12 @@ public class LocalRepositoryReaderMap
         
         ArtifactResults res = new ArtifactResults();
         
-        for( ArtifactMetadata bmd : query )
+        for( ArtifactMetadata md : query )
         {
             Artifact a;
             try
             {
-                a = _repo._storage.findArtifact( bmd );
+                a = _repo._storage.findArtifact( md );
             }
             catch ( Exception e )
             {
@@ -106,7 +106,7 @@ public class LocalRepositoryReaderMap
             }
             
             if( a != null )
-                res.add( bmd, a );
+                res.add( md, a );
         }
 
         return res;
@@ -173,7 +173,7 @@ public class LocalRepositoryReaderMap
             }
             catch ( Exception e )
             {
-                _log.error( e.getMessage() );
+                LOG.error( e.getMessage() );
                 
                 res.addError( bmd, e );
             }

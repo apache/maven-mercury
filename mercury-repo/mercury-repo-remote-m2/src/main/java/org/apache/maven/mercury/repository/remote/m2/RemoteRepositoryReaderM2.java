@@ -361,15 +361,18 @@ public class RemoteRepositoryReaderM2
 
         ArtifactResults res = new ArtifactResults();
 
-        for ( ArtifactMetadata bmd : query )
+        for ( ArtifactMetadata md : query )
         {
+            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+                continue;
+            
             try
             {
-                readArtifact( bmd, res );
+                readArtifact( md, res );
             }
             catch ( Exception e )
             {
-                res.addError( bmd, e );
+                res.addError( md, e );
             }
         }
 
@@ -387,7 +390,7 @@ public class RemoteRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    public void readArtifact( ArtifactMetadata bmd, ArtifactResults res )
+    private void readArtifact( ArtifactMetadata bmd, ArtifactResults res )
         throws IOException, RepositoryException, MetadataReaderException, MetadataException
     {
         DefaultArtifact da = bmd instanceof DefaultArtifact ? (DefaultArtifact) bmd : new DefaultArtifact( bmd );
@@ -448,21 +451,23 @@ public class RemoteRepositoryReaderM2
 
         MetadataResults ror = new MetadataResults( 16 );
 
-        for ( ArtifactMetadata bmd : query )
+        for ( ArtifactMetadata md : query )
         {
+            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+                continue;
+            
             try
             {
                 List<ArtifactMetadata> deps =
-                    _mdProcessor.getDependencies( bmd, _mdReader == null ? this : _mdReader, System.getenv(),
+                    _mdProcessor.getDependencies( md, _mdReader == null ? this : _mdReader, System.getenv(),
                                                   System.getProperties() );
-                ror.add( bmd, deps );
+                ror.add( md, deps );
             }
             catch ( Exception e )
             {
-                LOG.warn( "error reading " + bmd.toString() + " dependencies", e );
+                LOG.warn( "error reading " + md.toString() + " dependencies", e );
                 continue;
             }
-
         }
 
         return ror;
@@ -707,26 +712,29 @@ public class RemoteRepositoryReaderM2
 
         String root = _repo.getServer().getURL().toString();
 
-        for ( ArtifactMetadata bmd : query )
+        for ( ArtifactMetadata md : query )
         {
-            ArtifactLocation loc = new ArtifactLocation( root, bmd );
+            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+                continue;
+            
+            ArtifactLocation loc = new ArtifactLocation( root, md );
 
             TreeSet<String> versions = null;
 
             try
             {
-                versions = getCachedVersions( loc, bmd, res );
+                versions = getCachedVersions( loc, md, res );
 
                 if ( Util.isEmpty( versions ) )
                     continue;
             }
             catch ( Exception e )
             {
-                res.addError( bmd, e );
+                res.addError( md, e );
                 continue;
             }
 
-            Quality vq = new Quality( bmd.getVersion() );
+            Quality vq = new Quality( md.getVersion() );
 
             boolean lookForSnapshot = vq.equals( Quality.SNAPSHOT_QUALITY );
             boolean lookForLatest = vq.equals( Quality.FIXED_LATEST_QUALITY );
@@ -760,7 +768,7 @@ public class RemoteRepositoryReaderM2
                 }
                 else
                 {
-                    String base = ArtifactLocation.stripSN( bmd.getVersion() );
+                    String base = ArtifactLocation.stripSN( md.getVersion() );
 
                     if ( base != null )
                     {
@@ -785,13 +793,13 @@ public class RemoteRepositoryReaderM2
                 if ( found != null )
                 {
                     ArtifactMetadata vmd = new ArtifactMetadata();
-                    vmd.setGroupId( bmd.getGroupId() );
-                    vmd.setArtifactId( bmd.getArtifactId() );
-                    vmd.setClassifier( bmd.getClassifier() );
-                    vmd.setType( bmd.getType() );
+                    vmd.setGroupId( md.getGroupId() );
+                    vmd.setArtifactId( md.getArtifactId() );
+                    vmd.setClassifier( md.getClassifier() );
+                    vmd.setType( md.getType() );
                     vmd.setVersion( found );
 
-                    res = MetadataResults.add( res, bmd, vmd );
+                    res = MetadataResults.add( res, md, vmd );
                 }
 
                 continue;
@@ -800,11 +808,11 @@ public class RemoteRepositoryReaderM2
             VersionRange versionQuery;
             try
             {
-                versionQuery = VersionRangeFactory.create( bmd.getVersion(), _repo.getVersionRangeQualityRange() );
+                versionQuery = VersionRangeFactory.create( md.getVersion(), _repo.getVersionRangeQualityRange() );
             }
             catch ( VersionException e )
             {
-                res.addError( bmd, new RepositoryException( e ) );
+                res.addError( md, new RepositoryException( e ) );
                 continue;
             }
 
@@ -819,13 +827,13 @@ public class RemoteRepositoryReaderM2
                     continue;
 
                 ArtifactMetadata vmd = new ArtifactMetadata();
-                vmd.setGroupId( bmd.getGroupId() );
-                vmd.setArtifactId( bmd.getArtifactId() );
-                vmd.setClassifier( bmd.getClassifier() );
-                vmd.setType( bmd.getType() );
+                vmd.setGroupId( md.getGroupId() );
+                vmd.setArtifactId( md.getArtifactId() );
+                vmd.setClassifier( md.getClassifier() );
+                vmd.setType( md.getType() );
                 vmd.setVersion( version );
 
-                res = MetadataResults.add( res, bmd, vmd );
+                res = MetadataResults.add( res, md, vmd );
             }
 
         }
@@ -834,10 +842,13 @@ public class RemoteRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
+    public byte[] readRawData( ArtifactMetadata md, String classifier, String type )
         throws MetadataReaderException
     {
-        return readRawData( bmd, classifier, type, false );
+        if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+            return null;
+
+        return readRawData( md, classifier, type, false );
     }
 
     // ---------------------------------------------------------------------------------------------------------------

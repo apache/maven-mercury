@@ -70,21 +70,21 @@ public interface Repository
     public boolean isAcceptedQuality( Quality quality );
 
     /**
+     * defines the code quality range for this repository
+     */
+    public QualityRange getRepositoryQualityRange();
+    void setRepositoryQualityRange( QualityRange qualityRange );
+
+    /**
      * defines how VersionRnage treats upper boundary - which Artifacts should be treated as belonging to the vicinity -
      * http://docs.codehaus.org/x/twDPBQ
      * 
-     * @return
-     * @throws NonExistentProtocolException if protocol not supported
+     * note: don't mix this with repository quality range - this one is for version range calculations only!
+     * 
      */
     public QualityRange getVersionRangeQualityRange();
-
-    /**
-     * what quality code this repository serves
-     * 
-     * @param qualityRange
-     */
-    void setRepositoryQualityRange( QualityRange qualityRange );
-
+    public void setVersionRangeQualityRange( QualityRange qualityRange );
+    
     /**
      * get default reader, if any
      * 

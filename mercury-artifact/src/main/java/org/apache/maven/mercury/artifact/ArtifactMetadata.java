@@ -54,8 +54,10 @@ public class ArtifactMetadata
     protected String artifactId;
 
     private String version;
-    
+
     private transient VersionRange versionRange;
+
+    private Quality quality;
 
     /**
      * relocation chain after processing by ProjectBuilder
@@ -434,6 +436,31 @@ public class ArtifactMetadata
         return !isSingleton();
     }
 
+    /** code quality used to decide whether try or skip a repository - see repository code quality  */
+    public Quality getRequestedQuality()
+    {
+        if( isRange() )
+            return null;
+        
+        if( isVirtual() )
+        {
+            if( isVirtualSnapshot() )
+                return Quality.SNAPSHOT_QUALITY;
+            else
+                if( isVirtualRelease() )
+                    return Quality.RELEASE_QUALITY;
+            
+            return null;
+        }
+        
+        if( quality != null )
+            return quality;
+        
+        quality = new Quality( getVersion() );
+        
+        return quality;
+    }
+
     public String getClassifier()
     {
         return classifier;
@@ -527,6 +554,21 @@ public class ArtifactMetadata
     public boolean isVirtual()
     {
         return DefaultArtifactVersion.isVirtual( version );
+    }
+
+    public boolean isVirtualSnapshot()
+    {
+        return DefaultArtifactVersion.isVirtualSnapshot( version );
+    }
+
+    public boolean isVirtualRelease()
+    {
+        return DefaultArtifactVersion.isVirtualRelease( version );
+    }
+
+    public boolean isVirtualLatest()
+    {
+        return DefaultArtifactVersion.isVirtualLatest( version );
     }
 
     public ArtifactCoordinates getEffectiveCoordinates()

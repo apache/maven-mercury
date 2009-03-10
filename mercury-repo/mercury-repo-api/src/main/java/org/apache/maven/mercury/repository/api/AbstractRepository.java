@@ -125,7 +125,7 @@ public abstract class AbstractRepository
     // ---------------------------------------------------------------------------
     public QualityRange getRepositoryQualityRange()
     {
-        return repositoryQualityRange;
+        return repositoryQualityRange == null ? QualityRange.ALL : repositoryQualityRange;
     }
 
     // ---------------------------------------------------------------------------

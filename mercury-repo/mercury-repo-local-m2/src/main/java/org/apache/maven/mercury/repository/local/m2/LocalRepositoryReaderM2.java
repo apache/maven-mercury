@@ -206,11 +206,14 @@ public class LocalRepositoryReaderM2
         if ( _repo.hasServer() && _repo.getServer().hasReaderStreamVerifierFactories() )
             vFacs = _repo.getServer().getReaderStreamVerifierFactories();
 
-        for ( ArtifactMetadata bmd : query )
+        for ( ArtifactMetadata md : query )
         {
-            DefaultArtifact da = bmd instanceof DefaultArtifact ? (DefaultArtifact) bmd : new DefaultArtifact( bmd );
+            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+                continue;
 
-            ArtifactLocation loc = calculateLocation( _repoDir.getAbsolutePath(), bmd, res );
+            DefaultArtifact da = md instanceof DefaultArtifact ? (DefaultArtifact) md : new DefaultArtifact( md );
+
+            ArtifactLocation loc = calculateLocation( _repoDir.getAbsolutePath(), md, res );
 
             if ( loc == null )
                 continue;
@@ -223,7 +226,7 @@ public class LocalRepositoryReaderM2
 //                res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(),
 //                                                                             binary.getAbsolutePath() ) ) );
                 if( LOG.isDebugEnabled() )
-                    LOG.debug( LANG.getMessage( "binary.not.found", bmd.toString(), binary.getAbsolutePath() ) );
+                    LOG.debug( LANG.getMessage( "binary.not.found", md.toString(), binary.getAbsolutePath() ) );
 
                 continue;
             }
@@ -236,7 +239,7 @@ public class LocalRepositoryReaderM2
                     da.setTracker( this._repo );
                 }
 
-                if ( "pom".equals( bmd.getType() ) )
+                if ( "pom".equals( md.getType() ) )
                 {
                     da.setPomBlob( FileUtil.readRawData( binary ) );
                 }
@@ -249,11 +252,11 @@ public class LocalRepositoryReaderM2
                             da.setPomBlob( FileUtil.readRawData( pomFile ) );
                     }
                     else
-                        LOG.warn( LANG.getMessage( "pom.not.found", bmd.toString() ) );
+                        LOG.warn( LANG.getMessage( "pom.not.found", md.toString() ) );
                 }
 
                 da.setVersion( loc.getVersion() );
-                res.add( bmd, da );
+                res.add( md, da );
             }
             catch ( Exception e )
             {
@@ -367,11 +370,14 @@ public class LocalRepositoryReaderM2
         MetadataResults ror = null;
 
         File pomFile = null;
-        for ( ArtifactMetadata bmd : query )
+        for ( ArtifactMetadata md : query )
         {
+            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+                continue;
+
             String pomPath =
-                bmd.getGroupId().replace( '.', '/' ) + "/" + bmd.getArtifactId() + "/" + ArtifactLocation.calculateVersionDir( bmd.getVersion() ) + "/"
-                    + bmd.getArtifactId() + '-' + bmd.getVersion() + ".pom";
+                md.getGroupId().replace( '.', '/' ) + "/" + md.getArtifactId() + "/" + ArtifactLocation.calculateVersionDir( md.getVersion() ) + "/"
+                    + md.getArtifactId() + '-' + md.getVersion() + ".pom";
 
             pomFile = new File( _repoDir, pomPath );
             if ( !pomFile.exists() )
@@ -384,18 +390,18 @@ public class LocalRepositoryReaderM2
             try
             {
                 List<ArtifactMetadata> deps =
-                    _mdProcessor.getDependencies( bmd, _mdReader == null ? this : _mdReader, System.getenv(),
+                    _mdProcessor.getDependencies( md, _mdReader == null ? this : _mdReader, System.getenv(),
                                                   System.getProperties() );
 // for(ArtifactBasicMetadata d : deps )
 // {
 // System.out.println("======> "+d.getScope() );
 // }
-                ror = MetadataResults.add( ror, bmd, deps );
+                ror = MetadataResults.add( ror, md, deps );
             }
             catch ( Exception e )
             {
                 if( LOG.isDebugEnabled() )
-                    LOG.debug( "error reading " + bmd.toString() + " dependencies", e );
+                    LOG.debug( "error reading " + md.toString() + " dependencies", e );
                 continue;
             }
 
@@ -468,9 +474,12 @@ public class LocalRepositoryReaderM2
         MetadataResults res = new MetadataResults( query.size() );
 
         File gaDir = null;
-        for ( ArtifactMetadata bmd : query )
+        for ( ArtifactMetadata md : query )
         {
-            gaDir = new File( _repoDir, bmd.getGroupId().replace( '.', '/' ) + "/" + bmd.getArtifactId() );
+            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+                continue;
+
+            gaDir = new File( _repoDir, md.getGroupId().replace( '.', '/' ) + "/" + md.getArtifactId() );
             if ( !gaDir.exists() )
                 continue;
 
@@ -479,32 +488,32 @@ public class LocalRepositoryReaderM2
             VersionRange versionQuery;
             try
             {
-                versionQuery = VersionRangeFactory.create( bmd.getVersion(), _repo.getVersionRangeQualityRange() );
+                versionQuery = VersionRangeFactory.create( md.getVersion(), _repo.getVersionRangeQualityRange() );
             }
             catch ( VersionException e )
             {
-                res = MetadataResults.add( res, bmd, new RepositoryException( e ) );
+                res = MetadataResults.add( res, md, new RepositoryException( e ) );
                 continue;
             }
 
-            Quality vq = new Quality( bmd.getVersion() );
+            Quality vq = new Quality( md.getVersion() );
 
             if ( vq.equals( Quality.FIXED_RELEASE_QUALITY ) || vq.equals( Quality.FIXED_LATEST_QUALITY )
                 || vq.equals( Quality.SNAPSHOT_QUALITY ) )
             {
-                ArtifactLocation loc = calculateLocation( _repoDir.getAbsolutePath(), bmd, res );
+                ArtifactLocation loc = calculateLocation( _repoDir.getAbsolutePath(), md, res );
 
                 if ( loc == null )
                     continue;
 
                 ArtifactMetadata vmd = new ArtifactMetadata();
-                vmd.setGroupId( bmd.getGroupId() );
-                vmd.setArtifactId( bmd.getArtifactId() );
-                vmd.setClassifier( bmd.getClassifier() );
-                vmd.setType( bmd.getType() );
+                vmd.setGroupId( md.getGroupId() );
+                vmd.setArtifactId( md.getArtifactId() );
+                vmd.setClassifier( md.getClassifier() );
+                vmd.setType( md.getType() );
                 vmd.setVersion( loc.getVersion() );
 
-                res = MetadataResults.add( res, bmd, vmd );
+                res = MetadataResults.add( res, md, vmd );
 
                 continue;
 
@@ -525,29 +534,32 @@ public class LocalRepositoryReaderM2
                     continue;
 
                 ArtifactMetadata vmd = new ArtifactMetadata();
-                vmd.setGroupId( bmd.getGroupId() );
-                vmd.setArtifactId( bmd.getArtifactId() );
-                vmd.setClassifier( bmd.getClassifier() );
-                vmd.setType( bmd.getType() );
+                vmd.setGroupId( md.getGroupId() );
+                vmd.setArtifactId( md.getArtifactId() );
+                vmd.setClassifier( md.getClassifier() );
+                vmd.setType( md.getType() );
                 vmd.setVersion( vf.getName() );
 
-                res = MetadataResults.add( res, bmd, vmd );
+                res = MetadataResults.add( res, md, vmd );
             }
         }
         return res;
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
+    public byte[] readRawData( ArtifactMetadata md, String classifier, String type )
         throws MetadataReaderException
     {
-        return readRawData( bmd, classifier, type, false );
+        return readRawData( md, classifier, type, false );
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata md, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
-        return readRawData( relPathOf( bmd, classifier, type ), exempt );
+        if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+            return null;
+
+        return readRawData( relPathOf( md, classifier, type ), exempt );
     }
 
     // ---------------------------------------------------------------------------------------------------------------

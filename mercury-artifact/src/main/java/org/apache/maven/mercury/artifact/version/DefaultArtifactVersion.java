@@ -128,6 +128,39 @@ public class DefaultArtifactVersion
         return false;
     }
 
+    public static boolean isVirtualRelease( String version )
+    {
+        if ( version == null )
+            return false;
+
+        if ( version.endsWith( Artifact.RELEASE_VERSION ) )
+            return true;
+
+        return false;
+    }
+
+    public static boolean isVirtualLatest( String version )
+    {
+        if ( version == null )
+            return false;
+
+        if ( version.endsWith( Artifact.LATEST_VERSION ) )
+            return true;
+
+        return false;
+    }
+
+    public static boolean isVirtualSnapshot( String version )
+    {
+        if ( version == null )
+            return false;
+
+        if ( version.endsWith( Artifact.SNAPSHOT_VERSION ) )
+            return true;
+
+        return false;
+    }
+
     public final void parseVersion( String version )
     {
         comparable = new ComparableVersion( version );
