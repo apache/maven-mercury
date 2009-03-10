@@ -29,6 +29,7 @@ import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
+import org.apache.maven.mercury.artifact.QualityRange;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
@@ -726,5 +727,66 @@ extends PlexusTestCase
         assertTrue( aSN.getFile().exists() );
         
         assertEquals( "2.0.8", aSN.getVersion() );
+    }
+    
+    public void testReadReleasePolicy()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( "org.apache.maven:maven-core:2.0.9",                    af, ap, _rr1, aJar1 );
+        writeArtifact( "org.apache.maven:maven-core:2.0.9-20090204.232324-24", af, ap, _rr2, aJar2 );
+        
+        _rr1.setRepositoryQualityRange( QualityRange.RELEASES_ONLY );
+        _rr2.setRepositoryQualityRange( QualityRange.SNAPSHOTS_ONLY );
+        
+        List<ArtifactMetadata> al = readVersions( name, _rrs );
+        
+        assertNotNull( al );
+
+        assertEquals( 1, al.size() );
+
+        assertEquals( "2.0.9", al.get( 0 ).getVersion() );
+    }
+    
+    public void testReadReleasePolicySwapped()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( "org.apache.maven:maven-core:2.0.9",                    af, ap, _rr1, aJar1 );
+        writeArtifact( "org.apache.maven:maven-core:2.0.9-20090204.232324-24", af, ap, _rr2, aJar2 );
+        
+        _rr2.setRepositoryQualityRange( QualityRange.RELEASES_ONLY );
+        _rr1.setRepositoryQualityRange( QualityRange.SNAPSHOTS_ONLY );
+        
+        ArtifactMetadata bmd = new ArtifactMetadata(name);
+        
+        List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
+        al.add( bmd );
+        
+        VirtualRepositoryReader vr = new VirtualRepositoryReader( _rrs );
+        
+        MetadataResults  res = vr.readVersions( al );
+        
+        assertTrue( res  == null || !res.hasResults() );
     }
 }
