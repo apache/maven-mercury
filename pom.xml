@@ -267,7 +267,7 @@ under the License.
         <artifactId>plexus-component-metadata</artifactId>
         <version>${plexus.component.metadata.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.sonatype.spice</groupId>
         <artifactId>model-builder</artifactId>
@@ -505,6 +505,11 @@ under the License.
               </goals>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.modello</groupId>
+          <artifactId>modello-maven-plugin</artifactId>
+          <version>1.0.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
