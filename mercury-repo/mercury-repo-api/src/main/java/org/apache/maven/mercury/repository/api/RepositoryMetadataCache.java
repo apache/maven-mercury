@@ -95,5 +95,17 @@ public interface RepositoryMetadataCache
      * @throws MetadataCacheException
      */
     public void saveRaw( ArtifactMetadata bmd, byte[] rawBytes )
-        throws MetadataCacheException;
+    throws MetadataCacheException;
+    
+    /**
+     * clears all session data (in-memory cache). Only on-disk data should remain and it
+     * complies with expiration policies. Session data is different in this regard and once in 
+     * memory - ignores expiration time; this is done for faster access of the same data if
+     * expiration is set to "always" - first time data is read from remote repository, cached in
+     * the session, and all subsequent call use this data.  
+     * 
+     * @throws MetadataCacheException
+     */
+    public void clearSession()
+    throws MetadataCacheException;
 }

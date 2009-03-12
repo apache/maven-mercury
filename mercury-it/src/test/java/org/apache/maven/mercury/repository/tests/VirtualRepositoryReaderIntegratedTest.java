@@ -32,6 +32,7 @@ import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
+import org.apache.maven.mercury.repository.api.RepositoryMetadataCache;
 import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
@@ -138,7 +139,7 @@ extends TestCase
     
     FileUtil.writeRawData( mdf, newBytes );
     
-    // repository policy is 2 sec, this should be still 5 versions
+    // version MD is in memory, there should be still be 5 versions
     vres = _vr.readVersions( q );
     
     assertNotNull( vres );
@@ -154,11 +155,15 @@ extends TestCase
     assertNotNull( versions );
     
     assertEquals( 5, versions.size() );
-
+    
+    // clean in-memory cache, so that on-disk expiration rules apply
+    RepositoryMetadataCache cache = _vr.getCache();
+    
+    cache.clearSession();
+    
     Thread.sleep( 4000L );
     
-    // repository policy is 2 sec, this should cause VR to re-read metadata
-    // should now have 6 versions
+    // We are past the expiration point of 5 sec - should now have 6 versions.  
     vres = _vr.readVersions( q );
     
     assertNotNull( vres );

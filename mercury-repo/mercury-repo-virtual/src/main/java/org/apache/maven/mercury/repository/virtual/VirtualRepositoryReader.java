@@ -107,7 +107,7 @@ public class VirtualRepositoryReader
 
     private RepositoryWriter _localRepositoryWriter;
 
-    RepositoryMetadataCache _mdCache;
+    private RepositoryMetadataCache _mdCache;
 
     private Map<String, ArtifactListProcessor> _processors;
 
@@ -1069,7 +1069,11 @@ public class VirtualRepositoryReader
             }
         }
     }
-
+    // ----------------------------------------------------------------------------------------------------------------------------
+    public RepositoryMetadataCache getCache()
+    {
+        return _mdCache;
+    }
     // ----------------------------------------------------------------------------------------------------------------------------
     public void register( MercuryEventListener listener )
     {

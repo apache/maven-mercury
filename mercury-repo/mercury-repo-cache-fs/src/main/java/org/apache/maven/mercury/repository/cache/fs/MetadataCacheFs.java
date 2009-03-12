@@ -129,6 +129,26 @@ public class MetadataCacheFs
             if ( _eventManager != null )
                 event = new GenericEvent( EventTypeEnum.fsCache, EVENT_FIND_GA, gaKey );
 
+            RepositoryGAMetadata inMem = gaCache.get( gaKey );
+
+            if ( inMem != null )
+            {
+                // im-memory never expires!
+/*                
+                long lastCheckMillis = inMem.getLastCheckMillis();
+
+                if ( up.timestampExpired( lastCheckMillis, null ) )
+                {
+                    inMem.setExpired( true );
+                    gaCache.put( gaKey, inMem );
+                }
+*/
+                if ( _eventManager != null )
+                    event.setResult( "found in memory, expired is " + inMem.isExpired() );
+
+                return inMem;
+            }
+
             // don't mess with cache if we are past update threshold
             long now = TimeUtil.getUTCTimestampAsLong();
             if ( up.timestampExpired( now, null ) )
@@ -137,24 +157,6 @@ public class MetadataCacheFs
                     event.setResult( LANG.getMessage( "pass.update" ) );
 
                 return null;
-            }
-
-            RepositoryGAMetadata inMem = gaCache.get( gaKey );
-
-            if ( inMem != null )
-            {
-                long lastCheckMillis = inMem.getLastCheckMillis();
-
-                if ( up.timestampExpired( lastCheckMillis, null ) )
-                {
-                    inMem.setExpired( true );
-                    gaCache.put( gaKey, inMem );
-                }
-
-                if ( _eventManager != null )
-                    event.setResult( "found in memory, expired is " + inMem.isExpired() );
-
-                return inMem;
             }
 
             File gaDir = getGADir( coord );
@@ -212,6 +214,26 @@ public class MetadataCacheFs
             if ( _eventManager != null )
                 event = new GenericEvent( EventTypeEnum.fsCache, EVENT_FIND_GAV, gavKey );
 
+            RepositoryGAVMetadata inMem = gavCache.get( gavKey );
+
+            if ( inMem != null )
+            {
+/*
+                long lastCheckMillis = inMem.getLastCheckMillis();
+
+                if ( up.timestampExpired( lastCheckMillis, null ) )
+                {
+                    inMem.setExpired( true );
+                    gavCache.put( gavKey, inMem );
+                }
+*/                
+
+                if ( _eventManager != null )
+                    event.setResult( "found in memory, expired is " + inMem.isExpired() );
+
+                return inMem;
+            }
+
             // don't mess with cache if we are past update threshold
             long now = TimeUtil.getUTCTimestampAsLong();
             if ( up.timestampExpired( now, null ) )
@@ -220,24 +242,6 @@ public class MetadataCacheFs
                     event.setResult( LANG.getMessage( "pass.update" ) );
 
                 return null;
-            }
-
-            RepositoryGAVMetadata inMem = gavCache.get( gavKey );
-
-            if ( inMem != null )
-            {
-                long lastCheckMillis = inMem.getLastCheckMillis();
-
-                if ( up.timestampExpired( lastCheckMillis, null ) )
-                {
-                    inMem.setExpired( true );
-                    gavCache.put( gavKey, inMem );
-                }
-
-                if ( _eventManager != null )
-                    event.setResult( "found in memory, expired is " + inMem.isExpired() );
-
-                return inMem;
             }
 
             File gavDir = getGAVDir( coord );
@@ -520,5 +524,13 @@ public class MetadataCacheFs
         else
             _eventManager.getListeners().addAll( eventManager.getListeners() );
 
+    }
+
+    public void clearSession()
+        throws MetadataCacheException
+    {
+        rawCache.clear();
+        gaCache.clear();
+        gavCache.clear();
     }
 }
