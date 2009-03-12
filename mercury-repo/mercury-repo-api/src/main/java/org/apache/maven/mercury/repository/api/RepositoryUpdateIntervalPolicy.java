@@ -58,6 +58,8 @@ public class RepositoryUpdateIntervalPolicy
     public static final RepositoryUpdateIntervalPolicy DEFAULT_UPDATE_POLICY = UPDATE_POLICY_NEVER;
 
     private static final long NEVER = -1L;
+
+    private static final long ALWAYS = 0L;
     
     private static final long DAYLY = 3600000L * 24L;
 
@@ -94,7 +96,7 @@ public class RepositoryUpdateIntervalPolicy
             throw new IllegalArgumentException( _lang.getMessage( "empty.policy", policy ) );
 
         if ( policy.startsWith( UPDATE_POLICY_NAME_ALWAYS ) )
-            return 0L;
+            return ALWAYS;
         else if ( policy.startsWith( UPDATE_POLICY_NAME_DAILY ) )
             return DAYLY;
         else if ( policy.startsWith( UPDATE_POLICY_NAME_NEVER ) )
@@ -113,8 +115,12 @@ public class RepositoryUpdateIntervalPolicy
 
     public boolean timestampExpired( long lastUpdateMillis, Quality quality )
     {
+        // save a couple of nannos 
         if ( interval == NEVER )
             return false;
+
+        if ( interval == ALWAYS )
+            return true;
 
         long now;
         try
