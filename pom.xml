@@ -97,7 +97,10 @@ under the License.
     <sat4j.version>2.0.4</sat4j.version>
     <ant.version>1.7.1</ant.version>
 
-    <!-- maven version: non-modules only !! Never use in Mercury modules!! -->
+    <!-- 
+           maven version: non-modules only !!
+           Never use in Mercury modules because Mercury does not depend on Maven 
+    -->
     <maven.version>3.0-SNAPSHOT</maven.version>
 
     <!-- mercury-wagon -->
@@ -267,7 +270,7 @@ under the License.
         <artifactId>plexus-component-metadata</artifactId>
         <version>${plexus.component.metadata.version}</version>
       </dependency>
-
+      
       <dependency>
         <groupId>org.sonatype.spice</groupId>
         <artifactId>model-builder</artifactId>

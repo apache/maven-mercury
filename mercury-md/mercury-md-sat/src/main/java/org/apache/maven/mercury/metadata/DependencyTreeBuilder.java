@@ -76,7 +76,7 @@ class DependencyTreeBuilder
 
     private EventManager _eventManager;
     
-    private boolean _buildAllTrees = true;
+    private boolean _buildIndividualTrees = true;
 
     /**
      * creates an instance of MetadataTree. Use this instance to
@@ -184,11 +184,13 @@ class DependencyTreeBuilder
         DUMMY_ROOT.setDependencies( startMDs );
         DUMMY_ROOT.setInclusions( inclusions == null ? null : inclusions.getMetadataList() );
         DUMMY_ROOT.setExclusions( exclusions == null ? null : exclusions.getMetadataList() );
-
-        List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
         
-        if( _buildAllTrees )
+        MetadataTreeNode root = null;
+        
+        if( _buildIndividualTrees )
         {
+            List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
+           
             for ( ArtifactMetadata bmd : startMDs )
             {
                 try
@@ -210,7 +212,7 @@ class DependencyTreeBuilder
                     else
                         bmd.setInclusions( inc );
                 }
-                
+    
                 if( exclusions != null )
                 {
                     List<ArtifactMetadata> excl = exclusions.getMetadataList();
@@ -228,19 +230,20 @@ class DependencyTreeBuilder
             
             if( Util.isEmpty( deps ) ) // all dependencies are filtered out 
                 return null;
-        }
-
-        // combine into one tree
-        MetadataTreeNode root = _buildAllTrees
-                                ? new MetadataTreeNode( DUMMY_ROOT, null, null ) 
-                                : buildTree( DUMMY_ROOT, scope )
-                                ;
-        if(_buildAllTrees)
-        {
+    
+            // combine into one tree
+            root = new MetadataTreeNode( DUMMY_ROOT, null, null );
+    
             for ( MetadataTreeNode kid : deps )
                 root.addChild( kid );
-        }
     
+        }
+        else
+        {
+            DUMMY_ROOT.setDependencies( startMDs );
+            root = buildTree( DUMMY_ROOT, scope );
+        }
+        
         List<ArtifactMetadata> res = resolveConflicts( root );
 
         if( res != null )
@@ -452,6 +455,8 @@ class DependencyTreeBuilder
     {
         if ( root == null )
             throw new MetadataTreeException( LANG.getMessage( "empty.tree" ) );
+        
+        root.createNames( 0, 0 );
 
         try
         {

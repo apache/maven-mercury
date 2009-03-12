@@ -31,178 +31,188 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
+
 /**
  * metadata [dirty] Tree
  * 
  * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>
- *
  */
 public class MetadataTreeNode
 {
-  private static final int DEFAULT_CHILDREN_COUNT = 8;
-  
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( MetadataTreeNode.class ); 
-  private static final Language LANG = new DefaultLanguage( MetadataTreeNode.class );
-  
-  /**
-   * this node's artifact MD
-   */
-  ArtifactMetadata md;
-  
-  /**
-   * fail resolution if it could not be found?
-   */
-  boolean optional = false;
+    private static final int DEFAULT_CHILDREN_COUNT = 8;
 
-  /**
-   * parent node
-   */
-  MetadataTreeNode parent;
-  
-  /**
-   * node unique id, used to identify this node in external tree manipulations, such as  
-   */
-  int id;
-  
-  /**
-   * query node - the one that originated this actual node
-   */
-  ArtifactMetadata query;
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( MetadataTreeNode.class );
 
-  /**
-   * queries - one per POM dependency
-   */
-  List<ArtifactMetadata> queries;
+    private static final Language LANG = new DefaultLanguage( MetadataTreeNode.class );
 
-  /**
-   * actual found versions
-   */
-  List<MetadataTreeNode> children;
-  //------------------------------------------------------------------------
-  public int countNodes()
-  {
-    return countNodes(this);
-  }
-  //------------------------------------------------------------------------
-  public static int countNodes( MetadataTreeNode node )
-  {
-    int res = 1;
+    /**
+     * this node's artifact MD
+     */
+    ArtifactMetadata md;
+
+    /**
+     * fail resolution if it could not be found?
+     */
+    boolean optional = false;
+
+    /**
+     * parent node
+     */
+    MetadataTreeNode parent;
+
+    /**
+     * node unique id, used to identify this node in external tree manipulations, such as
+     */
+    int id;
+
+    /**
+     * query node - the one that originated this actual node
+     */
+    ArtifactMetadata query;
+
+    /**
+     * queries - one per POM dependency
+     */
+    List<ArtifactMetadata> queries;
+
+    /**
+     * actual found versions
+     */
+    List<MetadataTreeNode> children;
     
-    if( node.children != null && node.children.size() > 0)
+    /** unique name of this node. Used in SAT solver */
+    String name;
+
+    // ------------------------------------------------------------------------
+    public int countNodes()
     {
-      for( MetadataTreeNode child : node.children )
-      {
-        res += countNodes( child );
-      }
+        return countNodes( this );
     }
-    
-    return res;
-  }
-  //------------------------------------------------------------------------
-  public int countDistinctNodes()
-  {
-    TreeSet<String> nodes = new TreeSet<String>();
-    
-    getDistinctNodes( this, nodes );
-if( LOG.isDebugEnabled() )
-{
-  LOG.debug( "tree distinct nodes count" );
-  LOG.debug( nodes.toString() );
-}
 
-    return nodes.size();
-  }
-  //------------------------------------------------------------------------
-  public static void getDistinctNodes( MetadataTreeNode node, TreeSet<String> nodes )
-  {
-    if( node.getMd() == null )
-      throw new IllegalArgumentException( "tree node without metadata" );
-    
-    nodes.add( node.getMd().getGAV() );
-    
-    if( node.children != null && node.children.size() > 0)
-      for( MetadataTreeNode child : node.children )
-        getDistinctNodes( child, nodes );
-  }
-	//------------------------------------------------------------------------
-  public MetadataTreeNode()
-  {
-  }
-  //------------------------------------------------------------------------
-  /**
-   * pointers to parent and query are a must. 
-   */
-  public MetadataTreeNode( ArtifactMetadata md
-                           , MetadataTreeNode parent
-                           , ArtifactMetadata query
-                         )
-  {
+    // ------------------------------------------------------------------------
+    public static int countNodes( MetadataTreeNode node )
+    {
+        int res = 1;
+
+        if ( node.children != null && node.children.size() > 0 )
+        {
+            for ( MetadataTreeNode child : node.children )
+            {
+                res += countNodes( child );
+            }
+        }
+
+        return res;
+    }
+
+    // ------------------------------------------------------------------------
+    public int countDistinctNodes()
+    {
+        TreeSet<String> nodes = new TreeSet<String>();
+
+        getDistinctNodes( this, nodes );
+
+        if ( LOG.isDebugEnabled() )
+        {
+            LOG.debug( "tree distinct nodes count" );
+            LOG.debug( nodes.toString() );
+        }
+
+        return nodes.size();
+    }
+
+    // ------------------------------------------------------------------------
+    public static void getDistinctNodes( MetadataTreeNode node, TreeSet<String> nodes )
+    {
+        if ( node.getMd() == null )
+            throw new IllegalArgumentException( "tree node without metadata" );
+
+        nodes.add( node.getMd().getGAV() );
+
+        if ( node.children != null && node.children.size() > 0 )
+            for ( MetadataTreeNode child : node.children )
+                getDistinctNodes( child, nodes );
+    }
+
+    // ------------------------------------------------------------------------
+    public MetadataTreeNode()
+    {
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * pointers to parent and query are a must.
+     */
+    public MetadataTreeNode( ArtifactMetadata md, MetadataTreeNode parent, ArtifactMetadata query )
+    {
         if ( md != null )
         {
-            md.setArtifactScope( ArtifactScopeEnum.checkScope(md.getArtifactScope()) );
+            md.setArtifactScope( ArtifactScopeEnum.checkScope( md.getArtifactScope() ) );
         }
 
         this.md = md;
         this.parent = parent;
         this.query = query;
-  }
-  //------------------------------------------------------------------------
-  /**
-   * dependencies are ordered in the POM - they should be added in the POM order
-   */
-  public MetadataTreeNode addChild( MetadataTreeNode kid )
-  {
-      if ( kid == null )
-      {
-          return this;
-      }
+    }
 
-      if( children == null )
-      {
-      	children = new ArrayList<MetadataTreeNode>( DEFAULT_CHILDREN_COUNT );
-      }
-              
-      kid.setParent( this );
-      children.add( kid );
-      
-      return this;
-  }
-  //------------------------------------------------------------------------
-  /**
-   * dependencies are ordered in the POM - they should be added in the POM order
-   */
-  public MetadataTreeNode addQuery( ArtifactMetadata query )
-  {
-      if ( query == null )
-      {
-          return this;
-      }
+    // ------------------------------------------------------------------------
+    /**
+     * dependencies are ordered in the POM - they should be added in the POM order
+     */
+    public MetadataTreeNode addChild( MetadataTreeNode kid )
+    {
+        if ( kid == null )
+        {
+            return this;
+        }
 
-      if( queries == null )
-      {
-        queries = new ArrayList<ArtifactMetadata>( DEFAULT_CHILDREN_COUNT );
-      }
-              
-      queries.add( query );
-      
-      return this;
-  }
-    //------------------------------------------------------------------
+        if ( children == null )
+        {
+            children = new ArrayList<MetadataTreeNode>( DEFAULT_CHILDREN_COUNT );
+        }
+
+        kid.setParent( this );
+        children.add( kid );
+
+        return this;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * dependencies are ordered in the POM - they should be added in the POM order
+     */
+    public MetadataTreeNode addQuery( ArtifactMetadata query )
+    {
+        if ( query == null )
+        {
+            return this;
+        }
+
+        if ( queries == null )
+        {
+            queries = new ArrayList<ArtifactMetadata>( DEFAULT_CHILDREN_COUNT );
+        }
+
+        queries.add( query );
+
+        return this;
+    }
+
+    // ------------------------------------------------------------------
     @Override
     public String toString()
     {
-        return md == null 
-            ? "no metadata, parent " + 
-                ( parent == null ? "null" : parent.toString() ) 
-            : md.toString()+":d="+getDepth()
-            ;
+        return md == null ? "no metadata, parent " + ( parent == null ? "null" : parent.toString() ) : md.toString()
+            + ":d=" + getDepth();
     }
-    //------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     public boolean hasChildren()
     {
         return children != null;
     }
-    //------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     public ArtifactMetadata getMd()
     {
         return md;
@@ -215,29 +225,29 @@ if( LOG.isDebugEnabled() )
 
     public int getDepth()
     {
-      int depth = 0;
-      
-      for( MetadataTreeNode p = parent; p != null; p = p.parent )
-        ++depth;
-      
-      return depth;
+        int depth = 0;
+
+        for ( MetadataTreeNode p = parent; p != null; p = p.parent )
+            ++depth;
+
+        return depth;
     }
 
     public int getMaxDepth( int depth )
     {
-      int res = 0;
-      
-      if( ! hasChildren() )
-        return depth + 1;
-      
-      for( MetadataTreeNode kid : children )
-      {
-        int kidDepth = kid.getMaxDepth( depth + 1 );
-        if( kidDepth > res )
-          res = kidDepth;
-      }
-      
-      return res;
+        int res = 0;
+
+        if ( !hasChildren() )
+            return depth + 1;
+
+        for ( MetadataTreeNode kid : children )
+        {
+            int kidDepth = kid.getMaxDepth( depth + 1 );
+            if ( kidDepth > res )
+                res = kidDepth;
+        }
+
+        return res;
     }
 
     public void setParent( MetadataTreeNode parent )
@@ -254,101 +264,124 @@ if( LOG.isDebugEnabled() )
     {
         return optional;
     }
-    
+
     public ArtifactMetadata getQuery()
     {
-      return query;
+        return query;
     }
-    
+
     public List<ArtifactMetadata> getQueries()
     {
-      return queries;
+        return queries;
     }
-    //------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     public static final MetadataTreeNode deepCopy( MetadataTreeNode node )
     {
-      MetadataTreeNode res = new MetadataTreeNode( node.getMd()
-                                                  , node.getParent()
-                                                  , node.getQuery()
-                                                  );
-      res.setId( node.getId() );
-      
-      if( node.hasChildren() )
-        for( MetadataTreeNode kid : node.children )
-        {
-          MetadataTreeNode deepKid = deepCopy( kid );
-          res.addChild( deepKid );
-        }
-      
-      return res;
+        MetadataTreeNode res = new MetadataTreeNode( node.getMd(), node.getParent(), node.getQuery() );
+        res.setId( node.getId() );
+
+        if ( node.hasChildren() )
+            for ( MetadataTreeNode kid : node.children )
+            {
+                MetadataTreeNode deepKid = deepCopy( kid );
+                res.addChild( deepKid );
+            }
+
+        return res;
     }
-    //----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
     /**
      * helper method to print the tree into a Writer
      */
     public static final void showNode( MetadataTreeNode n, int level, Writer wr )
-    throws IOException
+        throws IOException
     {
-      for( int i=0; i<level; i++ )
-        wr.write("  ");
-      
-      wr.write( level+"."+n.getMd()+"\n" );
-      
-      if( n.hasChildren() )
-      {
-        for( MetadataTreeNode kid : n.getChildren() )
-          showNode( kid, level+1, wr );
-      }
+        for ( int i = 0; i < level; i++ )
+            wr.write( "  " );
+
+        wr.write( level + "." + n.getMd() + "\n" );
+
+        if ( n.hasChildren() )
+        {
+            for ( MetadataTreeNode kid : n.getChildren() )
+                showNode( kid, level + 1, wr );
+        }
     }
-    //----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
     /**
      * helper method to print the tree into sysout
      */
     public static final void showNode( MetadataTreeNode n, int level )
-    throws IOException
+        throws IOException
     {
-      StringWriter sw = new StringWriter();
-      MetadataTreeNode.showNode( n, 0, sw );
-      System.out.println( sw.toString() );
+        StringWriter sw = new StringWriter();
+        MetadataTreeNode.showNode( n, 0, sw );
+        System.out.println( sw.toString() );
     }
-    //------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     public int getId()
     {
-      return id;
+        return id;
     }
+
     public void setId( int id )
     {
-      this.id = id;
+        this.id = id;
     }
-    //------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     public static void reNumber( MetadataTreeNode node, int startNum )
     {
-      reNum( node, new Counter(startNum) );
+        reNum( node, new Counter( startNum ) );
     }
-    //------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     private static void reNum( MetadataTreeNode node, Counter num )
     {
-      node.setId( num.next() );
+        node.setId( num.next() );
 
-      if( node.hasChildren() )
-        for( MetadataTreeNode kid : node.getChildren() )
-          reNum( kid, num );
+        if ( node.hasChildren() )
+            for ( MetadataTreeNode kid : node.getChildren() )
+                reNum( kid, num );
     }
-    //------------------------------------------------------------------------
-    //------------------------------------------------------------------------
+    
+    public String getName()
+    {
+        return name;
+    }
+
+    public void createNames( int level, int seq )
+    {
+        name = md.toScopedString()+":"+level+"."+seq;
+        
+        if( hasChildren() )
+        {
+            int no = 0;
+            
+            for( MetadataTreeNode kid : children )
+                kid.createNames( level+1, no++ );
+        }
+    }
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 }
-//------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------
 class Counter
 {
-  int n;
-  
-  public Counter( int n )
-  {
-    this.n = n;
-  }
-  
-  int next()
-  {
-    return n++;
-  }
+    int n;
+
+    public Counter( int n )
+    {
+        this.n = n;
+    }
+
+    int next()
+    {
+        return n++;
+    }
 }

@@ -845,16 +845,16 @@ public class RemoteRepositoryReaderM2
     public byte[] readRawData( ArtifactMetadata md, String classifier, String type )
         throws MetadataReaderException
     {
-        if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
-            return null;
-
         return readRawData( md, classifier, type, false );
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata md, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
+        if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+            return null;
+
         byte[] res = null;
         ArtifactMetadata mod = null;
 
@@ -864,10 +864,7 @@ public class RemoteRepositoryReaderM2
         // only cache poms at the moment
         if ( _mdCache != null && "pom".equals( type ) )
         {
-            mod = new ArtifactMetadata();
-            mod.setGroupId( bmd.getGroupId() );
-            mod.setArtifactId( bmd.getArtifactId() );
-            mod.setVersion( ArtifactLocation.calculateVersionDir( bmd.getVersion() ) );
+            mod = new ArtifactMetadata( md );
             mod.setClassifier( classifier );
             mod.setType( type );
 
@@ -877,33 +874,34 @@ public class RemoteRepositoryReaderM2
                 if ( res != null )
                 {
                     if ( LOG.isDebugEnabled() )
-                        LOG.debug( "found " + bmd + " in the cache" );
+                        LOG.debug( "found " + md + " in the cache" );
                     return res;
                 }
             }
             catch ( MetadataCacheException e )
             {
                 // problems with the cache - move on
-                LOG.error( LANG.getMessage( "cached.data.problem", e.getMessage(), bmd.toString() ) );
+                LOG.error( LANG.getMessage( "cached.data.problem", e.getMessage(), md.toString() ) );
             }
         }
 
         mod =
-            new ArtifactMetadata( bmd.getGroupId() + ":" + bmd.getArtifactId() + ":" + bmd.getVersion() + ":"
-                + ( classifier == null ? "" : classifier ) + ":" + ( type == null ? bmd.getType() : type ) );
+            new ArtifactMetadata( md.getGroupId() + ":" + md.getArtifactId() + ":" + md.getVersion() + ":"
+                + ( classifier == null ? "" : classifier ) + ":" + ( type == null ? md.getType() : type ) );
 
         // ArtifactLocation loc = new ArtifactLocation( "", mod );
 
         // String bmdPath = loc.getAbsPath();
 
-        String bmdPath =
-            bmd.getGroupId().replace( '.', '/' ) + '/' + bmd.getArtifactId() + '/'
-                + ArtifactLocation.calculateVersionDir( bmd.getVersion() ) + '/' + bmd.getBaseName( classifier ) + '.'
-                + ( type == null ? bmd.getType() : type );
-        if ( LOG.isDebugEnabled() )
-            LOG.debug( "calculated raw path as " + bmdPath );
+        String mdPath =
+            md.getGroupId().replace( '.', '/' ) + '/' + md.getArtifactId() + '/'
+                + ArtifactLocation.calculateVersionDir( md.getVersion() ) + '/' + md.getBaseName( classifier ) + '.'
+                + ( type == null ? md.getType() : type );
 
-        res = readRawData( bmdPath, exempt );
+        res = readRawData( mdPath, exempt );
+
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( "POM bytes not cached, read "+ (res == null ? 0:res.length) +" bytes from " + mdPath );
 
         if ( _mdCache != null && res != null && mod != null )
         {

@@ -18,6 +18,8 @@
  */
 package org.apache.maven.mercury.repository.tests;
 
+import java.io.File;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,10 @@ extends TestCase
     
     if( "Mac OS X".equals( os ) )
       goodOs = true;
+    
+    File sn = new File("target/test-classes/repo/a/a/5-SNAPSHOT/a-5-SNAPSHOT.jar");
+    
+    sn.setLastModified( new Date().getTime() + 10000L );
     
   }
   

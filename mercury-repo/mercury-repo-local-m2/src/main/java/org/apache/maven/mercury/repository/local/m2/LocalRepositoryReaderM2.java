@@ -411,23 +411,30 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static boolean findLatestSnapshot( final ArtifactMetadata bmd, final ArtifactLocation loc, AbstractRepOpResult res )
+    private static boolean findLatestSnapshot( final ArtifactMetadata md, final ArtifactLocation loc, AbstractRepOpResult res )
     {
-        File binary = new File( loc.getAbsPath() );
+        File snapshotFile = new File( loc.getAbsPath() );
+        
+        boolean virtualRequested = md.isVirtual();
+        
+        final boolean virtualExists = snapshotFile.exists();
+        
+        final long  virtualLM = virtualExists ? snapshotFile.lastModified() : 0L;
 
-        if ( binary.exists() )
-            return true;
-
+        // TS exists - return it
+        if ( ! virtualRequested )
+            return snapshotFile.exists();
+        
         // no real SNAPSHOT file, let's try to find one
         File gavDir = new File( loc.getAbsGavPath() );
         
-        String classifier = Util.isEmpty( bmd.getClassifier() ) ? "" : '-'+bmd.getClassifier();
+        String classifier = Util.isEmpty( md.getClassifier() ) ? "" : '-'+md.getClassifier();
         
-        final String regEx = Artifact.SNAPSHOT_TS_REGEX + classifier + "\\."+bmd.getCheckedType();
+        final String regEx = Artifact.SNAPSHOT_TS_REGEX + classifier + "\\."+md.getCheckedType();
         
         final TreeSet<String> ts = new TreeSet<String>( new VersionComparator() );
         
-        final int pos = bmd.getArtifactId().length() + 1;
+        final int pos = md.getArtifactId().length() + 1;
         
         gavDir.listFiles( new FilenameFilter()
                             {
@@ -437,9 +444,25 @@ public class LocalRepositoryReaderM2
                                     {
                                         String ver = name.substring( pos, name.lastIndexOf( '.' ) );
                                         
-                                        ts.add( ver );
+                                        if( !virtualExists )
+                                        {
+                                            ts.add( ver );
+                                            
+                                            return true;
+                                        }
                                         
-                                        return true;
+                                        // otherwise - only add it if older'n the SNAPSHOT
+                                        long fLM = new File( dir, name ).lastModified();
+                                        
+                                        if( fLM >= virtualLM )
+                                        {
+                                            ts.add( ver );
+                                            
+                                            return true;
+                                        }
+                                        
+                                        return false;
+                                        
                                     }
     
                                     return false;
@@ -450,12 +473,18 @@ public class LocalRepositoryReaderM2
         
         if( ts.isEmpty() )
         {
+            if( virtualExists ) // none were older'n the snapshot
+            {
+                return true;
+            }
+            
             if( LOG.isErrorEnabled() )
-                LOG.error( LANG.getMessage( "snapshot.not.found", bmd.toString(), gavDir.getAbsolutePath() )  );
+                LOG.error( LANG.getMessage( "snapshot.not.found", md.toString(), gavDir.getAbsolutePath() )  );
             
             return false;
         }
         
+        // at east one is older - return it
         loc.setVersion( ts.last() );
 
         return true;

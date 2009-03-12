@@ -89,7 +89,7 @@ implements SatSolver
     GenericEvent event = null;
     
     if( tree == null)
-      throw new SatException("cannot create a solver for an empty [null] tree");
+      throw new SatException( LANG.getMessage( "null.tree.arg" ) );
     
     try
     {
