@@ -96,7 +96,6 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-remote-m2</artifactId>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>

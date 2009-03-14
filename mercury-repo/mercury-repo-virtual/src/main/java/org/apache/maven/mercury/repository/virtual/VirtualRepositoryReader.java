@@ -20,6 +20,7 @@ package org.apache.maven.mercury.repository.virtual;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -35,6 +36,7 @@ import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessorException;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.artifact.version.MetadataVersionComparator;
+import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
 import org.apache.maven.mercury.event.EventGenerator;
@@ -54,6 +56,10 @@ import org.apache.maven.mercury.repository.api.RepositoryMetadataCache;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
 import org.apache.maven.mercury.repository.cache.fs.MetadataCacheFs;
+import org.apache.maven.mercury.repository.metadata.MetadataException;
+import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
+import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryReaderM2;
+import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -106,6 +112,8 @@ public class VirtualRepositoryReader
     private LocalRepository _localRepository;
 
     private RepositoryWriter _localRepositoryWriter;
+    
+    private RemoteRepositoryReaderM2 _idleReader;
 
     private RepositoryMetadataCache _mdCache;
 
@@ -262,6 +270,16 @@ public class VirtualRepositoryReader
 
             _repositoryReaders[i++] = rr;
         }
+        
+        try
+        {
+            _idleReader = (RemoteRepositoryReaderM2) new RemoteRepositoryM2( "http://localhost", DependencyProcessor.NULL_PROCESSOR ).getReader();
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new RepositoryException( e );
+        }
+        
         _initialized = true;
     }
 
@@ -633,7 +651,7 @@ public class VirtualRepositoryReader
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
-    public ArtifactResults readArtifacts( Collection<? extends ArtifactMetadata> query )
+    public ArtifactResults readArtifactsNoBatch( Collection<? extends ArtifactMetadata> query )
         throws RepositoryException
     {
         GenericEvent event = null;
@@ -817,6 +835,254 @@ public class VirtualRepositoryReader
                     String repoId = rr.getRepository().getId();
 
                     GenericEvent eventRead = null;
+
+                    try
+                    {
+                        if ( _eventManager != null )
+                        {
+                            eventRead =
+                                new GenericEvent( EventTypeEnum.virtualRepositoryReader,
+                                                  EVENT_READ_ARTIFACTS_FROM_REPO_UNQUALIFIED, repoId );
+                        }
+
+                        ArtifactResults rrRes = rr.readArtifacts( leftovers );
+
+                        if ( rrRes.hasExceptions() )
+                        {
+                            res.addError( rrRes );
+                        }
+                        else if ( rrRes.hasResults() )
+                        {
+                            for ( ArtifactMetadata bm : rrRes.getResults().keySet() )
+                            {
+                                List<Artifact> al = rrRes.getResults( bm );
+
+                                res.addAll( bm, al );
+
+                                leftovers.remove( bm );
+
+                                // don't write local artifacts back to the same repo
+                                if ( _localRepository != null && repoId.equals( _localRepository.getId() ) )
+                                {
+                                    continue;
+                                }
+
+                                if ( _localRepositoryWriter != null )
+                                {
+                                    _localRepositoryWriter.writeArtifacts( al );
+                                }
+
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        if ( _eventManager != null )
+                        {
+                            eventRead.stop();
+                            _eventManager.fireEvent( eventRead );
+                        }
+                    }
+                }
+            }
+
+            return res;
+        }
+        finally
+        {
+            if ( _eventManager != null )
+            {
+                event.stop();
+                _eventManager.fireEvent( event );
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------------------
+    public ArtifactResults readArtifacts( Collection<? extends ArtifactMetadata> query )
+        throws RepositoryException
+    {
+        GenericEvent event = null;
+
+        try
+        {
+            ArtifactResults res = null;
+
+            if ( _eventManager != null )
+            {
+                event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_ARTIFACTS, "" );
+            }
+
+            if ( Util.isEmpty( query ) )
+            {
+                return res;
+            }
+            
+            int qSize = query.size();
+            
+            List<ArtifactMetadata> qualified = new ArrayList<ArtifactMetadata>( qSize );
+            
+            List<ArtifactMetadata> leftovers = new ArrayList<ArtifactMetadata>( qSize );
+            
+            for( ArtifactMetadata md : query )
+            {
+                Object tracker = md.getTracker();
+    
+                // do we know where this metadata came from ?
+                if ( tracker != null 
+                     && RemoteRepositoryReaderM2.class.isAssignableFrom( tracker.getClass() )
+                     && !md.isVirtual()
+                     && md.isSingleton()
+                )
+                    qualified.add( md );
+                else
+                    leftovers.add( md );
+            }
+
+            if ( qualified.isEmpty()  && leftovers.isEmpty() )
+            {
+                throw new RepositoryException( LANG.getMessage( "internal.error.sorting.query", query.toString() ) );
+            }
+
+            init();
+
+            res = new ArtifactResults();
+
+            // first read repository-qualified Artifacts
+            GenericEvent eventRead = null;
+
+            if( qualified.size() > 0 )
+            try
+            {
+                if ( _eventManager != null )
+                    eventRead = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_ARTIFACTS, ""+qualified );
+                
+                ArtifactResults rrRes = new ArtifactResults();
+                
+                _idleReader.readQualifiedArtifacts( qualified, rrRes );
+
+                if ( rrRes.hasExceptions() )
+                {
+                    throw new RepositoryException( LANG.getMessage( "error.reading.existing.artifact",
+                                                                     rrRes.getExceptions().toString(),
+                                                                     "multiple.server.internal.repo" ) );
+                }
+
+                if ( rrRes.hasResults() )
+                {
+                    for ( ArtifactMetadata bm : rrRes.getResults().keySet() )
+                    {
+                        List<Artifact> al = rrRes.getResults( bm );
+
+                        res.addAll( bm, al );
+
+                        if ( _localRepositoryWriter != null )
+                        {
+                            _localRepositoryWriter.writeArtifacts( al );
+                        }
+                    }
+                }
+            }
+            catch ( Exception e )
+            {
+                throw new RepositoryException( e );
+            }
+            finally
+            {
+                if ( _eventManager != null )
+                {
+                    eventRead.stop();
+                    _eventManager.fireEvent( eventRead );
+                }
+            }
+
+            // then process unqualified virtuals
+            if ( !Util.isEmpty( leftovers ) )
+            {
+                List<ArtifactMetadata> virtuals = null;
+
+                for ( ArtifactMetadata md : leftovers )
+                {
+                    if ( DefaultArtifactVersion.isVirtual( md.getVersion() ) )
+                    {
+                        if ( virtuals == null )
+                        {
+                            virtuals = new ArrayList<ArtifactMetadata>();
+                        }
+
+                        virtuals.add( md );
+                    }
+                }
+
+
+                if ( virtuals != null )
+                {
+                    MetadataResults virtRes = readVersions( virtuals );
+
+                    leftovers.removeAll( virtuals );
+
+                    virtuals.clear();
+
+                    if ( virtRes != null )
+                    {
+                        if ( virtRes.hasResults() )
+                        {
+                            Map<ArtifactMetadata, ArtifactMetadata> sMap = new HashMap<ArtifactMetadata, ArtifactMetadata>();
+
+                            for ( ArtifactMetadata md : virtRes.getResults().keySet() )
+                            {
+                                ArtifactMetadata v = virtRes.getResult( md ).get( 0 );
+                                virtuals.add( v );
+                                sMap.put( v, md );
+                            }
+
+                            ArtifactResults ares = readArtifactsNoBatch( virtuals );
+
+                            if ( ares != null )
+                            {
+                                if ( ares.hasResults() )
+                                {
+                                    Map<ArtifactMetadata, List<Artifact>> aresMap = ares.getResults();
+
+                                    // remap
+                                    for ( ArtifactMetadata md : aresMap.keySet() )
+                                    {
+                                        res.add( sMap.get( md ), aresMap.get( md ).get( 0 ) );
+                                    }
+                                }
+
+                                if ( ares.hasExceptions() )
+                                {
+                                    res.getExceptions().putAll( ares.getExceptions() );
+                                }
+                            }
+
+                            if ( virtRes.hasExceptions() )
+                            {
+                                res.addError( virtRes.getExceptions() );
+                            }
+                        }
+
+                        if ( virtRes.hasExceptions() )
+                        {
+                            res.addError( virtRes.getExceptions() );
+                        }
+                    }
+                }
+
+            }
+
+            // then search all repos for unqualified Artifacts
+            if ( !Util.isEmpty( leftovers ) )
+            {
+                for ( RepositoryReader rr : _repositoryReaders )
+                {
+                    if ( leftovers.isEmpty() )
+                    {
+                        break;
+                    }
+
+                    String repoId = rr.getRepository().getId();
 
                     try
                     {

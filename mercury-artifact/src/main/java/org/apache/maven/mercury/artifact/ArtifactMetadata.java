@@ -550,6 +550,11 @@ public class ArtifactMetadata
     {
         this.local = local;
     }
+    
+    public boolean isPom()
+    {
+        return "pom".regionMatches( 0, type, 0, 3 );
+    }
 
     public boolean isVirtual()
     {

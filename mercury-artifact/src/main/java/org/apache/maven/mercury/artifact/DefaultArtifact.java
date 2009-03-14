@@ -35,6 +35,12 @@ public class DefaultArtifact
     private String inheritedScope;
 
     private byte[] pomBlob;
+    
+    /** 
+     * for temporary holding the reference
+     *  to the pom file during data transfer
+     */
+    transient private File pomFile;
 
     public DefaultArtifact( ArtifactMetadata bmd )
     {
@@ -143,6 +149,16 @@ public class DefaultArtifact
     public File getFile()
     {
         return file;
+    }
+
+    public void setPomFile( File file )
+    {
+        this.pomFile = file;
+    }
+
+    public File getPomFile()
+    {
+        return pomFile;
     }
 
     public void setStream( InputStream stream )

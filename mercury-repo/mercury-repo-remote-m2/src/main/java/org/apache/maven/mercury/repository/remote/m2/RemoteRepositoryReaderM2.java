@@ -27,8 +27,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.maven.mercury.artifact.Artifact;
@@ -180,15 +182,15 @@ public class RemoteRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private final ArtifactLocation calculateLocation( String root, ArtifactMetadata bmd, AbstractRepOpResult res )
+    private final ArtifactLocation calculateLocation( String root, ArtifactMetadata md, AbstractRepOpResult res )
         throws RepositoryException, MetadataReaderException, MetadataException
     {
-        ArtifactLocation loc = new ArtifactLocation( root, bmd );
+        ArtifactLocation loc = new ArtifactLocation( root, md );
 
         Collection<String> versions = null;
         try
         {
-            versions = getCachedVersions( loc, bmd, res );
+            versions = getCachedVersions( loc, md, res );
         }
         catch ( MetadataCacheException e )
         {
@@ -212,7 +214,7 @@ public class RemoteRepositoryReaderM2
                 // res.addError( bmd, new RepositoryException( LANG.getMessage( "gav.not.found", bmd.toString(),
                 // loc.getGaPath() ) ) );
                 if ( LOG.isWarnEnabled() )
-                    LOG.warn( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
+                    LOG.warn( LANG.getMessage( "gav.not.found", md.toString(), loc.getGaPath() ) );
 
                 return null;
             }
@@ -224,7 +226,7 @@ public class RemoteRepositoryReaderM2
             {
                 loc.setVersionDir( loc.getVersion() );
 
-                if ( !findLatestSnapshot( bmd, loc, res ) )
+                if ( !findLatestSnapshot( md, loc, res ) )
                     return null;
             }
             else
@@ -234,7 +236,7 @@ public class RemoteRepositoryReaderM2
         // regular snapshot requested
         else if ( loc.getVersion().endsWith( Artifact.SNAPSHOT_VERSION ) )
         {
-            if ( !versions.contains( loc.getVersion() ) && !findLatestSnapshot( bmd, loc, res ) )
+            if ( !versions.contains( loc.getVersion() ) && !findLatestSnapshot( md, loc, res ) )
                 return null;
         }
         // time stamped snapshot requested
@@ -390,19 +392,19 @@ public class RemoteRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private void readArtifact( ArtifactMetadata bmd, ArtifactResults res )
+    private void readArtifact( ArtifactMetadata md, ArtifactResults res )
         throws IOException, RepositoryException, MetadataReaderException, MetadataException
     {
-        DefaultArtifact da = bmd instanceof DefaultArtifact ? (DefaultArtifact) bmd : new DefaultArtifact( bmd );
+        DefaultArtifact da = md instanceof DefaultArtifact ? (DefaultArtifact) md : new DefaultArtifact( md );
 
-        ArtifactLocation loc = calculateLocation( _repo.getServer().getURL().toString(), bmd, res );
+        ArtifactLocation loc = calculateLocation( _repo.getServer().getURL().toString(), md, res );
 
         if ( loc == null )
             return;
 
         da.setVersion( loc.getVersion() );
 
-        Quality vq = new Quality( loc.getVersion() );
+        Quality vq = da.getRequestedQuality();
 
         File root = findLocalRoot( vq );
 
@@ -414,7 +416,7 @@ public class RemoteRepositoryReaderM2
         Binding binBinding = new Binding( new URL( loc.getAbsPath() ), binFile );
         drr.addBinding( binBinding );
 
-        boolean isPom = "pom".equals( bmd.getType() );
+        boolean isPom = "pom".equals( md.getType() );
         if ( !isPom )
         {
             pomFile = new File( root, loc.getRelPomPath() );
@@ -426,7 +428,7 @@ public class RemoteRepositoryReaderM2
 
         if ( resp.hasExceptions() )
         {
-            res.addError( bmd, new RepositoryException( resp.getExceptions().toString() ) );
+            res.addError( md, new RepositoryException( resp.getExceptions().toString() ) );
         }
         else
         {
@@ -435,7 +437,119 @@ public class RemoteRepositoryReaderM2
 
             da.setFile( binFile );
             da.setPomBlob( FileUtil.readRawData( isPom ? binFile : pomFile ) );
-            res.add( bmd, da );
+            res.add( md, da );
+        }
+    }
+    // ---------------------------------------------------------------------------------------------------------------
+    /**
+     * this is an extended call, specific to Remote M2 repository for now
+     */
+    public void readQualifiedArtifacts( Collection<ArtifactMetadata> mds, ArtifactResults res )
+    throws IOException, RepositoryException, MetadataReaderException, MetadataException
+    {
+        if( Util.isEmpty( mds ) )
+            throw new IllegalArgumentException( LANG.getMessage( "no.md.list" ) );
+        
+        Map<ArtifactMetadata, DefaultArtifact> artifacts = new HashMap<ArtifactMetadata, DefaultArtifact>( mds.size() );
+        
+        DefaultRetrievalRequest request = new DefaultRetrievalRequest();
+        
+        long start = 0;
+
+        if( LOG.isInfoEnabled() )
+        {
+            start = System.currentTimeMillis();
+            
+            LOG.info( LANG.getMessage( "read.artifacts", mds.size()+"" ) );
+        }
+        
+        TreeSet<Server> servers = new TreeSet<Server>(
+                        new Comparator<Server>()
+                        {
+
+                            public int compare( Server s1, Server s2 )
+                            {
+                                return s1.getId().compareTo( s2.getId() );
+                            }
+            
+                        }
+                                                     );
+        for( ArtifactMetadata md : mds )
+        {
+            DefaultArtifact da = md instanceof DefaultArtifact ? (DefaultArtifact) md : new DefaultArtifact( md );
+            
+            artifacts.put( md, da );
+            
+            Server server = ( (RemoteRepositoryReaderM2)md.getTracker() ).getRepository().getServer();
+    
+            ArtifactLocation loc = new ArtifactLocation( server.getURL().toString(), md ); //calculateLocation( server.getURL().toString(), md, res );
+            
+            servers.add( server );
+    
+            da.setVersion( loc.getVersion() );
+    
+            Quality vq = da.getRequestedQuality();
+    
+            File root = findLocalRoot( vq );
+    
+            File binFile = new File( root, loc.getRelPath() );
+            File pomFile = null;
+    
+            Binding binBinding = new Binding( new URL( loc.getAbsPath() ), binFile );
+            request.addBinding( binBinding );
+            
+            da.setFile( binFile );
+    
+            if ( !md.isPom() )
+            {
+                pomFile = new File( root, loc.getRelPomPath() );
+                Binding pomBinding = new Binding( new URL( loc.getAbsPomPath() ), pomFile );
+                request.addBinding( pomBinding );
+                
+                da.setPomFile( pomFile );
+            }
+
+            Object tracker = md.getTracker();
+            
+            if( tracker == null )
+                throw new RepositoryNonQualifiedArtifactException( LANG.getMessage( "non.qualified.artifact", md.toString() ));
+
+            servers.add( ((RemoteRepositoryReaderM2)tracker).getRepository().getServer() );
+        }
+
+        DefaultRetriever retriever;
+        try
+        {
+            retriever = new DefaultRetriever();
+        }
+        catch ( HttpClientException e )
+        {
+            throw new RepositoryException(e);
+        }
+        
+        retriever.setServers( servers );
+        
+        RetrievalResponse response = retriever.retrieve( request );
+
+        if ( response.hasExceptions() )
+        {
+            // record all bugs on the first artifact as jetty transport does not 
+            res.addError( (ArtifactMetadata) mds.toArray()[0], new RepositoryException( response.getExceptions().toString() ) );
+        }
+        else
+        {
+            for( Map.Entry<ArtifactMetadata, DefaultArtifact> e : artifacts.entrySet() )
+            {
+                DefaultArtifact da = e.getValue();
+                da.setPomBlob( FileUtil.readRawData( da.isPom() ? da.getFile() : da.getPomFile() ) );
+                res.add( e.getKey(), da );
+            }
+        }
+
+        if( LOG.isInfoEnabled() )
+        {
+            long diff = System.currentTimeMillis() - start;
+            LOG.info( LANG.getMessage( "read.artifacts.time", mds.size()+"", (diff/1000L)+"" ) );
         }
     }
 
@@ -798,6 +912,8 @@ public class RemoteRepositoryReaderM2
                     vmd.setClassifier( md.getClassifier() );
                     vmd.setType( md.getType() );
                     vmd.setVersion( found );
+                    
+                    vmd.setTracker( this );
 
                     res = MetadataResults.add( res, md, vmd );
                 }
@@ -832,6 +948,8 @@ public class RemoteRepositoryReaderM2
                 vmd.setClassifier( md.getClassifier() );
                 vmd.setType( md.getType() );
                 vmd.setVersion( version );
+                
+                vmd.setTracker( this );
 
                 res = MetadataResults.add( res, md, vmd );
             }
