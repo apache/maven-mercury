@@ -298,10 +298,15 @@ public class MetadataTreeNode
     public static final void showNode( MetadataTreeNode n, int level, Writer wr )
         throws IOException
     {
+        if( n == null )
+        {
+            wr.write( "null node" );
+            return;
+        }
         for ( int i = 0; i < level; i++ )
             wr.write( "  " );
 
-        wr.write( level + "." + n.getMd() + "\n" );
+        wr.write( level + " " + n.getMd() + "\n" );
 
         if ( n.hasChildren() )
         {

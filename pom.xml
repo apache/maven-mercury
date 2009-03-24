@@ -102,6 +102,7 @@ under the License.
            Never use in Mercury modules because Mercury does not depend on Maven 
     -->
     <maven.version>3.0-SNAPSHOT</maven.version>
+    <modello.version>1.0.1</modello.version>
 
     <!-- mercury-wagon -->
     <wagon.provider.api.version>1.0-beta-4</wagon.provider.api.version>

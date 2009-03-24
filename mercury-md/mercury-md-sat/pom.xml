@@ -93,6 +93,30 @@ under the License.
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.modello</groupId>
+        <artifactId>modello-maven-plugin</artifactId>
+        <version>${modello.version}</version>
+        <configuration>
+          <version>1.0.0</version>
+          <useJava5>true</useJava5>
+          <models>
+            <model>src/main/mdo/forest.mdo</model>
+          </models>
+        </configuration>
+        <executions>
+          <execution>
+            <id>standard</id>
+            <goals>
+              <goal>java</goal>
+              <goal>xpp3-reader</goal>
+              <goal>xpp3-writer</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>

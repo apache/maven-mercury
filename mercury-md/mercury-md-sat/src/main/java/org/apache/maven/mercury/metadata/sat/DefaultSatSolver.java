@@ -67,6 +67,8 @@ implements SatSolver
   protected MetadataTreeNode _root;
   
   protected EventManager _eventManager;
+
+  public static final BigInteger TWO = new BigInteger("2");
   
   protected static final Comparator<MetadataTreeNode> gaComparator = new MetadataTreeNodeGAComparator();
   //-----------------------------------------------------------------------
@@ -192,9 +194,9 @@ if( LOG.isDebugEnabled() )
         {
           vars.push( varLiteral );
           
-          long cf = (long)Math.pow( 2, count++ );
+          BigInteger cf = TWO.pow( count++ );
           
-          coeffs.push( BigInteger.valueOf( cf ) );
+          coeffs.push( cf );
 
 if( LOG.isDebugEnabled() )
     LOG.debug( "    "+cf+" x"+var.getLiteral() );

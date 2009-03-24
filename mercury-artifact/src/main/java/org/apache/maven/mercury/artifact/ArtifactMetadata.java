@@ -211,7 +211,7 @@ public class ArtifactMetadata
 
         if ( count > 4 )
         {
-            this.type = nullify( tokens[4] );
+            setType( nullify( tokens[4] ) );
         }
 
         if ( this.type == null || this.type.length() < 1 )
@@ -478,7 +478,13 @@ public class ArtifactMetadata
 
     public void setType( String type )
     {
-        this.type = type;
+        if( "test-jar".equals( type ) )
+        {
+            setClassifier( "tests" );
+            setType( "jar" );
+        }
+        else
+            this.type = type;
     }
 
     public Map<String, String> getAttributes()

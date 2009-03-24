@@ -61,6 +61,14 @@ class DependencyTreeBuilder
     public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata( "__fake:__fake:1.0" );
 
     private static final Language LANG = new DefaultLanguage( DependencyTreeBuilder.class );
+    
+    public static final String SYSTEM_PROPERTY_DUMP_DEPENDENCY_TREE = "mercury.dump.tree";
+    
+    private static final String _depTreeDumpFileName = System.getProperty( SYSTEM_PROPERTY_DUMP_DEPENDENCY_TREE );
+
+    private static final boolean _dumpDepTree = _depTreeDumpFileName != null;
+    
+    private static final DependencyTreeDumper _dumper = _dumpDepTree ? new DependencyTreeDumper(_depTreeDumpFileName ) : null;
 
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
 
@@ -177,7 +185,13 @@ class DependencyTreeBuilder
         {
             ArtifactMetadata bmd = startMDs.get( 0 );
             MetadataTreeNode rooty = buildTree( bmd, scope );
+
+
             List<ArtifactMetadata> res = resolveConflicts( rooty );
+
+if(_dumpDepTree )
+    _dumper.dump( scope, artifacts, inclusions, exclusions, rooty, res );
+
             return res;
         }
 
@@ -193,6 +207,9 @@ class DependencyTreeBuilder
            
             for ( ArtifactMetadata bmd : startMDs )
             {
+                if( scope != null && !scope.encloses( bmd.getArtifactScope() ) )
+                    continue;
+                
                 try
                 {
                     if( ! DUMMY_ROOT.allowDependency( bmd ) )
@@ -243,11 +260,14 @@ class DependencyTreeBuilder
             DUMMY_ROOT.setDependencies( startMDs );
             root = buildTree( DUMMY_ROOT, scope );
         }
-        
+
         List<ArtifactMetadata> res = resolveConflicts( root );
 
         if( res != null )
             res.remove( DUMMY_ROOT );
+
+if(_dumpDepTree )
+    _dumper.dump( scope, artifacts, inclusions, exclusions, root, res );
 
         return res;
     }
