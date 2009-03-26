@@ -31,6 +31,7 @@ import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierException;
@@ -189,6 +190,11 @@ public interface PlexusMercury
      * @throws PlexusMercuryException
      */
     public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions )
+        throws RepositoryException;
+
+    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
                                            ArtifactExclusionList exclusions )
         throws RepositoryException;

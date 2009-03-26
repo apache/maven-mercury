@@ -30,6 +30,7 @@ import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.event.EventGenerator;
@@ -85,6 +86,26 @@ class DependencyTreeBuilder
     private EventManager _eventManager;
     
     private boolean _buildIndividualTrees = true;
+    
+    class TruckLoad
+    {
+        List<ArtifactMetadata> cp;
+        MetadataTreeNode root;
+        
+        public TruckLoad()
+        {
+        }
+        
+        public TruckLoad( List<ArtifactMetadata> cp )
+        {
+            this.cp = cp;
+        }
+        
+        public TruckLoad( MetadataTreeNode root )
+        {
+            this.root = root;
+        }
+    }
 
     /**
      * creates an instance of MetadataTree. Use this instance to
@@ -163,10 +184,37 @@ class DependencyTreeBuilder
 
     // ------------------------------------------------------------------------
     public List<ArtifactMetadata> resolveConflicts( 
-                                        ArtifactScopeEnum   scope
-                                      , ArtifactQueryList artifacts
+                                        ArtifactScopeEnum     scope
+                                      , ArtifactQueryList     artifacts
                                       , ArtifactInclusionList inclusions
                                       , ArtifactExclusionList exclusions
+                                                  )
+    throws MetadataTreeException
+    {
+        TruckLoad tl = resolveConflictsInternally( scope, artifacts, inclusions, exclusions, false );
+        
+        return tl == null ? null : tl.cp;
+    }
+    // ------------------------------------------------------------------------
+    public MetadataTreeNode resolveConflictsAsTree( 
+                                        ArtifactScopeEnum     scope
+                                      , ArtifactQueryList     artifacts
+                                      , ArtifactInclusionList inclusions
+                                      , ArtifactExclusionList exclusions
+                                                  )
+    throws MetadataTreeException
+    {
+        TruckLoad tl = resolveConflictsInternally( scope, artifacts, inclusions, exclusions, true );
+        
+        return tl == null ? null : tl.root;
+    }
+    // ------------------------------------------------------------------------
+    public TruckLoad resolveConflictsInternally( 
+                                        ArtifactScopeEnum     scope
+                                      , ArtifactQueryList     artifacts
+                                      , ArtifactInclusionList inclusions
+                                      , ArtifactExclusionList exclusions
+                                      , boolean asTree
                                                   )
 
     throws MetadataTreeException
@@ -186,13 +234,25 @@ class DependencyTreeBuilder
             ArtifactMetadata bmd = startMDs.get( 0 );
             MetadataTreeNode rooty = buildTree( bmd, scope );
 
+            TruckLoad tl = null;
+            
+            if( asTree )
+            {
+                MetadataTreeNode tr = resolveConflictsAsTree( rooty );
+                
+                tl = new TruckLoad( tr );
+            }
+            else
+            {
+                List<ArtifactMetadata> res = resolveConflicts( rooty );
+                
+                tl = new TruckLoad( res );
+    
+                if(_dumpDepTree )
+                    _dumper.dump( scope, artifacts, inclusions, exclusions, rooty, res );
+            }
 
-            List<ArtifactMetadata> res = resolveConflicts( rooty );
-
-if(_dumpDepTree )
-    _dumper.dump( scope, artifacts, inclusions, exclusions, rooty, res );
-
-            return res;
+            return tl;
         }
 
         DUMMY_ROOT.setDependencies( startMDs );
@@ -260,16 +320,30 @@ if(_dumpDepTree )
             DUMMY_ROOT.setDependencies( startMDs );
             root = buildTree( DUMMY_ROOT, scope );
         }
+        
+        
+        TruckLoad tl = null;
+        
+        if( asTree )
+        {
+            MetadataTreeNode tr = resolveConflictsAsTree( root );
+            
+            tl = new TruckLoad( tr );
+        }
+        else
+        {
+            List<ArtifactMetadata> cp = resolveConflicts( root ); 
 
-        List<ArtifactMetadata> res = resolveConflicts( root );
+            if( cp != null )
+                cp.remove( DUMMY_ROOT );
+    
+                if(_dumpDepTree )
+                    _dumper.dump( scope, artifacts, inclusions, exclusions, root, cp );
+                
+                tl = new TruckLoad( cp );
+        }
 
-        if( res != null )
-            res.remove( DUMMY_ROOT );
-
-if(_dumpDepTree )
-    _dumper.dump( scope, artifacts, inclusions, exclusions, root, res );
-
-        return res;
+        return tl;
     }
     // -----------------------------------------------------
     private MetadataTreeNode createNode( ArtifactMetadata nodeMD, MetadataTreeNode parent
@@ -424,24 +498,24 @@ if(_dumpDepTree )
         {
             count++;
             // System.out.println("circ "+md+" vs "+p.md);
-            if ( md.sameGA( p.md ) )
+            if ( md.sameGA( p.getMd() ) )
             {
                 p = parent;
                 StringBuilder sb = new StringBuilder( 128 );
                 sb.append( md.toString() );
                 while ( p != null )
                 {
-                    sb.append( " <- " + p.md.toString() );
+                    sb.append( " <- " + p.getMd().toString() );
 
-                    if ( md.sameGA( p.md ) )
+                    if ( md.sameGA( p.getMd() ) )
                     {
                         throw new MetadataTreeCircularDependencyException( "circular dependency " + count
-                            + " levels up. " + sb.toString() + " <= " + ( p.parent == null ? "no parent" : p.parent.md ) );
+                            + " levels up. " + sb.toString() + " <= " + ( p.getParent() == null ? "no parent" : p.getParent().getMd() ) );
                     }
-                    p = p.parent;
+                    p = p.getParent();
                 }
             }
-            p = p.parent;
+            p = p.getParent();
         }
     }
 
@@ -550,7 +624,7 @@ if(_dumpDepTree )
 
             comma = " <== ";
 
-            p = p.parent;
+            p = p.getParent();
         }
 
         return sb.toString();

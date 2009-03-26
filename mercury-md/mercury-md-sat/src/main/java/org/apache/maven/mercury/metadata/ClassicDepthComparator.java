@@ -20,6 +20,8 @@ package org.apache.maven.mercury.metadata;
 
 import java.util.Comparator;
 
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
+
 /**
  * classical depth comparator: shallower is better by default, but that could 
  * be changed by appropriate constructor

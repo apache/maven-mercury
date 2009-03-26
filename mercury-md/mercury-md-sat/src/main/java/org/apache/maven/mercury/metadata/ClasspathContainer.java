@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 
 /*
  * classpath container that is aware of the classpath scope

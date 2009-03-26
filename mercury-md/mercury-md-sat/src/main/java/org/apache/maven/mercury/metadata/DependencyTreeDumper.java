@@ -35,6 +35,7 @@ import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.metadata.forest.Forest;
 import org.apache.maven.mercury.metadata.forest.Node;
 import org.apache.maven.mercury.metadata.forest.Tree;

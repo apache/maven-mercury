@@ -18,7 +18,7 @@
  */
 package org.apache.maven.mercury.metadata.sat;
 
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.sat4j.pb.ObjectiveFunction;
 
 /**

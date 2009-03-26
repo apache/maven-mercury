@@ -28,9 +28,9 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.metadata.ClassicDepthComparator;
 import org.apache.maven.mercury.metadata.ClassicVersionComparator;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
 
 /**
  * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>

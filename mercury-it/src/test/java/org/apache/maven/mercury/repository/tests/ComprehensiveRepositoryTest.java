@@ -299,6 +299,41 @@ extends PlexusTestCase
         assertFalse( localRepo2Jar.exists() );
     }
     
+    public void testWriteReadArtifactPom()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9::pom";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _rr2, aJar2 );
+
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _rrs );
+        
+        System.out.println(al);
+        
+        File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom" );
+        File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom" );
+        
+        assertFalse( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+        
+        al = readArtifact( name, _repos );
+        
+        assertTrue( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+    }
+    
     public void testWriteReadTimeStamp()
     throws Exception
     {

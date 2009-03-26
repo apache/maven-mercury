@@ -33,6 +33,7 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
@@ -337,6 +338,44 @@ public class DefaultPlexusMercuryTest
         assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
         assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
         assertTrue( assertHasArtifact( res, "asm:asm:3.0" ) );
+    }
+
+    // -------------------------------------------------------------------------------------
+    public void testResolveAsTree()
+        throws Exception
+    {
+        Server central = new Server( "central", new URL( "http://repo1.maven.org/maven2" ) );
+        // Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
+
+        repos.add( new RemoteRepositoryM2( central, pm.findDependencyProcessor() ) );
+
+        String artifactId = "asm:asm-xml:3.0";
+
+        MetadataTreeNode res =
+            pm.resolveAsTree( repos, ArtifactScopeEnum.compile, new ArtifactQueryList( artifactId ), null, null );
+
+        System.out.println( "Resolved as tree:" );
+        MetadataTreeNode.showNode( res, 0 );
+        
+        assertNotNull( res );
+        
+        assertTrue( res.hasChildren() );
+        
+        int nodes = res.countNodes();
+
+        /* tree structure:
+            0 asm:asm-xml:3.0::jar
+              1 asm:asm-util:3.0::jar
+                2 asm:asm-tree:3.0::jar
+                  3 asm:asm:3.0::jar
+         */
+        
+        assertEquals( 4, nodes );
+
+        assertTrue( res.getMd().equals( new ArtifactMetadata( "asm:asm-xml:3.0" ) ) );
+        assertTrue( res.getChildren().get( 0 ).getMd().equals( new ArtifactMetadata( "asm:asm-util:3.0" ) ) );
+        assertTrue( res.getChildren().get( 0 ).getChildren().get( 0 ).getMd().equals( new ArtifactMetadata( "asm:asm-tree:3.0" ) ) );
+        assertTrue( res.getChildren().get( 0 ).getChildren().get( 0 ).getChildren().get( 0 ).getMd().equals( new ArtifactMetadata( "asm:asm:3.0" ) ) );
     }
 
     // -------------------------------------------------------------------------------------

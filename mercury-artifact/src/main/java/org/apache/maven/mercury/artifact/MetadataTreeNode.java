@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.maven.mercury.metadata;
+package org.apache.maven.mercury.artifact;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,10 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.apache.maven.mercury.artifact.ArtifactMetadata;
-import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
-import org.apache.maven.mercury.logging.IMercuryLogger;
-import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
@@ -39,9 +35,11 @@ import org.codehaus.plexus.lang.Language;
  */
 public class MetadataTreeNode
 {
-    private static final int DEFAULT_CHILDREN_COUNT = 8;
+    /** prevailing # of queries (dependencies) in the dirty tree node */
+    private static final int DEFAULT_QUERY_COUNT = 8;
 
-    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( MetadataTreeNode.class );
+    /** prevailing # of children in the dirty tree node. If all queries are ranges - 2 hits per range */
+    private static final int DEFAULT_CHILDREN_COUNT = 16;
 
     private static final Language LANG = new DefaultLanguage( MetadataTreeNode.class );
 
@@ -54,6 +52,11 @@ public class MetadataTreeNode
      * fail resolution if it could not be found?
      */
     boolean optional = false;
+
+    /**
+     * is there a real artifact behind this node, or it's just a helper ?
+     */
+    boolean real = true;
 
     /**
      * parent node
@@ -111,12 +114,6 @@ public class MetadataTreeNode
         TreeSet<String> nodes = new TreeSet<String>();
 
         getDistinctNodes( this, nodes );
-
-        if ( LOG.isDebugEnabled() )
-        {
-            LOG.debug( "tree distinct nodes count" );
-            LOG.debug( nodes.toString() );
-        }
 
         return nodes.size();
     }
@@ -190,7 +187,7 @@ public class MetadataTreeNode
 
         if ( queries == null )
         {
-            queries = new ArrayList<ArtifactMetadata>( DEFAULT_CHILDREN_COUNT );
+            queries = new ArrayList<ArtifactMetadata>( DEFAULT_QUERY_COUNT );
         }
 
         queries.add( query );
@@ -263,6 +260,16 @@ public class MetadataTreeNode
     public boolean isOptional()
     {
         return optional;
+    }
+
+    public boolean isReal()
+    {
+        return real;
+    }
+
+    public void setReal( boolean real)
+    {
+        this.real = real;
     }
 
     public ArtifactMetadata getQuery()

@@ -41,6 +41,9 @@ public class RepositoryUpdateIntervalPolicy
 
     public static final String UPDATE_POLICY_NAME_ALWAYS = "always";
 
+    /** same as always - do it NOW */
+    public static final String UPDATE_POLICY_NAME_NOW = "now";
+
     public static final String UPDATE_POLICY_NAME_DAILY = "daily";
 
     public static final String UPDATE_POLICY_NAME_INTERVAL = "interval";
@@ -55,6 +58,10 @@ public class RepositoryUpdateIntervalPolicy
     public static final RepositoryUpdateIntervalPolicy UPDATE_POLICY_ALWAYS =
         new RepositoryUpdateIntervalPolicy( UPDATE_POLICY_NAME_ALWAYS );
 
+    public static final RepositoryUpdateIntervalPolicy UPDATE_POLICY_DAILY =
+        new RepositoryUpdateIntervalPolicy( UPDATE_POLICY_NAME_DAILY );
+
+    /** this is the default policy - don't update unless asked */
     public static final RepositoryUpdateIntervalPolicy DEFAULT_UPDATE_POLICY = UPDATE_POLICY_NEVER;
 
     private static final long NEVER = -1L;
@@ -96,6 +103,8 @@ public class RepositoryUpdateIntervalPolicy
             throw new IllegalArgumentException( _lang.getMessage( "empty.policy", policy ) );
 
         if ( policy.startsWith( UPDATE_POLICY_NAME_ALWAYS ) )
+            return ALWAYS;
+        else if ( policy.startsWith( UPDATE_POLICY_NAME_NOW ) )
             return ALWAYS;
         else if ( policy.startsWith( UPDATE_POLICY_NAME_DAILY ) )
             return DAYLY;

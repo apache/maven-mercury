@@ -19,7 +19,7 @@
 package org.apache.maven.mercury.metadata.sat;
 
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 
 /**
  * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>

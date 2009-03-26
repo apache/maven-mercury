@@ -25,6 +25,7 @@ import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.event.MercuryEventListener;
 
 /**
@@ -70,6 +71,23 @@ public interface DependencyBuilder
    * @throws MetadataTreeException
    */
   public abstract List<ArtifactMetadata> resolveConflicts( 
+                                          ArtifactScopeEnum   scope
+                                        , ArtifactQueryList artifacts
+                                        , ArtifactInclusionList inclusions
+                                        , ArtifactExclusionList exclusions
+                                        )
+
+  throws MetadataTreeException;
+
+  /**
+   * consolidated entry point: give it a collection of GAVs, it 
+   * will create a tree out of it
+   * 
+   * @param root the tree to resolve conflicts on
+   * @return resolved metadata tree
+   * @throws MetadataTreeException
+   */
+  public abstract MetadataTreeNode resolveConflictsAsTree( 
                                           ArtifactScopeEnum   scope
                                         , ArtifactQueryList artifacts
                                         , ArtifactInclusionList inclusions

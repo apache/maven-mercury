@@ -35,6 +35,7 @@ import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
@@ -276,6 +277,33 @@ public class DefaultPlexusMercury
                 DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
+
+            return res;
+        }
+        catch ( MetadataTreeException e )
+        {
+            throw new RepositoryException( e );
+        }
+    }
+
+    // ---------------------------------------------------------------
+    public MetadataTreeNode resolveAsTree( List<Repository> repos
+                                           , ArtifactScopeEnum scope
+                                           , ArtifactQueryList artifacts
+                                           , ArtifactInclusionList inclusions
+                                           , ArtifactExclusionList exclusions
+                                           )
+        throws RepositoryException
+    {
+        if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
+            throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
+
+        try
+        {
+            DependencyBuilder depBuilder =
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+
+            MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
 
             return res;
         }

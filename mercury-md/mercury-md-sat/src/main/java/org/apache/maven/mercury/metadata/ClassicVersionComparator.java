@@ -21,6 +21,7 @@ package org.apache.maven.mercury.metadata;
 import java.util.Comparator;
 
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 
 /**

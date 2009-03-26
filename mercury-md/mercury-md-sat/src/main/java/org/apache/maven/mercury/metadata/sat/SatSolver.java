@@ -22,8 +22,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.event.EventGenerator;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
 
 /**
  * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>
