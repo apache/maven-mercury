@@ -273,5 +273,46 @@ extends TestCase
     }
   }
   //----------------------------------------------------------------------------------------------
+  public void testResolvePluginAsTree()
+  throws Exception
+  {
+    String centralUrl = "http://repo1.maven.org/maven2";
+
+    String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
+    
+    reps.clear();
+    
+    File pluginRepo = new File( "./target/repoPlugin" );
+    localRepo = new LocalRepositoryM2( "testLocalPluginRepo", pluginRepo, new MavenDependencyProcessor() );
+    reps.add(  localRepo );
+
+    Server server = new Server( "id", new URL(centralUrl) );
+    remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
+    remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
+    reps.add( remoteRepo );
+    
+    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
+//    depBuilder.register( new DumbListener() );
+    
+    ArtifactMetadata md = new ArtifactMetadata( artifactId );
+
+    MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+
+    assertNotNull( root );
+    
+    MetadataTreeNode res = depBuilder.resolveConflictsAsTree( root );
+    
+    assertNotNull( res );
+    
+    int nodeCount = res.countNodes();
+    
+    assertEquals( 15, nodeCount);
+    
+    System.out.println("Unique feature - junit is in the compile scope thanks to plexus-container-default 1.0.9");
+
+    MetadataTreeNode.showNode( res, 0 );
+
+  }
+  //----------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------
 }
