@@ -379,6 +379,44 @@ public class DefaultPlexusMercuryTest
     }
 
     // -------------------------------------------------------------------------------------
+    public void testResolvePomAsTree()
+        throws Exception
+    {
+        Server central = new Server( "central", new URL( "http://repo1.maven.org/maven2" ) );
+        // Server central = new Server( "central", new URL("http://repository.sonatype.org/content/groups/public") );
+
+        repos.add( new RemoteRepositoryM2( central, pm.findDependencyProcessor() ) );
+
+        String artifactId = "asm:asm-xml:3.0::pom";
+
+        MetadataTreeNode res =
+            pm.resolveAsTree( repos, ArtifactScopeEnum.compile, new ArtifactQueryList( artifactId ), null, null );
+
+        System.out.println( "Resolved as tree:" );
+        MetadataTreeNode.showNode( res, 0 );
+        
+        assertNotNull( res );
+        
+        assertTrue( res.hasChildren() );
+        
+        int nodes = res.countNodes();
+
+        /* tree structure:
+            0 asm:asm-xml:3.0::pom
+              1 asm:asm-util:3.0::jar
+                2 asm:asm-tree:3.0::jar
+                  3 asm:asm:3.0::jar
+         */
+        
+        assertEquals( 4, nodes );
+
+        assertTrue( res.getMd().equals( new ArtifactMetadata( "asm:asm-xml:3.0::pom" ) ) );
+        assertTrue( res.getChildren().get( 0 ).getMd().equals( new ArtifactMetadata( "asm:asm-util:3.0" ) ) );
+        assertTrue( res.getChildren().get( 0 ).getChildren().get( 0 ).getMd().equals( new ArtifactMetadata( "asm:asm-tree:3.0" ) ) );
+        assertTrue( res.getChildren().get( 0 ).getChildren().get( 0 ).getChildren().get( 0 ).getMd().equals( new ArtifactMetadata( "asm:asm:3.0" ) ) );
+    }
+
+    // -------------------------------------------------------------------------------------
     @SuppressWarnings( "unchecked" )
     public void testResolveWithExclusion()
         throws Exception
