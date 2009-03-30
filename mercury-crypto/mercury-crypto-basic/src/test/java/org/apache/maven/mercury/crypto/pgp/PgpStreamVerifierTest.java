@@ -123,25 +123,32 @@ public class PgpStreamVerifierTest
     System.out.println("BouncyCastle Signature is "+verified);
   }
   //-------------------------------------------------------------------------------------------------
-  public void testVerifyExternalSignature()
+  public void testVerifyExternalSignature2()
   throws IOException, StreamObserverException
   {
-    PgpStreamVerifier sv = (PgpStreamVerifier)svf.newInstance();
-
     InputStream in = getClass().getResourceAsStream( "/file.gif" );
-    String sig = PgpHelper.streamToString( getClass().getResourceAsStream( "/file.gif.asc.external" ) );
+    InputStream sig = getClass().getResourceAsStream( "/file.gif.asc.external" );
+    InputStream publicKeyRingStream = getClass().getResourceAsStream( publicKeyFile );
     
-    sv.initSignature( sig );
-    
-    int b;
-    while( (b = in.read()) != -1 )
-      sv.byteReady( b );
-    
-    boolean verified = sv.verifySignature();
+    boolean verified = PgpHelper.verifyStream( in, sig, publicKeyRingStream );
     
     assertTrue( verified );
     
     System.out.println("3rd Party Signature is "+verified);
+  }
+  //-------------------------------------------------------------------------------------------------
+  public void testVerifyBCSignature()
+  throws IOException, StreamObserverException
+  {
+    InputStream in = getClass().getResourceAsStream( "/file.gif" );
+    InputStream sig = getClass().getResourceAsStream( "/file.gif.asc" );
+    InputStream publicKeyRingStream = getClass().getResourceAsStream( publicKeyFile );
+    
+    boolean verified = PgpHelper.verifyStream( in, sig, publicKeyRingStream );
+    
+    assertTrue( verified );
+    
+    System.out.println("BC Signature is "+verified);
   }
   //-------------------------------------------------------------------------------------------------
 }

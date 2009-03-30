@@ -26,6 +26,9 @@ import java.math.BigInteger;
 import java.security.Security;
 import java.util.Iterator;
 
+import org.apache.maven.mercury.crypto.api.StreamObserverException;
+import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
+import org.apache.maven.mercury.crypto.api.StreamVerifierException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPException;
@@ -48,6 +51,9 @@ public class PgpHelper
 {
   public static final String PROVIDER = "BC";
   public static final String EXTENSION = "asc";
+  
+  private static final byte [] _buf = new byte[10240];
+
 
   private static final Language LANG = new DefaultLanguage( PgpHelper.class );
   //---------------------------------------------------------------------------------
@@ -172,6 +178,28 @@ public class PgpHelper
     {
       if( fis != null ) try { fis.close(); } catch( Exception any ) {}
     }
+  }
+  //---------------------------------------------------------------------------------
+  public static final boolean verifyStream( InputStream in, InputStream asc, InputStream publicKeyRingStream )
+  throws IOException, StreamObserverException
+  {
+      StreamVerifierAttributes attributes = new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION, true, true);
+      
+      PgpStreamVerifierFactory svf = new PgpStreamVerifierFactory( attributes, publicKeyRingStream );
+
+      PgpStreamVerifier sv = (PgpStreamVerifier)svf.newInstance();
+
+      String sig = PgpHelper.streamToString( asc );
+      
+      sv.initSignature( sig );
+      
+      int nBytes = -1;
+      while( (nBytes = in.read(_buf)) != -1 )
+        sv.bytesReady( _buf, 0, nBytes );
+      
+      boolean verified = sv.verifySignature();
+
+      return verified;
   }
   //---------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------
