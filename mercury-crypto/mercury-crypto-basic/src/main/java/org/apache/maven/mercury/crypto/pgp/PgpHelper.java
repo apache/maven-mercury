@@ -99,6 +99,14 @@ public class PgpHelper
     return bi.longValue();
   }
   //---------------------------------------------------------------------------------
+  public static long getKeyId( InputStream inSig )
+  throws IOException, PGPException
+  {
+      PGPSignature sig = readSignature( inSig );
+      
+      return sig.getKeyID();
+  }
+  //---------------------------------------------------------------------------------
   public static PGPSignature readSignature( InputStream inS )
   throws IOException, PGPException
   {
