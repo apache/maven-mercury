@@ -183,7 +183,7 @@ public class PgpHelper
   public static final boolean verifyStream( InputStream in, InputStream asc, InputStream publicKeyRingStream )
   throws IOException, StreamObserverException
   {
-      StreamVerifierAttributes attributes = new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION, true, true);
+      StreamVerifierAttributes attributes = new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true);
       
       PgpStreamVerifierFactory svf = new PgpStreamVerifierFactory( attributes, publicKeyRingStream );
 
