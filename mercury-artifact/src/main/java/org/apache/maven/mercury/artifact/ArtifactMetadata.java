@@ -90,6 +90,11 @@ public class ArtifactMetadata
 
     transient Boolean local = false;
 
+    /**
+     * transient external datum to carry along
+     */
+    transient Object datum;
+    
     /** dependencies of the artifact behind this metadata */
     protected List<ArtifactMetadata> dependencies;
 
@@ -765,6 +770,15 @@ public class ArtifactMetadata
         this.artifactUri = artifactUri;
     }
 
+    public Object getDatum()
+    {
+        return datum;
+    }
+
+    public void setDatum( Object datum )
+    {
+        this.datum = datum;
+    }
     // ---------------------------------------------------------------------------
     // ---------------------------------------------------------------------------
 }
