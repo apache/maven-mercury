@@ -61,6 +61,17 @@ under the License.
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcpg-jdk15</artifactId>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <build>

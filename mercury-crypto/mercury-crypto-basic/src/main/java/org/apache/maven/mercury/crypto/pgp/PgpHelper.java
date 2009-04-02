@@ -188,10 +188,16 @@ public class PgpHelper
       StreamVerifierAttributes attributes = new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true);
       
       PgpStreamVerifierFactory svf = new PgpStreamVerifierFactory( attributes, publicKeyRingStream );
-
-      PgpStreamVerifier sv = (PgpStreamVerifier)svf.newInstance();
-
       String sig = PgpHelper.streamToString( asc );
+      
+      return verifyStream( in, sig, svf );
+  }
+  //---------------------------------------------------------------------------------
+  public static final boolean verifyStream( InputStream in, String sig, PgpStreamVerifierFactory factory )
+  throws IOException, StreamObserverException
+  {
+
+      PgpStreamVerifier sv = (PgpStreamVerifier)factory.newInstance();
       
       sv.initSignature( sig );
       
