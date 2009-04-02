@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.Security;
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPObjectFactory;
+import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
@@ -200,6 +202,30 @@ public class PgpHelper
       boolean verified = sv.verifySignature();
 
       return verified;
+  }
+  
+  public static final PGPPublicKeyRingCollection readPublicRing( InputStream in )
+  throws IOException, PGPException
+  {
+      if( in == null )
+          return null;
+      
+      PGPPublicKeyRingCollection res = new PGPPublicKeyRingCollection( PGPUtil.getDecoderStream( in ) );
+      
+      return res;
+  }
+  
+  public static final void writePublicRing( PGPPublicKeyRingCollection  prc, OutputStream out )
+  throws IOException
+  {
+      if( prc == null )
+          throw new IllegalArgumentException( LANG.getMessage( "null.ring" ) );
+      
+      if( out == null )
+          throw new IllegalArgumentException( LANG.getMessage( "null.os" ) );
+      
+      prc.encode( out );
+      
   }
   //---------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------
