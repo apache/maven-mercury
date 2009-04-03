@@ -30,6 +30,21 @@ under the License.
   <name>Mercury Plexus Component</name>
 
   <dependencies>
+  
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcpg-jdk15</artifactId>
+      <optional>true</optional>
+    </dependency>
+<!-- 
+ -->
+  
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
