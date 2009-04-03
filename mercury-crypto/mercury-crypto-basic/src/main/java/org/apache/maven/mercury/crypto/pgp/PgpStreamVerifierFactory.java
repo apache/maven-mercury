@@ -69,12 +69,12 @@ implements StreamVerifierFactory
   }
   //--------------------------------------------------------------------------------------------
   public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
-                                  , PGPPublicKeyRingCollection trustedPublicKeyRing
+                                  , PGPPublicKeyRingCollection publicKeyRing
                                   )
   throws StreamVerifierException
   {
     super( attributes );
-    this.trustedPublicKeyRing = trustedPublicKeyRing;
+    this.trustedPublicKeyRing = publicKeyRing;
   }
   //--------------------------------------------------------------------------------------------
   public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
