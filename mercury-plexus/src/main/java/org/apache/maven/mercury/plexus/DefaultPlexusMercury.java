@@ -277,6 +277,8 @@ public class DefaultPlexusMercury
                 DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
+            
+            depBuilder.close();
 
             return res;
         }
@@ -304,6 +306,8 @@ public class DefaultPlexusMercury
                 DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
 
             MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
+            
+            depBuilder.close();
 
             return res;
         }

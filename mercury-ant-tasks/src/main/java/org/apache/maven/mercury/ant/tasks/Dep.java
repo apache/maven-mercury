@@ -209,6 +209,8 @@ public class Dep
         List<ArtifactMetadata> res =
             _transitive ? db.resolveConflicts( scope, aql, ail, ael )
                             : toArtifactMetadataList( depList );
+            
+        db.close();
 
         if ( Util.isEmpty( res ) )
         {

@@ -530,7 +530,7 @@ public class RemoteRepositoryReaderM2
         retriever.setServers( servers );
         
         RetrievalResponse response = retriever.retrieve( request );
-
+        
         if ( response.hasExceptions() )
         {
             // record all bugs on the first artifact as jetty transport does not 
@@ -1104,12 +1104,13 @@ public class RemoteRepositoryReaderM2
 
     public void close()
     {
-        // TODO Auto-generated method stub
-
+        if( _transport != null )
+            _transport.stop();
     }
 
     public String[] getProtocols()
     {
         return _protocols;
     }
+
 }

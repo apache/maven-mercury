@@ -120,6 +120,12 @@ public interface DependencyBuilder
    * @param listener
    */
   public abstract void unRegister( MercuryEventListener listener );
+  
+  /**
+   * release all resources 
+   * 
+   */
+  public abstract void close();
   //-----------------------------------------------------
   //-----------------------------------------------------
 

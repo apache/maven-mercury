@@ -48,4 +48,10 @@ public interface Retriever
      * @param callback
      */
     void retrieve( RetrievalRequest request, RetrievalCallback callback );
+    
+    /**
+     * stop and release all resources
+     * @throws Exception 
+     */
+    void stop();
 }

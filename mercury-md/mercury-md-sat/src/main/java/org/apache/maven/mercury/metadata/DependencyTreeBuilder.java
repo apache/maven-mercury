@@ -652,4 +652,10 @@ class DependencyTreeBuilder
             _eventManager.getListeners().addAll( eventManager.getListeners() );
 
     }
+    
+    public void close()
+    {
+        if( _reader != null )
+            _reader.close();
+    }
 }

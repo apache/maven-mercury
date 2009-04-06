@@ -36,4 +36,10 @@ public interface Deployer
      * has occurred.
      */
     void deploy( DeployRequest request, DeployCallback callback );
+    
+    /**
+     * stop and release all resources
+     * @throws Exception 
+     */
+    void stop();
 }

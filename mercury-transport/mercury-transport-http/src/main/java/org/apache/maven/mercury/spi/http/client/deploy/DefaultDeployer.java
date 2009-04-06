@@ -35,6 +35,8 @@ import org.apache.maven.mercury.crypto.api.StreamObserver;
 import org.apache.maven.mercury.crypto.api.StreamObserverException;
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
+import org.apache.maven.mercury.logging.IMercuryLogger;
+import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.spi.http.client.DestinationRealmResolver;
 import org.apache.maven.mercury.spi.http.client.FileExchange;
 import org.apache.maven.mercury.spi.http.client.HandshakeExchange;
@@ -51,6 +53,8 @@ import org.mortbay.jetty.client.HttpClient;
  */
 public class DefaultDeployer implements Deployer
 {
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultDeployer.class );
+    
     private HttpClient _httpClient;
     private BatchIdGenerator _idGenerator;
     private Set<Server> _servers = new HashSet<Server>();
@@ -84,7 +88,7 @@ public class DefaultDeployer implements Deployer
         _httpClient = client;
         try
         {
-            if ( _httpClient.isStarted() )
+            if ( !_httpClient.isStarted() )
             {
                 _httpClient.start();
             }
@@ -357,6 +361,25 @@ public class DefaultDeployer implements Deployer
           }
         }
         return observers;
+    }
+    
+    public void stop()
+    {
+        if( _httpClient == null )
+            return;
+        
+        if( _httpClient.isStopped() || _httpClient.isStopping() )
+            return;
+        
+        try
+        {
+            _httpClient.stop();
+        }
+        catch ( Exception e )
+        {
+            LOG.error( e.getMessage() );
+        }
+            
     }
 
 }

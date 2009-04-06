@@ -282,6 +282,25 @@ public class VirtualRepositoryReader
         
         _initialized = true;
     }
+    
+    /**
+     * close all readers is they are started
+     */
+    public void close()
+    {
+        if( ! _initialized )
+            return;
+        
+        try
+        {
+            for( RepositoryReader rr : _repositoryReaders )
+                rr.close();
+        }
+        finally
+        {
+            _initialized = false;
+        }
+    }
 
     // ----------------------------------------------------------------------------------------------------------------------------
     public MetadataResults readVersions( Collection<ArtifactMetadata> query )

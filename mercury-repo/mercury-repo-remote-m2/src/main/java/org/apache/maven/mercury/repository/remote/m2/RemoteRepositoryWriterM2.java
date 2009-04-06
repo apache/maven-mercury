@@ -126,6 +126,8 @@ implements RepositoryWriter
   //---------------------------------------------------------------------------------------------------------------
   public void close()
   {
+      if( _transport != null )
+          _transport.stop();
   }
   //---------------------------------------------------------------------------------------------------------------
   public void writeArtifacts( Collection<Artifact> artifacts )

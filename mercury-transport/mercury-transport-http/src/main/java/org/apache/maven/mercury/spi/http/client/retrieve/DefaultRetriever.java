@@ -34,6 +34,8 @@ import org.apache.maven.mercury.crypto.api.StreamObserverException;
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierException;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
+import org.apache.maven.mercury.logging.IMercuryLogger;
+import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.spi.http.client.DestinationRealmResolver;
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
 import org.apache.maven.mercury.transport.api.Binding;
@@ -42,9 +44,10 @@ import org.mortbay.jetty.client.HttpClient;
 
 public class DefaultRetriever implements Retriever
 {
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultRetriever.class );
+    
     private HttpClient _httpClient;
     private Set<Server> _servers = new HashSet<Server>();
-    
 
     public DefaultRetriever()
         throws HttpClientException
@@ -55,7 +58,6 @@ public class DefaultRetriever implements Retriever
         try
         {
             //TODO: What are all the reasons that the httpclient couldn't start up correctly?
-            
             _httpClient.start();
         }
         catch ( Exception e )
@@ -71,7 +73,7 @@ public class DefaultRetriever implements Retriever
         _httpClient = client;
         try
         {
-            if ( _httpClient.isStarted() )
+            if ( !_httpClient.isStarted() )
             {
                 _httpClient.start();
             }
@@ -336,6 +338,25 @@ public class DefaultRetriever implements Retriever
             }
         }
         return observers;
+    }
+    
+    public void stop()
+    {
+        if( _httpClient == null )
+            return;
+        
+        if( _httpClient.isStopped() || _httpClient.isStopping() )
+            return;
+        
+        try
+        {
+            _httpClient.stop();
+        }
+        catch ( Exception e )
+        {
+            LOG.error( e.getMessage() );
+        }
+            
     }
 
 }
