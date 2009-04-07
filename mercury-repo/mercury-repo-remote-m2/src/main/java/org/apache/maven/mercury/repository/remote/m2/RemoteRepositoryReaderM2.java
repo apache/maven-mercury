@@ -99,9 +99,7 @@ public class RemoteRepositoryReaderM2
     // TODO - replace with known Transport's protocols. Should be similar to RepositoryReader/Writer registration
     private static final String[] _protocols = new String[] { "http", "https", "dav", "webdav" };
 
-    // TODO replace with Transport
-    DefaultRetriever _transport;
-
+    private HashSet<Server> _servers;
     // ---------------------------------------------------------------------------------------------------------------
     RemoteRepository _repo;
 
@@ -160,19 +158,10 @@ public class RemoteRepositoryReaderM2
         else
             _localRepos = localRepos;
 
-        try
-        {
-            // TODO 2008-07-29 og: here I should analyze Server protocol
-            // and come with appropriate Transport implementation
-            _transport = new DefaultRetriever();
-            HashSet<Server> servers = new HashSet<Server>( 1 );
-            servers.add( repo.getServer() );
-            _transport.setServers( servers );
-        }
-        catch ( HttpClientException e )
-        {
-            throw new RepositoryException( e );
-        }
+        // TODO 2008-07-29 og: here I should analyze Server protocol
+        // and come with appropriate Transport implementation
+        _servers = new HashSet<Server>( 1 );
+        _servers.add( repo.getServer() );
     }
 
     // ---------------------------------------------------------------------------------------------------------------
@@ -424,7 +413,18 @@ public class RemoteRepositoryReaderM2
             drr.addBinding( pomBinding );
         }
 
-        RetrievalResponse resp = _transport.retrieve( drr );
+        DefaultRetriever transport;
+        try
+        {
+            transport = new DefaultRetriever();
+        }
+        catch ( HttpClientException e )
+        {
+            throw new RepositoryException( e );
+        }
+        transport.setServers( _servers );
+        RetrievalResponse resp = transport.retrieve( drr );
+        transport.stop();
 
         if ( resp.hasExceptions() )
         {
@@ -530,6 +530,8 @@ public class RemoteRepositoryReaderM2
         retriever.setServers( servers );
         
         RetrievalResponse response = retriever.retrieve( request );
+        
+        retriever.stop();
         
         if ( response.hasExceptions() )
         {
@@ -1065,7 +1067,10 @@ public class RemoteRepositoryReaderM2
             DefaultRetrievalRequest request = new DefaultRetrievalRequest();
             request.addBinding( binding );
 
-            RetrievalResponse response = _transport.retrieve( request );
+            DefaultRetriever transport = new DefaultRetriever();
+            transport.setServers( _servers );
+            RetrievalResponse response = transport.retrieve( request );
+            transport.stop();
 
             if ( response.hasExceptions() )
             {
@@ -1083,6 +1088,10 @@ public class RemoteRepositoryReaderM2
         catch ( IOException e )
         {
             throw new MetadataReaderException( e );
+        }
+        catch ( HttpClientException e )
+        {
+            throw new MetadataReaderException(e);
         }
         finally
         {
@@ -1104,8 +1113,8 @@ public class RemoteRepositoryReaderM2
 
     public void close()
     {
-        if( _transport != null )
-            _transport.stop();
+//        if( _transport != null )
+//            _transport.stop();
     }
 
     public String[] getProtocols()
