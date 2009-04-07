@@ -1,3 +1,20 @@
+=================================================================================
+Release 1.0.0-alpha-6: 2009-04-07
+
+Iterative alpha release. Major fixes:
+- # of dependencies - less'n 64 were ordered correctly the rest used to be volatile
+- Mercury-ant tasks is succesfully used to bootstrap build Maven3
+- bad/missing repository metadata is worked around in most cases
+
+We solved 7 issues:
+http://jira.codehaus.org/browse/MERCURY/fixforversion/14964
+
+Staging repo:
+https://repository.apache.org/content/repositories/maven-staging-4630e65601be12/
+
+Guide to testing staged releases:
+http://maven.apache.org/guides/development/guide-testing-releases.html
+=================================================================================
 Release 1.0.0-alpha-3: 2009-01-18
 
 7 issues resolved. Main driver for this release - maven-3.0-alpha-2 prep. 
