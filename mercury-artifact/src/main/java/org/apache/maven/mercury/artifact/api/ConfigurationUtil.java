@@ -30,13 +30,13 @@ import java.util.Map;
  */
 public class ConfigurationUtil
 {
-    public static void configure( Configurable impl, Map<String,String> config )
+    public static void configure( Configurable impl, Map<String,Object> config )
     throws ConfigurationException
     {
         if( impl == null || config == null )
             return;
         
-        for( Map.Entry<String, String> e : config.entrySet() )
+        for( Map.Entry<String, Object> e : config.entrySet() )
             impl.setOption( e.getKey(), e.getValue() );
     }
 }

@@ -91,15 +91,15 @@ public class Util
        return (int)(Math.round( sz / 1024.))+" kb";
    }
    
-   public static Map<String,String> mapOf( String [][] entries )
+   public static Map<String,Object> mapOf( Object [][] entries )
    {
        if( entries == null )
            return null;
        
-       Map<String,String> map = new HashMap<String, String>( entries.length );
+       Map<String,Object> map = new HashMap<String, Object>( entries.length );
        
-       for( String [] kv : entries )
-           map.put( kv[0], kv[1] );
+       for( Object [] kv : entries )
+           map.put( (String)kv[0], kv[1] );
        
        return map;
    }

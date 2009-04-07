@@ -283,7 +283,7 @@ public class DefaultPlexusMercury
         {
             DependencyBuilder depBuilder =
                 DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
-                    , Util.mapOf( new String [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
+                    , Util.mapOf( new Object [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
                                                 );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );

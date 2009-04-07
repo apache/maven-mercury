@@ -74,7 +74,7 @@ public class DependencyBuilderFactory
       , Collection<MetadataTreeArtifactFilter> filters
       , List<Comparator<MetadataTreeNode>> comparators
       , Map<String,ArtifactListProcessor> processors
-      , Map<String,String> config 
+      , Map<String,Object> config 
                      )
   throws RepositoryException
   {

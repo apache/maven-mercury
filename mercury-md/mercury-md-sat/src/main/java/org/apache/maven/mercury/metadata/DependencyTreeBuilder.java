@@ -90,6 +90,9 @@ class DependencyTreeBuilder
     
     private boolean _allowCircularDependencies = Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
     
+    /** mandated versions in the format G:A -> V */
+    private Map<String, String> _versionMap;
+    
     class TruckLoad
     {
         List<ArtifactMetadata> cp;
@@ -677,10 +680,13 @@ class DependencyTreeBuilder
             _reader.close();
     }
 
-    public void setOption( String name, String val )
+    @SuppressWarnings("unchecked")
+    public void setOption( String name, Object val )
         throws ConfigurationException
     {
         if( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES.equals( name ) )
-            _allowCircularDependencies = Boolean.parseBoolean( val );
+            _allowCircularDependencies = Boolean.parseBoolean( (String)val );
+        else if( CONFIGURATION_PROPERTY_VERSION_MAP.equals( name ) )
+            _versionMap = (Map<String, String>) val;
     }
 }

@@ -18,8 +18,6 @@
  */
 package org.apache.maven.mercury.artifact.api;
 
-import java.util.Map;
-
 /**
  * provides a way to configure an object instance, if that object supports the idea
  * 
@@ -35,6 +33,6 @@ public interface Configurable
      * @param name of the configurable property
      * @param val configuration value
      */
-    public void setOption( String name, String val )
+    public void setOption( String name, Object val )
         throws ConfigurationException;
 }

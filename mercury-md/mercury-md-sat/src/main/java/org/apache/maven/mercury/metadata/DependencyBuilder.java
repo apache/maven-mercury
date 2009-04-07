@@ -43,6 +43,8 @@ extends Configurable
   public static final String TREE_NODE_BUILD_EVENT = "tree.node.build";
 
   public static final String SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES = "mercury.circular.allow";
+
+  public static final String CONFIGURATION_PROPERTY_VERSION_MAP = "mercury.version.map";
   //------------------------------------------------------------------------
   /**
    * build the tree, using the repositories specified in the
