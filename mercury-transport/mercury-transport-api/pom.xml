@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-transport</artifactId>
-    <version>1.0-alpha-6-SNAPSHOT</version>
+    <version>1.0-alpha-6</version>
   </parent>
 
   <artifactId>mercury-transport-api</artifactId>
