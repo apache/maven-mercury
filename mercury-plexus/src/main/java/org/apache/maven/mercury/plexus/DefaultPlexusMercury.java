@@ -83,6 +83,9 @@ public class DefaultPlexusMercury
     @Configuration( name = "defaultDependencyProcessorHint", value = "maven" )
     String _defaultDpHint = "maven";
 
+    @Configuration( name = "allowCircularDependencies", value = "true" )
+    boolean _allowCircularDependencies = true;
+
     @Requirement
     private Map<String, DependencyProcessor> _dependencyProcessors;
 
@@ -111,6 +114,11 @@ public class DefaultPlexusMercury
     public void setDefaultDependencyProcessorHint( String hint )
     {
         _defaultDpHint = hint;
+    }
+    // ---------------------------------------------------------------
+    public void setAllowCircularDependencies( boolean allow )
+    {
+        _allowCircularDependencies = allow;
     }
     // ---------------------------------------------------------------
     public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
@@ -274,7 +282,9 @@ public class DefaultPlexusMercury
         try
         {
             DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
+                    , Util.mapOf( new String [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
+                                                );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
             
@@ -303,7 +313,9 @@ public class DefaultPlexusMercury
         try
         {
             DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
+                       , Util.mapOf( new String [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
+                );
 
             MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
             

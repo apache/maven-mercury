@@ -142,8 +142,8 @@ public class RemoteRepositoryReaderM2
             _defaultRoot.mkdirs();
             _defaultRoot.deleteOnExit();
             
-            if( LOG.isWarnEnabled() )
-                LOG.warn( LANG.getMessage( "default.root", _defaultRoot.getCanonicalPath() ) );
+            if( LOG.isDebugEnabled() )
+                LOG.debug( LANG.getMessage( "default.root", _defaultRoot.getCanonicalPath() ) );
         }
         catch ( IOException e )
         {
@@ -1115,6 +1115,10 @@ public class RemoteRepositoryReaderM2
     {
 //        if( _transport != null )
 //            _transport.stop();
+        
+        if( _defaultRoot != null )
+            FileUtil.delete( _defaultRoot );
+        _defaultRoot = null;
     }
 
     public String[] getProtocols()

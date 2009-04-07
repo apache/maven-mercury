@@ -266,7 +266,7 @@ class MavenVersionRange
             _osgiVersion = Boolean.parseBoolean( System.getProperty( val, SYSTEM_PARAMETER_OSGI_VERSION_DEFAULT ) );
         }
     }
-
+    
     public boolean isSingleton()
     {
         return _singleton;

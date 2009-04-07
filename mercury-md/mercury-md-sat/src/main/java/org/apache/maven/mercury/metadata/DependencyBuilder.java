@@ -26,6 +26,7 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.artifact.MetadataTreeNode;
+import org.apache.maven.mercury.artifact.api.Configurable;
 import org.apache.maven.mercury.event.MercuryEventListener;
 
 /**
@@ -36,9 +37,12 @@ import org.apache.maven.mercury.event.MercuryEventListener;
  *
  */
 public interface DependencyBuilder
+extends Configurable
 {
   public static final String TREE_BUILD_EVENT = "tree.build";
   public static final String TREE_NODE_BUILD_EVENT = "tree.node.build";
+
+  public static final String SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES = "mercury.circular.allow";
   //------------------------------------------------------------------------
   /**
    * build the tree, using the repositories specified in the

@@ -32,6 +32,7 @@ import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
 import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
+import org.apache.maven.mercury.artifact.api.ConfigurationException;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.event.EventGenerator;
 import org.apache.maven.mercury.event.EventManager;
@@ -70,7 +71,7 @@ class DependencyTreeBuilder
     private static final boolean _dumpDepTree = _depTreeDumpFileName != null;
     
     private static final DependencyTreeDumper _dumper = _dumpDepTree ? new DependencyTreeDumper(_depTreeDumpFileName ) : null;
-
+    
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
 
     private Collection<MetadataTreeArtifactFilter> _filters;
@@ -86,6 +87,8 @@ class DependencyTreeBuilder
     private EventManager _eventManager;
     
     private boolean _buildIndividualTrees = true;
+    
+    private boolean _allowCircularDependencies = Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
     
     class TruckLoad
     {
@@ -358,7 +361,21 @@ class DependencyTreeBuilder
 
         try
         {
-            checkForCircularDependency( nodeMD, parent );
+            try
+            {
+                checkForCircularDependency( nodeMD, parent );
+            }
+            catch ( MetadataTreeCircularDependencyException e )
+            {
+                if( _allowCircularDependencies )
+                {
+                    String line = LANG.getMessage( "attention.line" );
+                    LOG.info( line + e.getMessage() + line );
+                    return null;
+                }
+                else
+                    throw e;
+            }
 
             ArtifactMetadata mr;
 
@@ -431,7 +448,8 @@ class DependencyTreeBuilder
                     }
 
                     MetadataTreeNode kid = createNode( ver, node, md, globalScope );
-                    node.addChild( kid );
+                    if( kid != null )
+                        node.addChild( kid );
 
                     noVersions = false;
 
@@ -657,5 +675,12 @@ class DependencyTreeBuilder
     {
         if( _reader != null )
             _reader.close();
+    }
+
+    public void setOption( String name, String val )
+        throws ConfigurationException
+    {
+        if( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES.equals( name ) )
+            _allowCircularDependencies = Boolean.parseBoolean( val );
     }
 }
