@@ -21,7 +21,7 @@ package org.apache.maven.mercury.repository.tests;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  *
@@ -32,7 +32,7 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
  */
 public class THelper
 {
-  public static List<ArtifactBasicMetadata> toList( ArtifactBasicMetadata... bmds)
+  public static List<ArtifactMetadata> toList( ArtifactMetadata... bmds)
   {
     return Arrays.asList( bmds );
   }

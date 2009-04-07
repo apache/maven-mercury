@@ -15,125 +15,123 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- * This is a data object to carry GA level repository 
- * metadata, namely - a list of versions and last check timestamp
- *
+ * This is a data object to carry GA level repository metadata, namely - a list of versions and last check timestamp
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class RepositoryGAMetadata
 {
-  private static final Language LANG = new DefaultLanguage( RepositoryGAVMetadata.class );
-  
-  protected ArtifactCoordinates ga;
+    private static final Language LANG = new DefaultLanguage( RepositoryGAVMetadata.class );
 
-  /** a list of last discovered versions, ordered ascending */
-  protected TreeSet<String> versions = new TreeSet<String>( new VersionComparator() );
-  
-  /** GMT timestamp of the last metadata check */
-  protected long lastCheck;
-  
-  /** is set true by cache implementation when determined that it's time to refresh */
-  protected transient boolean expired = false;
+    protected ArtifactCoordinates ga;
 
-  protected RepositoryGAMetadata()
-  {
-  }
+    /** a list of last discovered versions, ordered ascending */
+    protected TreeSet<String> versions = new TreeSet<String>( new VersionComparator() );
 
-  /**
-   * @param versions
-   * @param lastCheck
-   */
-  public RepositoryGAMetadata( ArtifactCoordinates ga, Collection<String> versions )
-  {
-    this.ga = ga;
-    
-    if( ! Util.isEmpty( versions ) )
-      this.versions.addAll( versions );
-    
-    this.lastCheck = TimeUtil.getUTCTimestampAsLong();
-  }
+    /** GMT timestamp of the last metadata check */
+    protected long lastCheck;
 
-  /**
-   * construct from maven 2.x maven-metadata.xml object
-   * 
-   * @param md
-   * @throws MetadataException 
-   */
-  public RepositoryGAMetadata( Metadata md )
-  throws MetadataException
-  {
-    if( md == null )
-      throw new IllegalArgumentException( LANG.getMessage( "empty.md" ) );
-    
-    this.ga = new ArtifactCoordinates( md.getGroupId(), md.getArtifactId(), md.getVersion() );
+    /** is set true by cache implementation when determined that it's time to refresh */
+    protected transient boolean expired = false;
 
-    List<String> vers = null;
-    
-    if( md.getVersioning() != null )
+    protected RepositoryGAMetadata()
     {
-      vers = md.getVersioning().getVersions();
-      this.versions.addAll( vers );
-    }
-    
-    this.lastCheck = TimeUtil.getUTCTimestampAsLong();
-  }
-  
-  /**
-   * copy constructor
-   * 
-   * @param md
-   * @throws MetadataException 
-   */
-  public RepositoryGAMetadata( RepositoryGAMetadata md )
-  throws MetadataException
-  {    
-    this.ga = md.getGA();
-
-    if( !Util.isEmpty( md.getVersions() ) )
-    {
-      this.versions.addAll( md.getVersions() );
     }
 
-    this.lastCheck = TimeUtil.getUTCTimestampAsLong();
-  }
+    /**
+     * @param versions
+     * @param lastCheck
+     */
+    public RepositoryGAMetadata( ArtifactCoordinates ga, Collection<String> versions )
+    {
+        this.ga = ga;
 
-  public TreeSet<String> getVersions()
-  {
-    return versions;
-  }
+        if ( !Util.isEmpty( versions ) )
+            this.versions.addAll( versions );
 
-  public long getLastCheckTs()
-  {
-    return lastCheck;
-  }
-  
-  public long getLastCheckMillis()
-  throws ParseException
-  {
-    return TimeUtil.toMillis(  lastCheck );
-  }
-  
-  public void update( Collection<String> versions )
-  {
-    this.versions.addAll( versions );
-    this.lastCheck = TimeUtil.getUTCTimestampAsLong();
-  }
-  
-  public ArtifactCoordinates getGA()
-  {
-    return ga;
-  }
+        this.lastCheck = TimeUtil.getUTCTimestampAsLong();
+    }
 
-  public boolean isExpired()
-  {
-    return expired;
-  }
+    /**
+     * construct from maven 2.x maven-metadata.xml object
+     * 
+     * @param md
+     * @throws MetadataException
+     */
+    public RepositoryGAMetadata( Metadata md )
+        throws MetadataException
+    {
+        if ( md == null )
+            throw new IllegalArgumentException( LANG.getMessage( "empty.md" ) );
 
-  public void setExpired( boolean expired )
-  {
-    this.expired = expired;
-  }
+        this.ga = new ArtifactCoordinates( md.getGroupId(), md.getArtifactId(), md.getVersion() );
+
+        List<String> vers = null;
+
+        if ( md.getVersioning() != null )
+        {
+            vers = md.getVersioning().getVersions();
+            this.versions.addAll( vers );
+        }
+
+        this.lastCheck = TimeUtil.getUTCTimestampAsLong();
+    }
+
+    /**
+     * copy constructor
+     * 
+     * @param md
+     * @throws MetadataException
+     */
+    public RepositoryGAMetadata( RepositoryGAMetadata md )
+        throws MetadataException
+    {
+        this.ga = md.getGA();
+
+        if ( !Util.isEmpty( md.getVersions() ) )
+        {
+            this.versions.addAll( md.getVersions() );
+        }
+
+        this.lastCheck = TimeUtil.getUTCTimestampAsLong();
+    }
+
+    public TreeSet<String> getVersions()
+    {
+        return versions;
+    }
+
+    public long getLastCheckTs()
+    {
+        return lastCheck;
+    }
+
+    public long getLastCheckMillis()
+        throws ParseException
+    {
+        return TimeUtil.toMillis( lastCheck );
+    }
+
+    public void update( Collection<String> versions )
+    {
+        this.versions.addAll( versions );
+        this.lastCheck = TimeUtil.getUTCTimestampAsLong();
+    }
+
+    public ArtifactCoordinates getGA()
+    {
+        return ga;
+    }
+
+    public boolean isExpired()
+    {
+        return expired;
+    }
+
+    public void setExpired( boolean expired )
+    {
+        this.expired = expired;
+    }
 
 }

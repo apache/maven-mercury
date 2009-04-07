@@ -27,11 +27,10 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.metadata.ClassicDepthComparator;
 import org.apache.maven.mercury.metadata.ClassicVersionComparator;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
 
 /**
  * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>
@@ -101,7 +100,7 @@ public class DefaultSatSolverTest
       .addQuery(b2)
     ;
     
-    ArtifactBasicMetadata c2q = new ArtifactBasicMetadata("t:c:[2,4)");
+    ArtifactMetadata c2q = new ArtifactMetadata("t:c:[2,4)");
     
     MetadataTreeNode nd1 = new MetadataTreeNode( d1, na1, d1 )
       .addQuery( c2q )
@@ -363,7 +362,7 @@ public class DefaultSatSolverTest
       .addQuery(b2)
     ;
     
-    ArtifactBasicMetadata c2q = new ArtifactBasicMetadata("t:c:[2,4)");
+    ArtifactMetadata c2q = new ArtifactMetadata("t:c:[2,4)");
     
     MetadataTreeNode nb1 = new MetadataTreeNode( b1, na1, b1 )
       .addQuery( c2q )
@@ -440,7 +439,7 @@ public class DefaultSatSolverTest
       .addQuery(b2)
     ;
     
-    ArtifactBasicMetadata c2q = new ArtifactBasicMetadata("t:c:[2,4)");
+    ArtifactMetadata c2q = new ArtifactMetadata("t:c:[2,4)");
     
     MetadataTreeNode nd1 = new MetadataTreeNode( d1, na1, d1 )
       .addQuery( c2q )
@@ -519,7 +518,7 @@ public class DefaultSatSolverTest
       .addQuery(b2)
     ;
     
-    ArtifactBasicMetadata c2q = new ArtifactBasicMetadata("t:c:[2,4)");
+    ArtifactMetadata c2q = new ArtifactMetadata("t:c:[2,4)");
     
     MetadataTreeNode nd1 = new MetadataTreeNode( d1, na1, d1 )
       .addQuery( c2q )

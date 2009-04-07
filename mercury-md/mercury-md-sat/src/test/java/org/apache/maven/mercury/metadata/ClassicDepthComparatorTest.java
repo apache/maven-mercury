@@ -20,6 +20,8 @@ package org.apache.maven.mercury.metadata;
 
 import java.util.Comparator;
 
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
+
 public class ClassicDepthComparatorTest
 extends AbstractSimpleTreeTest
 {

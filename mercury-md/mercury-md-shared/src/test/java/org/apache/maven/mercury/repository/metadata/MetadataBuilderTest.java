@@ -129,40 +129,52 @@ extends TestCase
      assertEquals( 2, versions.size() );
   }
   //-------------------------------------------------------------------------
-  public void testAddPluginOperation()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-    byte [] targetBytes = FileUtil.readRawData( groupMd );
+    public void testAddPluginOperation()
+        throws Exception
+    {
+        File mdFileBefore = new File( testBase, "group-maven-metadata.xml" );
+        Metadata mdBefore = getMetadata( mdFileBefore );
 
-    Plugin plugin = new Plugin();
-    plugin.setArtifactId( "some-artifact-id" );
-    plugin.setName( "Some Plugin" );
-    plugin.setPrefix( "some" );
+        Plugin pluginA = new Plugin();
+        pluginA.setArtifactId( "maven-testa-plugin" );
+        pluginA.setName( "Some Plugin A" );
+        pluginA.setPrefix( "testa" );
+        Plugin pluginB = new Plugin();
+        pluginB.setArtifactId( "maven-testb-plugin" );
+        pluginB.setName( "Some Plugin B" );
+        pluginB.setPrefix( "testb" );
+        Plugin pluginC = new Plugin();
+        pluginC.setArtifactId( "maven-testc-plugin" );
+        pluginC.setName( "Some Plugin C" );
+        pluginC.setPrefix( "testc" );
 
-    byte [] resBytes = MetadataBuilder.changeMetadata( targetBytes, new AddPluginOperation( new PluginOperand(plugin) ) );
+        List<MetadataOperation> opsAdd = new ArrayList<MetadataOperation>();
 
-    File resFile = new File( testBase, "group-maven-metadata-write.xml");
+        opsAdd.add( new AddPluginOperation( new PluginOperand( pluginC ) ) );
+        opsAdd.add( new AddPluginOperation( new PluginOperand( pluginB ) ) );
+        opsAdd.add( new AddPluginOperation( new PluginOperand( pluginA ) ) );
 
-    FileUtil.writeRawData( resFile, resBytes );
+        File mdFileAfter = new File( testBase, "group-maven-metadata-write.xml" );
+        Metadata mdAfterAdd = applyOpsAndGetMetadata( mdBefore, opsAdd, mdFileAfter );
 
-     Metadata mmd = MetadataBuilder.read( new FileInputStream(resFile) );
+        assertEquals( 3, mdAfterAdd.getPlugins().size() );
+        assertEquals( "maven-testa-plugin", ( (Plugin) mdAfterAdd.getPlugins().get( 0 ) ).getArtifactId() );
+        assertEquals( "testa", ( (Plugin) mdAfterAdd.getPlugins().get( 0 ) ).getPrefix() );
+        assertEquals( "Some Plugin A", ( (Plugin) mdAfterAdd.getPlugins().get( 0 ) ).getName() );
+        assertEquals( "maven-testb-plugin", ( (Plugin) mdAfterAdd.getPlugins().get( 1 ) ).getArtifactId() );
+        assertEquals( "maven-testc-plugin", ( (Plugin) mdAfterAdd.getPlugins().get( 2 ) ).getArtifactId() );
 
-     assertNotNull( mmd );
-     assertEquals(1, mmd.getPlugins().size() );
-     assertEquals("some-artifact-id", ((Plugin)mmd.getPlugins().get( 0 )).getArtifactId() );
-     assertEquals("Some Plugin", ((Plugin)mmd.getPlugins().get( 0 )).getName() );
-     assertEquals("some", ((Plugin)mmd.getPlugins().get( 0 )).getPrefix() );
+        List<MetadataOperation> opsRemove = new ArrayList<MetadataOperation>();
 
-     // now let's drop plugin
-     targetBytes = FileUtil.readRawData( resFile );
-     resBytes = MetadataBuilder.changeMetadata( targetBytes, new RemovePluginOperation( new PluginOperand(plugin) ) );
+        opsRemove.add( new RemovePluginOperation( new PluginOperand( pluginA ) ) );
+        opsRemove.add( new RemovePluginOperation( new PluginOperand( pluginB ) ) );
+        opsRemove.add( new RemovePluginOperation( new PluginOperand( pluginC ) ) );
 
-     Metadata mmd2 = MetadataBuilder.read( new ByteArrayInputStream(resBytes) );
+        Metadata mdAfterRemove = applyOpsAndGetMetadata( mdAfterAdd, opsRemove, mdFileAfter );
 
-     assertNotNull( mmd2 );
-     assertEquals(0, mmd2.getPlugins().size() );
-  }
+        assertEquals( 0, mdAfterRemove.getPlugins().size() );
+    }
+    
   //-------------------------------------------------------------------------
   public void testMergeOperation()
   throws FileNotFoundException, IOException, XmlPullParserException, MetadataException

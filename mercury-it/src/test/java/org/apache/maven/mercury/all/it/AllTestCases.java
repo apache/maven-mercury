@@ -19,6 +19,9 @@ under the License.
 
 package org.apache.maven.mercury.all.it;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.apache.maven.mercury.dependency.tests.DependencyTreeBuilderTest;
 import org.apache.maven.mercury.plexus.DefaultPlexusMercuryTest;
 import org.apache.maven.mercury.repository.tests.ComprehensiveRepositoryTest;
@@ -30,9 +33,6 @@ import org.apache.maven.mercury.repository.tests.RemoteRepositoryCachingReaderM2
 import org.apache.maven.mercury.repository.tests.RemoteRepositoryReaderM2Test;
 import org.apache.maven.mercury.repository.tests.RemoteRepositoryWriterM2Test;
 import org.apache.maven.mercury.repository.tests.VirtualRepositoryReaderIntegratedTest;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * adopted from Maven ITs structure

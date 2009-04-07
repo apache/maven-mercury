@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierException;
@@ -172,10 +172,10 @@ public interface PlexusMercury
      * @return
      * @throws PlexusMercuryException
      */
-    public List<Artifact> read( List<Repository> repo, List<? extends ArtifactBasicMetadata> artifacts )
+    public List<Artifact> read( List<Repository> repo, List<? extends ArtifactMetadata> artifacts )
         throws RepositoryException;
 
-    public List<Artifact> read( List<Repository> repo, ArtifactBasicMetadata... artifacts )
+    public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
         throws RepositoryException;
 
     /**
@@ -194,6 +194,11 @@ public interface PlexusMercury
                                            ArtifactExclusionList exclusions )
         throws RepositoryException;
 
+    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions )
+        throws RepositoryException;
+
     public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
         throws RepositoryException;
 
@@ -205,6 +210,6 @@ public interface PlexusMercury
      * @return list of found version metadatas
      * @throws PlexusMercuryException
      */
-    public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
+    public List<ArtifactMetadata> readVersions( List<Repository> repos, ArtifactMetadata query )
         throws RepositoryException;
 }

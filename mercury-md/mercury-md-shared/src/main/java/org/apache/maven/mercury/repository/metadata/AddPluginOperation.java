@@ -18,6 +18,8 @@
  */
 package org.apache.maven.mercury.repository.metadata;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -35,6 +37,12 @@ public class AddPluginOperation
     private static final Language LANG = new DefaultLanguage( AddPluginOperation.class );
 
     private Plugin plugin;
+    
+    private static PluginComparator pluginComparator;
+    
+    {
+        pluginComparator = new PluginComparator();
+    }
 
     /**
      * @throws MetadataException
@@ -87,7 +95,29 @@ public class AddPluginOperation
         // not found, add it
         plugins.add( plugin );
 
+        Collections.sort( plugins, pluginComparator );
+        
         return true;
+    }
+    
+    class PluginComparator
+        implements Comparator<Plugin>
+    {
+        public int compare( Plugin p1, Plugin p2 )
+        {
+            if ( p1 == null || p2 == null )
+            {
+                throw new IllegalArgumentException( LANG.getMessage( "null.plugin.to.compare" ) );
+            }
+
+            if ( p1.getArtifactId() == null || p2.getArtifactId() == null )
+            {
+                throw new IllegalArgumentException( LANG.getMessage( "null.plugin.artifactId.to.compare", p1
+                    .getArtifactId(), p2.getArtifactId() ) );
+            }
+
+            return p1.getArtifactId().compareTo( p2.getArtifactId() );
+        }
     }
 
 }

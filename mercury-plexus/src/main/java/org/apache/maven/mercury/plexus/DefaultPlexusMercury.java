@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamObserverFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
@@ -47,7 +47,7 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.metadata.MetadataTreeException;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -83,6 +83,9 @@ public class DefaultPlexusMercury
     @Configuration( name = "defaultDependencyProcessorHint", value = "maven" )
     String _defaultDpHint = "maven";
 
+    @Configuration( name = "allowCircularDependencies", value = "true" )
+    boolean _allowCircularDependencies = true;
+
     @Requirement
     private Map<String, DependencyProcessor> _dependencyProcessors;
 
@@ -111,6 +114,11 @@ public class DefaultPlexusMercury
     public void setDefaultDependencyProcessorHint( String hint )
     {
         _defaultDpHint = hint;
+    }
+    // ---------------------------------------------------------------
+    public void setAllowCircularDependencies( boolean allow )
+    {
+        _allowCircularDependencies = allow;
     }
     // ---------------------------------------------------------------
     public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
@@ -200,7 +208,7 @@ public class DefaultPlexusMercury
 
     // ---------------------------------------------------------------
     // ---------------------------------------------------------------
-    public List<Artifact> read( List<Repository> repos, List<? extends ArtifactBasicMetadata> artifacts )
+    public List<Artifact> read( List<Repository> repos, List<? extends ArtifactMetadata> artifacts )
         throws RepositoryException
     {
         if ( Util.isEmpty( repos ) )
@@ -219,17 +227,17 @@ public class DefaultPlexusMercury
         if ( !ar.hasResults() )
             return null;
 
-        Map<ArtifactBasicMetadata, List<Artifact>> am = ar.getResults();
+        Map<ArtifactMetadata, List<Artifact>> am = ar.getResults();
 
         List<Artifact> al = new ArrayList<Artifact>();
-        for ( Map.Entry<ArtifactBasicMetadata, List<Artifact>> e : am.entrySet() )
+        for ( Map.Entry<ArtifactMetadata, List<Artifact>> e : am.entrySet() )
             al.addAll( e.getValue() );
 
         return al;
 
     }
 
-    public List<Artifact> read( List<Repository> repos, ArtifactBasicMetadata... artifacts )
+    public List<Artifact> read( List<Repository> repos, ArtifactMetadata... artifacts )
         throws RepositoryException
     {
         return read( repos, Arrays.asList( artifacts ) );
@@ -274,9 +282,44 @@ public class DefaultPlexusMercury
         try
         {
             DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null );
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
+                    , Util.mapOf( new Object [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
+                                                );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
+            
+            depBuilder.close();
+
+            return res;
+        }
+        catch ( MetadataTreeException e )
+        {
+            throw new RepositoryException( e );
+        }
+    }
+
+    // ---------------------------------------------------------------
+    public MetadataTreeNode resolveAsTree( List<Repository> repos
+                                           , ArtifactScopeEnum scope
+                                           , ArtifactQueryList artifacts
+                                           , ArtifactInclusionList inclusions
+                                           , ArtifactExclusionList exclusions
+                                           )
+        throws RepositoryException
+    {
+        if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
+            throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
+
+        try
+        {
+            DependencyBuilder depBuilder =
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
+                       , Util.mapOf( new String [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
+                );
+
+            MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
+            
+            depBuilder.close();
 
             return res;
         }
@@ -295,14 +338,14 @@ public class DefaultPlexusMercury
      * @return list of found version metadatas
      * @throws PlexusMercuryException
      */
-    public List<ArtifactBasicMetadata> readVersions( List<Repository> repos, ArtifactBasicMetadata query )
+    public List<ArtifactMetadata> readVersions( List<Repository> repos, ArtifactMetadata query )
         throws RepositoryException
     {
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-        List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>( 1 );
+        List<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>( 1 );
         q.add( query );
 
-        ArtifactBasicResults res = vr.readVersions( q );
+        MetadataResults res = vr.readVersions( q );
 
         if ( res == null )
             return null;

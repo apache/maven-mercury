@@ -27,10 +27,11 @@ import java.util.List;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
+import org.apache.maven.mercury.artifact.QualityRange;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
@@ -197,7 +198,7 @@ extends PlexusTestCase
     public void writeArtifact( String name, File af, File ap, Repository repo, File expectedFile )
     throws Exception
     {
-        DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata(name) );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata(name) );
         
         da.setPomBlob( FileUtil.readRawData( ap ) );
         da.setFile( af );
@@ -222,9 +223,9 @@ extends PlexusTestCase
     public List<Artifact> readArtifact( String name , List<Repository> repos )
     throws Exception
     {
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata(name);
+        ArtifactMetadata bmd = new ArtifactMetadata(name);
         
-        List<ArtifactBasicMetadata> al = new ArrayList<ArtifactBasicMetadata>();
+        List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
         al.add( bmd );
         
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
@@ -241,17 +242,17 @@ extends PlexusTestCase
         return res.getResults( bmd );
     }
     
-    public List<ArtifactBasicMetadata> readVersions( String name , List<Repository> repos )
+    public List<ArtifactMetadata> readVersions( String name , List<Repository> repos )
     throws Exception
     {
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata(name);
+        ArtifactMetadata bmd = new ArtifactMetadata(name);
         
-        List<ArtifactBasicMetadata> al = new ArrayList<ArtifactBasicMetadata>();
+        List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
         al.add( bmd );
         
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
         
-        ArtifactBasicResults  res = vr.readVersions( al );
+        MetadataResults  res = vr.readVersions( al );
         
         assertNotNull( res );
         
@@ -288,6 +289,41 @@ extends PlexusTestCase
         
         File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar" );
         File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar" );
+        
+        assertFalse( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+        
+        al = readArtifact( name, _repos );
+        
+        assertTrue( localRepo1Jar.exists() );
+        assertFalse( localRepo2Jar.exists() );
+    }
+    
+    public void testWriteReadArtifactPom()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9::pom";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( name, af, ap, _rr2, aJar2 );
+
+        assertFalse( aJar1.exists() );
+        assertTrue( aJar2.exists() );
+        
+        List<Artifact> al = readArtifact( name, _rrs );
+        
+        System.out.println(al);
+        
+        File localRepo1Jar = new File( _lbase1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom" );
+        File localRepo2Jar = new File( _lbase2, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.pom" );
         
         assertFalse( localRepo1Jar.exists() );
         assertFalse( localRepo2Jar.exists() );
@@ -473,7 +509,7 @@ extends PlexusTestCase
         writeArtifact( nameTS2, af, ap, _rr2, null );
         writeArtifact( nameSN, af, ap, _rr2, null );
         
-        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         
@@ -514,7 +550,7 @@ extends PlexusTestCase
         aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
         writeArtifact( nameTS2, af, ap, _rr1, aJar );
         
-        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         
@@ -555,7 +591,7 @@ extends PlexusTestCase
         aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
         writeArtifact( nameTS2, af, ap, _rr2, aJar );
         
-        List<ArtifactBasicMetadata> vl = readVersions( nameSN, _rrs );
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
         
         System.out.println(vl);
         
@@ -726,5 +762,66 @@ extends PlexusTestCase
         assertTrue( aSN.getFile().exists() );
         
         assertEquals( "2.0.8", aSN.getVersion() );
+    }
+    
+    public void testReadReleasePolicy()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( "org.apache.maven:maven-core:2.0.9",                    af, ap, _rr1, aJar1 );
+        writeArtifact( "org.apache.maven:maven-core:2.0.9-20090204.232324-24", af, ap, _rr2, aJar2 );
+        
+        _rr1.setRepositoryQualityRange( QualityRange.RELEASES_ONLY );
+        _rr2.setRepositoryQualityRange( QualityRange.SNAPSHOTS_ONLY );
+        
+        List<ArtifactMetadata> al = readVersions( name, _rrs );
+        
+        assertNotNull( al );
+
+        assertEquals( 1, al.size() );
+
+        assertEquals( "2.0.9", al.get( 0 ).getVersion() );
+    }
+    
+    public void testReadReleasePolicySwapped()
+    throws Exception
+    {
+        String name = "org.apache.maven:maven-core:2.0.9";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar1 = new File( _base1, "org/apache/maven/maven-core/2.0.9/maven-core-2.0.9.jar");
+        File aJar2 = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        
+        assertFalse( aJar1.exists() );
+        assertFalse( aJar2.exists() );
+        
+        writeArtifact( "org.apache.maven:maven-core:2.0.9",                    af, ap, _rr1, aJar1 );
+        writeArtifact( "org.apache.maven:maven-core:2.0.9-20090204.232324-24", af, ap, _rr2, aJar2 );
+        
+        _rr2.setRepositoryQualityRange( QualityRange.RELEASES_ONLY );
+        _rr1.setRepositoryQualityRange( QualityRange.SNAPSHOTS_ONLY );
+        
+        ArtifactMetadata bmd = new ArtifactMetadata(name);
+        
+        List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
+        al.add( bmd );
+        
+        VirtualRepositoryReader vr = new VirtualRepositoryReader( _rrs );
+        
+        MetadataResults  res = vr.readVersions( al );
+        
+        assertTrue( res  == null || !res.hasResults() );
     }
 }

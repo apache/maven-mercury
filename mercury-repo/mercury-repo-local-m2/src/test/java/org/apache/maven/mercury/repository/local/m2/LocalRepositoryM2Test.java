@@ -25,7 +25,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 
 /**
@@ -64,9 +64,9 @@ public class LocalRepositoryM2Test
   {
     String artifactId = "a:a:4";
     
-    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata(artifactId);
+    ArtifactMetadata bmd = new ArtifactMetadata(artifactId);
     
-    ArrayList<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>();
+    ArrayList<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>();
     
     q.add( bmd );
     

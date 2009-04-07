@@ -25,13 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
+import org.apache.maven.mercury.artifact.api.ConfigurationException;
 import org.apache.maven.mercury.artifact.version.VersionException;
 import org.apache.maven.mercury.event.EventGenerator;
 import org.apache.maven.mercury.event.EventManager;
@@ -42,7 +43,7 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.sat.DefaultSatSolver;
 import org.apache.maven.mercury.metadata.sat.SatException;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
@@ -62,7 +63,15 @@ class DependencyTreeBuilder
     public static final ArtifactMetadata DUMMY_ROOT = new ArtifactMetadata( "__fake:__fake:1.0" );
 
     private static final Language LANG = new DefaultLanguage( DependencyTreeBuilder.class );
+    
+    public static final String SYSTEM_PROPERTY_DUMP_DEPENDENCY_TREE = "mercury.dump.tree";
+    
+    private static final String _depTreeDumpFileName = System.getProperty( SYSTEM_PROPERTY_DUMP_DEPENDENCY_TREE );
 
+    private static final boolean _dumpDepTree = _depTreeDumpFileName != null;
+    
+    private static final DependencyTreeDumper _dumper = _dumpDepTree ? new DependencyTreeDumper(_depTreeDumpFileName ) : null;
+    
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DependencyTreeBuilder.class );
 
     private Collection<MetadataTreeArtifactFilter> _filters;
@@ -77,7 +86,32 @@ class DependencyTreeBuilder
 
     private EventManager _eventManager;
     
-    private boolean _buildAllTrees = true;
+    private boolean _buildIndividualTrees = true;
+    
+    private boolean _allowCircularDependencies = Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
+    
+    /** mandated versions in the format G:A -> V */
+    private Map<String, String> _versionMap;
+    
+    class TruckLoad
+    {
+        List<ArtifactMetadata> cp;
+        MetadataTreeNode root;
+        
+        public TruckLoad()
+        {
+        }
+        
+        public TruckLoad( List<ArtifactMetadata> cp )
+        {
+            this.cp = cp;
+        }
+        
+        public TruckLoad( MetadataTreeNode root )
+        {
+            this.root = root;
+        }
+    }
 
     /**
      * creates an instance of MetadataTree. Use this instance to
@@ -118,7 +152,7 @@ class DependencyTreeBuilder
     }
 
     // ------------------------------------------------------------------------
-    public MetadataTreeNode buildTree( ArtifactBasicMetadata startMD, ArtifactScopeEnum treeScope )
+    public MetadataTreeNode buildTree( ArtifactMetadata startMD, ArtifactScopeEnum treeScope )
         throws MetadataTreeException
     {
         if ( startMD == null )
@@ -156,10 +190,37 @@ class DependencyTreeBuilder
 
     // ------------------------------------------------------------------------
     public List<ArtifactMetadata> resolveConflicts( 
-                                        ArtifactScopeEnum   scope
-                                      , ArtifactQueryList artifacts
+                                        ArtifactScopeEnum     scope
+                                      , ArtifactQueryList     artifacts
                                       , ArtifactInclusionList inclusions
                                       , ArtifactExclusionList exclusions
+                                                  )
+    throws MetadataTreeException
+    {
+        TruckLoad tl = resolveConflictsInternally( scope, artifacts, inclusions, exclusions, false );
+        
+        return tl == null ? null : tl.cp;
+    }
+    // ------------------------------------------------------------------------
+    public MetadataTreeNode resolveConflictsAsTree( 
+                                        ArtifactScopeEnum     scope
+                                      , ArtifactQueryList     artifacts
+                                      , ArtifactInclusionList inclusions
+                                      , ArtifactExclusionList exclusions
+                                                  )
+    throws MetadataTreeException
+    {
+        TruckLoad tl = resolveConflictsInternally( scope, artifacts, inclusions, exclusions, true );
+        
+        return tl == null ? null : tl.root;
+    }
+    // ------------------------------------------------------------------------
+    public TruckLoad resolveConflictsInternally( 
+                                        ArtifactScopeEnum     scope
+                                      , ArtifactQueryList     artifacts
+                                      , ArtifactInclusionList inclusions
+                                      , ArtifactExclusionList exclusions
+                                      , boolean asTree
                                                   )
 
     throws MetadataTreeException
@@ -167,7 +228,7 @@ class DependencyTreeBuilder
         if ( artifacts == null )
             throw new MetadataTreeException( LANG.getMessage( "empty.md.collection" ) );
 
-        List<ArtifactBasicMetadata> startMDs = artifacts.getMetadataList();
+        List<ArtifactMetadata> startMDs = artifacts.getMetadataList();
         
         if ( Util.isEmpty( startMDs ) )
             throw new MetadataTreeException( LANG.getMessage( "empty.md.collection" ) );
@@ -176,22 +237,45 @@ class DependencyTreeBuilder
 
         if ( nodeCount == 1 && inclusions == null && exclusions == null )
         {
-            ArtifactBasicMetadata bmd = startMDs.get( 0 );
+            ArtifactMetadata bmd = startMDs.get( 0 );
             MetadataTreeNode rooty = buildTree( bmd, scope );
-            List<ArtifactMetadata> res = resolveConflicts( rooty );
-            return res;
+
+            TruckLoad tl = null;
+            
+            if( asTree )
+            {
+                MetadataTreeNode tr = resolveConflictsAsTree( rooty );
+                
+                tl = new TruckLoad( tr );
+            }
+            else
+            {
+                List<ArtifactMetadata> res = resolveConflicts( rooty );
+                
+                tl = new TruckLoad( res );
+    
+                if(_dumpDepTree )
+                    _dumper.dump( scope, artifacts, inclusions, exclusions, rooty, res );
+            }
+
+            return tl;
         }
 
         DUMMY_ROOT.setDependencies( startMDs );
         DUMMY_ROOT.setInclusions( inclusions == null ? null : inclusions.getMetadataList() );
         DUMMY_ROOT.setExclusions( exclusions == null ? null : exclusions.getMetadataList() );
-
-        List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
         
-        if( _buildAllTrees )
+        MetadataTreeNode root = null;
+        
+        if( _buildIndividualTrees )
         {
-            for ( ArtifactBasicMetadata bmd : startMDs )
+            List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
+           
+            for ( ArtifactMetadata bmd : startMDs )
             {
+                if( scope != null && !scope.encloses( bmd.getArtifactScope() ) )
+                    continue;
+                
                 try
                 {
                     if( ! DUMMY_ROOT.allowDependency( bmd ) )
@@ -204,17 +288,17 @@ class DependencyTreeBuilder
            
                 if( inclusions != null )
                 {
-                    List<ArtifactBasicMetadata> inc = inclusions.getMetadataList();
+                    List<ArtifactMetadata> inc = inclusions.getMetadataList();
                     
                     if( bmd.hasInclusions() )
                         bmd.getInclusions().addAll( inc );
                     else
                         bmd.setInclusions( inc );
                 }
-                
+    
                 if( exclusions != null )
                 {
-                    List<ArtifactBasicMetadata> excl = exclusions.getMetadataList();
+                    List<ArtifactMetadata> excl = exclusions.getMetadataList();
                     
                     if( bmd.hasExclusions() )
                         bmd.getExclusions().addAll( excl );
@@ -229,29 +313,47 @@ class DependencyTreeBuilder
             
             if( Util.isEmpty( deps ) ) // all dependencies are filtered out 
                 return null;
-        }
-
-        // combine into one tree
-        MetadataTreeNode root = _buildAllTrees
-                                ? new MetadataTreeNode( DUMMY_ROOT, null, null ) 
-                                : buildTree( DUMMY_ROOT, scope )
-                                ;
-        if(_buildAllTrees)
-        {
+    
+            // combine into one tree
+            root = new MetadataTreeNode( DUMMY_ROOT, null, null );
+    
             for ( MetadataTreeNode kid : deps )
                 root.addChild( kid );
-        }
     
-        List<ArtifactMetadata> res = resolveConflicts( root );
+        }
+        else
+        {
+            DUMMY_ROOT.setDependencies( startMDs );
+            root = buildTree( DUMMY_ROOT, scope );
+        }
+        
+        
+        TruckLoad tl = null;
+        
+        if( asTree )
+        {
+            MetadataTreeNode tr = resolveConflictsAsTree( root );
+            
+            tl = new TruckLoad( tr );
+        }
+        else
+        {
+            List<ArtifactMetadata> cp = resolveConflicts( root ); 
 
-        if( res != null )
-            res.remove( DUMMY_ROOT );
+            if( cp != null )
+                cp.remove( DUMMY_ROOT );
+    
+                if(_dumpDepTree )
+                    _dumper.dump( scope, artifacts, inclusions, exclusions, root, cp );
+                
+                tl = new TruckLoad( cp );
+        }
 
-        return res;
+        return tl;
     }
     // -----------------------------------------------------
-    private MetadataTreeNode createNode( ArtifactBasicMetadata nodeMD, MetadataTreeNode parent
-                                         , ArtifactBasicMetadata nodeQuery, ArtifactScopeEnum globalScope
+    private MetadataTreeNode createNode( ArtifactMetadata nodeMD, MetadataTreeNode parent
+                                         , ArtifactMetadata nodeQuery, ArtifactScopeEnum globalScope
                                        )
         throws MetadataTreeException
     {
@@ -262,7 +364,21 @@ class DependencyTreeBuilder
 
         try
         {
-            checkForCircularDependency( nodeMD, parent );
+            try
+            {
+                checkForCircularDependency( nodeMD, parent );
+            }
+            catch ( MetadataTreeCircularDependencyException e )
+            {
+                if( _allowCircularDependencies )
+                {
+                    String line = LANG.getMessage( "attention.line" );
+                    LOG.info( line + e.getMessage() + line );
+                    return null;
+                }
+                else
+                    throw e;
+            }
 
             ArtifactMetadata mr;
 
@@ -281,14 +397,14 @@ class DependencyTreeBuilder
 
             MetadataTreeNode node = new MetadataTreeNode( mr, parent, nodeQuery );
 
-            List<ArtifactBasicMetadata> allDependencies = mr.getDependencies();
+            List<ArtifactMetadata> allDependencies = mr.getDependencies();
 
             if ( allDependencies == null || allDependencies.size() < 1 )
                 return node;
 
-            List<ArtifactBasicMetadata> dependencies = new ArrayList<ArtifactBasicMetadata>( allDependencies.size() );
+            List<ArtifactMetadata> dependencies = new ArrayList<ArtifactMetadata>( allDependencies.size() );
             if ( globalScope != null )
-                for ( ArtifactBasicMetadata md : allDependencies )
+                for ( ArtifactMetadata md : allDependencies )
                 {
                     ArtifactScopeEnum mdScope = md.getArtifactScope();
                     if ( globalScope.encloses( mdScope ) )
@@ -300,20 +416,20 @@ class DependencyTreeBuilder
             if ( Util.isEmpty( dependencies ) )
                 return node;
 
-            ArtifactBasicResults res = _reader.readVersions( dependencies );
+            MetadataResults res = _reader.readVersions( dependencies );
             
             if( res == null )
                 throw new MetadataTreeException( LANG.getMessage( "no.versions", dependencies.toString() ) );
 
-            Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata>> expandedDeps = res.getResults();
+            Map<ArtifactMetadata, List<ArtifactMetadata>> expandedDeps = res.getResults();
 
-            for ( ArtifactBasicMetadata md : dependencies )
+            for ( ArtifactMetadata md : dependencies )
             {
 
                 if ( LOG.isDebugEnabled() )
                     LOG.debug( "node " + nodeQuery + ", dep " + md );
 
-                List<ArtifactBasicMetadata> versions = expandedDeps.get( md );
+                List<ArtifactMetadata> versions = expandedDeps.get( md );
                 if ( versions == null || versions.size() < 1 )
                 {
                     if ( md.isOptional() )
@@ -325,7 +441,7 @@ class DependencyTreeBuilder
                 boolean noVersions = true;
                 boolean noGoodVersions = true;
 
-                for ( ArtifactBasicMetadata ver : versions )
+                for ( ArtifactMetadata ver : versions )
                 {
                     if ( veto( ver, _filters ) || vetoInclusionsExclusions( node, ver ) )
                     {
@@ -335,7 +451,8 @@ class DependencyTreeBuilder
                     }
 
                     MetadataTreeNode kid = createNode( ver, node, md, globalScope );
-                    node.addChild( kid );
+                    if( kid != null )
+                        node.addChild( kid );
 
                     noVersions = false;
 
@@ -393,7 +510,7 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
-    private void checkForCircularDependency( ArtifactBasicMetadata md, MetadataTreeNode parent )
+    private void checkForCircularDependency( ArtifactMetadata md, MetadataTreeNode parent )
         throws MetadataTreeCircularDependencyException
     {
         MetadataTreeNode p = parent;
@@ -402,29 +519,29 @@ class DependencyTreeBuilder
         {
             count++;
             // System.out.println("circ "+md+" vs "+p.md);
-            if ( md.sameGA( p.md ) )
+            if ( md.sameGA( p.getMd() ) )
             {
                 p = parent;
                 StringBuilder sb = new StringBuilder( 128 );
                 sb.append( md.toString() );
                 while ( p != null )
                 {
-                    sb.append( " <- " + p.md.toString() );
+                    sb.append( " <- " + p.getMd().toString() );
 
-                    if ( md.sameGA( p.md ) )
+                    if ( md.sameGA( p.getMd() ) )
                     {
                         throw new MetadataTreeCircularDependencyException( "circular dependency " + count
-                            + " levels up. " + sb.toString() + " <= " + ( p.parent == null ? "no parent" : p.parent.md ) );
+                            + " levels up. " + sb.toString() + " <= " + ( p.getParent() == null ? "no parent" : p.getParent().getMd() ) );
                     }
-                    p = p.parent;
+                    p = p.getParent();
                 }
             }
-            p = p.parent;
+            p = p.getParent();
         }
     }
 
     // -----------------------------------------------------
-    private boolean veto( ArtifactBasicMetadata md, Collection<MetadataTreeArtifactFilter> filters )
+    private boolean veto( ArtifactMetadata md, Collection<MetadataTreeArtifactFilter> filters )
     {
         if ( filters != null && filters.size() > 1 )
             for ( MetadataTreeArtifactFilter filter : filters )
@@ -434,12 +551,12 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
-    private boolean vetoInclusionsExclusions( MetadataTreeNode node, ArtifactBasicMetadata ver )
+    private boolean vetoInclusionsExclusions( MetadataTreeNode node, ArtifactMetadata ver )
         throws VersionException
     {
         for ( MetadataTreeNode n = node; n != null; n = n.getParent() )
         {
-            ArtifactBasicMetadata md = n.getQuery();
+            ArtifactMetadata md = n.getQuery();
 
             if ( !md.allowDependency( ver ) ) // veto it
                 return true;
@@ -453,6 +570,8 @@ class DependencyTreeBuilder
     {
         if ( root == null )
             throw new MetadataTreeException( LANG.getMessage( "empty.tree" ) );
+        
+        root.createNames( 0, 0 );
 
         try
         {
@@ -526,7 +645,7 @@ class DependencyTreeBuilder
 
             comma = " <== ";
 
-            p = p.parent;
+            p = p.getParent();
         }
 
         return sb.toString();
@@ -553,5 +672,21 @@ class DependencyTreeBuilder
         else
             _eventManager.getListeners().addAll( eventManager.getListeners() );
 
+    }
+    
+    public void close()
+    {
+        if( _reader != null )
+            _reader.close();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setOption( String name, Object val )
+        throws ConfigurationException
+    {
+        if( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES.equals( name ) )
+            _allowCircularDependencies = Boolean.parseBoolean( (String)val );
+        else if( CONFIGURATION_PROPERTY_VERSION_MAP.equals( name ) )
+            _versionMap = (Map<String, String>) val;
     }
 }

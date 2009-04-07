@@ -26,9 +26,9 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 import org.apache.maven.mercury.util.FileUtil;
@@ -48,7 +48,7 @@ public class LocalRepositoryMapTest
     
     RepositoryReader _rr;
     
-    ArtifactBasicMetadata bmd;
+    ArtifactMetadata bmd;
     
     File _pom;
 
@@ -56,7 +56,7 @@ public class LocalRepositoryMapTest
     protected void setUp()
         throws Exception
     {
-        bmd = new ArtifactBasicMetadata("t:t:1.0::pom");
+        bmd = new ArtifactMetadata("t:t:1.0::pom");
         
         _pom = new File("./target/test-classes/t-1.0.pom");
 
@@ -84,11 +84,11 @@ public class LocalRepositoryMapTest
     public void testReadMap()
         throws Exception
     {
-        Collection<ArtifactBasicMetadata> query = new ArrayList<ArtifactBasicMetadata>(1);
+        Collection<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>(1);
         
         query.add( bmd );
         
-        ArtifactBasicResults res = _rr.readDependencies( query  );
+        MetadataResults res = _rr.readDependencies( query  );
         
         assertNotNull( res );
         
@@ -96,13 +96,13 @@ public class LocalRepositoryMapTest
         
         assertTrue( res.hasResults() );
         
-        Map<ArtifactBasicMetadata, List<ArtifactBasicMetadata>>  deps = res.getResults();
+        Map<ArtifactMetadata, List<ArtifactMetadata>>  deps = res.getResults();
         
         assertNotNull( deps );
         
         assertEquals( 1, deps.size() );
         
-        List<ArtifactBasicMetadata> myDeps = deps.get( bmd );
+        List<ArtifactMetadata> myDeps = deps.get( bmd );
         
         assertNotNull( myDeps );
         

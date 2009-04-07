@@ -83,14 +83,15 @@ public abstract class AbstractRepository
 
         this.type = type;
     }
+
     // ---------------------------------------------------------------------------
     public static String hashId( String id )
     {
         try
         {
-            if( id == null || (id.indexOf('/') == -1 && id.indexOf('\\') == -1) )
+            if ( id == null || ( id.indexOf( '/' ) == -1 && id.indexOf( '\\' ) == -1 ) )
                 return id;
-            
+
             MessageDigest digest = MessageDigest.getInstance( "SHA-1" );
 
             digest.update( id.getBytes() );
@@ -124,7 +125,7 @@ public abstract class AbstractRepository
     // ---------------------------------------------------------------------------
     public QualityRange getRepositoryQualityRange()
     {
-        return repositoryQualityRange;
+        return repositoryQualityRange == null ? QualityRange.ALL : repositoryQualityRange;
     }
 
     // ---------------------------------------------------------------------------

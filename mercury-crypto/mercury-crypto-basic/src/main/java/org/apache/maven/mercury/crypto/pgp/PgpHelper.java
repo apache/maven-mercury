@@ -22,14 +22,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.Security;
 import java.util.Iterator;
 
+import org.apache.maven.mercury.crypto.api.StreamObserverException;
+import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
+import org.apache.maven.mercury.crypto.api.StreamVerifierException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPObjectFactory;
+import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
@@ -48,6 +53,9 @@ public class PgpHelper
 {
   public static final String PROVIDER = "BC";
   public static final String EXTENSION = "asc";
+  
+  private static final byte [] _buf = new byte[10240];
+
 
   private static final Language LANG = new DefaultLanguage( PgpHelper.class );
   //---------------------------------------------------------------------------------
@@ -97,6 +105,14 @@ public class PgpHelper
   {
     BigInteger bi = new BigInteger( hexId, 16 );
     return bi.longValue();
+  }
+  //---------------------------------------------------------------------------------
+  public static long getKeyId( InputStream inSig )
+  throws IOException, PGPException
+  {
+      PGPSignature sig = readSignature( inSig );
+      
+      return sig.getKeyID();
   }
   //---------------------------------------------------------------------------------
   public static PGPSignature readSignature( InputStream inS )
@@ -164,6 +180,58 @@ public class PgpHelper
     {
       if( fis != null ) try { fis.close(); } catch( Exception any ) {}
     }
+  }
+  //---------------------------------------------------------------------------------
+  public static final boolean verifyStream( InputStream in, InputStream asc, InputStream publicKeyRingStream )
+  throws IOException, StreamObserverException
+  {
+      StreamVerifierAttributes attributes = new StreamVerifierAttributes(PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true);
+      
+      PgpStreamVerifierFactory svf = new PgpStreamVerifierFactory( attributes, publicKeyRingStream );
+      String sig = PgpHelper.streamToString( asc );
+      
+      return verifyStream( in, sig, svf );
+  }
+  //---------------------------------------------------------------------------------
+  public static final boolean verifyStream( InputStream in, String sig, PgpStreamVerifierFactory factory )
+  throws IOException, StreamObserverException
+  {
+
+      PgpStreamVerifier sv = (PgpStreamVerifier)factory.newInstance();
+      
+      sv.initSignature( sig );
+      
+      int nBytes = -1;
+      while( (nBytes = in.read(_buf)) != -1 )
+        sv.bytesReady( _buf, 0, nBytes );
+      
+      boolean verified = sv.verifySignature();
+
+      return verified;
+  }
+  
+  public static final PGPPublicKeyRingCollection readPublicRing( InputStream in )
+  throws IOException, PGPException
+  {
+      if( in == null )
+          return null;
+      
+      PGPPublicKeyRingCollection res = new PGPPublicKeyRingCollection( PGPUtil.getDecoderStream( in ) );
+      
+      return res;
+  }
+  
+  public static final void writePublicRing( PGPPublicKeyRingCollection  prc, OutputStream out )
+  throws IOException
+  {
+      if( prc == null )
+          throw new IllegalArgumentException( LANG.getMessage( "null.ring" ) );
+      
+      if( out == null )
+          throw new IllegalArgumentException( LANG.getMessage( "null.os" ) );
+      
+      prc.encode( out );
+      
   }
   //---------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------

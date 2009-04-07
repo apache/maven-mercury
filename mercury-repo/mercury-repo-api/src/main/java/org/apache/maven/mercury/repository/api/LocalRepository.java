@@ -2,7 +2,6 @@ package org.apache.maven.mercury.repository.api;
 
 import java.io.File;
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,7 +24,7 @@ import java.io.File;
 /**
  */
 public interface LocalRepository
-extends Repository
+    extends Repository
 {
     File getDirectory();
 }

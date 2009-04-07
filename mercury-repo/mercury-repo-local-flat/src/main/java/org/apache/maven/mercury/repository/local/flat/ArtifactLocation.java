@@ -18,7 +18,7 @@
  */
 package org.apache.maven.mercury.repository.local.flat;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
 import org.apache.maven.mercury.util.FileUtil;
 
@@ -43,9 +43,9 @@ public class ArtifactLocation
   private String classifier;
   private String type;
   
-  private ArtifactBasicMetadata bmd;
+  private ArtifactMetadata bmd;
   
-  public ArtifactLocation( String prefix, ArtifactBasicMetadata bmd )
+  public ArtifactLocation( String prefix, ArtifactMetadata bmd )
   {
     if( prefix == null || bmd == null || bmd.getGroupId() == null || bmd.getArtifactId() == null || bmd.getVersion() == null )
       return;

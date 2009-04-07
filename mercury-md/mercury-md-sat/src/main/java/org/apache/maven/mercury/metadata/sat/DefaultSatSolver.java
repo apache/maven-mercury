@@ -27,15 +27,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.event.EventManager;
 import org.apache.maven.mercury.event.EventTypeEnum;
 import org.apache.maven.mercury.event.GenericEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
 import org.apache.maven.mercury.metadata.MetadataTreeNodeGAComparator;
 import org.apache.maven.mercury.metadata.MetadataTreeNodeGAVComparator;
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -68,6 +67,8 @@ implements SatSolver
   protected MetadataTreeNode _root;
   
   protected EventManager _eventManager;
+
+  public static final BigInteger TWO = new BigInteger("2");
   
   protected static final Comparator<MetadataTreeNode> gaComparator = new MetadataTreeNodeGAComparator();
   //-----------------------------------------------------------------------
@@ -90,7 +91,7 @@ implements SatSolver
     GenericEvent event = null;
     
     if( tree == null)
-      throw new SatException("cannot create a solver for an empty [null] tree");
+      throw new SatException( LANG.getMessage( "null.tree.arg" ) );
     
     try
     {
@@ -193,9 +194,9 @@ if( LOG.isDebugEnabled() )
         {
           vars.push( varLiteral );
           
-          long cf = (long)Math.pow( 2, count++ );
+          BigInteger cf = TWO.pow( count++ );
           
-          coeffs.push( BigInteger.valueOf( cf ) );
+          coeffs.push( cf );
 
 if( LOG.isDebugEnabled() )
     LOG.debug( "    "+cf+" x"+var.getLiteral() );
@@ -408,8 +409,8 @@ if( LOG.isDebugEnabled() )
   LOG.debug(( ge ? " >= " : " < ")+" "+cardinality );
   }
   //-----------------------------------------------------------------------
-  private final Map<ArtifactBasicMetadata, List<MetadataTreeNode>> processChildren(
-                                                        List<ArtifactBasicMetadata> queries
+  private final Map<ArtifactMetadata, List<MetadataTreeNode>> processChildren(
+                                                        List<ArtifactMetadata> queries
                                                         , List<MetadataTreeNode> children
                                                                               )
   throws SatException
@@ -421,9 +422,9 @@ if( LOG.isDebugEnabled() )
       throw new SatException("there are queries, but not results. Queries: "+queries);
     
     // TODO og: MERCURY-40
-    Map<ArtifactBasicMetadata, List<MetadataTreeNode>> res = new LinkedHashMap<ArtifactBasicMetadata, List<MetadataTreeNode>>( queries.size() );
+    Map<ArtifactMetadata, List<MetadataTreeNode>> res = new LinkedHashMap<ArtifactMetadata, List<MetadataTreeNode>>( queries.size() );
 
-    for( ArtifactBasicMetadata q : queries )
+    for( ArtifactMetadata q : queries )
     {
       List<MetadataTreeNode> bucket = new ArrayList<MetadataTreeNode>(4);
       String queryGA = q.getGA();
@@ -466,15 +467,15 @@ if( LOG.isDebugEnabled() )
     if( ! node.hasChildren() )
       return;
     
-    Map<ArtifactBasicMetadata,List<MetadataTreeNode>> kids = processChildren( node.getQueries(), node.getChildren() );
+    Map<ArtifactMetadata,List<MetadataTreeNode>> kids = processChildren( node.getQueries(), node.getChildren() );
     
     // leaf node in this scope
     if( kids == null )
       return;
     
-    for( Map.Entry<ArtifactBasicMetadata,List<MetadataTreeNode>> kid : kids.entrySet() )
+    for( Map.Entry<ArtifactMetadata,List<MetadataTreeNode>> kid : kids.entrySet() )
     {
-      ArtifactBasicMetadata query = kid.getKey();
+      ArtifactMetadata query = kid.getKey();
       
       List<MetadataTreeNode> range = kid.getValue();
 

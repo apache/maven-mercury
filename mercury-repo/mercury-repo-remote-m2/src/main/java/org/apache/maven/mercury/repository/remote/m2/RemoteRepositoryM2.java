@@ -38,7 +38,7 @@ public class RemoteRepositoryM2
     extends AbstractRepository
     implements RemoteRepository
 {
-    private static final Language _LANG = new DefaultLanguage( RemoteRepositoryReaderM2.class );
+    private static final Language LANG = new DefaultLanguage( RemoteRepositoryReaderM2.class );
 
     public static final String METADATA_FILE_NAME = "maven-metadata.xml";
 
@@ -48,7 +48,7 @@ public class RemoteRepositoryM2
 
     /** default update policy */
     private RepositoryUpdatePolicy _updatePolicy =
-        new RepositoryUpdateIntervalPolicy( RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY );
+        RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY;
 
     // ----------------------------------------------------------------------------------
     public RemoteRepositoryM2( String url, DependencyProcessor dependencyProcessor )
@@ -100,10 +100,9 @@ public class RemoteRepositoryM2
 
     // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter( String protocol )
-        throws NonExistentProtocolException
+        throws NonExistentProtocolException, RepositoryException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return getWriter();
     }
 
     // ----------------------------------------------------------------------------------
@@ -145,12 +144,15 @@ public class RemoteRepositoryM2
     // ----------------------------------------------------------------------------------
     public RepositoryUpdatePolicy getUpdatePolicy()
     {
-        return _updatePolicy;
+        return _updatePolicy == null ? RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY : _updatePolicy;
     }
 
     // ----------------------------------------------------------------------------------
     public void setUpdatePolicy( RepositoryUpdatePolicy updatePolicy )
     {
+        if( updatePolicy == null )
+            throw new IllegalArgumentException( LANG.getMessage( "null.update.policy", getId(), _server == null ? "no URL":_server.getURL()+"" ) );
+        
         this._updatePolicy = updatePolicy;
     }
 

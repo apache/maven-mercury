@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
@@ -153,7 +153,7 @@ extends PlexusTestCase
         File pom = new File("./target/test.pom");
         FileUtil.writeRawData( pom, "test-pom" );
 
-        DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("a:test:1.0") );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("a:test:1.0") );
         da.setFile( jar );
         da.setPomBlob( FileUtil.readRawData( pom ) );
 
@@ -176,9 +176,9 @@ extends PlexusTestCase
     {
         testDavWrite();
         
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("a:test:1.0");
+        ArtifactMetadata bmd = new ArtifactMetadata("a:test:1.0");
         
-        List<ArtifactBasicMetadata> query = new ArrayList<ArtifactBasicMetadata>( 1 );
+        List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
 
         query.add( bmd );
         
@@ -218,7 +218,7 @@ extends PlexusTestCase
         File pom = new File("./target/test.pom");
         FileUtil.writeRawData( pom, "test-pom" );
 
-        DefaultArtifact da = new DefaultArtifact( new ArtifactBasicMetadata("a:test:1.0") );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("a:test:1.0") );
         da.setFile( jar );
         da.setPomBlob( FileUtil.readRawData( pom ) );
 
@@ -241,9 +241,9 @@ extends PlexusTestCase
     {
         testDavWrite2();
         
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("a:test:1.0");
+        ArtifactMetadata bmd = new ArtifactMetadata("a:test:1.0");
         
-        List<ArtifactBasicMetadata> query = new ArrayList<ArtifactBasicMetadata>( 1 );
+        List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
 
         query.add( bmd );
         

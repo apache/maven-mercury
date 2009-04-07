@@ -31,7 +31,7 @@ public class ArtifactQueryList
     /**
      * @param md
      */
-    public ArtifactQueryList( ArtifactBasicMetadata... md )
+    public ArtifactQueryList( ArtifactMetadata... md )
     {
         super( md );
     }
@@ -39,7 +39,7 @@ public class ArtifactQueryList
     /**
      * @param md
      */
-    public ArtifactQueryList( Collection<ArtifactBasicMetadata> md )
+    public ArtifactQueryList( Collection<ArtifactMetadata> md )
     {
         super( md );
     }

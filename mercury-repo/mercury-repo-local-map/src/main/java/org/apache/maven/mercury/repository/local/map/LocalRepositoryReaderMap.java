@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
@@ -30,7 +30,7 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.AbstracRepositoryReader;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -43,9 +43,9 @@ public class LocalRepositoryReaderMap
     extends AbstracRepositoryReader
     implements RepositoryReader
 {
-    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( LocalRepositoryReaderMap.class );
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryReaderMap.class );
 
-    private static final Language _lang = new DefaultLanguage( LocalRepositoryReaderMap.class );
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderMap.class );
 
     // ---------------------------------------------------------------------------------------------------------------
     private static final String[] _protocols = new String[] { "map" };
@@ -82,7 +82,7 @@ public class LocalRepositoryReaderMap
         return _protocols;
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public ArtifactResults readArtifacts( Collection<ArtifactBasicMetadata> query )
+    public ArtifactResults readArtifacts( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         if( Util.isEmpty( query ) )
@@ -93,12 +93,12 @@ public class LocalRepositoryReaderMap
         
         ArtifactResults res = new ArtifactResults();
         
-        for( ArtifactBasicMetadata bmd : query )
+        for( ArtifactMetadata md : query )
         {
             Artifact a;
             try
             {
-                a = _repo._storage.findArtifact( bmd );
+                a = _repo._storage.findArtifact( md );
             }
             catch ( Exception e )
             {
@@ -106,7 +106,7 @@ public class LocalRepositoryReaderMap
             }
             
             if( a != null )
-                res.add( bmd, a );
+                res.add( md, a );
         }
 
         return res;
@@ -131,13 +131,13 @@ public class LocalRepositoryReaderMap
         }
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
         return readRawData( bmd, classifier, type, false );
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactBasicMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
         
@@ -151,7 +151,7 @@ public class LocalRepositoryReaderMap
         return readRawData( key, exempt );
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public ArtifactBasicResults readDependencies( Collection<ArtifactBasicMetadata> query )
+    public MetadataResults readDependencies( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         if( Util.isEmpty( query ) )
@@ -159,21 +159,21 @@ public class LocalRepositoryReaderMap
         
         DependencyProcessor dp = _repo.getDependencyProcessor();
         
-        ArtifactBasicResults res = new ArtifactBasicResults( query.size() );
+        MetadataResults res = new MetadataResults( query.size() );
         
-        for( ArtifactBasicMetadata bmd : query )
+        for( ArtifactMetadata bmd : query )
         {
             try
             {
                 MetadataReader mdr = _repo._mdReader == null ? this : _repo._mdReader;
                 
-                List<ArtifactBasicMetadata> deps = dp.getDependencies( bmd, mdr, System.getenv(), System.getProperties() );
+                List<ArtifactMetadata> deps = dp.getDependencies( bmd, mdr, System.getenv(), System.getProperties() );
                 
                 res.add( bmd, deps );
             }
             catch ( Exception e )
             {
-                _log.error( e.getMessage() );
+                LOG.error( e.getMessage() );
                 
                 res.addError( bmd, e );
             }
@@ -182,7 +182,7 @@ public class LocalRepositoryReaderMap
         return res;
     }
     // ---------------------------------------------------------------------------------------------------------------
-    public ArtifactBasicResults readVersions( Collection<ArtifactBasicMetadata> query )
+    public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         return null;

@@ -21,14 +21,14 @@ package org.apache.maven.mercury.builder.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 public interface DependencyProcessor
 {
-
+    /** dummy processor to create M2 repositories when metadata processing is not required */
     public static final DependencyProcessor NULL_PROCESSOR = new DependencyProcessor()
     {
-        public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader,
+        public List<ArtifactMetadata> getDependencies( ArtifactMetadata bmd, MetadataReader mdReader,
                                                             Map<String, String> env, Map<?, ?> sysProps )
             throws MetadataReaderException, DependencyProcessorException
         {
@@ -37,7 +37,9 @@ public interface DependencyProcessor
     };
 
     // TODO: shouldn't sysProps be changed to Properties because of System.getProperties() API?
-    public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader,
+    // Oleg: sysProp may help to experiment with Objects, different from Strings, so I'd 
+    //  stay with the Map until this is stable enough
+    public List<ArtifactMetadata> getDependencies( ArtifactMetadata bmd, MetadataReader mdReader,
                                                         Map<String, String> env, Map<?, ?> sysProps )
         throws MetadataReaderException, DependencyProcessorException;
 }

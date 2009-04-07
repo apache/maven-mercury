@@ -27,12 +27,12 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.event.MercuryEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
 import org.apache.maven.mercury.repository.api.RemoteRepository;
@@ -148,8 +148,8 @@ public class VirtualRepositoryReaderTest
     public void testReadSnapshot()
         throws Exception
     {
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata( _artifactCoordSn );
-        List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>();
+        ArtifactMetadata bmd = new ArtifactMetadata( _artifactCoordSn );
+        List<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>();
         q.add( bmd );
 
         ArtifactResults res = _vr.readArtifacts( q );
@@ -162,7 +162,7 @@ public class VirtualRepositoryReaderTest
 
         assertTrue( res.hasResults( bmd ) );
 
-        Map<ArtifactBasicMetadata, List<Artifact>> m = res.getResults();
+        Map<ArtifactMetadata, List<Artifact>> m = res.getResults();
 
         List<Artifact> al = m.get( bmd );
 
@@ -191,7 +191,7 @@ public class VirtualRepositoryReaderTest
     public void testWrite()
         throws Exception
     {
-        Artifact a = new DefaultArtifact( new ArtifactBasicMetadata( "a:a:1.0:text:txt" ) );
+        Artifact a = new DefaultArtifact( new ArtifactMetadata( "a:a:1.0:text:txt" ) );
         File bin = File.createTempFile( "vr-", "-test.txt" );
         bin.deleteOnExit();
         FileUtil.writeRawData( bin, "test" );
@@ -213,14 +213,14 @@ public class VirtualRepositoryReaderTest
     public void testReadRelease()
         throws Exception
     {
-        ArtifactBasicMetadata bmd = new ArtifactBasicMetadata( _artifactCoordRelease );
-        List<ArtifactBasicMetadata> q = new ArrayList<ArtifactBasicMetadata>();
+        ArtifactMetadata bmd = new ArtifactMetadata( _artifactCoordRelease );
+        List<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>();
         q.add( bmd );
 
         Listener l = new Listener();
         _vr.register( l );
 
-        ArtifactBasicResults res = _vr.readVersions( q );
+        MetadataResults res = _vr.readVersions( q );
 
         assertNotNull( res );
 

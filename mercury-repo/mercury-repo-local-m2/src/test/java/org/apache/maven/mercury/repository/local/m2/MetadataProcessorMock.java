@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.digester.Digester;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
@@ -43,10 +43,10 @@ public class MetadataProcessorMock
 implements DependencyProcessor
 {
 
-  public List<ArtifactBasicMetadata> getDependencies( ArtifactBasicMetadata bmd, MetadataReader mdReader, Map env, Map sysProps )
+  public List<ArtifactMetadata> getDependencies( ArtifactMetadata bmd, MetadataReader mdReader, Map env, Map sysProps )
   throws MetadataReaderException
   {
-    List<ArtifactBasicMetadata> deps = null;
+    List<ArtifactMetadata> deps = null;
     
     try
     {
@@ -65,7 +65,7 @@ implements DependencyProcessor
     }
   }
   
-  private static final List<ArtifactBasicMetadata> getDeps( byte [] pom )
+  private static final List<ArtifactMetadata> getDeps( byte [] pom )
   throws IOException, SAXException
   {
     if( pom == null )
@@ -92,11 +92,11 @@ implements DependencyProcessor
 //==============================================================================================
 class DependencyCreator
 {
-  List<ArtifactBasicMetadata> mds = new ArrayList<ArtifactBasicMetadata>(8);
+  List<ArtifactMetadata> mds = new ArrayList<ArtifactMetadata>(8);
   
   public void addMD( String g, String a, String v, String t, String s, String o)
   {
-    ArtifactBasicMetadata md = new ArtifactBasicMetadata();
+    ArtifactMetadata md = new ArtifactMetadata();
     md.setGroupId(g);
     md.setArtifactId(a);
     md.setVersion(v);

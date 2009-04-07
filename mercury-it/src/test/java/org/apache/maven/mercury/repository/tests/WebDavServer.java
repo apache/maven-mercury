@@ -20,17 +20,11 @@ under the License.
 package org.apache.maven.mercury.repository.tests;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.Servlet;
 
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.sonatype.webdav.WebdavServlet;

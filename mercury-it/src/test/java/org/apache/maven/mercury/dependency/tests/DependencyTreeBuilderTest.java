@@ -31,16 +31,15 @@ import junit.framework.TestCase;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.event.DumbListener;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.metadata.MetadataTreeException;
-import org.apache.maven.mercury.metadata.MetadataTreeNode;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
@@ -184,7 +183,7 @@ extends TestCase
     
     List<Artifact> artifacts = new ArrayList<Artifact>();
     
-    for( ArtifactBasicMetadata abm : aRes.getResults().keySet() )
+    for( ArtifactMetadata abm : aRes.getResults().keySet() )
       artifacts.addAll(  aRes.getResults(abm) );
     
     localRepo.getWriter().writeArtifacts( artifacts );
@@ -265,13 +264,54 @@ extends TestCase
 
     assertTrue( ar.hasResults() );
     
-    Map<ArtifactBasicMetadata, List<Artifact>> arts = ar.getResults();
+    Map<ArtifactMetadata, List<Artifact>> arts = ar.getResults();
     
     for( List<Artifact> al : arts.values() )
     {
       for( Artifact a : al )
         System.out.println( a.toString()+" -> "+a.getFile() );
     }
+  }
+  //----------------------------------------------------------------------------------------------
+  public void testResolvePluginAsTree()
+  throws Exception
+  {
+    String centralUrl = "http://repo1.maven.org/maven2";
+
+    String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
+    
+    reps.clear();
+    
+    File pluginRepo = new File( "./target/repoPlugin" );
+    localRepo = new LocalRepositoryM2( "testLocalPluginRepo", pluginRepo, new MavenDependencyProcessor() );
+    reps.add(  localRepo );
+
+    Server server = new Server( "id", new URL(centralUrl) );
+    remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
+    remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
+    reps.add( remoteRepo );
+    
+    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
+//    depBuilder.register( new DumbListener() );
+    
+    ArtifactMetadata md = new ArtifactMetadata( artifactId );
+
+    MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+
+    assertNotNull( root );
+    
+    MetadataTreeNode res = depBuilder.resolveConflictsAsTree( root );
+    
+    assertNotNull( res );
+    
+    int nodeCount = res.countNodes();
+    
+    assertEquals( 15, nodeCount);
+    
+    System.out.println("Unique feature - junit is in the compile scope thanks to plexus-container-default 1.0.9");
+
+    MetadataTreeNode.showNode( res, 0 );
+
   }
   //----------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------

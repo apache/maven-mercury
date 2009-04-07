@@ -20,7 +20,10 @@ package org.apache.maven.mercury.util;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Configurable;
 
 /**
  * general utility helpers
@@ -86,5 +89,18 @@ public class Util
            return sz+" bytes";
        
        return (int)(Math.round( sz / 1024.))+" kb";
+   }
+   
+   public static Map<String,Object> mapOf( Object [][] entries )
+   {
+       if( entries == null )
+           return null;
+       
+       Map<String,Object> map = new HashMap<String, Object>( entries.length );
+       
+       for( Object [] kv : entries )
+           map.put( (String)kv[0], kv[1] );
+       
+       return map;
    }
 }

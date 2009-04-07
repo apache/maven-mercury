@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
@@ -86,7 +85,7 @@ public class Dep
     
     List<String> _exclusions;
 
-    private List<ArtifactBasicMetadata> getDependencies( VirtualRepositoryReader vr )
+    private List<ArtifactMetadata> getDependencies( VirtualRepositoryReader vr )
         throws RepositoryException
     {
         if ( Util.isEmpty( _dependencies ) )
@@ -94,7 +93,7 @@ public class Dep
             return null;
         }
 
-        List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _dependencies.size() );
+        List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( _dependencies.size() );
 
         for ( Dependency d : _dependencies )
         {
@@ -135,7 +134,7 @@ public class Dep
 
                 if ( deps != null && !Util.isEmpty( deps.getDependencies() ) )
                 {
-                    for ( ArtifactBasicMetadata bmd : deps.getDependencies() )
+                    for ( ArtifactMetadata bmd : deps.getDependencies() )
                     {
                         res.add( bmd );
                     }
@@ -199,7 +198,7 @@ public class Dep
         
         _pomRepo.setMetadataReader( vr );
 
-        List<ArtifactBasicMetadata> depList = getDependencies( vr );
+        List<ArtifactMetadata> depList = getDependencies( vr );
         
         ArtifactQueryList aql = new ArtifactQueryList( depList );
         
@@ -210,6 +209,8 @@ public class Dep
         List<ArtifactMetadata> res =
             _transitive ? db.resolveConflicts( scope, aql, ail, ael )
                             : toArtifactMetadataList( depList );
+            
+        db.close();
 
         if ( Util.isEmpty( res ) )
         {
@@ -236,10 +237,10 @@ public class Dep
             return null;
         }
 
-        Map<ArtifactBasicMetadata, List<Artifact>> resMap = aRes.getResults();
+        Map<ArtifactMetadata, List<Artifact>> resMap = aRes.getResults();
 
         int count = 0;
-        for ( ArtifactBasicMetadata key : resMap.keySet() )
+        for ( ArtifactMetadata key : resMap.keySet() )
         {
             List<Artifact> artifacts = resMap.get( key );
             if ( artifacts != null )
@@ -255,7 +256,7 @@ public class Dep
 
         _artifacts = new ArrayList<Artifact>( count );
 
-        for ( ArtifactBasicMetadata key : resMap.keySet() )
+        for ( ArtifactMetadata key : resMap.keySet() )
         {
             List<Artifact> artifacts = resMap.get( key );
 
@@ -291,14 +292,14 @@ public class Dep
      * @param depList
      * @return
      */
-    private List<ArtifactMetadata> toArtifactMetadataList( List<ArtifactBasicMetadata> depList )
+    private List<ArtifactMetadata> toArtifactMetadataList( List<ArtifactMetadata> depList )
     {
         if ( Util.isEmpty( depList ) )
             return null;
 
         List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( depList.size() );
 
-        for ( ArtifactBasicMetadata bmd : depList )
+        for ( ArtifactMetadata bmd : depList )
             res.add( new ArtifactMetadata( bmd ) );
 
         return res;

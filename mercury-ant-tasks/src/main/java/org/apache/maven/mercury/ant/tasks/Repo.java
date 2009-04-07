@@ -30,12 +30,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
+import org.apache.maven.mercury.artifact.QualityRange;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
 import org.apache.maven.mercury.crypto.sha.SHA1VerifierFactory;
 import org.apache.maven.mercury.repository.api.Repository;
+import org.apache.maven.mercury.repository.api.RepositoryUpdatePolicy;
+import org.apache.maven.mercury.repository.api.RepositoryUpdatePolicyFactory;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.transport.api.Credentials;
@@ -70,9 +73,15 @@ public class Repo
 
     private String _proxyauthid;
 
+    private String _updatePolicy;
+
     private boolean _readable = true;
 
     private boolean _writeable = false;
+
+    private boolean _releases = true;
+
+    private boolean _snapshots = true;
 
     private Auth _auth;
 
@@ -130,6 +139,20 @@ public class Repo
     public void setId( String id )
     {
         super.setId( id );
+
+        processDefaults();
+    }
+
+    public void setReleases( boolean releases )
+    {
+        this._releases = releases;
+
+        processDefaults();
+    }
+    
+    public void setSnapshots( boolean snapshots )
+    {
+        this._snapshots = snapshots;
 
         processDefaults();
     }
@@ -233,6 +256,13 @@ public class Repo
 
         processDefaults();
     }
+    
+    public void setUpdatePolicy( String updatePolicy )
+    {
+        this._updatePolicy = updatePolicy;
+
+        processDefaults();
+    }
 
     boolean isLocal()
     {
@@ -309,6 +339,7 @@ public class Repo
 
                 server.setReaderStreamVerifierFactories( getVerifiers( _readVerifiers ) );
                 server.setWriterStreamVerifierFactories( getVerifiers( _writeVerifiers ) );
+                    
             }
             catch ( MalformedURLException e )
             {
@@ -316,6 +347,10 @@ public class Repo
             }
 
             r = new LocalRepositoryM2( server, dp );
+            
+            QualityRange qr = QualityRange.create( _releases, _snapshots );
+            
+            r.setRepositoryQualityRange( qr );
         }
         else
         {
@@ -381,6 +416,15 @@ public class Repo
             }
 
             r = new RemoteRepositoryM2( server, dp );
+            
+            _updatePolicy = System.getProperty( RepositoryUpdatePolicy.SYSTEM_PROPERTY_UPDATE_POLICY, _updatePolicy );
+            
+            if( !Util.isEmpty( _updatePolicy) )
+                ((RemoteRepositoryM2)r).setUpdatePolicy( RepositoryUpdatePolicyFactory.create( _updatePolicy ) );
+            
+            QualityRange qr = QualityRange.create( _releases, _snapshots );
+            
+            r.setRepositoryQualityRange( qr );
         }
 
         return r;

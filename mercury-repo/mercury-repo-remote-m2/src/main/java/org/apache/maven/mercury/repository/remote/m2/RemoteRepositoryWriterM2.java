@@ -42,7 +42,6 @@ import org.apache.maven.mercury.repository.api.AbstractRepositoryWriter;
 import org.apache.maven.mercury.repository.api.RemoteRepository;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
-import org.apache.maven.mercury.repository.api.RepositoryGAMetadata;
 import org.apache.maven.mercury.repository.api.RepositoryGAVMetadata;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
@@ -127,6 +126,8 @@ implements RepositoryWriter
   //---------------------------------------------------------------------------------------------------------------
   public void close()
   {
+      if( _transport != null )
+          _transport.stop();
   }
   //---------------------------------------------------------------------------------------------------------------
   public void writeArtifacts( Collection<Artifact> artifacts )

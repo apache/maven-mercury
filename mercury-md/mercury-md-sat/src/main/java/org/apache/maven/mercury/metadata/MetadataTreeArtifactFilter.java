@@ -18,7 +18,7 @@
  */
 package org.apache.maven.mercury.metadata;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * This is a member of a chain of filters that can stop an ArtifactMetadata 
@@ -28,5 +28,5 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
  */
 public interface MetadataTreeArtifactFilter
 {
-  public boolean veto( ArtifactBasicMetadata md );
+  public boolean veto( ArtifactMetadata md );
 }

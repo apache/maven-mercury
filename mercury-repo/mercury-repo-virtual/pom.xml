@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury-repo</artifactId>
-    <version>1.0-alpha-6-SNAPSHOT</version>
+    <version>1.0-alpha-6</version>
   </parent>
 
   <artifactId>mercury-repo-virtual</artifactId>
@@ -96,7 +96,6 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-remote-m2</artifactId>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>

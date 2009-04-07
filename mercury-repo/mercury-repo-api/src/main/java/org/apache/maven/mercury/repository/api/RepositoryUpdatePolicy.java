@@ -18,27 +18,29 @@
  */
 package org.apache.maven.mercury.repository.api;
 
+import org.apache.maven.mercury.artifact.Quality;
+
 /**
  * abstraction of a repository update policy calculator
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface RepositoryUpdatePolicy
 {
-  /**
-   * initialize this calculator
-   * 
-   * @param policy as a string somewhere in configuration
-   */
-  void init( String policy );
+    public static final String SYSTEM_PROPERTY_UPDATE_POLICY = "mercury.repository.update.policy";
+    /**
+     * initialize this calculator
+     * 
+     * @param policy as a string somewhere in configuration
+     */
+    void init( String policy );
 
-  /**
-   * perform the calculation and decide if it's time to update
-   * 
-   * @param timestamp - UTC-based timestamp as long milliseconds
-   * @return
-   */
-  boolean timestampExpired( long timestampMillis );
+    /**
+     * perform the calculation and decide if it's time to update
+     * 
+     * @param timestamp - UTC-based timestamp as long milliseconds
+     * @return
+     */
+    boolean timestampExpired( long timestampMillis, Quality quality );
 }

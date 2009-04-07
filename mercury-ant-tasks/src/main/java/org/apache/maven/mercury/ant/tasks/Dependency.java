@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -37,7 +37,7 @@ public class Dependency
 {
     private static final Language LANG = new DefaultLanguage( Dependency.class );
 
-    protected ArtifactBasicMetadata _amd;
+    protected ArtifactMetadata _amd;
 
     protected String _pom;
 
@@ -52,7 +52,7 @@ public class Dependency
     
     private static long _count = 0L;
     
-    public ArtifactBasicMetadata getMetadata()
+    public ArtifactMetadata getMetadata()
     {
         _amd.setInclusions( getInclusions() );
         
@@ -61,28 +61,28 @@ public class Dependency
         return _amd;
     }
     
-    private Collection<ArtifactBasicMetadata> getExclusions()
+    private Collection<ArtifactMetadata> getExclusions()
     {
         if( Util.isEmpty( _exclusions ))
             return null;
         
-        List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _exclusions.size() );
+        List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( _exclusions.size() );
         
         for( String name : _exclusions )
-            res.add( new ArtifactBasicMetadata(name) );
+            res.add( new ArtifactMetadata(name) );
         
         return res;
     }
 
-    private Collection<ArtifactBasicMetadata> getInclusions()
+    private Collection<ArtifactMetadata> getInclusions()
     {
         if( Util.isEmpty( _inclusions ))
             return null;
         
-        List<ArtifactBasicMetadata> res = new ArrayList<ArtifactBasicMetadata>( _inclusions.size() );
+        List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( _inclusions.size() );
         
         for( String name : _inclusions )
-            res.add( new ArtifactBasicMetadata(name) );
+            res.add( new ArtifactMetadata(name) );
         
         return res;
     }
@@ -92,7 +92,7 @@ public class Dependency
         if( _pom != null )
             throw new IllegalArgumentException( LANG.getMessage( "dependency.amd.pom.exists", _pom, name ) );
         
-        _amd = new ArtifactBasicMetadata( name );
+        _amd = new ArtifactMetadata( name );
 
         _amd.setOptional( _optional );
     }
@@ -141,7 +141,7 @@ public class Dependency
     {
         if ( _amd == null )
         {
-            _amd = new ArtifactBasicMetadata();
+            _amd = new ArtifactMetadata();
         }
 
         _amd.setGroupId( groupId );
@@ -156,7 +156,7 @@ public class Dependency
     {
         if ( _amd == null )
         {
-            _amd = new ArtifactBasicMetadata();
+            _amd = new ArtifactMetadata();
         }
 
         _amd.setArtifactId( artifactId );
@@ -171,7 +171,7 @@ public class Dependency
     {
         if ( _amd == null )
         {
-            _amd = new ArtifactBasicMetadata();
+            _amd = new ArtifactMetadata();
         }
 
         _amd.setVersion( version );

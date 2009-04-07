@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 import org.apache.maven.mercury.transport.api.Server;
@@ -44,7 +44,7 @@ extends AbstractRepositoryReaderM2Test
   {
     mdProcessor = new MetadataProcessorMock();
 
-    query = new ArrayList<ArtifactBasicMetadata>();
+    query = new ArrayList<ArtifactMetadata>();
 
     server = new Server( "test", new File("./target/test-classes/repo").toURL() );
       

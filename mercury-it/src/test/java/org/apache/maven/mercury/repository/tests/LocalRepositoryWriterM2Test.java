@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifierFactory;
@@ -58,7 +58,7 @@ extends AbstractRepositoryWriterM2Test
     FileUtil.copy( new File("./target/test-classes/repo"), targetDirectory, true );
     FileUtil.delete( new File(targetDirectory, "org") );
     
-    query = new ArrayList<ArtifactBasicMetadata>();
+    query = new ArrayList<ArtifactMetadata>();
     
     server = new Server( "test", targetDirectory.toURL() );
     // verifiers

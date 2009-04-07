@@ -26,7 +26,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
@@ -66,7 +66,7 @@ public class LocalRepositoryFlatTest
     
     byte [] pomBlob = "pomblob".getBytes();
     
-    a = new DefaultArtifact( new ArtifactBasicMetadata("a:a:1.0.0") );
+    a = new DefaultArtifact( new ArtifactMetadata("a:a:1.0.0") );
     
     File ant = File.createTempFile( "test-flat", "-repo" );
     ant.deleteOnExit();
@@ -75,7 +75,7 @@ public class LocalRepositoryFlatTest
     a.setFile( ant );
     a.setPomBlob( pomBlob );
     
-    b = new DefaultArtifact( new ArtifactBasicMetadata("b:b:1.0.0") );
+    b = new DefaultArtifact( new ArtifactMetadata("b:b:1.0.0") );
     
     File antlr = File.createTempFile( "test-flat", "-repo" );
     antlr.deleteOnExit();

@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.maven.mercury</groupId>
   <artifactId>mercury</artifactId>
-  <version>1.0-alpha-6-SNAPSHOT</version>
+  <version>1.0-alpha-6</version>
   <packaging>pom</packaging>
 
   <name>Mercury</name>
@@ -65,6 +65,10 @@ under the License.
     <module>mercury-logging</module>
     <module>mercury-plexus</module>
     <module>mercury-wagon</module>
+<!-- 
+    <module>mercury-it</module>
+-->
+
   </modules>
 
   <properties>
@@ -78,16 +82,18 @@ under the License.
     <plexus.utils.version>1.5.5</plexus.utils.version>
     <plexus.lang.version>1.1</plexus.lang.version>
 
+    <plexus.spice.model.builder.version>1.8</plexus.spice.model.builder.version>
+
     <emma4it.plugin.version>1.0</emma4it.plugin.version>
 
     <commons.digester.version>1.8</commons.digester.version>
     <commons.cli.version>1.1</commons.cli.version>
 
-    <jetty.version>6.1.15.rc2</jetty.version>
-    <jetty.client.version>6.1.15.rc2</jetty.client.version>
+    <jetty.version>6.1.15</jetty.version>
+    <jetty.client.version>6.1.15</jetty.client.version>
     <jetty.servlet.api.version>6.1.14</jetty.servlet.api.version>
-    <jetty.util5.version>6.1.15.rc2</jetty.util5.version>
-    <jetty.servlet.tester.version>6.1.15.rc2</jetty.servlet.tester.version>
+    <jetty.util5.version>6.1.15</jetty.util5.version>
+    <jetty.servlet.tester.version>6.1.15</jetty.servlet.tester.version>
 
     <junit.version>3.8.1</junit.version>
 
@@ -95,8 +101,12 @@ under the License.
     <sat4j.version>2.0.4</sat4j.version>
     <ant.version>1.7.1</ant.version>
 
-    <!-- maven version: non-modules only !! Never use in Mercury modules!! -->
+    <!-- 
+           maven version: non-modules only !!
+           Never use in Mercury modules because Mercury does not depend on Maven 
+    -->
     <maven.version>3.0-SNAPSHOT</maven.version>
+    <modello.version>1.0.1</modello.version>
 
     <!-- mercury-wagon -->
     <wagon.provider.api.version>1.0-beta-4</wagon.provider.api.version>
@@ -104,9 +114,9 @@ under the License.
   </properties>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/trunk/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/trunk/</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/mercury/trunk/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0-alpha-6</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/mercury/tags/mercury-1.0-alpha-6</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/mercury/tags/mercury-1.0-alpha-6</url>
   </scm>
 
   <issueManagement>
@@ -264,6 +274,12 @@ under the License.
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-metadata</artifactId>
         <version>${plexus.component.metadata.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.sonatype.spice</groupId>
+        <artifactId>model-builder</artifactId>
+        <version>${plexus.spice.model.builder.version}</version>
       </dependency>
 
       <!-- Mercury deps -->
@@ -497,6 +513,11 @@ under the License.
               </goals>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.modello</groupId>
+          <artifactId>modello-maven-plugin</artifactId>
+          <version>1.0.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

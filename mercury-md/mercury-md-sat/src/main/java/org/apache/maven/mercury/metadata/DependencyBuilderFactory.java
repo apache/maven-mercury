@@ -23,7 +23,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
+import org.apache.maven.mercury.artifact.api.Configurable;
+import org.apache.maven.mercury.artifact.api.ConfigurationException;
+import org.apache.maven.mercury.artifact.api.ConfigurationUtil;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.codehaus.plexus.lang.DefaultLanguage;
@@ -61,8 +65,34 @@ public class DependencyBuilderFactory
                      )
   throws RepositoryException
   {
+      return create( dependencyModel, repositories, null, null, null, null );
+  }
+  
+  public static final DependencyBuilder create(
+        String dependencyModel
+      , Collection<Repository> repositories
+      , Collection<MetadataTreeArtifactFilter> filters
+      , List<Comparator<MetadataTreeNode>> comparators
+      , Map<String,ArtifactListProcessor> processors
+      , Map<String,Object> config 
+                     )
+  throws RepositoryException
+  {
     if( JAVA_DEPENDENCY_MODEL.equals( dependencyModel ) )
-      return new DependencyTreeBuilder( repositories,  filters, comparators, processors );
+    {
+        DependencyBuilder db = new DependencyTreeBuilder( repositories,  filters, comparators, processors );
+        
+        try
+        {
+            ConfigurationUtil.configure( db, config );
+        }
+        catch ( ConfigurationException e )
+        {
+            throw new RepositoryException( e );
+        }
+        
+        return db;
+    }
     
     throw new IllegalArgumentException( LANG.getMessage( "dependency.model.not.implemented", dependencyModel ) );
   }

@@ -28,13 +28,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
-
 import org.apache.maven.mercury.crypto.api.StreamObserver;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.spi.http.client.FileExchange;
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
+import org.apache.maven.mercury.spi.http.client.HttpServletResponse;
 import org.apache.maven.mercury.spi.http.client.ObservableOutputStream;
 import org.apache.maven.mercury.transport.api.Binding;
 import org.apache.maven.mercury.transport.api.Server;

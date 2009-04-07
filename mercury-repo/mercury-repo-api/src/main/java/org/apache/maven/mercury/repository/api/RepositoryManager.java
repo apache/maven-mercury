@@ -25,33 +25,31 @@ import java.util.List;
 import org.apache.maven.mercury.artifact.Quality;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class RepositoryManager
 {
-  protected static transient List<Repository> _repoList = Collections.synchronizedList( new ArrayList<Repository>(8) );
-  
-  void setRepositories()
-  {
-    
-  }
-  
-  List<Repository> getRepositories()
-  {
-    return _repoList;
-  }
-  
-  LocalRepository findLocal( Quality aq )
-  {
-    for( Repository r : _repoList )
+    protected static transient List<Repository> _repoList =
+        Collections.synchronizedList( new ArrayList<Repository>( 8 ) );
+
+    void setRepositories()
     {
-      if( r.isLocal() && r.isWriteable() && r.isAcceptedQuality( aq ) )
-        return (LocalRepository)r;
+
     }
-    return null;
-  }
+
+    List<Repository> getRepositories()
+    {
+        return _repoList;
+    }
+
+    LocalRepository findLocal( Quality aq )
+    {
+        for ( Repository r : _repoList )
+        {
+            if ( r.isLocal() && r.isWriteable() && r.isAcceptedQuality( aq ) )
+                return (LocalRepository) r;
+        }
+        return null;
+    }
 }

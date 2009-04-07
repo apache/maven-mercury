@@ -20,12 +20,13 @@ package org.apache.maven.mercury.metadata;
 
 import java.util.List;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactExclusionList;
 import org.apache.maven.mercury.artifact.ArtifactInclusionList;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactQueryList;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
+import org.apache.maven.mercury.artifact.api.Configurable;
 import org.apache.maven.mercury.event.MercuryEventListener;
 
 /**
@@ -36,9 +37,14 @@ import org.apache.maven.mercury.event.MercuryEventListener;
  *
  */
 public interface DependencyBuilder
+extends Configurable
 {
   public static final String TREE_BUILD_EVENT = "tree.build";
   public static final String TREE_NODE_BUILD_EVENT = "tree.node.build";
+
+  public static final String SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES = "mercury.circular.allow";
+
+  public static final String CONFIGURATION_PROPERTY_VERSION_MAP = "mercury.version.map";
   //------------------------------------------------------------------------
   /**
    * build the tree, using the repositories specified in the
@@ -49,7 +55,7 @@ public interface DependencyBuilder
    * @return the root of the tree built
    * @throws MetadataTreeException
    */
-  public abstract MetadataTreeNode buildTree( ArtifactBasicMetadata startMD, ArtifactScopeEnum scope )
+  public abstract MetadataTreeNode buildTree( ArtifactMetadata startMD, ArtifactScopeEnum scope )
   throws MetadataTreeException;
 
   /**
@@ -71,6 +77,23 @@ public interface DependencyBuilder
    * @throws MetadataTreeException
    */
   public abstract List<ArtifactMetadata> resolveConflicts( 
+                                          ArtifactScopeEnum   scope
+                                        , ArtifactQueryList artifacts
+                                        , ArtifactInclusionList inclusions
+                                        , ArtifactExclusionList exclusions
+                                        )
+
+  throws MetadataTreeException;
+
+  /**
+   * consolidated entry point: give it a collection of GAVs, it 
+   * will create a tree out of it
+   * 
+   * @param root the tree to resolve conflicts on
+   * @return resolved metadata tree
+   * @throws MetadataTreeException
+   */
+  public abstract MetadataTreeNode resolveConflictsAsTree( 
                                           ArtifactScopeEnum   scope
                                         , ArtifactQueryList artifacts
                                         , ArtifactInclusionList inclusions
@@ -103,6 +126,12 @@ public interface DependencyBuilder
    * @param listener
    */
   public abstract void unRegister( MercuryEventListener listener );
+  
+  /**
+   * release all resources 
+   * 
+   */
+  public abstract void close();
   //-----------------------------------------------------
   //-----------------------------------------------------
 

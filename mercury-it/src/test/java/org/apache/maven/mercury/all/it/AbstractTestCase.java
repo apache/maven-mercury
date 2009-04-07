@@ -21,8 +21,6 @@ package org.apache.maven.mercury.all.it;
 
 import org.codehaus.plexus.PlexusTestCase;
 
-import junit.framework.TestCase;
-
 /**
  * Common tests code
  *

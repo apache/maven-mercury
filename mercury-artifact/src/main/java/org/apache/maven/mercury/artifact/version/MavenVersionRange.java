@@ -259,14 +259,14 @@ class MavenVersionRange
         return false;
     }
 
-    public void setOption( String name, String val )
+    public void setOption( String name, Object val )
     {
         if ( SYSTEM_PARAMETER_OSGI_VERSION.equals( name ) )
         {
-            _osgiVersion = Boolean.parseBoolean( System.getProperty( val, SYSTEM_PARAMETER_OSGI_VERSION_DEFAULT ) );
+            _osgiVersion = Boolean.parseBoolean( System.getProperty( (String)val, SYSTEM_PARAMETER_OSGI_VERSION_DEFAULT ) );
         }
     }
-
+    
     public boolean isSingleton()
     {
         return _singleton;

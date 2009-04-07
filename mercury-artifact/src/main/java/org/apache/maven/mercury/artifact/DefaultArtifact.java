@@ -35,19 +35,14 @@ public class DefaultArtifact
     private String inheritedScope;
 
     private byte[] pomBlob;
+    
+    /** 
+     * for temporary holding the reference
+     *  to the pom file during data transfer
+     */
+    transient private File pomFile;
 
-    public DefaultArtifact( String groupId, String artifactId, String version, String type, String classifier,
-                            boolean optional, String scope, String inheritedScope )
-    {
-        if ( version == null )
-        {
-            throw new IllegalArgumentException( "Version cannot be null." );
-        }
-
-        initialize( groupId, artifactId, version, type, classifier, optional, scope, inheritedScope );
-    }
-
-    public DefaultArtifact( ArtifactBasicMetadata bmd )
+    public DefaultArtifact( ArtifactMetadata bmd )
     {
         if ( bmd.getVersion() == null )
         {
@@ -154,6 +149,16 @@ public class DefaultArtifact
     public File getFile()
     {
         return file;
+    }
+
+    public void setPomFile( File file )
+    {
+        this.pomFile = file;
+    }
+
+    public File getPomFile()
+    {
+        return pomFile;
     }
 
     public void setStream( InputStream stream )

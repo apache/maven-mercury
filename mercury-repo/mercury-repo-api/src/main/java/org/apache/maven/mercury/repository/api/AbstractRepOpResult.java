@@ -21,7 +21,7 @@ package org.apache.maven.mercury.repository.api;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * generic repository operation result. Represents a Map of query object to AbstractRepositoryOperationResult
@@ -31,38 +31,38 @@ import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
  */
 public abstract class AbstractRepOpResult
 {
-    private Map<ArtifactBasicMetadata, Exception> _exceptions;
+    private Map<ArtifactMetadata, Exception> _exceptions;
 
     public AbstractRepOpResult()
     {
     }
 
-    public Map<ArtifactBasicMetadata, Exception> getExceptions()
+    public Map<ArtifactMetadata, Exception> getExceptions()
     {
         return _exceptions;
     }
 
     public abstract boolean hasResults();
 
-    public abstract boolean hasResults( ArtifactBasicMetadata key );
+    public abstract boolean hasResults( ArtifactMetadata key );
 
     public boolean hasExceptions()
     {
         return _exceptions != null && !_exceptions.isEmpty();
     }
 
-    public void addError( ArtifactBasicMetadata key, Exception error )
+    public void addError( ArtifactMetadata key, Exception error )
     {
         if ( _exceptions == null )
-            _exceptions = new HashMap<ArtifactBasicMetadata, Exception>( 8 );
+            _exceptions = new HashMap<ArtifactMetadata, Exception>( 8 );
 
         _exceptions.put( key, error );
     }
 
-    public void addError( Map<ArtifactBasicMetadata, Exception> error )
+    public void addError( Map<ArtifactMetadata, Exception> error )
     {
         if ( _exceptions == null )
-            _exceptions = new HashMap<ArtifactBasicMetadata, Exception>( 8 );
+            _exceptions = new HashMap<ArtifactMetadata, Exception>( 8 );
 
         _exceptions.putAll( error );
     }
@@ -73,13 +73,13 @@ public abstract class AbstractRepOpResult
             return;
 
         if ( _exceptions == null )
-            _exceptions = new HashMap<ArtifactBasicMetadata, Exception>( 8 );
-        
-        for( ArtifactBasicMetadata bmd : res.getExceptions().keySet() )
-           _exceptions.put( bmd, res.getError( bmd ) );
+            _exceptions = new HashMap<ArtifactMetadata, Exception>( 8 );
+
+        for ( ArtifactMetadata bmd : res.getExceptions().keySet() )
+            _exceptions.put( bmd, res.getError( bmd ) );
     }
 
-    public Exception getError( ArtifactBasicMetadata key )
+    public Exception getError( ArtifactMetadata key )
     {
         if ( _exceptions == null )
             return null;

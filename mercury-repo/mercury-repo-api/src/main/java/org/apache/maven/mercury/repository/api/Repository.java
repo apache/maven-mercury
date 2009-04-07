@@ -5,7 +5,6 @@ import org.apache.maven.mercury.artifact.QualityRange;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.transport.api.Server;
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -29,68 +28,72 @@ import org.apache.maven.mercury.transport.api.Server;
  */
 public interface Repository
 {
-  String getId();
-  
+    String getId();
 
-  /**
-   * repository type - m2, nexus, ivy, p2 - to name a few. It defines the RepositoryReader/Writer 
-   * that will be searched for in the registry.
-   */
-  public String getType();
+    /**
+     * repository type - m2, nexus, ivy, p2 - to name a few. It defines the RepositoryReader/Writer that will be
+     * searched for in the registry.
+     */
+    public String getType();
 
-  /**
-   * Indicates whether this is local Repository. This flag defines the necessity to download
-   * the artifact, if it was cleared by the conflict resolver but not read from a localRepo.
-   */
-  public boolean isLocal();
+    /**
+     * Indicates whether this is local Repository. This flag defines the necessity to download the artifact, if it was
+     * cleared by the conflict resolver but not read from a localRepo.
+     */
+    public boolean isLocal();
 
-  /**
-   * Indicates whether it's possible to read from this Repository. 
-   */
-  public boolean isReadable();
+    /**
+     * Indicates whether it's possible to read from this Repository.
+     */
+    public boolean isReadable();
 
-  /**
-   * Indicates whether it's possible to write to this Repository. Good example is the flat repo, which is used to
-   * only collect dependencies for some 3rd party reasons, but not read them.
-   * 
-   * If there are multiple localRepo's and Artifact needs to be downloaded - it will be "written" to all 
-   * "local" repositories that are writeable.
-   */
-  public boolean isWriteable();
+    /**
+     * Indicates whether it's possible to write to this Repository. Good example is the flat repo, which is used to only
+     * collect dependencies for some 3rd party reasons, but not read them. If there are multiple localRepo's and
+     * Artifact needs to be downloaded - it will be "written" to all "local" repositories that are writeable.
+     */
+    public boolean isWriteable();
 
-  /**
-   * Indicates whether this repository contains releases
-   */
-  public boolean isReleases();
+    /**
+     * Indicates whether this repository contains releases
+     */
+    public boolean isReleases();
 
-  /**
-   * Indicates whether this repository contains snapshots
-   */
-  public boolean isSnapshots();
+    /**
+     * Indicates whether this repository contains snapshots
+     */
+    public boolean isSnapshots();
 
-  /**
-   * reserved
-   */
-  public boolean isAcceptedQuality( Quality quality );
-  
-  /**
-   * defines how VersionRnage treats upper boundary - which Artifacts should be treated as belonging 
-   * to the vicinity - http://docs.codehaus.org/x/twDPBQ  
-   * 
-   * @return
-   * @throws NonExistentProtocolException if protocol not supported
-   */
-  public QualityRange getVersionRangeQualityRange();
-  
+    /**
+     * indicates if the supplied code quality is served by this repository
+     */
+    public boolean isAcceptedQuality( Quality quality );
+
+    /**
+     * defines the code quality range for this repository
+     */
+    public QualityRange getRepositoryQualityRange();
+    void setRepositoryQualityRange( QualityRange qualityRange );
+
+    /**
+     * defines how VersionRnage treats upper boundary - which Artifacts should be treated as belonging to the vicinity -
+     * http://docs.codehaus.org/x/twDPBQ
+     * 
+     * note: don't mix this with repository quality range - this one is for version range calculations only!
+     * 
+     */
+    public QualityRange getVersionRangeQualityRange();
+    public void setVersionRangeQualityRange( QualityRange qualityRange );
+    
     /**
      * get default reader, if any
      * 
      * @return default reader or null, if none exists
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     RepositoryReader getReader()
-    throws RepositoryException;
-    
+        throws RepositoryException;
+
     /**
      * get protocol specific reader, if any
      * 
@@ -99,54 +102,51 @@ public interface Repository
      * @throws NonExistentProtocolException if protocol not supported
      */
     RepositoryReader getReader( String protocol )
-    throws RepositoryException;
+        throws RepositoryException;
 
     /**
      * get default writer, if any
      * 
      * @return default writer or null, if none exists
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     RepositoryWriter getWriter()
-    throws RepositoryException;
-    
+        throws RepositoryException;
+
     /**
-     * 
      * @param protocol
      * @return writer instance for the specified protocol
      * @throws NonExistentProtocolException if protocol not supported
+     * @throws RepositoryException 
      */
     RepositoryWriter getWriter( String protocol )
-    throws NonExistentProtocolException;
-    
+        throws NonExistentProtocolException, RepositoryException;
+
     /**
      * server where this repo resides. For local repo - folder as URL and stream verifiers are important.
      * 
      * @return server
      */
     boolean hasServer();
+
     Server getServer();
-    
+
     /**
      * DependencyProcessor used by this repo resides
      * 
      * @return server
      */
     boolean hasDependencyProcessor();
+
     DependencyProcessor getDependencyProcessor();
+
     void setDependencyProcessor( DependencyProcessor dependencyProcessor );
 
     /**
-     * maven-metadata.xml file name for this repository. This is internal to repository and should never be used 
-     * outside of readers and wrters
+     * maven-metadata.xml file name for this repository. This is internal to repository and should never be used outside
+     * of readers and wrters
      * 
      * @return server
      */
     String getMetadataName();
-
-
-    /**
-     * @param releasesOnly
-     */
-    void setRepositoryQualityRange( QualityRange releasesOnly );
 }

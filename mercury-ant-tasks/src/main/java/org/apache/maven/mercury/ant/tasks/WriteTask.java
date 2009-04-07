@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 
 import org.apache.maven.mercury.artifact.Artifact;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.DefaultArtifact;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.util.Util;
@@ -165,7 +165,7 @@ public class WriteTask
 
             if ( !Util.isEmpty( _name ) )
             {
-                a = new DefaultArtifact( new ArtifactBasicMetadata( _name ) );
+                a = new DefaultArtifact( new ArtifactMetadata( _name ) );
 
                 String pomStr =
                     "?xml version='1.0' encoding='UTF-8'?>\n"

@@ -69,6 +69,15 @@ implements StreamVerifierFactory
   }
   //--------------------------------------------------------------------------------------------
   public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
+                                  , PGPPublicKeyRingCollection publicKeyRing
+                                  )
+  throws StreamVerifierException
+  {
+    super( attributes );
+    this.trustedPublicKeyRing = publicKeyRing;
+  }
+  //--------------------------------------------------------------------------------------------
+  public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
                                   , InputStream secretKeyRingStream
                                   , String secretKeyId
                                   , String secretKeyPass

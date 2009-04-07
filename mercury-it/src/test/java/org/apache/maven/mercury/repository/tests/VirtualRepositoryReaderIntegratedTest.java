@@ -27,13 +27,12 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.maven.mercury.MavenDependencyProcessor;
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.ArtifactBasicResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.Repository;
-import org.apache.maven.mercury.repository.api.RepositoryException;
+import org.apache.maven.mercury.repository.api.RepositoryMetadataCache;
 import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
 import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
@@ -57,7 +56,7 @@ extends TestCase
   public String _port;
   HttpTestServer _server;
   
-  List<ArtifactBasicMetadata> _query;
+  List<ArtifactMetadata> _query;
   
   RemoteRepositoryM2 _remoteRepo;
   LocalRepositoryM2  _localRepo;
@@ -80,7 +79,7 @@ extends TestCase
     _server.start();
     _port = String.valueOf( _server.getPort() );
 
-    _query = new ArrayList<ArtifactBasicMetadata>();
+    _query = new ArrayList<ArtifactMetadata>();
 
     DependencyProcessor mdProcessor = new MetadataProcessorMock();
 
@@ -113,10 +112,10 @@ extends TestCase
   {
     try
     {
-    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("a:a:[1,)");
-    List<ArtifactBasicMetadata> q = THelper.toList( bmd );
+    ArtifactMetadata bmd = new ArtifactMetadata("a:a:[1,)");
+    List<ArtifactMetadata> q = THelper.toList( bmd );
     
-    ArtifactBasicResults vres = _vr.readVersions( q );
+    MetadataResults vres = _vr.readVersions( q );
      
     assertNotNull( vres );
      
@@ -126,7 +125,7 @@ extends TestCase
     
     assertTrue( vres.hasResults(bmd) );
     
-    List<ArtifactBasicMetadata> versions = vres.getResult( bmd );
+    List<ArtifactMetadata> versions = vres.getResult( bmd );
     
     assertNotNull( versions );
     
@@ -140,7 +139,7 @@ extends TestCase
     
     FileUtil.writeRawData( mdf, newBytes );
     
-    // repository policy is 2 sec, this should be still 5 versions
+    // version MD is in memory, there should be still be 5 versions
     vres = _vr.readVersions( q );
     
     assertNotNull( vres );
@@ -156,11 +155,15 @@ extends TestCase
     assertNotNull( versions );
     
     assertEquals( 5, versions.size() );
-
+    
+    // clean in-memory cache, so that on-disk expiration rules apply
+    RepositoryMetadataCache cache = _vr.getCache();
+    
+    cache.clearSession();
+    
     Thread.sleep( 4000L );
     
-    // repository policy is 2 sec, this should cause VR to re-read metadata
-    // should now have 6 versions
+    // We are past the expiration point of 5 sec - should now have 6 versions.  
     vres = _vr.readVersions( q );
     
     assertNotNull( vres );
@@ -189,10 +192,10 @@ extends TestCase
   //-------------------------------------------------------------------------
   public void testReadBadVersions()
   {
-    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("does.not:exist:1.0");
-    List<ArtifactBasicMetadata> q = THelper.toList( bmd );
+    ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
+    List<ArtifactMetadata> q = THelper.toList( bmd );
     
-    ArtifactBasicResults vres = null;
+    MetadataResults vres = null;
     try
     {
         vres = _vr.readVersions( q );
@@ -208,7 +211,7 @@ extends TestCase
   //-------------------------------------------------------------------------
   public void testReadBadDependencies()
   {
-    ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("does.not:exist:1.0");
+    ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
     
     ArtifactMetadata vres = null;
     try
@@ -226,8 +229,8 @@ extends TestCase
   //-------------------------------------------------------------------------
   public void testReadBadArtifact()
   {
-      ArtifactBasicMetadata bmd = new ArtifactBasicMetadata("does.not:exist:1.0");
-      List<ArtifactBasicMetadata> q = THelper.toList( bmd );
+      ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
+      List<ArtifactMetadata> q = THelper.toList( bmd );
       
     ArtifactResults vres = null;
     try

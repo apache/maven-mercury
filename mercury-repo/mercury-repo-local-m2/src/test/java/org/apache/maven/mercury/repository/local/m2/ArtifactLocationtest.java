@@ -19,9 +19,9 @@ under the License.
 
 package org.apache.maven.mercury.repository.local.m2;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
-
 import junit.framework.TestCase;
+
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  *
@@ -42,21 +42,21 @@ public class ArtifactLocationtest
     public void testChopTS()
     throws Exception
     {
-        ArtifactLocation loc = new ArtifactLocation( "test", new ArtifactBasicMetadata("a:a:3.0-alpha-1-20080920.015600-7") );
+        ArtifactLocation loc = new ArtifactLocation( "test", new ArtifactMetadata("a:a:3.0-alpha-1-20080920.015600-7") );
         
         String chop = loc.getVersionWithoutTS();
         
         assertEquals( "3.0-alpha-1", chop );
 
         
-        loc = new ArtifactLocation( "test", new ArtifactBasicMetadata("a:a:3.0-20080920.015600-7") );
+        loc = new ArtifactLocation( "test", new ArtifactMetadata("a:a:3.0-20080920.015600-7") );
         
         chop = loc.getVersionWithoutTS();
         
         assertEquals( "3.0", chop );
 
 
-        loc = new ArtifactLocation( "test", new ArtifactBasicMetadata("a:a:3.0-20080920.0156007") );
+        loc = new ArtifactLocation( "test", new ArtifactMetadata("a:a:3.0-20080920.0156007") );
         
         chop = loc.getVersionWithoutTS();
         

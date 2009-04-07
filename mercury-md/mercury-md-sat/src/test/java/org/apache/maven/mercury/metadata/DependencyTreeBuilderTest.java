@@ -24,9 +24,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.maven.mercury.artifact.ArtifactBasicMetadata;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.artifact.ArtifactScopeEnum;
+import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
@@ -160,8 +160,8 @@ extends TestCase
     String title = "testResolveScopedConflictsWithFiltering";
     ArtifactMetadata md = new ArtifactMetadata( "a:a:4" );
     
-    List<ArtifactBasicMetadata> exclusions = new ArrayList<ArtifactBasicMetadata>();
-    exclusions.add( new ArtifactBasicMetadata("c:c:3") );
+    List<ArtifactMetadata> exclusions = new ArrayList<ArtifactMetadata>();
+    exclusions.add( new ArtifactMetadata("c:c:3") );
     md.setExclusions( exclusions );
     
     MetadataTreeNode root = mt.buildTree( md, ArtifactScopeEnum.compile );
@@ -185,8 +185,8 @@ extends TestCase
     String title = "testResolveScopedConflictsWithFilteringOne";
     ArtifactMetadata md = new ArtifactMetadata( "a:a:2" );
     
-    List<ArtifactBasicMetadata> exclusions = new ArrayList<ArtifactBasicMetadata>();
-    exclusions.add( new ArtifactBasicMetadata("c:c:2") );
+    List<ArtifactMetadata> exclusions = new ArrayList<ArtifactMetadata>();
+    exclusions.add( new ArtifactMetadata("c:c:2") );
     md.setExclusions( exclusions );
     
     MetadataTreeNode root = mt.buildTree( md, ArtifactScopeEnum.compile );
@@ -211,9 +211,9 @@ extends TestCase
     String title = "testResolveScopedConflictsWithFilteringTwo";
     ArtifactMetadata md = new ArtifactMetadata( "a:a:2" );
     
-    List<ArtifactBasicMetadata> exclusions = new ArrayList<ArtifactBasicMetadata>();
-    exclusions.add( new ArtifactBasicMetadata("b:b:2") );
-    exclusions.add( new ArtifactBasicMetadata("c:c:2") );
+    List<ArtifactMetadata> exclusions = new ArrayList<ArtifactMetadata>();
+    exclusions.add( new ArtifactMetadata("b:b:2") );
+    exclusions.add( new ArtifactMetadata("c:c:2") );
     md.setExclusions( exclusions );
     
     MetadataTreeNode root = mt.buildTree( md, ArtifactScopeEnum.compile );
@@ -239,10 +239,10 @@ extends TestCase
     String title = "testResolveScopedConflictsWithFilteringTwo";
     ArtifactMetadata md = new ArtifactMetadata( "a:a:2" );
     
-    List<ArtifactBasicMetadata> exclusions = new ArrayList<ArtifactBasicMetadata>();
-    exclusions.add( new ArtifactBasicMetadata("b:b:1") );
-    exclusions.add( new ArtifactBasicMetadata("b:b:2") );
-    exclusions.add( new ArtifactBasicMetadata("c:c:2") );
+    List<ArtifactMetadata> exclusions = new ArrayList<ArtifactMetadata>();
+    exclusions.add( new ArtifactMetadata("b:b:1") );
+    exclusions.add( new ArtifactMetadata("b:b:2") );
+    exclusions.add( new ArtifactMetadata("c:c:2") );
     md.setExclusions( exclusions );
     
     MetadataTreeNode root = mt.buildTree( md, ArtifactScopeEnum.compile );
