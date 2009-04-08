@@ -91,7 +91,7 @@ class DependencyTreeBuilder
     private boolean _allowCircularDependencies = Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
     
     /** mandated versions in the format G:A -> V */
-    private Map<String, String> _versionMap;
+    private Map<String, ArtifactMetadata> _versionMap;
     
     class TruckLoad
     {
@@ -401,6 +401,29 @@ class DependencyTreeBuilder
 
             if ( allDependencies == null || allDependencies.size() < 1 )
                 return node;
+            
+            if( !Util.isEmpty( _versionMap ) )
+                for( ArtifactMetadata am :  allDependencies )
+                {
+                    String key = am.toManagementString();
+                    ArtifactMetadata ver = _versionMap.get( key );
+                    if( ver != null )
+                    {
+                        if( LOG.isDebugEnabled() )
+                            LOG.debug( "managed replacement: "+am+" -> "+ver );
+                        
+                        if ( _eventManager != null )
+                        {
+                            GenericEvent replaceEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_NODE_VERSION_REPLACE_EVENT, "managed replacement: "+am+" -> "+ver );
+                            replaceEvent.stop();
+                            _eventManager.fireEvent( replaceEvent );
+                        }
+ 
+                        am.setVersion( ver.getVersion() );
+                        am.setInclusions( ver.getInclusions() );
+                        am.setExclusions( ver.getExclusions() );
+                    }
+                }
 
             List<ArtifactMetadata> dependencies = new ArrayList<ArtifactMetadata>( allDependencies.size() );
             if ( globalScope != null )
@@ -687,6 +710,6 @@ class DependencyTreeBuilder
         if( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES.equals( name ) )
             _allowCircularDependencies = Boolean.parseBoolean( (String)val );
         else if( CONFIGURATION_PROPERTY_VERSION_MAP.equals( name ) )
-            _versionMap = (Map<String, String>) val;
+            _versionMap = (Map<String, ArtifactMetadata>) val;
     }
 }

@@ -41,6 +41,7 @@ extends Configurable
 {
   public static final String TREE_BUILD_EVENT = "tree.build";
   public static final String TREE_NODE_BUILD_EVENT = "tree.node.build";
+  public static final String TREE_NODE_VERSION_REPLACE_EVENT = "tree.node.build.version.replace";
 
   public static final String SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES = "mercury.circular.allow";
 

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.mercury.artifact.Artifact;
@@ -194,9 +195,23 @@ public interface PlexusMercury
                                            ArtifactExclusionList exclusions )
         throws RepositoryException;
 
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions
+                                           , Map<String, ?> config
+                                           )
+        throws RepositoryException;
+
     public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
                                            ArtifactExclusionList exclusions )
+        throws RepositoryException;
+
+    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions
+                                           , Map<String, ?> config
+                                           )
         throws RepositoryException;
 
     public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )

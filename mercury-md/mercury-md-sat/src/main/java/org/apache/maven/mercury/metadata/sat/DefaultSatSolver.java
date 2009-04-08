@@ -587,6 +587,10 @@ if( LOG.isDebugEnabled() )
           if( i > 0 )
             res.add( _context.getMd( i ) );
       }
+      else // not satisfied
+      {
+          throw new SatException( LANG.getMessage( "no.solution", _root.toString() ));
+      }
     }
     catch (TimeoutException e)
     {

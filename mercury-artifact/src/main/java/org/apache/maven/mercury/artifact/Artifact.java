@@ -19,7 +19,15 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
-
+/**
+ * TODO: Oleg: don't know if this should be interface or class, so there is a little disparate:
+ *  ArtifactMetadata is a class, Artifact is an interface. Will clear out  
+ *
+ *
+ * @author Oleg Gusakov
+ * @version $Id$
+ *
+ */
 public interface Artifact
 extends Comparable<Artifact>
 {

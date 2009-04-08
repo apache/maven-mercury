@@ -276,6 +276,14 @@ public class DefaultPlexusMercury
                                            )
         throws RepositoryException
     {
+        return resolve( repos, scope, artifacts, inclusions, exclusions, null );
+    }
+
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions, Map<String, ?> config )
+        throws RepositoryException
+    {
         if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
             throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
 
@@ -283,10 +291,45 @@ public class DefaultPlexusMercury
         {
             DependencyBuilder depBuilder =
                 DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
-                    , Util.mapOf( new Object [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
+                             , Util.mapOf( new Object [][] { 
+                                 {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies}
+                               , {DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, config}
+                                                          } 
+                                       ) 
                                                 );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
+            
+            depBuilder.close();
+
+            return res;
+        }
+        catch ( MetadataTreeException e )
+        {
+            throw new RepositoryException( e );
+        }
+    }
+
+    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions, Map<String, ?> config )
+        throws RepositoryException
+    {
+        if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
+            throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
+
+        try
+        {
+            DependencyBuilder depBuilder =
+                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
+                       , Util.mapOf( new Object [][] { 
+                             {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies}
+                           , {DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, config}
+                                                      } 
+                                   ) 
+                );
+
+            MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
             
             depBuilder.close();
 
@@ -307,26 +350,7 @@ public class DefaultPlexusMercury
                                            )
         throws RepositoryException
     {
-        if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
-            throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
-
-        try
-        {
-            DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
-                       , Util.mapOf( new String [][] { {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies} } ) 
-                );
-
-            MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
-            
-            depBuilder.close();
-
-            return res;
-        }
-        catch ( MetadataTreeException e )
-        {
-            throw new RepositoryException( e );
-        }
+            return resolveAsTree( repos, scope, artifacts, inclusions, exclusions, null );
     }
 
     // ---------------------------------------------------------------
