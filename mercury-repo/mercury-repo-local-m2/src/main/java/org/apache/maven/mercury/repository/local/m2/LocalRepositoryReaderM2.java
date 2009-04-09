@@ -430,6 +430,9 @@ public class LocalRepositoryReaderM2
         // TS exists - return it
         if ( ! virtualRequested )
             return snapshotFile.exists();
+
+        if( virtualExists &&  _snapshotAlwaysWins )
+            return true;
         
         // no real SNAPSHOT file, let's try to find one
         File gavDir = new File( loc.getAbsGavPath() );
@@ -456,9 +459,6 @@ public class LocalRepositoryReaderM2
                                             
                                             return true;
                                         }
-                                        
-                                        if( _snapshotAlwaysWins )
-                                            return false;
                                         
                                         // otherwise - only add it if older'n the SNAPSHOT
                                         long fLM = new File( dir, name ).lastModified();
