@@ -66,6 +66,11 @@ public class LocalRepositoryReaderM2
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryReaderM2.class );
 
     private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderM2.class );
+    
+    /** indicates that if a-1.0-SNAPSHOT.jar exists, it wins despite any timestamps
+     *  required for Maven comatibility 
+     **/
+    private boolean _snapshotAlwaysWins = false;
 
     // ---------------------------------------------------------------------------------------------------------------
     private static final String[] _protocols = new String[] { "file" };
@@ -103,7 +108,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static ArtifactLocation calculateLocation( String root, ArtifactMetadata bmd, AbstractRepOpResult res )
+    private ArtifactLocation calculateLocation( String root, ArtifactMetadata bmd, AbstractRepOpResult res )
     {
         ArtifactLocation loc = new ArtifactLocation( root, bmd );
 
@@ -176,6 +181,7 @@ public class LocalRepositoryReaderM2
 //                                                                             gavDir.getAbsolutePath() ) ) );
                 if( LOG.isDebugEnabled() )
                     LOG.debug( LANG.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) );
+                
                 return null;
             }
 
@@ -411,7 +417,7 @@ public class LocalRepositoryReaderM2
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    private static boolean findLatestSnapshot( final ArtifactMetadata md, final ArtifactLocation loc, AbstractRepOpResult res )
+    private boolean findLatestSnapshot( final ArtifactMetadata md, final ArtifactLocation loc, AbstractRepOpResult res )
     {
         File snapshotFile = new File( loc.getAbsPath() );
         
@@ -450,6 +456,9 @@ public class LocalRepositoryReaderM2
                                             
                                             return true;
                                         }
+                                        
+                                        if( _snapshotAlwaysWins )
+                                            return false;
                                         
                                         // otherwise - only add it if older'n the SNAPSHOT
                                         long fLM = new File( dir, name ).lastModified();
@@ -675,4 +684,11 @@ public class LocalRepositoryReaderM2
     {
     }
     // ---------------------------------------------------------------------------------------------------------------
+
+    public void setSnapshotAlwaysWins( boolean alwaysWins )
+    {
+        _snapshotAlwaysWins = alwaysWins;
+    }
+    
+    
 }
