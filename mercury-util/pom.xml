@@ -86,6 +86,7 @@ under the License.
 
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
+        <version>1.2</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -93,7 +94,6 @@ under the License.
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>${project.artifactId}-all</finalName>
               <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
               <createDependencyReducedPom>true</createDependencyReducedPom>
               <artifactSet>
