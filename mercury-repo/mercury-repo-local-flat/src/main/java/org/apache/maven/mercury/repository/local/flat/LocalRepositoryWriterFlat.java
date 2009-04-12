@@ -21,6 +21,7 @@ package org.apache.maven.mercury.repository.local.flat;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
@@ -274,6 +275,17 @@ implements RepositoryWriter
     {
       if( fLock != null )
         fLock.release();
+            if ( in != null )
+            {
+                try
+                {
+                    in.close();
+                }
+                catch ( IOException e )
+                {
+                    // ignore, tried our best to clean up
+                }
+            }
     }
     
   }

@@ -43,6 +43,7 @@ import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.spi.http.server.HttpTestServer;
 import org.apache.maven.mercury.transport.api.Server;
+import org.apache.maven.mercury.util.FileUtil;
 
 /**
  *
@@ -109,6 +110,7 @@ extends TestCase
     super.tearDown();
     httpServer.stop();
     httpServer.destroy();
+    FileUtil.delete( localRepoBase );
   }
   
   public void testOneArtifact()

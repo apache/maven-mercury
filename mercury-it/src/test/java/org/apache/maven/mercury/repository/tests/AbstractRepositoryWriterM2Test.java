@@ -126,12 +126,14 @@ extends PlexusTestCase
 //    }
 
     artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
+    artifactBinary.deleteOnExit();
     FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
     binarySize = artifactBinary.length();
 
     System.out.println( "Binary size is "+binarySize+" bytes" );
 
     artifactPom = File.createTempFile( "test-repo-writer", "pom" );
+    artifactPom.deleteOnExit();
     FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.pom" ), artifactPom );
     pomSize = artifactPom.length();
     pomBytes = FileUtil.readRawData( artifactPom );

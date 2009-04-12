@@ -114,6 +114,7 @@ public class DefaultPlexusMercuryTest
 
         // prep. Artifact
         File artifactBinary = File.createTempFile( "test-repo-writer", "bin" );
+        artifactBinary.deleteOnExit();
         FileUtil.writeRawData( getClass().getResourceAsStream( "/maven-core-2.0.9.jar" ), artifactBinary );
 
         a = new DefaultArtifact( new ArtifactMetadata( "org.apache.maven.mercury:mercury-core:2.0.9" ) );

@@ -306,6 +306,17 @@ implements RepositoryWriter
     {
       if( fLock != null )
         fLock.release();
+            if ( in != null )
+            {
+                try
+                {
+                    in.close();
+                }
+                catch ( IOException e )
+                {
+                    // ignore, tried our best to clean up
+                }
+            }
     }
     
   }

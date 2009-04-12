@@ -143,6 +143,10 @@ public class VirtualRepositoryReaderTest
         if ( _jetty != null )
         {
         }
+        if ( _vr != null )
+        {
+            _vr.close();
+        }
     }
 
     public void testReadSnapshot()

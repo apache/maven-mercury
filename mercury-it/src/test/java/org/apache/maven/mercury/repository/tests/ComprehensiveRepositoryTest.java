@@ -91,6 +91,7 @@ extends PlexusTestCase
         String prefix = "-t-";
         String suffix = "-t";
         File temp = File.createTempFile( prefix, suffix );
+        temp.delete();
         
         DependencyProcessor dp = new MavenDependencyProcessor();
         Credentials user = new Credentials("foo","bar");
@@ -108,6 +109,7 @@ extends PlexusTestCase
         _rr1 = new RemoteRepositoryM2( server, dp );
         
         temp = File.createTempFile( prefix, suffix );
+        temp.delete();
         _base2 = new File( "./target/webdav2" + temp.getName() );
 //        FileUtil.delete( _base2 );
         assertFalse( _base2.exists() );
@@ -125,6 +127,7 @@ extends PlexusTestCase
         _rrs.add( _rr2 );
         
         temp = File.createTempFile( prefix, suffix );
+        temp.delete();
         _lbase1 = new File( _local1 + temp.getName() );
 //        FileUtil.delete( _lbase1 );
         assertFalse( _lbase1.exists() );
@@ -133,6 +136,7 @@ extends PlexusTestCase
         _lr1 = new LocalRepositoryM2( "lr1", _lbase1, dp );
         
         temp = File.createTempFile( prefix, suffix );
+        temp.delete();
         _lbase2 = new File( _local2 + temp.getName() );
 //        FileUtil.delete( _lbase2 );
         assertFalse( _lbase2.exists() );
