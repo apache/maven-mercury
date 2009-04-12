@@ -82,6 +82,9 @@ public class ArtifactMetadata
     protected Collection<ArtifactMetadata> exclusions;
 
     protected Map<String, String> attributes;
+    
+    /** conveniency for SNAPSHOT file timestamp */
+    private String timeStamp;
 
     /**
      * transient helper objects, used by DependencyBuilder.
@@ -779,6 +782,18 @@ public class ArtifactMetadata
     {
         this.datum = datum;
     }
+
+    public String getTimeStamp()
+    {
+        return timeStamp;
+    }
+
+    public void setTimeStamp( String timeStamp )
+    {
+        this.timeStamp = timeStamp;
+    }
+    
+    
     // ---------------------------------------------------------------------------
     // ---------------------------------------------------------------------------
 }

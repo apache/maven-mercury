@@ -18,8 +18,11 @@
  */
 package org.apache.maven.mercury.util;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author Oleg Gusakov
@@ -30,6 +33,8 @@ public class TimeUtil
     public static final java.util.TimeZone TS_TZ = java.util.TimeZone.getTimeZone( "UTC" );
 
     public static final java.text.DateFormat TS_FORMAT = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
+
+    public static final java.text.DateFormat SN_TS_FORMAT = new java.text.SimpleDateFormat( "yyyyMMdd.HHmmss" );
 
     static
     {
@@ -95,6 +100,44 @@ public class TimeUtil
         Date dts = TS_FORMAT.parse( ts );
 
         return dts.getTime();
+    }
+    
+    /**
+     * conver SNAPSHOT timestampt into millis
+     * 
+     * @param ts
+     * @return
+     * @throws ParseException
+     */
+    public static long snTstoMillis( String ts )
+    throws ParseException
+    {
+        if( ts == null )
+            return 0;
+        
+        int dot = ts.indexOf( '.' );
+        
+        int dash = ts.indexOf( '-' );
+        
+        int lastInd = dash == -1 ? ts.length() : dash;
+        
+        if( dot == -1 )
+            return toMillis( ts );
+        
+        return toMillis( ts.substring( 0, dot )+ts.substring( dot+1, lastInd ) );
+    }
+    
+    /**
+     * convert current millis to UTC timestamp
+     * @param local
+     * @return
+     */
+    public static String defaultToSnTs( long local )
+    {
+      Date lDate = new Date(local);
+
+      SN_TS_FORMAT.setTimeZone( TS_TZ );
+      return SN_TS_FORMAT.format(lDate);
     }
 
     public static void main( String[] args ) throws Exception

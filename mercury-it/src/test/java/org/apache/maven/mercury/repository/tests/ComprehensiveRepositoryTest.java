@@ -218,7 +218,7 @@ extends PlexusTestCase
                     count--;
             }
         }
-        Thread.sleep( 1000L ); // [MERCURY-112] ?
+        Thread.sleep( 2000L ); // [MERCURY-112] ?
     }
     
     public List<Artifact> readArtifact( String name , List<Repository> repos )

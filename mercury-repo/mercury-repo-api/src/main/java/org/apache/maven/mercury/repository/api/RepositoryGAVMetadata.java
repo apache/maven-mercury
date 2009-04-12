@@ -58,6 +58,9 @@ public class RepositoryGAVMetadata
     /** is set true by cache implementation when determined that it's time to refresh */
     protected transient boolean expired = false;
 
+    /** negative yes */
+    protected transient boolean negativeResult = false;
+
     protected RepositoryGAVMetadata()
     {
     }
@@ -178,6 +181,16 @@ public class RepositoryGAVMetadata
     public void setExpired( boolean expired )
     {
         this.expired = expired;
+    }
+
+    public boolean isNegativeResult()
+    {
+        return negativeResult;
+    }
+
+    public void setNegativeResult( boolean negativeResult )
+    {
+        this.negativeResult = negativeResult;
     }
 
 }

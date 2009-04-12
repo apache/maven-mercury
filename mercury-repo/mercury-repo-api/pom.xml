@@ -57,5 +57,10 @@ under the License.
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-md-shared</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-util</artifactId>
+    </dependency>
   </dependencies>
 </project>

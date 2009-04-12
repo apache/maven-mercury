@@ -35,16 +35,4 @@ under the License.
     <module>mercury-md-sat</module>
     <module>mercury-md-shared</module>
   </modules>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-event</artifactId>
-    </dependency>
-  </dependencies>
 </project>

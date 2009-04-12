@@ -422,6 +422,7 @@ class DependencyTreeBuilder
                         am.setVersion( ver.getVersion() );
                         am.setInclusions( ver.getInclusions() );
                         am.setExclusions( ver.getExclusions() );
+                        am.setOptional( ver.isOptional() );
                     }
                 }
 
@@ -455,7 +456,7 @@ class DependencyTreeBuilder
                 List<ArtifactMetadata> versions = expandedDeps.get( md );
                 if ( versions == null || versions.size() < 1 )
                 {
-                    if ( md.isOptional() )
+                    if ( md.isOptional() || checkOptional( node) )
                         continue;
 
                     throw new MetadataTreeException( LANG.getMessage( "not.optional.missing" ) + md + " <== "+ showPath( node ) );
@@ -653,8 +654,22 @@ class DependencyTreeBuilder
     }
 
     // -----------------------------------------------------
+    private boolean checkOptional( MetadataTreeNode node )
+    {
+        MetadataTreeNode p = node;
+
+        while ( p != null )
+        {
+            if( p.getMd() != null && p.getMd().isOptional() )
+                return true;
+            
+            p = p.getParent();
+        }
+
+        return false;
+    }
+    // -----------------------------------------------------
     private String showPath( MetadataTreeNode node )
-        throws MetadataTreeCircularDependencyException
     {
         StringBuilder sb = new StringBuilder( 256 );
 

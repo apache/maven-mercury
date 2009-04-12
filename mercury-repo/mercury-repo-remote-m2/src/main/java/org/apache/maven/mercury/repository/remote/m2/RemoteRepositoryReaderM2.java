@@ -436,7 +436,9 @@ public class RemoteRepositoryReaderM2
                 LOG.info( LANG.getMessage( "read.artifact", loc.getAbsPath(), Util.convertLength( binFile.length() ) ) );
 
             da.setFile( binFile );
+            
             da.setPomBlob( FileUtil.readRawData( isPom ? binFile : pomFile ) );
+            
             res.add( md, da );
         }
     }
@@ -607,7 +609,7 @@ public class RemoteRepositoryReaderM2
                 coord.setVersion( loc.getVersion() );
 
                 gam = _mdCache.findGA( _repo.getId(), _repo.getUpdatePolicy(), coord );
-
+                
                 if ( gam != null && !gam.isExpired() )
                 {
                     gaVersions = gam.getVersions();
@@ -637,7 +639,6 @@ public class RemoteRepositoryReaderM2
 
                     if ( pom != null && pom.length > 1 )
                     {
-
                         String oldSnapshot = findDuplicateSnapshot( ver, gaVersions );
 
                         if ( oldSnapshot != null )
@@ -683,6 +684,7 @@ public class RemoteRepositoryReaderM2
                 String binPath =
                     loc.getGaPath() + FileUtil.SEP + versionDir + FileUtil.SEP + bmd.getArtifactId() + "-"
                         + ver + ".pom";
+
                 byte[] pom = readRawData( binPath, true );
 
                 if ( pom != null ) // version exists
@@ -730,6 +732,14 @@ public class RemoteRepositoryReaderM2
         {
             LOG.warn( LANG.getMessage( "maven.metadata.no.versions", loc.getGaPath() + FileUtil.SEP
                 + _repo.getMetadataName(), _repo.getId() ) );
+            
+            if( gam != null && _mdCache != null )
+            {
+                gam.setNegativeResult( true );
+                // cache negative result
+                _mdCache.updateGA( _repo.getId(), gam );
+            }
+
             return null;
         }
 

@@ -49,6 +49,23 @@ under the License.
 
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-crypto-basic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-crypto-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-transport-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-logging</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-util</artifactId>
     </dependency>
 
@@ -57,10 +74,6 @@ under the License.
       <artifactId>plexus-container-default</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-    </dependency>
     <dependency>
       <groupId>bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>

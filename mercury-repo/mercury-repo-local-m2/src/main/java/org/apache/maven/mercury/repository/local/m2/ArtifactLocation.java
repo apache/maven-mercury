@@ -176,6 +176,24 @@ public class ArtifactLocation
     
     return ver;
   }
+  
+  public static String getFileTS( String name  )
+  {
+      if( name == null )
+          return null;
+      
+      int lastDash = name.lastIndexOf( '-' );
+      if( lastDash < 2 )
+          return null;
+      
+      int firstDash = name.lastIndexOf( '-', lastDash-1 );
+      if( firstDash < 1 )
+          return null;
+      
+      String fTS = name.substring( firstDash+1, lastDash );
+      
+      return fTS;
+  }
   //---------------------------------------------------------------------------------------------------------------
   public static String calculateVersionDir( String ver )
   {

@@ -44,6 +44,7 @@ extends RepositoryGAMetadata
   public static final String ATTR_GROUP_ID = "groupId";
   public static final String ATTR_ARTIFACT_ID = "artifactId";
   public static final String ATTR_VERSION = "version";
+  public static final String ATTR_NEGATIVE = "negative";
 
   public static final String ELEM_VERSIONS = "versions";
 
@@ -86,6 +87,11 @@ extends RepositoryGAMetadata
       this.versions.addAll( verList );
 
     String lChk = cm.getLastUpdate();
+    
+    String negative = cm.getAttribute( ELEM_COORDINATES, ATTR_NEGATIVE, false );
+    
+    if( !Util.isEmpty( negative ) )
+        setNegativeResult( Boolean.parseBoolean( negative ) );
 
     lastCheck = Long.parseLong( lChk );
   }
@@ -96,6 +102,9 @@ extends RepositoryGAMetadata
     
     cm.setAttribute( ELEM_COORDINATES, ATTR_GROUP_ID, ga.getGroupId() );
     cm.setAttribute( ELEM_COORDINATES, ATTR_ARTIFACT_ID, ga.getArtifactId() );
+    
+    if( isNegativeResult() )
+        cm.setAttribute( ELEM_COORDINATES, ATTR_NEGATIVE, "true" );
     
     if( !Util.isEmpty( versions ) )
       cm.setAttribute( ELEM_VERSIONS, ATTR_VERSION, versions );

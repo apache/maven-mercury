@@ -41,6 +41,11 @@ implements LocalRepository
     private File directory;
     
     public static final String METADATA_FILE_NAME = "maven-metadata-local.xml";
+    
+    /** indicates that if a-1.0-SNAPSHOT.jar exists, it wins despite any timestamps
+     *  required for Maven comatibility 
+     **/
+    private boolean _snapshotAlwaysWins = false;
 
     //----------------------------------------------------------------------------------
     private void setDirectory( File directory )
@@ -135,6 +140,17 @@ implements LocalRepository
     {
       return true;
     }
+
+    public void setSnapshotAlwaysWins( boolean alwaysWins )
+    {
+        _snapshotAlwaysWins = alwaysWins;
+    }
+
+    public boolean getSnapshotAlwaysWins()
+    {
+        return _snapshotAlwaysWins;
+    }
+    
     //----------------------------------------------------------------------------------
     public String getType()
     {

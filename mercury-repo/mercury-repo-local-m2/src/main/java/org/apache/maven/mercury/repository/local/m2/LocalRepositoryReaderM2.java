@@ -55,6 +55,7 @@ import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.util.FileUtil;
+import org.apache.maven.mercury.util.TimeUtil;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -66,11 +67,6 @@ public class LocalRepositoryReaderM2
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryReaderM2.class );
 
     private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderM2.class );
-    
-    /** indicates that if a-1.0-SNAPSHOT.jar exists, it wins despite any timestamps
-     *  required for Maven comatibility 
-     **/
-    private boolean _snapshotAlwaysWins = false;
 
     // ---------------------------------------------------------------------------------------------------------------
     private static final String[] _protocols = new String[] { "file" };
@@ -426,12 +422,13 @@ public class LocalRepositoryReaderM2
         final boolean virtualExists = snapshotFile.exists();
         
         final long  virtualLM = virtualExists ? snapshotFile.lastModified() : 0L;
+        final String virtualTS = virtualExists ? TimeUtil.defaultToSnTs( virtualLM ) : "00000000.000000";
 
         // TS exists - return it
         if ( ! virtualRequested )
             return snapshotFile.exists();
 
-        if( virtualExists &&  _snapshotAlwaysWins )
+        if( virtualExists &&  ((LocalRepositoryM2)_repo).getSnapshotAlwaysWins() )
             return true;
         
         // no real SNAPSHOT file, let's try to find one
@@ -461,9 +458,9 @@ public class LocalRepositoryReaderM2
                                         }
                                         
                                         // otherwise - only add it if older'n the SNAPSHOT
-                                        long fLM = new File( dir, name ).lastModified();
+                                        String fTS = ArtifactLocation.getFileTS( name );
                                         
-                                        if( fLM >= virtualLM )
+                                        if( fTS.compareTo( virtualTS ) >= 0 )
                                         {
                                             ts.add( ver );
                                             
@@ -484,6 +481,7 @@ public class LocalRepositoryReaderM2
         {
             if( virtualExists ) // none were older'n the snapshot
             {
+                md.setTimeStamp( virtualTS );
                 return true;
             }
             
@@ -550,6 +548,7 @@ public class LocalRepositoryReaderM2
                 vmd.setClassifier( md.getClassifier() );
                 vmd.setType( md.getType() );
                 vmd.setVersion( loc.getVersion() );
+                vmd.setTimeStamp( md.getTimeStamp() );
 
                 res = MetadataResults.add( res, md, vmd );
 
@@ -684,11 +683,5 @@ public class LocalRepositoryReaderM2
     {
     }
     // ---------------------------------------------------------------------------------------------------------------
-
-    public void setSnapshotAlwaysWins( boolean alwaysWins )
-    {
-        _snapshotAlwaysWins = alwaysWins;
-    }
-    
     
 }

@@ -176,8 +176,6 @@ extends TestCase
     
     File aBin = new File( localRepoBase, "a/a/4/a-4-sources.jar" );
     assertTrue( aBin.exists() );
-
-    log.info( a+" - pom length is "+a.getPomBlob().length );
   }
 
 }

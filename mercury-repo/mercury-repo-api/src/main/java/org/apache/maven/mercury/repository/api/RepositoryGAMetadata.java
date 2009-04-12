@@ -35,6 +35,9 @@ public class RepositoryGAMetadata
     /** is set true by cache implementation when determined that it's time to refresh */
     protected transient boolean expired = false;
 
+    /** negative yes */
+    protected transient boolean negativeResult = false;
+
     protected RepositoryGAMetadata()
     {
     }
@@ -134,4 +137,14 @@ public class RepositoryGAMetadata
         this.expired = expired;
     }
 
+    public boolean isNegativeResult()
+    {
+        return negativeResult;
+    }
+
+    public void setNegativeResult( boolean negativeResult )
+    {
+        this.negativeResult = negativeResult;
+    }
+    
 }

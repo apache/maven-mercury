@@ -317,7 +317,6 @@ public class VirtualRepositoryReader
 
         try
         {
-
             if ( _eventManager != null )
             {
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_VERSIONS );
@@ -474,6 +473,7 @@ public class VirtualRepositoryReader
         }
     }
 
+    /** order all found versions per query, then leave only the last one hanging */
     private void processSingletons( ArtifactMetadata key, List<ArtifactMetadata> res )
     {
         if ( Util.isEmpty( res ) || !DefaultArtifactVersion.isVirtual( key.getVersion() ) )
@@ -486,17 +486,36 @@ public class VirtualRepositoryReader
                         {
                             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
                             {
-                                  DefaultArtifactVersion av1 = new DefaultArtifactVersion( o1.getVersion() );
-                                  DefaultArtifactVersion av2 = new DefaultArtifactVersion( o2.getVersion() );
+                                String v1 = o1.getVersion();
+                                String v2 = o2.getVersion();
+                                
+                                if( o1.isVirtualSnapshot() && o1.getTimeStamp() != null )
+                                    v1 = v1.replace( Artifact.SNAPSHOT_VERSION, o1.getTimeStamp()+"-00" );
+                                
+                                if( o2.isVirtualSnapshot() && o2.getTimeStamp() != null )
+                                    v2 = v2.replace( Artifact.SNAPSHOT_VERSION, o2.getTimeStamp()+"-00" );
+                                
+                                  DefaultArtifactVersion av1 = new DefaultArtifactVersion( v1 );
+                                  DefaultArtifactVersion av2 = new DefaultArtifactVersion( v2 );
 
                                   return av1.compareTo( av2 );
                             }
 
                         }
-                                                                              );
+                                                                      );
         ts.addAll( res );
 
         ArtifactMetadata single = ts.last();
+        
+        // Oleg: -SNAPSHOT should always win        
+//        if( key.isVirtualSnapshot() )
+//        {
+//            ArtifactMetadata first = ts.first();
+//            
+//            if( first.isVirtualSnapshot() )
+//                single = first;
+//        }
+            
 
         res.clear();
 
@@ -1222,8 +1241,15 @@ public class VirtualRepositoryReader
                         + ( Util.isEmpty( type ) ? "" : ", type=" + type );
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_RAW, eventTag );
             }
+
+            ArtifactMetadata bmdQuery = new ArtifactMetadata(bmd);
             
-            ArtifactMetadata bmdQuery = bmd;
+            if( !Util.isEmpty( type ))
+                bmdQuery.setType( type );
+            
+            // pom cannot have classifiers
+            if( "pom".equals( bmdQuery.getType() ) )
+                bmdQuery.setClassifier( null );
 
             try
             {
@@ -1246,7 +1272,7 @@ public class VirtualRepositoryReader
             {
                 List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
                 
-                ArtifactMetadata nBmd = new ArtifactMetadata( bmd.toString() );
+                ArtifactMetadata nBmd = new ArtifactMetadata( bmdQuery );
                 
                 if( !Util.isEmpty( type ))
                     nBmd.setType( type );
@@ -1270,12 +1296,16 @@ public class VirtualRepositoryReader
                     if ( vRes.hasResults( nBmd ) )
                     {
                         List<ArtifactMetadata> versions = vRes.getResult( nBmd );
+                        
+                        processSingletons( nBmd, versions );
 
-                        TreeSet<ArtifactMetadata> snapshots =
-                            new TreeSet<ArtifactMetadata>( new MetadataVersionComparator() );
-                        snapshots.addAll( versions );
-
-                        bmdQuery = snapshots.last();
+//                        TreeSet<ArtifactMetadata> snapshots =
+//                            new TreeSet<ArtifactMetadata>( new MetadataVersionComparator() );
+//                        snapshots.addAll( versions );
+//
+//                        bmdQuery = snapshots.last();
+                        
+                        bmdQuery = versions.get( 0 );
                     }
                     else
                     {

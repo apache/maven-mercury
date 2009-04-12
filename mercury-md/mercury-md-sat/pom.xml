@@ -43,27 +43,39 @@ under the License.
     </dependency>
 
     <dependency>
-      <groupId>commons-digester</groupId>
-      <artifactId>commons-digester</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-md-shared</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-virtual</artifactId>
     </dependency>
-
-  <!--  test deps -->
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-local-m2</artifactId>
-      <scope>test</scope>
+      <artifactId>mercury-event</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-artifact</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-repo-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.mercury</groupId>
+      <artifactId>mercury-external</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+
+  <!--  test deps -->
 
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
@@ -75,6 +87,11 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-repo-remote-m2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>commons-digester</groupId>
+    	<artifactId>commons-digester</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
