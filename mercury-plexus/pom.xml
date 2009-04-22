@@ -46,55 +46,7 @@ under the License.
  -->
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-remote-m2</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-virtual</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-md-sat</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-crypto-basic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-util</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-crypto-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-artifact</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-transport-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-external</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-local-m2</artifactId>
+      <artifactId>mercury-core</artifactId>
     </dependency>
 
     <dependency>
@@ -150,4 +102,3 @@ under the License.
     </plugins>
   </build>
 </project>
-

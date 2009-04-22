@@ -54,21 +54,8 @@ under the License.
   </developers>
 
   <modules>
-    <module>mercury-artifact</module>
-    <module>mercury-md</module>
-    <module>mercury-repo</module>
-    <module>mercury-transport</module>
-    <module>mercury-external</module>
-    <module>mercury-crypto</module>
-    <module>mercury-util</module>
-    <module>mercury-event</module>
-    <module>mercury-logging</module>
+    <module>mercury-core</module>
     <module>mercury-plexus</module>
-    <module>mercury-wagon</module>
-    <module>mercury-it</module>
-<!-- 
--->
-
   </modules>
 
   <properties>
@@ -175,12 +162,13 @@ under the License.
         <artifactId>org.sat4j.pb</artifactId>
         <version>${sat4j.version}</version>
       </dependency>
-
+<!-- 
       <dependency>
         <groupId>org.sonatype.appbooter</groupId>
         <artifactId>plexus-forked-app-booter</artifactId>
         <version>${plexus.appbooter.version}</version>
       </dependency>
+ -->
 <!--
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -285,116 +273,13 @@ under the License.
       <!-- Mercury deps -->
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-artifact</artifactId>
+        <artifactId>mercury-core</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-external</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-event</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-util</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-logging</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-md-shared</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-crypto-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-crypto-basic</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-m2</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-map</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-local-m2</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-remote-m2</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-virtual</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-repo-cache-fs</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-md-sat</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-http</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-       <dependency>
-        <groupId>org.apache.maven.mercury</groupId>
-        <artifactId>mercury-transport-http</artifactId>
+        <artifactId>mercury-core</artifactId>
         <type>test-jar</type>
         <version>${project.version}</version>
       </dependency>
@@ -712,6 +597,13 @@ under the License.
           </plugin>
         </plugins>
       </reporting>
+    </profile>
+
+    <profile>
+    	<id>run-its</id>
+    	<modules>
+    		<module>mercury-it</module>
+    	</modules>
     </profile>
   </profiles>
 </project>

@@ -41,40 +41,12 @@ under the License.
 
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-event</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-util</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-api</artifactId>
-      <scope>test</scope>
+      <artifactId>mercury-core</artifactId>
     </dependency>
 
     <dependency>
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-md-shared</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-crypto-basic</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -91,63 +63,14 @@ under the License.
 
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-local-m2</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-local-m2</artifactId>
+      <artifactId>mercury-core</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-remote-m2</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-repo-virtual</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-md-sat</artifactId>
-    </dependency>
-
-     <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-transport-http</artifactId>
-      <type>test-jar</type>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-plexus</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-transport-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-crypto-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-artifact</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-transport-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.mercury</groupId>
-      <artifactId>mercury-external</artifactId>
     </dependency>
 
     <dependency>
@@ -309,46 +232,13 @@ under the License.
           <searchPath>${basedir}</searchPath>
 
           <sourceFolders>
-            <sourceFolder>${basedir}/../mercury-artifact/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-crypto/mercury-crypto-api/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-crypto/mercury-crypto-basic/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-event/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-external/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-logging/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-md/mercury-md-shared/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-md/mercury-md-sat/src/main/java</sourceFolder>
+            <sourceFolder>${basedir}/../mercury-core/src/main/java</sourceFolder>
             <sourceFolder>${basedir}/../mercury-plexus/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-api/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-cache-fs/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-flat/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-local-m2/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-local-map/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-remote-m2/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-repo/mercury-repo-virtual/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-transport/mercury-transport-api/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-transport/mercury-transport-http/src/main/java</sourceFolder>
-            <sourceFolder>${basedir}/../mercury-util/src/main/java</sourceFolder>
           </sourceFolders>
 
           <jarFiles>
-            <jarFile>${basedir}/../mercury-artifact/target/mercury-artifact-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-crypto/mercury-crypto-api/target/mercury-crypto-api-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-crypto/mercury-crypto-basic/target/mercury-crypto-basic-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-event/target/mercury-event-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-external/target/mercury-external-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-logging/target/mercury-logging-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-md/mercury-md-shared/target/mercury-md-shared-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-md/mercury-md-sat/target/mercury-md-sat-${project.version}.jar</jarFile>
+            <jarFile>${basedir}/../mercury-core/target/mercury-core-${project.version}.jar</jarFile>
             <jarFile>${basedir}/../mercury-plexus/target/mercury-plexus-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-repo/mercury-repo-api/target/mercury-repo-api-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-repo/mercury-repo-cache-fs/target/mercury-repo-cache-fs-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-repo/mercury-repo-local-m2/target/mercury-repo-local-m2-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-repo/mercury-repo-local-map/target/mercury-repo-local-map-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-repo/mercury-repo-remote-m2/target/mercury-repo-remote-m2-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-repo/mercury-repo-remote-virtual/target/mercury-repo-remote-virtual-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-transport/mercury-transport-api/target/mercury-transport-api-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-transport/mercury-transport-http/target/mercury-transport-http-${project.version}.jar</jarFile>
-            <jarFile>${basedir}/../mercury-util/target/mercury-util-${project.version}.jar</jarFile>
           </jarFiles>
         </configuration>
 
