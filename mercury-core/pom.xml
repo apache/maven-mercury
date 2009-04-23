@@ -2,13 +2,11 @@
   <parent>
     <artifactId>mercury</artifactId>
     <groupId>org.apache.maven.mercury</groupId>
-    <version>1.0-alpha-7-SNAPSHOT</version>
+    <version>1.0-alpha-8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.maven.mercury</groupId>
   <artifactId>mercury-core</artifactId>
   <name>Mercury Core</name>
-  <version>1.0-alpha-7-SNAPSHOT</version>
 
   <dependencies>
   	<dependency>
