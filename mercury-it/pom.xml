@@ -36,7 +36,10 @@ under the License.
   </dependencyManagement>
 
   <properties>
+<!-- 
     <maven.version>3.0-763966</maven.version>
+ -->
+    <maven.version>3.0-SNAPSHOT</maven.version>
     <spice.model.builder.version>1.5</spice.model.builder.version>
     <plexus.webdav.version>1.0</plexus.webdav.version>
   </properties>
