@@ -233,6 +233,7 @@ extends PlexusTestCase
         List<ArtifactMetadata> al = new ArrayList<ArtifactMetadata>();
         al.add( bmd );
         
+        Thread.sleep( 2000L ); // [MERCURY-112] ?
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
         
         ArtifactResults  res = vr.readArtifacts( al );
