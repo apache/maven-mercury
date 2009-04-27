@@ -23,13 +23,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-
-public class RandomBatchIdGenerator implements BatchIdGenerator
+public class RandomBatchIdGenerator
+    implements BatchIdGenerator
 {
     protected final static String SESSION_ID_RANDOM_ALGORITHM = "SHA1PRNG";
-    private Random _random;
-    private boolean _initialized;
 
+    private Random _random;
+
+    private boolean _initialized;
 
     public RandomBatchIdGenerator()
     {
@@ -74,8 +75,8 @@ public class RandomBatchIdGenerator implements BatchIdGenerator
                 {
                     _random = new Random();
                 }
-                _random.setSeed(
-                    _random.nextLong() ^ System.currentTimeMillis() ^ hashCode() ^ Runtime.getRuntime().freeMemory() );
+                _random.setSeed( _random.nextLong() ^ System.currentTimeMillis() ^ hashCode()
+                    ^ Runtime.getRuntime().freeMemory() );
                 _initialized = true;
             }
         }

@@ -19,7 +19,6 @@
 
 package org.apache.maven.mercury.spi.http.client.retrieve;
 
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,11 +41,13 @@ import org.apache.maven.mercury.transport.api.Binding;
 import org.apache.maven.mercury.transport.api.Server;
 import org.mortbay.jetty.client.HttpClient;
 
-public class DefaultRetriever implements Retriever
+public class DefaultRetriever
+    implements Retriever
 {
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultRetriever.class );
-    
+
     private HttpClient _httpClient;
+
     private Set<Server> _servers = new HashSet<Server>();
 
     public DefaultRetriever()
@@ -57,7 +58,7 @@ public class DefaultRetriever implements Retriever
         _httpClient.setConnectorType( HttpClient.CONNECTOR_SELECT_CHANNEL );
         try
         {
-            //TODO: What are all the reasons that the httpclient couldn't start up correctly?
+            // TODO: What are all the reasons that the httpclient couldn't start up correctly?
             _httpClient.start();
         }
         catch ( Exception e )
@@ -83,32 +84,31 @@ public class DefaultRetriever implements Retriever
             throw new HttpClientException( null, "unable to start http client", e );
         }
     }
-                           
-    public void setServers (Set<Server>servers)
+
+    public void setServers( Set<Server> servers )
     {
         _servers.clear();
-        _servers.addAll(servers);
-        _httpClient.setRealmResolver(new DestinationRealmResolver(_servers));
+        _servers.addAll( servers );
+        _httpClient.setRealmResolver( new DestinationRealmResolver( _servers ) );
     }
-    
+
     public Set<Server> getServers()
     {
         return _servers;
     }
 
     /**
-     * Retrieve a set of artifacts and wait until all retrieved successfully
-     * or an error occurs.
+     * Retrieve a set of artifacts and wait until all retrieved successfully or an error occurs.
      * <p/>
-     * Note: whilst this method is synchronous for the caller, the implementation
-     * will be asynchronous so many artifacts are fetched in parallel.
-     *
+     * Note: whilst this method is synchronous for the caller, the implementation will be asynchronous so many artifacts
+     * are fetched in parallel.
+     * 
      * @param request
      * @return the list of errors, if any
      */
     public RetrievalResponse retrieve( RetrievalRequest request )
     {
-        final RetrievalResponse[] response = new RetrievalResponse[]{null};
+        final RetrievalResponse[] response = new RetrievalResponse[] { null };
 
         retrieve( request, new RetrievalCallback()
         {
@@ -140,10 +140,9 @@ public class DefaultRetriever implements Retriever
     }
 
     /**
-     * Retrieve a set of artifacts without waiting for the results.
-     * When all results have been obtained (or an error occurs) the
-     * RetrievalResponse will be called.
-     *
+     * Retrieve a set of artifacts without waiting for the results. When all results have been obtained (or an error
+     * occurs) the RetrievalResponse will be called.
+     * 
      * @param request
      * @param callback
      */
@@ -170,60 +169,61 @@ public class DefaultRetriever implements Retriever
         for ( int i = 0; i < bindings.length && count.get() > 0; i++ )
         {
             final Binding binding = bindings[i];
-            
+
             RetrievalTarget target = null;
             try
             {
-                Server server = resolveServer(binding);
+                Server server = resolveServer( binding );
                 Set<StreamObserver> observers = createStreamObservers( server, binding.isExempt() );
-                
-                target = new RetrievalTarget( server, DefaultRetriever.this, binding, request.getValidators(), observers )
-                {
-                    public void onComplete()
-                    {
-                        //got the file, check the checksum
-                        boolean checksumOK = false;
-                        try
-                        {
-                          checksumOK = verifyChecksum();
-                          if ( !checksumOK )
-                          {
-                              response.add( new HttpClientException( binding, "Checksum failed") );
-                          }
-                        }
-                        catch( StreamVerifierException e )
-                        {
-                          response.add( new HttpClientException( binding, e.getMessage()) );
-                        }
 
-                        //if the file checksum is ok, then apply the validators
-                        if ( checksumOK )
+                target =
+                    new RetrievalTarget( server, DefaultRetriever.this, binding, request.getValidators(), observers )
+                    {
+                        public void onComplete()
                         {
-                            List<String> validateErrors = new ArrayList<String>();
-                            if ( !validate( validateErrors ) )
+                            // got the file, check the checksum
+                            boolean checksumOK = false;
+                            try
                             {
-                                for ( String s : validateErrors )
+                                checksumOK = verifyChecksum();
+                                if ( !checksumOK )
                                 {
-                                    response.add( new HttpClientException( binding, s ) );
+                                    response.add( new HttpClientException( binding, "Checksum failed" ) );
                                 }
+                            }
+                            catch ( StreamVerifierException e )
+                            {
+                                response.add( new HttpClientException( binding, e.getMessage() ) );
+                            }
+
+                            // if the file checksum is ok, then apply the validators
+                            if ( checksumOK )
+                            {
+                                List<String> validateErrors = new ArrayList<String>();
+                                if ( !validate( validateErrors ) )
+                                {
+                                    for ( String s : validateErrors )
+                                    {
+                                        response.add( new HttpClientException( binding, s ) );
+                                    }
+                                }
+                            }
+
+                            if ( DefaultRetriever.this.isComplete( count, request, response, targets ) )
+                            {
+                                callback.onComplete( response );
                             }
                         }
 
-                        if ( DefaultRetriever.this.isComplete( count, request, response, targets ) )
+                        public void onError( HttpClientException exception )
                         {
-                            callback.onComplete( response );
+                            response.add( exception );
+                            if ( DefaultRetriever.this.isComplete( count, request, response, targets ) )
+                            {
+                                callback.onComplete( response );
+                            }
                         }
-                    }
-
-                    public void onError( HttpClientException exception )
-                    {
-                        response.add( exception );
-                        if ( DefaultRetriever.this.isComplete( count, request, response, targets ) )
-                        {
-                            callback.onComplete( response );
-                        }
-                    }
-                };
+                    };
 
                 targets.add( target );
             }
@@ -239,17 +239,15 @@ public class DefaultRetriever implements Retriever
 
         for ( final RetrievalTarget target : targets )
         {
-            target.retrieve(); //go get the remote file
+            target.retrieve(); // go get the remote file
         }
     }
 
-    private boolean isComplete( AtomicInteger count,
-                                RetrievalRequest request,
-                                RetrievalResponse response,
+    private boolean isComplete( AtomicInteger count, RetrievalRequest request, RetrievalResponse response,
                                 List<RetrievalTarget> targets )
     {
         boolean completor = count.decrementAndGet() == 0;
-        
+
         if ( !completor && request.isFailFast() && response.getExceptions().size() > 0 )
         {
             completor = count.getAndSet( 0 ) > 0;
@@ -278,52 +276,51 @@ public class DefaultRetriever implements Retriever
         return false;
     }
 
-
     /**
      * Get the jetty async client
-     *
+     * 
      * @return
      */
     public HttpClient getHttpClient()
     {
         return _httpClient;
     }
-    
-    private Server resolveServer (Binding binding)
-    throws MalformedURLException
+
+    private Server resolveServer( Binding binding )
+        throws MalformedURLException
     {
-        if (binding.getRemoteResource() == null)
-        return null;
-        
-        URL bindingURL = binding.getRemoteResource();
-        if (_servers == null)
+        if ( binding.getRemoteResource() == null )
             return null;
-        
+
+        URL bindingURL = binding.getRemoteResource();
+        if ( _servers == null )
+            return null;
+
         Iterator<Server> itor = _servers.iterator();
         Server server = null;
-        while(itor.hasNext() && server==null)
+        while ( itor.hasNext() && server == null )
         {
             Server s = itor.next();
-            if (bindingURL.getProtocol().equalsIgnoreCase(s.getURL().getProtocol()) 
-                    && bindingURL.getHost().equalsIgnoreCase(s.getURL().getHost())
-                    && bindingURL.getPort() == s.getURL().getPort())
+            if ( bindingURL.getProtocol().equalsIgnoreCase( s.getURL().getProtocol() )
+                && bindingURL.getHost().equalsIgnoreCase( s.getURL().getHost() )
+                && bindingURL.getPort() == s.getURL().getPort() )
                 server = s;
         }
         return server;
     }
-    
-    private Set<StreamObserver> createStreamObservers (Server server, boolean exempt )
-    throws StreamObserverException
+
+    private Set<StreamObserver> createStreamObservers( Server server, boolean exempt )
+        throws StreamObserverException
     {
         HashSet<StreamObserver> observers = new HashSet<StreamObserver>();
-        
-        if( server == null )
-          return observers;
-        
-        if ( (!exempt) && server.hasReaderStreamVerifierFactories() )
+
+        if ( server == null )
+            return observers;
+
+        if ( ( !exempt ) && server.hasReaderStreamVerifierFactories() )
         {
             Set<StreamVerifierFactory> factories = server.getReaderStreamVerifierFactories();
-            for( StreamVerifierFactory f:factories )
+            for ( StreamVerifierFactory f : factories )
             {
                 observers.add( f.newInstance() );
             }
@@ -332,22 +329,22 @@ public class DefaultRetriever implements Retriever
         if ( server.hasReaderStreamObserverFactories() )
         {
             Set<StreamObserverFactory> factories = server.getReaderStreamObserverFactories();
-            for( StreamObserverFactory f:factories )
+            for ( StreamObserverFactory f : factories )
             {
                 observers.add( f.newInstance() );
             }
         }
         return observers;
     }
-    
+
     public void stop()
     {
-        if( _httpClient == null )
+        if ( _httpClient == null )
             return;
-        
-        if( _httpClient.isStopped() || _httpClient.isStopping() )
+
+        if ( _httpClient.isStopped() || _httpClient.isStopping() )
             return;
-        
+
         try
         {
             _httpClient.stop();
@@ -356,7 +353,7 @@ public class DefaultRetriever implements Retriever
         {
             LOG.error( e.getMessage() );
         }
-            
+
     }
 
 }

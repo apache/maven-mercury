@@ -33,37 +33,42 @@ import org.mortbay.jetty.client.HttpExchange;
  * <p/>
  * Base class for asynchronously PUTting or GETting a file.
  */
-public abstract class FileExchange extends HttpExchange
+public abstract class FileExchange
+    extends HttpExchange
 {
 
-   
-
     public static final String __BATCH_HEADER = "Jetty-Batch-Id";
+
     public static final String __BATCH_SUPPORTED_HEADER = "Jetty-Batch-Supported";
+
     public static final String __BATCH_COMMIT_HEADER = "Jetty-Batch-Commit";
+
     public static final String __BATCH_DISCARD_HEADER = "Jetty-Batch-Discard";
 
-
     protected HttpClient _httpClient;
+
     protected int _status;
+
     protected String _url;
+
     protected File _localFile;
+
     protected Binding _binding;
+
     protected Server _server;
 
     public abstract void onFileComplete( String url, File localFile );
 
     public abstract void onFileError( String url, Exception e );
 
-
     public FileExchange( Server server, Binding binding, File localFile, HttpClient client )
     {
         _server = server;
         _binding = binding;
-        if (_binding != null)
+        if ( _binding != null )
         {
             URL url = binding.getRemoteResource();
-            if (url != null)
+            if ( url != null )
                 _url = url.toString();
         }
 
@@ -76,7 +81,7 @@ public abstract class FileExchange extends HttpExchange
     {
         try
         {
-            SecureSender.send(_server, _httpClient, this);
+            SecureSender.send( _server, _httpClient, this );
         }
         catch ( Exception e )
         {
@@ -98,10 +103,10 @@ public abstract class FileExchange extends HttpExchange
     {
         onFileError( _url, new Exception( "Timeout occurred" ) );
     }
-    
-    protected void onConnectionFailed(Throwable ex)
+
+    protected void onConnectionFailed( Throwable ex )
     {
-        onFileError(_url, new Exception(ex));
+        onFileError( _url, new Exception( ex ) );
     }
-    
+
 }

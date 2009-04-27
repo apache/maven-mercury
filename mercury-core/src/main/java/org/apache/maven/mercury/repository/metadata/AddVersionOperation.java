@@ -28,18 +28,17 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * adds new version to metadata
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class AddVersionOperation
     implements MetadataOperation
 {
     private static final Language LANG = new DefaultLanguage( AddVersionOperation.class );
-  
+
     private String version;
-  
+
     /**
      * @throws MetadataException
      */
@@ -48,8 +47,8 @@ public class AddVersionOperation
     {
         setOperand( data );
     }
-  
-  public void setOperand( Object data )
+
+    public void setOperand( Object data )
         throws MetadataException
     {
         if ( data == null || !( data instanceof StringOperand ) )
@@ -61,7 +60,7 @@ public class AddVersionOperation
         version = ( (StringOperand) data ).getOperand();
     }
 
-  /**
+    /**
      * add version to the in-memory metadata instance
      * 
      * @param metadata
@@ -96,35 +95,35 @@ public class AddVersionOperation
         }
 
         vs.addVersion( version );
-        
+
         List<String> versions = vs.getVersions();
-        
+
         Collections.sort( versions, new VersionComparator() );
-        
-        vs.setLatest( getLatestVersion(versions) );
-        
-        vs.setRelease( getReleaseVersion(versions) );
-        
+
+        vs.setLatest( getLatestVersion( versions ) );
+
+        vs.setRelease( getReleaseVersion( versions ) );
+
         vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
 
         return true;
     }
-    
+
     private String getLatestVersion( List<String> orderedVersions )
     {
-    	return orderedVersions.get( orderedVersions.size() - 1 );
+        return orderedVersions.get( orderedVersions.size() - 1 );
     }
-    
+
     private String getReleaseVersion( List<String> orderedVersions )
     {
-        for (int i = orderedVersions.size() - 1; i >= 0; i--) 
+        for ( int i = orderedVersions.size() - 1; i >= 0; i-- )
         {
-			if (!orderedVersions.get(i).endsWith("SNAPSHOT")) 
-			{
-				return orderedVersions.get(i);
-			}
-		}
-        
+            if ( !orderedVersions.get( i ).endsWith( "SNAPSHOT" ) )
+            {
+                return orderedVersions.get( i );
+            }
+        }
+
         return "";
     }
 }

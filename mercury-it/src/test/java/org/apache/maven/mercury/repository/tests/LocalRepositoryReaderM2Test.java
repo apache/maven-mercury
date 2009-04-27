@@ -28,31 +28,28 @@ import org.apache.maven.mercury.repository.local.m2.MetadataProcessorMock;
 import org.apache.maven.mercury.transport.api.Server;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class LocalRepositoryReaderM2Test
-extends AbstractRepositoryReaderM2Test
+    extends AbstractRepositoryReaderM2Test
 {
 
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    mdProcessor = new MetadataProcessorMock();
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        mdProcessor = new MetadataProcessorMock();
 
-    query = new ArrayList<ArtifactMetadata>();
+        query = new ArrayList<ArtifactMetadata>();
 
-    server = new Server( "test", new File("./target/test-classes/repo").toURL() );
-      
-    repo = new LocalRepositoryM2( server, new MavenDependencyProcessor() );
-    repo.setDependencyProcessor( mdProcessor );
-    reader = repo.getReader();
+        server = new Server( "test", new File( "./target/test-classes/repo" ).toURL() );
 
-    super.setUp();
-  }
+        repo = new LocalRepositoryM2( server, new MavenDependencyProcessor() );
+        repo.setDependencyProcessor( mdProcessor );
+        reader = repo.getReader();
+
+        super.setUp();
+    }
 
 }

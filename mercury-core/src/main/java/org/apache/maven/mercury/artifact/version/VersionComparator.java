@@ -25,7 +25,7 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * version comparator used elsewhere to keep version collections sorted
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */

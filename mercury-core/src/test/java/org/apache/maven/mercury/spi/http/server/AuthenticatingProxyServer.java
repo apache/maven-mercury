@@ -35,48 +35,50 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.servlet.ProxyServlet;
 import org.mortbay.util.StringUtil;
 
-public class AuthenticatingProxyServer extends Server
+public class AuthenticatingProxyServer
+    extends Server
 {
     public static final String __username = "foo";
+
     public static final String __password = "banana";
+
     public static final String __role = "fooproxy";
-    protected Context  _context;
-    
-    
-    
-    
-    public static class AuthProxyServlet extends ProxyServlet 
+
+    protected Context _context;
+
+    public static class AuthProxyServlet
+        extends ProxyServlet
     {
-        public void service(ServletRequest request, ServletResponse response)
-                throws ServletException, IOException
+        public void service( ServletRequest request, ServletResponse response )
+            throws ServletException, IOException
         {
-            String proxyAuth = ((HttpServletRequest)request).getHeader("Proxy-Authorization");
-            if (proxyAuth!=null)
+            String proxyAuth = ( (HttpServletRequest) request ).getHeader( "Proxy-Authorization" );
+            if ( proxyAuth != null )
             {
-                String authType = proxyAuth.substring(0,6);
-                
-                if (authType.equalsIgnoreCase("basic "))
-                    proxyAuth = proxyAuth.substring(6);
-                         
-                proxyAuth = B64Code.decode(proxyAuth,StringUtil.__ISO_8859_1);
-                int sep = proxyAuth.indexOf(":");
-                String username = proxyAuth.substring(0,sep);
-                String password = proxyAuth.substring(sep+1);
-                
-                if (__username.equalsIgnoreCase(username) && __password.equalsIgnoreCase(password))
-                    super.service(request, response);
+                String authType = proxyAuth.substring( 0, 6 );
+
+                if ( authType.equalsIgnoreCase( "basic " ) )
+                    proxyAuth = proxyAuth.substring( 6 );
+
+                proxyAuth = B64Code.decode( proxyAuth, StringUtil.__ISO_8859_1 );
+                int sep = proxyAuth.indexOf( ":" );
+                String username = proxyAuth.substring( 0, sep );
+                String password = proxyAuth.substring( sep + 1 );
+
+                if ( __username.equalsIgnoreCase( username ) && __password.equalsIgnoreCase( password ) )
+                    super.service( request, response );
                 else
-                    ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    ( (HttpServletResponse) response ).setStatus( HttpServletResponse.SC_FORBIDDEN );
             }
             else
             {
-                ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+                ( (HttpServletResponse) response ).setStatus( HttpServletResponse.SC_FORBIDDEN );
             }
-        }    
+        }
     }
-    
+
     public AuthenticatingProxyServer()
-    throws Exception
+        throws Exception
     {
         super( 0 );
 
@@ -87,23 +89,23 @@ public class AuthenticatingProxyServer extends Server
         handlers.addHandler( new DefaultHandler() );
 
         _context.addServlet( AuthProxyServlet.class, "/" );
-        
+
         HashUserRealm realm = new HashUserRealm();
-        realm.put (__username, __password);
-        realm.addUserToRole(__username, __role);
-        realm.setName("proxyrealm");
+        realm.put( __username, __password );
+        realm.addUserToRole( __username, __role );
+        realm.setName( "proxyrealm" );
     }
-    
+
     public int getPort()
     {
         return getConnectors()[0].getLocalPort();
     }
-    
+
     public String getUsername()
     {
         return __username;
     }
-    
+
     public String getPassword()
     {
         return __password;

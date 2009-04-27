@@ -25,29 +25,29 @@ import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 
 public class SHA1VerifierFactory
-extends AbstractStreamVerifierFactory
-implements StreamVerifierFactory
+    extends AbstractStreamVerifierFactory
+    implements StreamVerifierFactory
 {
-  public static final String DEFAULT_EXTENSION = "sha1";
-  
-  public SHA1VerifierFactory( StreamVerifierAttributes attrs )
-  {
-    super( attrs );
-  }
-  
-  public SHA1VerifierFactory( boolean lenient, boolean satisfactory )
-  {
-    super( new StreamVerifierAttributes( DEFAULT_EXTENSION, lenient, satisfactory ) );
-  }
-  
-  public StreamVerifier newInstance()
-  {
-     return new SHA1Verifier( attributes );
-  }
+    public static final String DEFAULT_EXTENSION = "sha1";
 
-  public String getDefaultExtension()
-  {
-    return DEFAULT_EXTENSION;
-  }
+    public SHA1VerifierFactory( StreamVerifierAttributes attrs )
+    {
+        super( attrs );
+    }
+
+    public SHA1VerifierFactory( boolean lenient, boolean satisfactory )
+    {
+        super( new StreamVerifierAttributes( DEFAULT_EXTENSION, lenient, satisfactory ) );
+    }
+
+    public StreamVerifier newInstance()
+    {
+        return new SHA1Verifier( attributes );
+    }
+
+    public String getDefaultExtension()
+    {
+        return DEFAULT_EXTENSION;
+    }
 
 }

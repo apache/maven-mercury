@@ -43,39 +43,42 @@ import org.mortbay.jetty.HttpHeaders;
 import org.mortbay.jetty.HttpMethods;
 import org.mortbay.jetty.client.HttpClient;
 
-
 /**
  * FileGetExchange
  * <p/>
- * Make an asynchronous request to download a file and stream its bytes to a file.
- * When all bytes have been received onFileComplete will be called.
+ * Make an asynchronous request to download a file and stream its bytes to a file. When all bytes have been received
+ * onFileComplete will be called.
  * <p/>
- * As an optimization, the file that is being downloaded can have it's
- * SHA-1 digest calculated as it is being streamed down.
+ * As an optimization, the file that is being downloaded can have it's SHA-1 digest calculated as it is being streamed
+ * down.
  */
-public abstract class FileGetExchange extends FileExchange
+public abstract class FileGetExchange
+    extends FileExchange
 {
-    private static final IMercuryLogger log = MercuryLoggerManager.getLogger(FileGetExchange.class);
+    private static final IMercuryLogger log = MercuryLoggerManager.getLogger( FileGetExchange.class );
+
     private OutputStream _outputStream;
+
     private Set<StreamObserver> _observers = new HashSet<StreamObserver>();
+
     int _contentLength = -1;
-    
+
     /**
      * Constructor.
-     *
-     * @param binding        the remote file to fetch
-     * @param localFile      the local file location to store the remote file
-     * @param observers      observers of the io stream
-     * @param client         async http client
+     * 
+     * @param binding the remote file to fetch
+     * @param localFile the local file location to store the remote file
+     * @param observers observers of the io stream
+     * @param client async http client
      */
-    public FileGetExchange( Server server, Binding binding, File localFile, Set<StreamObserver> observers, HttpClient client )
+    public FileGetExchange( Server server, Binding binding, File localFile, Set<StreamObserver> observers,
+                            HttpClient client )
     {
         super( server, binding, localFile, client );
 
-        if( observers != null && ! observers.isEmpty() )
-            _observers.addAll(observers);
+        if ( observers != null && !observers.isEmpty() )
+            _observers.addAll( observers );
     }
-
 
     /** Start the retrieval. */
     public void send()
@@ -84,38 +87,38 @@ public abstract class FileGetExchange extends FileExchange
         super.send();
     }
 
-    protected void onResponseHeader(Buffer name, Buffer value) throws IOException
+    protected void onResponseHeader( Buffer name, Buffer value )
+        throws IOException
     {
-        int header = HttpHeaders.CACHE.getOrdinal(value);
-        switch (header)
+        int header = HttpHeaders.CACHE.getOrdinal( value );
+        switch ( header )
         {
             case HttpHeaders.CONTENT_LENGTH_ORDINAL:
-                _contentLength = BufferUtil.toInt(value);
-                for (StreamObserver o:_observers)
+                _contentLength = BufferUtil.toInt( value );
+                for ( StreamObserver o : _observers )
                 {
-                    o.setLength(_contentLength);
+                    o.setLength( _contentLength );
                 }
-                if (log.isDebugEnabled())
-                    log.debug("GET of "+_contentLength +" bytes");
+                if ( log.isDebugEnabled() )
+                    log.debug( "GET of " + _contentLength + " bytes" );
                 break;
             case HttpHeaders.LAST_MODIFIED_ORDINAL:
-                for (StreamObserver o:_observers)
+                for ( StreamObserver o : _observers )
                 {
-                    o.setLastModified(BufferUtil.to8859_1_String(value));
+                    o.setLastModified( BufferUtil.to8859_1_String( value ) );
                 }
                 break;
         }
     }
-    
 
     protected void onResponseComplete()
     {
-        //All bytes of file have been received
+        // All bytes of file have been received
         try
         {
-            if (_outputStream != null)
+            if ( _outputStream != null )
                 _outputStream.close();
-            
+
             if ( _status == HttpServletResponse.SC_NOT_FOUND )
             {
                 onFileError( _url, new FileNotFoundException( "File not found on remote server" ) );
@@ -135,10 +138,9 @@ public abstract class FileGetExchange extends FileExchange
         }
     }
 
-
     /**
      * Stream the downloaded bytes to a file
-     *
+     * 
      * @see org.mortbay.jetty.client.HttpExchange$ContentExchange#onResponseContent(org.sonatype.io.Buffer)
      */
     protected void onResponseContent( Buffer content )
@@ -155,13 +157,12 @@ public abstract class FileGetExchange extends FileExchange
         }
     }
 
-
     /**
-     * Get an output stream for the file contents. A digest can be optionally calculated
-     * for the file contents as they are being streamed.
-     *
+     * Get an output stream for the file contents. A digest can be optionally calculated for the file contents as they
+     * are being streamed.
+     * 
      * @return OutputStream for file contents
-     * @throws IOException              if io error occurs
+     * @throws IOException if io error occurs
      * @throws NoSuchAlgorithmException if the SHA-1 algorithm is not supported
      */
     protected OutputStream getOutputStream()
@@ -170,13 +171,13 @@ public abstract class FileGetExchange extends FileExchange
         if ( _outputStream == null )
         {
             OutputStream os = null;
-            if (_binding.isFile())
+            if ( _binding.isFile() )
                 os = new FileOutputStream( _localFile );
-            else if (_binding.isInMemory())
+            else if ( _binding.isInMemory() )
                 os = _binding.getLocalOutputStream();
-            
+
             ObservableOutputStream oos = new ObservableOutputStream( os );
-            oos.addObservers(_observers);
+            oos.addObservers( _observers );
             _outputStream = oos;
         }
         return _outputStream;

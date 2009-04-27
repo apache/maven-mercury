@@ -54,7 +54,7 @@ public class MercuryBootstrapTest
     File _testCopyDir;
 
     File _testCopyRuntimeDir;
-    
+
     AuthenticatingTestServer _jetty;
 
     int _port;
@@ -75,11 +75,11 @@ public class MercuryBootstrapTest
         _localRepoDirFile = new File( _localRepoDir );
         FileUtil.delete( _localRepoDirFile );
         _localRepoDirFile.mkdirs();
-        
+
         _testCopyDir = new File( "target/test-copy" );
         FileUtil.delete( _testCopyDir );
         _testCopyDir.mkdirs();
-        
+
         _testCopyRuntimeDir = new File( "target/test-copy-runtime" );
         FileUtil.delete( _testCopyRuntimeDir );
         _testCopyRuntimeDir.mkdirs();
@@ -174,7 +174,7 @@ public class MercuryBootstrapTest
 
     // -----------------------------------
     public void testDownloadPomNonTransitive()
-    throws IOException
+        throws IOException
     {
         String title = "download-pom-non-transtive";
         System.out.println( "========> start " + title );
@@ -193,7 +193,7 @@ public class MercuryBootstrapTest
         File tc0 = new File( _testCopyDir, "a0-v0.jar" );
         File tc1 = new File( _testCopyDir, "a1-v1.jar" );
         File tc2 = new File( _testCopyDir, "a2-v2.jar" );
-        
+
         assertFalse( tc0.exists() );
         assertFalse( tc1.exists() );
         assertFalse( tc2.exists() );
@@ -202,36 +202,37 @@ public class MercuryBootstrapTest
         File tcr0 = new File( _testCopyRuntimeDir, "a0-v0.jar" );
         File tcr1 = new File( _testCopyRuntimeDir, "a1-v1.jar" );
         File tcr2 = new File( _testCopyRuntimeDir, "a2-v2.jar" );
-        
+
         assertFalse( tcr0.exists() );
         assertFalse( tcr1.exists() );
         assertFalse( tcr2.exists() );
-        
+
         executeTarget( title );
 
         assertTrue( a0.exists() );
         assertTrue( a1.exists() );
         assertFalse( a2.exists() );
-        
+
         String cp = getProject().getProperty( "cp" );
-        
-//        System.out.println( "cp = " + cp );
-        
+
+        // System.out.println( "cp = " + cp );
+
         // mercury.classpath
         assertTrue( cp.indexOf( a0.getCanonicalPath() ) != -1 );
         assertTrue( cp.indexOf( a1.getCanonicalPath() ) != -1 );
         assertTrue( cp.indexOf( a2.getCanonicalPath() ) == -1 );
-        
+
         // mercury.fileset
         assertTrue( tc0.exists() );
         assertTrue( tc1.exists() );
         assertFalse( tc2.exists() );
-        
+
         // mercury.fileset.runtime
         assertTrue( tcr0.exists() );
         assertTrue( tcr1.exists() );
         assertFalse( tcr2.exists() );
     }
+
     // -----------------------------------
     public void testExclusions()
     {
@@ -255,13 +256,13 @@ public class MercuryBootstrapTest
 
         String cp = getProject().getProperty( "cp" );
         assertNotNull( cp );
-        
+
         // mercury.classpath
         assertTrue( cp.indexOf( "a0" ) != -1 );
         assertTrue( cp.indexOf( "a1" ) != -1 );
         assertTrue( cp.indexOf( "a2" ) == -1 );
-        
-//        System.out.println( "cp = " + cp );
+
+        // System.out.println( "cp = " + cp );
     }
 
     // -----------------------------------
@@ -280,12 +281,12 @@ public class MercuryBootstrapTest
         assertFalse( a2.exists() );
 
         executeTarget( title );
-        
+
         // TODO: prep. the test data to test pgp sigs
-//
-//        assertTrue( a0.exists() );
-//        assertTrue( a1.exists() );
-//        assertTrue( a2.exists() );
+        //
+        // assertTrue( a0.exists() );
+        // assertTrue( a1.exists() );
+        // assertTrue( a2.exists() );
     }
     // -----------------------------------
     // -----------------------------------

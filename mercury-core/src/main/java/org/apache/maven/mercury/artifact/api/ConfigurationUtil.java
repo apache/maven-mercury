@@ -15,28 +15,25 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.artifact.api;
 
 import java.util.Map;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class ConfigurationUtil
 {
-    public static void configure( Configurable impl, Map<String,Object> config )
-    throws ConfigurationException
+    public static void configure( Configurable impl, Map<String, Object> config )
+        throws ConfigurationException
     {
-        if( impl == null || config == null )
+        if ( impl == null || config == null )
             return;
-        
-        for( Map.Entry<String, Object> e : config.entrySet() )
+
+        for ( Map.Entry<String, Object> e : config.entrySet() )
             impl.setOption( e.getKey(), e.getValue() );
     }
 }

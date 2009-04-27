@@ -50,327 +50,335 @@ import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.repository.virtual.VirtualRepositoryReader;
 import org.apache.maven.mercury.transport.api.Server;
 
-
 /**
- * 
  * @author Oleg Gusakov
  * @version $Id$
  */
 public class DependencyTreeBuilderTest
-extends TestCase
+    extends TestCase
 {
-  private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilderTest.class ); 
-  
-  String repoUrl = "http://repo1.maven.org/maven2";
-//  String repoUrl = "http://repository.sonatype.org/content/groups/public";
-//  String repoUrl = "http://nexus:8081/nexus/content/groups/public";
+    private static final IMercuryLogger _log = MercuryLoggerManager.getLogger( DependencyTreeBuilderTest.class );
 
-  File repoDir;
-  
-  DependencyBuilder depBuilder;
-  LocalRepositoryM2 localRepo;
-  RemoteRepositoryM2 remoteRepo;
-  List<Repository> reps;
-  
-  VirtualRepositoryReader vReader;
-  
-  //----------------------------------------------------------------------------------------------
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    
-    Logger.getLogger("").setLevel(Level.ALL);
+    String repoUrl = "http://repo1.maven.org/maven2";
 
-    repoDir = new File( "./target/local");
-//    repoDir = File.createTempFile( "local-repo-","-it");
-    repoDir.delete();
-    repoDir.mkdirs();
-    
-    _log.info( "temporary local repository at "+repoDir );
-    
-    reps = new ArrayList<Repository>();
-    
-    localRepo = new LocalRepositoryM2( "testLocalRepo", repoDir, new MavenDependencyProcessor() );
-    reps.add(  localRepo );
-    
-    Server server = new Server( "testRemoteRepo", new URL(repoUrl) );
-    remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
-    reps.add( remoteRepo );
-    
-//    Server central = new Server("central", new URL("http://repo1.maven.org/maven2") );
-//    RemoteRepositoryM2 centralRepo = new RemoteRepositoryM2(central);
-//    reps.add(centralRepo);
+    // String repoUrl = "http://repository.sonatype.org/content/groups/public";
+    // String repoUrl = "http://nexus:8081/nexus/content/groups/public";
 
-    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
-    depBuilder.register( new DumbListener() );
-    
-    vReader = new VirtualRepositoryReader( reps );
-  }
-  //----------------------------------------------------------------------------------------------
-  @Override
-  protected void tearDown()
-  throws Exception
-  {
-    super.tearDown();
-  }
-  //----------------------------------------------------------------------------------------------
-  private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )
-  {
-    ArtifactMetadata gavMd = new ArtifactMetadata(gav);
-    
-    for( ArtifactMetadata md : res )
-      if( md.sameGAV( gavMd ) )
-        return true;
-    
-    return false;
-  }
-   //----------------------------------------------------------------------------------------------
-  public void testDummy()
-  throws MetadataTreeException
-  {
-  }
-  //----------------------------------------------------------------------------------------------
-  /**
-   * this test relies on MavenVersionRange maven.mercury.osgi.version being set to false, it's default value.
-   * <strong>Do not</strong> run maven with -Dmaven.mercury.osgi.version=true   
-   */
-  public void testResolveConflicts()
-  throws Exception
-  {
-//    String artifactId = "org.testng:testng:5.7";
-    String artifactId = "asm:asm-xml:3.0";
-//  String artifactId = "org.apache.maven:maven-core:2.0.9";
-//  String artifactId = "qdox:qdox:1.6.1";
-    
-    
-    ArtifactMetadata md = new ArtifactMetadata( artifactId );
+    File repoDir;
 
-    MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+    DependencyBuilder depBuilder;
 
-    assertNotNull( "null tree built", root );
-    
-//    assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
+    LocalRepositoryM2 localRepo;
 
-    List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
-    
-    assertNotNull( res );
-    
-    assertTrue( res.size() > 1 );
-    
-    System.out.println("\n---------------------------------\nclasspath: "+res);    
-    System.out.println("---------------------------------");    
-    for( ArtifactMetadata amd : res )
+    RemoteRepositoryM2 remoteRepo;
+
+    List<Repository> reps;
+
+    VirtualRepositoryReader vReader;
+
+    // ----------------------------------------------------------------------------------------------
+    @Override
+    protected void setUp()
+        throws Exception
     {
-      System.out.println(amd + ( amd.getTracker() == null ? " [no tracker]" : " ["+((RepositoryReader)amd.getTracker()).getRepository().getId()+"]" ) );
-    }
-    System.out.println("---------------------------------");    
 
-    
-    assertEquals( 4, res.size() );
-    
-    assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
-    assertTrue( assertHasArtifact( res, "asm:asm:3.0" ) );
-    
-    ArtifactResults aRes = vReader.readArtifacts( res );
-    
-    assertNotNull( aRes );
-    
-    assertFalse( aRes.hasExceptions() );
-    
-    assertTrue( aRes.hasResults() );
-    
-    List<Artifact> artifacts = new ArrayList<Artifact>();
-    
-    for( ArtifactMetadata abm : aRes.getResults().keySet() )
-      artifacts.addAll(  aRes.getResults(abm) );
-    
-    localRepo.getWriter().writeArtifacts( artifacts );
-    
-    System.out.println("Saved "+artifacts.size()+" artifacts to "+localRepo.getDirectory() );
-    
-  }
-  //----------------------------------------------------------------------------------------------
-  private static void showClasspath( List<ArtifactMetadata> cp )
-  {
-    TreeSet<String> scp = new TreeSet<String>();
-    
-    for( ArtifactMetadata m : cp )
-      scp.add( m.getArtifactId()+"-"+m.getVersion()+"."+m.getType() );
-    
-    System.out.println("\n========> Classpath: "+cp.size()+" elements");
-    for( String s : scp )
+        Logger.getLogger( "" ).setLevel( Level.ALL );
+
+        repoDir = new File( "./target/local" );
+        // repoDir = File.createTempFile( "local-repo-","-it");
+        repoDir.delete();
+        repoDir.mkdirs();
+
+        _log.info( "temporary local repository at " + repoDir );
+
+        reps = new ArrayList<Repository>();
+
+        localRepo = new LocalRepositoryM2( "testLocalRepo", repoDir, new MavenDependencyProcessor() );
+        reps.add( localRepo );
+
+        Server server = new Server( "testRemoteRepo", new URL( repoUrl ) );
+        remoteRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
+        reps.add( remoteRepo );
+
+        // Server central = new Server("central", new URL("http://repo1.maven.org/maven2") );
+        // RemoteRepositoryM2 centralRepo = new RemoteRepositoryM2(central);
+        // reps.add(centralRepo);
+
+        depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
+        depBuilder.register( new DumbListener() );
+
+        vReader = new VirtualRepositoryReader( reps );
+    }
+
+    // ----------------------------------------------------------------------------------------------
+    @Override
+    protected void tearDown()
+        throws Exception
     {
-      System.out.println(s);
+        super.tearDown();
     }
-    System.out.println("<======== Classpath\n");
-    
-  }
-  //----------------------------------------------------------------------------------------------
-  /**
-   * this test relies on MavenVersionRange maven.mercury.osgi.version being set to false, it's default value.
-   * <strong>Do not</strong> run maven with -Dmaven.mercury.osgi.version=true   
-   */
-  public void testResolvePlugin()
-  throws Exception
-  {
-    String centralUrl = "http://repo1.maven.org/maven2";
 
-    String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
-    
-    reps.clear();
-    
-    File pluginRepo = new File( "./target/repoPlugin" );
-    localRepo = new LocalRepositoryM2( "testLocalPluginRepo", pluginRepo, new MavenDependencyProcessor() );
-    reps.add(  localRepo );
-
-    Server server = new Server( "id", new URL(centralUrl) );
-    remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
-    remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
-    reps.add( remoteRepo );
-    
-    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
-//    depBuilder.register( new DumbListener() );
-    
-    ArtifactMetadata md = new ArtifactMetadata( artifactId );
-
-    MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
-
-    assertNotNull( "null tree built", root );
-    
-//    assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
-
-    List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
-    
-    assertNotNull( res );
-    
-    assertTrue( res.size() > 1 );
-
-    showClasspath( res );
-
-    artifactId = "org.apache.maven.plugins:maven-compiler-plugin:2.0.2";
-    md = new ArtifactMetadata( artifactId );
-    root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
-    assertNotNull( "null tree built", root );
-    res = depBuilder.resolveConflicts( root );
-    showClasspath( res );
-    
-    ArtifactResults ar = vReader.readArtifacts( res );
-    
-    assertNotNull( ar );
-    
-    assertFalse( ar.hasExceptions() );
-
-    assertTrue( ar.hasResults() );
-    
-    Map<ArtifactMetadata, List<Artifact>> arts = ar.getResults();
-    
-    for( List<Artifact> al : arts.values() )
+    // ----------------------------------------------------------------------------------------------
+    private static boolean assertHasArtifact( List<ArtifactMetadata> res, String gav )
     {
-      for( Artifact a : al )
-        System.out.println( a.toString()+" -> "+a.getFile() );
+        ArtifactMetadata gavMd = new ArtifactMetadata( gav );
+
+        for ( ArtifactMetadata md : res )
+            if ( md.sameGAV( gavMd ) )
+                return true;
+
+        return false;
     }
-  }
-  //----------------------------------------------------------------------------------------------
-  public void testResolvePluginAsTree()
-  throws Exception
-  {
-    String centralUrl = "http://repo1.maven.org/maven2";
 
-    String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
-    
-    reps.clear();
-    
-    File pluginRepo = new File( "./target/repoPlugin" );
-    localRepo = new LocalRepositoryM2( "testLocalPluginRepo", pluginRepo, new MavenDependencyProcessor() );
-    reps.add(  localRepo );
+    // ----------------------------------------------------------------------------------------------
+    public void testDummy()
+        throws MetadataTreeException
+    {
+    }
 
-    Server server = new Server( "id", new URL(centralUrl) );
-    remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
-    remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
-    reps.add( remoteRepo );
-    
-    depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
-//    depBuilder.register( new DumbListener() );
-    
-    ArtifactMetadata md = new ArtifactMetadata( artifactId );
+    // ----------------------------------------------------------------------------------------------
+    /**
+     * this test relies on MavenVersionRange maven.mercury.osgi.version being set to false, it's default value.
+     * <strong>Do not</strong> run maven with -Dmaven.mercury.osgi.version=true
+     */
+    public void testResolveConflicts()
+        throws Exception
+    {
+        // String artifactId = "org.testng:testng:5.7";
+        String artifactId = "asm:asm-xml:3.0";
+        // String artifactId = "org.apache.maven:maven-core:2.0.9";
+        // String artifactId = "qdox:qdox:1.6.1";
 
-    MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+        ArtifactMetadata md = new ArtifactMetadata( artifactId );
 
-    assertNotNull( root );
-    
-    MetadataTreeNode res = depBuilder.resolveConflictsAsTree( root );
-    
-    assertNotNull( res );
-    
-    int nodeCount = res.countNodes();
-    
-    assertEquals( 15, nodeCount);
-    
-    System.out.println("Unique feature - junit is in the compile scope thanks to plexus-container-default 1.0.9");
+        MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
 
-    MetadataTreeNode.showNode( res, 0 );
+        assertNotNull( "null tree built", root );
 
-  }
-  //----------------------------------------------------------------------------------------------
-  // modify the resolution by demanding plexus-util:1.5.8, by default clean plugin 2.2 depends on plexus-util:1.1 
-  public void testManagedVersionMap()
-  throws Exception
-  {
-      String centralUrl = "http://repo1.maven.org/maven2";
+        // assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
 
-      String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
-      
-      reps.clear();
-      
-      File versionMapRepo = new File( "./target/repoVersionMap" );
-      localRepo = new LocalRepositoryM2( "testVersionMap", versionMapRepo, new MavenDependencyProcessor() );
-      reps.add(  localRepo );
+        List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
 
-      Server server = new Server( "id", new URL(centralUrl) );
-      remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
-      remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
-      reps.add( remoteRepo );
-      
-      ArtifactMetadata modifiedDep = new ArtifactMetadata("org.codehaus.plexus:plexus-utils:1.5.8");
-      Map<String, ArtifactMetadata> versionMap = new HashMap<String, ArtifactMetadata>(1);
-      String key = modifiedDep.toManagementString();
-      versionMap.put( key, modifiedDep );
-      
-      Map<String,Object> config = new HashMap<String, Object>(1);
-      config.put( DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, versionMap );
-      
-      depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps, null, null, null, config );
-//      depBuilder.register( new DumbListener() );
-      
-      ArtifactMetadata md = new ArtifactMetadata( artifactId );
+        assertNotNull( res );
 
-      MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+        assertTrue( res.size() > 1 );
 
-      assertNotNull( "null tree built", root );
-      
-//      assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
+        System.out.println( "\n---------------------------------\nclasspath: " + res );
+        System.out.println( "---------------------------------" );
+        for ( ArtifactMetadata amd : res )
+        {
+            System.out.println( amd
+                + ( amd.getTracker() == null ? " [no tracker]" : " ["
+                    + ( (RepositoryReader) amd.getTracker() ).getRepository().getId() + "]" ) );
+        }
+        System.out.println( "---------------------------------" );
 
-      List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
-      
-      assertNotNull( res );
-      
-      assertTrue( res.size() > 1 );
+        assertEquals( 4, res.size() );
 
-      showClasspath( res );
-      
-      for( ArtifactMetadata am : res )
-      {
-          if( 
-              "org.codehaus.plexus".equals( am.getGroupId() )
-              &&
-              "plexus-utils".equals( am.getArtifactId() )
-            )
-              assertEquals( "1.5.8", am.getVersion() );
-      }
-  }
-  //----------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------
+        assertTrue( assertHasArtifact( res, "asm:asm-xml:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-util:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm-tree:3.0" ) );
+        assertTrue( assertHasArtifact( res, "asm:asm:3.0" ) );
+
+        ArtifactResults aRes = vReader.readArtifacts( res );
+
+        assertNotNull( aRes );
+
+        assertFalse( aRes.hasExceptions() );
+
+        assertTrue( aRes.hasResults() );
+
+        List<Artifact> artifacts = new ArrayList<Artifact>();
+
+        for ( ArtifactMetadata abm : aRes.getResults().keySet() )
+            artifacts.addAll( aRes.getResults( abm ) );
+
+        localRepo.getWriter().writeArtifacts( artifacts );
+
+        System.out.println( "Saved " + artifacts.size() + " artifacts to " + localRepo.getDirectory() );
+
+    }
+
+    // ----------------------------------------------------------------------------------------------
+    private static void showClasspath( List<ArtifactMetadata> cp )
+    {
+        TreeSet<String> scp = new TreeSet<String>();
+
+        for ( ArtifactMetadata m : cp )
+            scp.add( m.getArtifactId() + "-" + m.getVersion() + "." + m.getType() );
+
+        System.out.println( "\n========> Classpath: " + cp.size() + " elements" );
+        for ( String s : scp )
+        {
+            System.out.println( s );
+        }
+        System.out.println( "<======== Classpath\n" );
+
+    }
+
+    // ----------------------------------------------------------------------------------------------
+    /**
+     * this test relies on MavenVersionRange maven.mercury.osgi.version being set to false, it's default value.
+     * <strong>Do not</strong> run maven with -Dmaven.mercury.osgi.version=true
+     */
+    public void testResolvePlugin()
+        throws Exception
+    {
+        String centralUrl = "http://repo1.maven.org/maven2";
+
+        String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
+
+        reps.clear();
+
+        File pluginRepo = new File( "./target/repoPlugin" );
+        localRepo = new LocalRepositoryM2( "testLocalPluginRepo", pluginRepo, new MavenDependencyProcessor() );
+        reps.add( localRepo );
+
+        Server server = new Server( "id", new URL( centralUrl ) );
+        remoteRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
+        remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
+        reps.add( remoteRepo );
+
+        depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
+        // depBuilder.register( new DumbListener() );
+
+        ArtifactMetadata md = new ArtifactMetadata( artifactId );
+
+        MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+
+        assertNotNull( "null tree built", root );
+
+        // assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
+
+        List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
+
+        assertNotNull( res );
+
+        assertTrue( res.size() > 1 );
+
+        showClasspath( res );
+
+        artifactId = "org.apache.maven.plugins:maven-compiler-plugin:2.0.2";
+        md = new ArtifactMetadata( artifactId );
+        root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+        assertNotNull( "null tree built", root );
+        res = depBuilder.resolveConflicts( root );
+        showClasspath( res );
+
+        ArtifactResults ar = vReader.readArtifacts( res );
+
+        assertNotNull( ar );
+
+        assertFalse( ar.hasExceptions() );
+
+        assertTrue( ar.hasResults() );
+
+        Map<ArtifactMetadata, List<Artifact>> arts = ar.getResults();
+
+        for ( List<Artifact> al : arts.values() )
+        {
+            for ( Artifact a : al )
+                System.out.println( a.toString() + " -> " + a.getFile() );
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------
+    public void testResolvePluginAsTree()
+        throws Exception
+    {
+        String centralUrl = "http://repo1.maven.org/maven2";
+
+        String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
+
+        reps.clear();
+
+        File pluginRepo = new File( "./target/repoPlugin" );
+        localRepo = new LocalRepositoryM2( "testLocalPluginRepo", pluginRepo, new MavenDependencyProcessor() );
+        reps.add( localRepo );
+
+        Server server = new Server( "id", new URL( centralUrl ) );
+        remoteRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
+        remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
+        reps.add( remoteRepo );
+
+        depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps );
+        // depBuilder.register( new DumbListener() );
+
+        ArtifactMetadata md = new ArtifactMetadata( artifactId );
+
+        MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+
+        assertNotNull( root );
+
+        MetadataTreeNode res = depBuilder.resolveConflictsAsTree( root );
+
+        assertNotNull( res );
+
+        int nodeCount = res.countNodes();
+
+        assertEquals( 15, nodeCount );
+
+        System.out.println( "Unique feature - junit is in the compile scope thanks to plexus-container-default 1.0.9" );
+
+        MetadataTreeNode.showNode( res, 0 );
+
+    }
+
+    // ----------------------------------------------------------------------------------------------
+    // modify the resolution by demanding plexus-util:1.5.8, by default clean plugin 2.2 depends on plexus-util:1.1
+    public void testManagedVersionMap()
+        throws Exception
+    {
+        String centralUrl = "http://repo1.maven.org/maven2";
+
+        String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
+
+        reps.clear();
+
+        File versionMapRepo = new File( "./target/repoVersionMap" );
+        localRepo = new LocalRepositoryM2( "testVersionMap", versionMapRepo, new MavenDependencyProcessor() );
+        reps.add( localRepo );
+
+        Server server = new Server( "id", new URL( centralUrl ) );
+        remoteRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
+        remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
+        reps.add( remoteRepo );
+
+        ArtifactMetadata modifiedDep = new ArtifactMetadata( "org.codehaus.plexus:plexus-utils:1.5.8" );
+        Map<String, ArtifactMetadata> versionMap = new HashMap<String, ArtifactMetadata>( 1 );
+        String key = modifiedDep.toManagementString();
+        versionMap.put( key, modifiedDep );
+
+        Map<String, Object> config = new HashMap<String, Object>( 1 );
+        config.put( DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, versionMap );
+
+        depBuilder =
+            DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps, null, null, null,
+                                             config );
+        // depBuilder.register( new DumbListener() );
+
+        ArtifactMetadata md = new ArtifactMetadata( artifactId );
+
+        MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+
+        assertNotNull( "null tree built", root );
+
+        // assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
+
+        List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
+
+        assertNotNull( res );
+
+        assertTrue( res.size() > 1 );
+
+        showClasspath( res );
+
+        for ( ArtifactMetadata am : res )
+        {
+            if ( "org.codehaus.plexus".equals( am.getGroupId() ) && "plexus-utils".equals( am.getArtifactId() ) )
+                assertEquals( "1.5.8", am.getVersion() );
+        }
+    }
+    // ----------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------
 }

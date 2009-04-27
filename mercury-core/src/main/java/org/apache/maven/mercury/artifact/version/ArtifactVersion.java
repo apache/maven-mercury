@@ -33,6 +33,6 @@ public interface ArtifactVersion
     int getBuildNumber();
 
     String getQualifier();
-    
+
     Quality getQuality();
 }

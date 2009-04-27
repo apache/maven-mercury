@@ -19,47 +19,43 @@
 package org.apache.maven.mercury.logging;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public abstract class AbstractMercuryLogger
 {
-  protected String _className;
-  
-  MercuryLoggingLevelEnum _threshold = MercuryLoggerManager.getThreshold();
-  
-  
-  @SuppressWarnings("unchecked")
-  public AbstractMercuryLogger( Class clazz )
-  {
-    _className = clazz.getName();
-  }
-  
-  public boolean isDebugEnabled()
-  {
-    return _threshold.getId() <= MercuryLoggingLevelEnum.debug.getId();
-  }
+    protected String _className;
 
-  public boolean isErrorEnabled()
-  {
-    return _threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
-  }
+    MercuryLoggingLevelEnum _threshold = MercuryLoggerManager.getThreshold();
 
-  public boolean isFatalEnabled()
-  {
-    return _threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
-  }
+    @SuppressWarnings( "unchecked" )
+    public AbstractMercuryLogger( Class clazz )
+    {
+        _className = clazz.getName();
+    }
 
-  public boolean isInfoEnabled()
-  {
-    return _threshold.getId() <= MercuryLoggingLevelEnum.info.getId();
-  }
+    public boolean isDebugEnabled()
+    {
+        return _threshold.getId() <= MercuryLoggingLevelEnum.debug.getId();
+    }
 
-  public boolean isWarnEnabled()
-  {
-    return _threshold.getId() <= MercuryLoggingLevelEnum.warn.getId();
-  }
+    public boolean isErrorEnabled()
+    {
+        return _threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
+    }
+
+    public boolean isFatalEnabled()
+    {
+        return _threshold.getId() <= MercuryLoggingLevelEnum.error.getId();
+    }
+
+    public boolean isInfoEnabled()
+    {
+        return _threshold.getId() <= MercuryLoggingLevelEnum.info.getId();
+    }
+
+    public boolean isWarnEnabled()
+    {
+        return _threshold.getId() <= MercuryLoggingLevelEnum.warn.getId();
+    }
 }

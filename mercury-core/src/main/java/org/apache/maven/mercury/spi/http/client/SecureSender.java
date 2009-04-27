@@ -33,67 +33,64 @@ import org.mortbay.jetty.client.HttpExchange;
 import org.mortbay.jetty.client.security.ProxyAuthorization;
 
 /**
- * SecureSender
- *
- * Initiates a HttpExchange with the remote server, taking into account any proxy
- * authentication required. Any non-proxy authentication required will be taken
- * care of by the DestinationRealmResolver that is set on the HttpClient used
- * by this class.
- * 
- * TODO think of a better name for this class.
+ * SecureSender Initiates a HttpExchange with the remote server, taking into account any proxy authentication required.
+ * Any non-proxy authentication required will be taken care of by the DestinationRealmResolver that is set on the
+ * HttpClient used by this class. TODO think of a better name for this class.
  */
 public class SecureSender
 {
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( SecureSender.class );
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( SecureSender.class );
 
-  public static void send (Server server, HttpClient httpClient, HttpExchange exchange)
-    throws Exception
+    public static void send( Server server, HttpClient httpClient, HttpExchange exchange )
+        throws Exception
     {
-        if (server != null && server.hasProxy() && (server.getProxy() != null))
+        if ( server != null && server.hasProxy() && ( server.getProxy() != null ) )
         {
             String s = exchange.getURI();
-            URI uri = new URI(s);
-            boolean ssl = "https".equalsIgnoreCase(uri.getScheme());
+            URI uri = new URI( s );
+            boolean ssl = "https".equalsIgnoreCase( uri.getScheme() );
             URL proxy = server.getProxy();
 
             String host = proxy.getHost();
             int port = proxy.getPort();
-            boolean proxySsl = "https".equalsIgnoreCase(proxy.getProtocol());
-            if (port < 0)
+            boolean proxySsl = "https".equalsIgnoreCase( proxy.getProtocol() );
+            if ( port < 0 )
             {
-                port = proxySsl?443:80;
+                port = proxySsl ? 443 : 80;
             }
 
-            Address proxyAddress = new Address(host,port);
-            HttpDestination destination = httpClient.getDestination(exchange.getAddress(), ssl);  
-            if( LOG.isDebugEnabled() )
-                LOG.debug("Matched destination "+destination);
+            Address proxyAddress = new Address( host, port );
+            HttpDestination destination = httpClient.getDestination( exchange.getAddress(), ssl );
+            if ( LOG.isDebugEnabled() )
+                LOG.debug( "Matched destination " + destination );
 
-            destination.setProxy(proxyAddress);
-            if( LOG.isDebugEnabled() )
-                LOG.debug("Set proxy "+host+":"+port+" on destination");
-            LOG.info("Set proxy "+host+":"+port+" on destination");
-         
-            //set up authentication for the proxy
+            destination.setProxy( proxyAddress );
+            if ( LOG.isDebugEnabled() )
+                LOG.debug( "Set proxy " + host + ":" + port + " on destination" );
+            LOG.info( "Set proxy " + host + ":" + port + " on destination" );
+
+            // set up authentication for the proxy
             Credentials proxyCredentials = server.getProxyCredentials();
 
-            if (proxyCredentials != null)
+            if ( proxyCredentials != null )
             {
-                if (proxyCredentials.isCertificate())
-                    throw new UnsupportedOperationException ("Proxy credential not supported");
+                if ( proxyCredentials.isCertificate() )
+                    throw new UnsupportedOperationException( "Proxy credential not supported" );
                 else
                 {
-                    destination.setProxyAuthentication(new ProxyAuthorization (proxyCredentials.getUser(), proxyCredentials.getPass()));
-                    if( LOG.isDebugEnabled() )
-                        LOG.debug( "Set proxy authentication: "+proxyCredentials.getUser()+":"+proxyCredentials.getPass());
+                    destination.setProxyAuthentication( new ProxyAuthorization( proxyCredentials.getUser(),
+                                                                                proxyCredentials.getPass() ) );
+                    if ( LOG.isDebugEnabled() )
+                        LOG.debug( "Set proxy authentication: " + proxyCredentials.getUser() + ":"
+                            + proxyCredentials.getPass() );
                 }
             }
-            destination.send(exchange); 
+            destination.send( exchange );
         }
         else
-        { 
-            httpClient.send(exchange);
-        } 
+        {
+            httpClient.send( exchange );
+        }
     }
 
 }

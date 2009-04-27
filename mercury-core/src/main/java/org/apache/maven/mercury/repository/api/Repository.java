@@ -65,13 +65,13 @@ public interface Repository
     public boolean isSnapshots();
 
     /**
-     * indicates that any version or artifact, found in the repository
-     * is sufficient and VirtualRepositoryReader should look no further  
-     * 
+     * indicates that any version or artifact, found in the repository is sufficient and VirtualRepositoryReader should
+     * look no further
      */
     boolean isSufficient();
+
     void setSufficient( boolean isSufficient );
-    
+
     /**
      * indicates if the supplied code quality is served by this repository
      */
@@ -81,18 +81,18 @@ public interface Repository
      * defines the code quality range for this repository
      */
     public QualityRange getRepositoryQualityRange();
+
     void setRepositoryQualityRange( QualityRange qualityRange );
 
     /**
      * defines how VersionRnage treats upper boundary - which Artifacts should be treated as belonging to the vicinity -
-     * http://docs.codehaus.org/x/twDPBQ
-     * 
-     * note: don't mix this with repository quality range - this one is for version range calculations only!
-     * 
+     * http://docs.codehaus.org/x/twDPBQ note: don't mix this with repository quality range - this one is for version
+     * range calculations only!
      */
     public QualityRange getVersionRangeQualityRange();
+
     public void setVersionRangeQualityRange( QualityRange qualityRange );
-    
+
     /**
      * get default reader, if any
      * 
@@ -125,7 +125,7 @@ public interface Repository
      * @param protocol
      * @return writer instance for the specified protocol
      * @throws NonExistentProtocolException if protocol not supported
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     RepositoryWriter getWriter( String protocol )
         throws NonExistentProtocolException, RepositoryException;

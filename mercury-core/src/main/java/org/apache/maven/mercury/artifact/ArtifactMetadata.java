@@ -35,7 +35,7 @@ import org.codehaus.plexus.lang.Language;
 /**
  * this is the most primitive metadata there is, usually used to query repository for "real" metadata. It holds
  * everything a project.dependencies.dependency element can have
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -44,7 +44,6 @@ public class ArtifactMetadata
     public static final String DEFAULT_ARTIFACT_TYPE = "jar";
 
     private static final Language LANG = new DefaultLanguage( ArtifactMetadata.class );
-
 
     /**
      * standard glorified artifact coordinates
@@ -82,7 +81,7 @@ public class ArtifactMetadata
     protected Collection<ArtifactMetadata> exclusions;
 
     protected Map<String, String> attributes;
-    
+
     /** conveniency for SNAPSHOT file timestamp */
     private String timeStamp;
 
@@ -97,7 +96,7 @@ public class ArtifactMetadata
      * transient external datum to carry along
      */
     transient Object datum;
-    
+
     /** dependencies of the artifact behind this metadata */
     protected List<ArtifactMetadata> dependencies;
 
@@ -237,7 +236,7 @@ public class ArtifactMetadata
             processAttributes( nullify( tokens[6] ) );
         }
     }
-    
+
     /**
      * copy constructor
      * 
@@ -245,26 +244,26 @@ public class ArtifactMetadata
      */
     public ArtifactMetadata( ArtifactMetadata copyFrom )
     {
-        if( copyFrom == null )
-            throw new IllegalArgumentException( LANG.getMessage( "null.copy.from.md") );
+        if ( copyFrom == null )
+            throw new IllegalArgumentException( LANG.getMessage( "null.copy.from.md" ) );
 
-       setGroupId( copyFrom.getGroupId() );
-       setArtifactId( copyFrom.getArtifactId() );
-       setVersion( copyFrom.getVersion() );
-       setClassifier( copyFrom.getClassifier() );
-       setType( copyFrom.getType() );
-       setScope( copyFrom.getScope() );
-       
-       Map<String, String> a = copyFrom.getAttributes(); 
-       if(  a != null && a.size() > 0 )
-       {
-           attributes = new HashMap<String, String>( a.size() );
-           
-           attributes.putAll( a );
-       }
-       
-       setTracker( copyFrom.getTracker() );
-       
+        setGroupId( copyFrom.getGroupId() );
+        setArtifactId( copyFrom.getArtifactId() );
+        setVersion( copyFrom.getVersion() );
+        setClassifier( copyFrom.getClassifier() );
+        setType( copyFrom.getType() );
+        setScope( copyFrom.getScope() );
+
+        Map<String, String> a = copyFrom.getAttributes();
+        if ( a != null && a.size() > 0 )
+        {
+            attributes = new HashMap<String, String>( a.size() );
+
+            attributes.putAll( a );
+        }
+
+        setTracker( copyFrom.getTracker() );
+
     }
 
     // ------------------------------------------------------------------
@@ -411,12 +410,12 @@ public class ArtifactMetadata
     {
         this.version = version;
     }
-    
+
     private void checkRangeExists()
     {
-        if( versionRange == null )
+        if ( versionRange == null )
         {
-            if( version == null )
+            if ( version == null )
                 throw new IllegalArgumentException( LANG.getMessage( "artifact.metadata.no.version", toString() ) );
             else
             {
@@ -435,7 +434,7 @@ public class ArtifactMetadata
     public boolean isSingleton()
     {
         checkRangeExists();
-        
+
         return versionRange.isSingleton();
     }
 
@@ -444,28 +443,27 @@ public class ArtifactMetadata
         return !isSingleton();
     }
 
-    /** code quality used to decide whether try or skip a repository - see repository code quality  */
+    /** code quality used to decide whether try or skip a repository - see repository code quality */
     public Quality getRequestedQuality()
     {
-        if( isRange() )
+        if ( isRange() )
             return null;
-        
-        if( isVirtual() )
+
+        if ( isVirtual() )
         {
-            if( isVirtualSnapshot() )
+            if ( isVirtualSnapshot() )
                 return Quality.SNAPSHOT_QUALITY;
-            else
-                if( isVirtualRelease() )
-                    return Quality.RELEASE_QUALITY;
-            
+            else if ( isVirtualRelease() )
+                return Quality.RELEASE_QUALITY;
+
             return null;
         }
-        
-        if( quality != null )
+
+        if ( quality != null )
             return quality;
-        
+
         quality = new Quality( getVersion() );
-        
+
         return quality;
     }
 
@@ -486,7 +484,7 @@ public class ArtifactMetadata
 
     public void setType( String type )
     {
-        if( "test-jar".equals( type ) )
+        if ( "test-jar".equals( type ) )
         {
             setClassifier( "tests" );
             setType( "jar" );
@@ -564,7 +562,7 @@ public class ArtifactMetadata
     {
         this.local = local;
     }
-    
+
     public boolean isPom()
     {
         return "pom".regionMatches( 0, type, 0, 3 );
@@ -681,7 +679,7 @@ public class ArtifactMetadata
     /**
      * run dependency through inclusion/exclusion filters. Inclusion filter is always a "hole"-filter, which is then
      * enhanced by exclusion "cork"-filter
-     *
+     * 
      * @param dep dependency to vet
      * @return vet result
      * @throws VersionException
@@ -792,8 +790,7 @@ public class ArtifactMetadata
     {
         this.timeStamp = timeStamp;
     }
-    
-    
+
     // ---------------------------------------------------------------------------
     // ---------------------------------------------------------------------------
 }

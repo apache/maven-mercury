@@ -28,15 +28,20 @@ import org.mortbay.jetty.client.HttpExchange;
 /**
  * HandshakeExchange
  * <p/>
- * Asychronous http message sending. Used to generate a commit or discard
- * message to the remote server after the mercury upload is finished.
+ * Asychronous http message sending. Used to generate a commit or discard message to the remote server after the mercury
+ * upload is finished.
  */
-public abstract class HandshakeExchange extends HttpExchange
+public abstract class HandshakeExchange
+    extends HttpExchange
 {
     private HttpClient _httpClient;
+
     private String _method;
+
     private String _url;
+
     private Map<String, String> _headers;
+
     private int _status;
 
     public abstract void onHandshakeComplete( String url );
@@ -77,7 +82,6 @@ public abstract class HandshakeExchange extends HttpExchange
             onHandshakeError( _url, new Exception( null, e ) );
         }
     }
-
 
     protected void onResponseStatus( Buffer version, int status, Buffer reason )
     {

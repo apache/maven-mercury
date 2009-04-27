@@ -20,6 +20,7 @@ package org.apache.maven.mercury.repository.local.map;
 
 import java.io.File;
 
+import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
@@ -35,88 +36,110 @@ import org.apache.maven.mercury.repository.api.RepositoryWriter;
  * @version $Id$
  */
 public class LocalRepositoryMap
-extends AbstractRepository
-implements LocalRepository
+    extends AbstractRepository
+    implements LocalRepository
 {
     public static final String FLAT_REPOSITORY_TYPE = "map";
-    
+
     protected Storage _storage;
-    
+
     protected MetadataReader _mdReader;
-    
+
     // ----------------------------------------------------------------------------------
     public Storage getStorage()
     {
         return _storage;
     }
+
     // ----------------------------------------------------------------------------------
     public LocalRepositoryMap( String id, DependencyProcessor dp, Storage storage )
     {
         super( id, FLAT_REPOSITORY_TYPE );
         setDependencyProcessor( dp );
-        
+
         _storage = storage;
     }
+
     // ----------------------------------------------------------------------------------
     public LocalRepositoryMap( DependencyProcessor dp, Storage storage )
     {
-        this( "" + System.currentTimeMillis() + (int)(Math.random()*10000), dp, storage );
+        this( "" + System.currentTimeMillis() + (int) ( Math.random() * 10000 ), dp, storage );
     }
-    
+
     public void setMetadataReader( MetadataReader reader )
     {
         _mdReader = reader;
     }
+
     // ----------------------------------------------------------------------------------
     public File getDirectory()
     {
         return null;
     }
+
     // ----------------------------------------------------------------------------------
     public RepositoryReader getReader()
     {
         return new LocalRepositoryReaderMap( this, getDependencyProcessor() );
     }
+
     // ----------------------------------------------------------------------------------
     public RepositoryReader getReader( String protocol )
     {
         return getReader();
     }
+
     // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter()
     {
         return RepositoryWriter.NULL_WRITER;
     }
+
     // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter( String protocol )
         throws NonExistentProtocolException
     {
         return getWriter();
     }
+
     // ----------------------------------------------------------------------------------
     public boolean isLocal()
     {
         return true;
     }
+
     // ----------------------------------------------------------------------------------
     public boolean isReadable()
     {
         return true;
     }
+
     // ----------------------------------------------------------------------------------
     public boolean isWriteable()
     {
         return false;
     }
+
     // ----------------------------------------------------------------------------------
     public String getType()
     {
         return FLAT_REPOSITORY_TYPE;
     }
+
     // ----------------------------------------------------------------------------------
     public String getMetadataName()
     {
         return null;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public static final String calculateStorageKey( ArtifactMetadata md, String classifier, String type )
+    {
+        String key =
+            md.getGroupId() + ":" + md.getArtifactId() + ":" + md.getVersion() + ":"
+                + ( classifier == null ? "" : classifier ) + ":" + ( type == null ? md.getType() : type );
+
+        return key;
     }
     // ----------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------

@@ -31,85 +31,84 @@ import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class CachedGAMetadata
-extends RepositoryGAMetadata
+    extends RepositoryGAMetadata
 {
-  public static final String ELEM_COORDINATES = "coordinates";
-  public static final String ATTR_GROUP_ID = "groupId";
-  public static final String ATTR_ARTIFACT_ID = "artifactId";
-  public static final String ATTR_VERSION = "version";
-  public static final String ATTR_NEGATIVE = "negative";
+    public static final String ELEM_COORDINATES = "coordinates";
 
-  public static final String ELEM_VERSIONS = "versions";
+    public static final String ATTR_GROUP_ID = "groupId";
 
-  CachedMetadata cm;
-  
-  public CachedGAMetadata( File mdFile )
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataCorruptionException
-  {
-    cm = new CachedMetadata( mdFile );
-    fromXml();
-  }
-  
-  public CachedGAMetadata( RepositoryGAMetadata md )
-  throws MetadataException
-  {
-    super( md );
-    
-    cm = new CachedMetadata();
-    
-    toXml();
-  }
-  
-  /**
-   * fill GA with data from cm
-   * 
-   * @throws MetadataCorruptionException 
-   */
-  private void fromXml()
-  throws MetadataCorruptionException
-  {
-    ga = new ArtifactCoordinates( 
-                    cm.getAttribute( ELEM_COORDINATES, ATTR_GROUP_ID, true ) 
-                  , cm.getAttribute( ELEM_COORDINATES, ATTR_ARTIFACT_ID, true ) 
-                  , null 
-                                );
-    
-    List<String> verList = cm.findAttributes( ELEM_VERSIONS, ATTR_VERSION );
-    
-    if( ! Util.isEmpty( verList ) )
-      this.versions.addAll( verList );
+    public static final String ATTR_ARTIFACT_ID = "artifactId";
 
-    String lChk = cm.getLastUpdate();
-    
-    String negative = cm.getAttribute( ELEM_COORDINATES, ATTR_NEGATIVE, false );
-    
-    if( !Util.isEmpty( negative ) )
-        setNegativeResult( Boolean.parseBoolean( negative ) );
+    public static final String ATTR_VERSION = "version";
 
-    lastCheck = Long.parseLong( lChk );
-  }
-  
-  private void toXml()
-  {
-    cm.clean();
-    
-    cm.setAttribute( ELEM_COORDINATES, ATTR_GROUP_ID, ga.getGroupId() );
-    cm.setAttribute( ELEM_COORDINATES, ATTR_ARTIFACT_ID, ga.getArtifactId() );
-    
-    if( isNegativeResult() )
-        cm.setAttribute( ELEM_COORDINATES, ATTR_NEGATIVE, "true" );
-    
-    if( !Util.isEmpty( versions ) )
-      cm.setAttribute( ELEM_VERSIONS, ATTR_VERSION, versions );
-    
-    cm.setLastUpdate( ""+lastCheck );
-  }
-  
+    public static final String ATTR_NEGATIVE = "negative";
+
+    public static final String ELEM_VERSIONS = "versions";
+
+    CachedMetadata cm;
+
+    public CachedGAMetadata( File mdFile )
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataCorruptionException
+    {
+        cm = new CachedMetadata( mdFile );
+        fromXml();
+    }
+
+    public CachedGAMetadata( RepositoryGAMetadata md )
+        throws MetadataException
+    {
+        super( md );
+
+        cm = new CachedMetadata();
+
+        toXml();
+    }
+
+    /**
+     * fill GA with data from cm
+     * 
+     * @throws MetadataCorruptionException
+     */
+    private void fromXml()
+        throws MetadataCorruptionException
+    {
+        ga =
+            new ArtifactCoordinates( cm.getAttribute( ELEM_COORDINATES, ATTR_GROUP_ID, true ),
+                                     cm.getAttribute( ELEM_COORDINATES, ATTR_ARTIFACT_ID, true ), null );
+
+        List<String> verList = cm.findAttributes( ELEM_VERSIONS, ATTR_VERSION );
+
+        if ( !Util.isEmpty( verList ) )
+            this.versions.addAll( verList );
+
+        String lChk = cm.getLastUpdate();
+
+        String negative = cm.getAttribute( ELEM_COORDINATES, ATTR_NEGATIVE, false );
+
+        if ( !Util.isEmpty( negative ) )
+            setNegativeResult( Boolean.parseBoolean( negative ) );
+
+        lastCheck = Long.parseLong( lChk );
+    }
+
+    private void toXml()
+    {
+        cm.clean();
+
+        cm.setAttribute( ELEM_COORDINATES, ATTR_GROUP_ID, ga.getGroupId() );
+        cm.setAttribute( ELEM_COORDINATES, ATTR_ARTIFACT_ID, ga.getArtifactId() );
+
+        if ( isNegativeResult() )
+            cm.setAttribute( ELEM_COORDINATES, ATTR_NEGATIVE, "true" );
+
+        if ( !Util.isEmpty( versions ) )
+            cm.setAttribute( ELEM_VERSIONS, ATTR_VERSION, versions );
+
+        cm.setLastUpdate( "" + lastCheck );
+    }
+
 }

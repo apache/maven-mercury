@@ -33,9 +33,10 @@ public class DefaultMonitor
     implements Monitor
 {
     Writer _writer;
+
     boolean _timestamp = true;
-    private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    
+
+    private static final SimpleDateFormat fmt = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 
     public DefaultMonitor( boolean timestamp )
     {
@@ -64,7 +65,7 @@ public class DefaultMonitor
         {
             if ( _writer != null )
             {
-                if( _timestamp )
+                if ( _timestamp )
                 {
                     _writer.write( fmt.format( new Date() ) );
                     _writer.write( ": " );

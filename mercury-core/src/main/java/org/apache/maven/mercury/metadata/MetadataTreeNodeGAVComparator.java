@@ -29,12 +29,12 @@ import org.apache.maven.mercury.artifact.MetadataTreeNode;
  * @version $Id$
  */
 public class MetadataTreeNodeGAVComparator
-implements Comparator<MetadataTreeNode>
+    implements Comparator<MetadataTreeNode>
 {
 
-  public int compare(MetadataTreeNode n1, MetadataTreeNode n2)
-  {
-    return n1.getMd().getGAV().compareTo( n2.getMd().getGAV() );
-  }
+    public int compare( MetadataTreeNode n1, MetadataTreeNode n2 )
+    {
+        return n1.getMd().getGAV().compareTo( n2.getMd().getGAV() );
+    }
 
 }

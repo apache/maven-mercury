@@ -25,10 +25,9 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * merge Metadata.
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class MergeOperation
     implements MetadataOperation

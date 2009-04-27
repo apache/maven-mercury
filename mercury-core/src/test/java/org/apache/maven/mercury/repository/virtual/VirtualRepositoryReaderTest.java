@@ -33,9 +33,9 @@ import org.apache.maven.mercury.event.EventManager;
 import org.apache.maven.mercury.event.MercuryEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;
-import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.RemoteRepository;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.local.m2.LocalRepositoryM2;
@@ -67,7 +67,7 @@ public class VirtualRepositoryReaderTest
     String _artifactCoordLatest = "org.apache.maven.mercury:mercury-repo-virtual:1.0.0-alpha-2-LATEST";
 
     String _artifactCoordRelease = "ant:ant:1.6.5";
-    
+
     String LOCAL_REPO_ID = "localRepo";
 
     String _localRepoId;
@@ -110,7 +110,7 @@ public class VirtualRepositoryReaderTest
         }
 
         _localRepo = new LocalRepositoryM2( LOCAL_REPO_ID, _testBase, new MetadataProcessorMock() );
-        
+
         _localRepoId = _localRepo.getId();
 
         _jetty = new HttpTestServer( _remoteRepoBase, "/repo" );
@@ -119,7 +119,7 @@ public class VirtualRepositoryReaderTest
         Server server = new Server( REMOTE_REPO_ID, new URL( "http://localhost:" + _port + "/repo" ) );
 
         _remoteRepo = new RemoteRepositoryM2( server, new MetadataProcessorMock() );
-        
+
         _remoteRepoId = _remoteRepo.getId();
 
         if ( Util.isWindows() )
@@ -132,8 +132,7 @@ public class VirtualRepositoryReaderTest
         rl.add( _remoteRepo );
 
         _vr = new VirtualRepositoryReader( rl );
-        
-        
+
     }
 
     @Override
@@ -266,8 +265,8 @@ public class VirtualRepositoryReaderTest
                 ++remoteEventCount;
             }
 
- System.out.println(EventManager.toString( event ));
- System.out.flush();
+            System.out.println( EventManager.toString( event ) );
+            System.out.flush();
         }
 
         public EventMask getMask()

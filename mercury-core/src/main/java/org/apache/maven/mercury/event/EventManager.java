@@ -32,177 +32,174 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * event queue dispatcher. It registers/unregisters listeners, dispatches events
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class EventManager
 {
-  public static final int THREAD_COUNT = 4;
+    public static final int THREAD_COUNT = 4;
 
-  /**
-   * this property may contain comma separated list of bit numbers defined in MercuryEvent.EventTypeEnum. It supersedes 
-   * any bits set by the appropriate EventManager constructor by OR operation with those
-   */
-  public static final String SYSTEM_PROPERTY_EVENT_MASK = "maven.mercury.events";
-  public static final String systemPropertyEventMask = System.getProperty( SYSTEM_PROPERTY_EVENT_MASK, null );
+    /**
+     * this property may contain comma separated list of bit numbers defined in MercuryEvent.EventTypeEnum. It
+     * supersedes any bits set by the appropriate EventManager constructor by OR operation with those
+     */
+    public static final String SYSTEM_PROPERTY_EVENT_MASK = "maven.mercury.events";
 
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( EventManager.class );
-  private static final Language LANG = new DefaultLanguage( EventManager.class );
-  
-  final List<MercuryEventListener> _listeners = new ArrayList<MercuryEventListener>(8);
-  
-  final LinkedBlockingQueue<UnitOfWork> _queue = new LinkedBlockingQueue<UnitOfWork>( 512 );
-  
-  private ExecutorService _execService;
-  
-  private MercuryEvent.EventMask _eventMask;
-  
-  /**
-   * default initialization - create thread pool
-   */
-  public EventManager()
-  {
-    _execService = Executors.newFixedThreadPool( THREAD_COUNT );
+    public static final String systemPropertyEventMask = System.getProperty( SYSTEM_PROPERTY_EVENT_MASK, null );
 
-    for( int i = 0; i < THREAD_COUNT; i++ )
-      _execService.execute( new Runner( _queue ) );
-    
-    processSystemOptions();
-  }
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( EventManager.class );
 
-  /**
-   * default initialization - create thread pool
-   */
-  public EventManager( MercuryEvent.EventMask eventMask )
-  {
-    this();
-    
-    this._eventMask = eventMask;
-    
-    processSystemOptions();
-  }
-  
-  private final void processSystemOptions()
-  {
-    if( systemPropertyEventMask == null )
-      return;
-    
-    if( _eventMask == null )
-      _eventMask = new MercuryEvent.EventMask( systemPropertyEventMask );
-    else
-      _eventMask.setBits( systemPropertyEventMask );
-  }
-  
-  /**
-   * add listener only if it meets the criteria
-   * 
-   * @param listener
-   */
-  public void register( MercuryEventListener listener )
-  {
-    MercuryEvent.EventMask lMask = listener.getMask();
-    
-    if( lMask == null || _eventMask == null || _eventMask.intersects( lMask ) )
-      _listeners.add( listener );
-  }
-  
-  public void unRegister( MercuryEventListener listener )
-  {
-    _listeners.remove( listener );
-  }
-  
-  public List<MercuryEventListener> getListeners()
-  {
-    return _listeners;
-  }
-  
-  public void fireEvent( MercuryEvent event )
-  {
-    for( MercuryEventListener listener : _listeners )
-      _queue.add( new UnitOfWork( listener, event ) );
-  }
+    private static final Language LANG = new DefaultLanguage( EventManager.class );
 
-  public static final String toString( MercuryEvent event )
-  {
-    return new Date( event.getStart() )+", dur: "+ event.getDuration()+" millis :"
-    		   + " ["+ event.getType()+":"+event.getName()+"] "
-           + ( isEmpty( event.getTag() ) ? "" : ", tag: "+event.getTag() )
-           + ( isEmpty( event.getInfo() ) ? "" : ", info: "+event.getInfo() )
-           + ( isEmpty( event.getResult() ) ? "" : ", result: "+event.getResult() )
-    ;
-  }
-  
-  public static final boolean isEmpty( String o )
-  {
-    return o == null || o.length() < 1;
-  }
+    final List<MercuryEventListener> _listeners = new ArrayList<MercuryEventListener>( 8 );
 
+    final LinkedBlockingQueue<UnitOfWork> _queue = new LinkedBlockingQueue<UnitOfWork>( 512 );
 
-  class UnitOfWork
-  {
-    MercuryEventListener listener;
-    MercuryEvent event;
-    
-    public UnitOfWork( MercuryEventListener listener, MercuryEvent event )
+    private ExecutorService _execService;
+
+    private MercuryEvent.EventMask _eventMask;
+
+    /**
+     * default initialization - create thread pool
+     */
+    public EventManager()
     {
-      this.listener = listener;
-      this.event = event;
+        _execService = Executors.newFixedThreadPool( THREAD_COUNT );
+
+        for ( int i = 0; i < THREAD_COUNT; i++ )
+            _execService.execute( new Runner( _queue ) );
+
+        processSystemOptions();
     }
-    
-    void execute()
+
+    /**
+     * default initialization - create thread pool
+     */
+    public EventManager( MercuryEvent.EventMask eventMask )
     {
-      try
-      {
+        this();
+
+        this._eventMask = eventMask;
+
+        processSystemOptions();
+    }
+
+    private final void processSystemOptions()
+    {
+        if ( systemPropertyEventMask == null )
+            return;
+
+        if ( _eventMask == null )
+            _eventMask = new MercuryEvent.EventMask( systemPropertyEventMask );
+        else
+            _eventMask.setBits( systemPropertyEventMask );
+    }
+
+    /**
+     * add listener only if it meets the criteria
+     * 
+     * @param listener
+     */
+    public void register( MercuryEventListener listener )
+    {
         MercuryEvent.EventMask lMask = listener.getMask();
-        
-        if( _eventMask != null )
-        {
-          if( lMask == null )
-            lMask = _eventMask;
-          else 
-            lMask.and( _eventMask );
-        }
-        
-        
-        if( lMask == null || lMask.get( event.getType().bitNo ) )
-          listener.fire( event );
-      }
-      catch( Throwable th )
-      {
-        LOG.error( LANG.getMessage( "listener.error", th.getMessage() ) );
-      }
-    }
-  }
-  
-  class Runner
-  implements Runnable
-  {
-    final LinkedBlockingQueue<UnitOfWork> queue;
 
-    public Runner( LinkedBlockingQueue<UnitOfWork> queue )
+        if ( lMask == null || _eventMask == null || _eventMask.intersects( lMask ) )
+            _listeners.add( listener );
+    }
+
+    public void unRegister( MercuryEventListener listener )
     {
-      this.queue = queue;
+        _listeners.remove( listener );
     }
 
-    public void run()
+    public List<MercuryEventListener> getListeners()
     {
-      UnitOfWork uow;
+        return _listeners;
+    }
 
-      for(;;)
-        try
+    public void fireEvent( MercuryEvent event )
+    {
+        for ( MercuryEventListener listener : _listeners )
+            _queue.add( new UnitOfWork( listener, event ) );
+    }
+
+    public static final String toString( MercuryEvent event )
+    {
+        return new Date( event.getStart() ) + ", dur: " + event.getDuration() + " millis :" + " [" + event.getType()
+            + ":" + event.getName() + "] " + ( isEmpty( event.getTag() ) ? "" : ", tag: " + event.getTag() )
+            + ( isEmpty( event.getInfo() ) ? "" : ", info: " + event.getInfo() )
+            + ( isEmpty( event.getResult() ) ? "" : ", result: " + event.getResult() );
+    }
+
+    public static final boolean isEmpty( String o )
+    {
+        return o == null || o.length() < 1;
+    }
+
+    class UnitOfWork
+    {
+        MercuryEventListener listener;
+
+        MercuryEvent event;
+
+        public UnitOfWork( MercuryEventListener listener, MercuryEvent event )
         {
-          uow = queue.take();
-          uow.execute();
+            this.listener = listener;
+            this.event = event;
         }
-        catch( InterruptedException e )
+
+        void execute()
         {
-          return;
+            try
+            {
+                MercuryEvent.EventMask lMask = listener.getMask();
+
+                if ( _eventMask != null )
+                {
+                    if ( lMask == null )
+                        lMask = _eventMask;
+                    else
+                        lMask.and( _eventMask );
+                }
+
+                if ( lMask == null || lMask.get( event.getType().bitNo ) )
+                    listener.fire( event );
+            }
+            catch ( Throwable th )
+            {
+                LOG.error( LANG.getMessage( "listener.error", th.getMessage() ) );
+            }
         }
     }
-    
-  }
+
+    class Runner
+        implements Runnable
+    {
+        final LinkedBlockingQueue<UnitOfWork> queue;
+
+        public Runner( LinkedBlockingQueue<UnitOfWork> queue )
+        {
+            this.queue = queue;
+        }
+
+        public void run()
+        {
+            UnitOfWork uow;
+
+            for ( ;; )
+                try
+                {
+                    uow = queue.take();
+                    uow.execute();
+                }
+                catch ( InterruptedException e )
+                {
+                    return;
+                }
+        }
+
+    }
 
 }
-

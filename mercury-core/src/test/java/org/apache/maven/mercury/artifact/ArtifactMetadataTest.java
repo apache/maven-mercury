@@ -15,28 +15,25 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.artifact;
 
 import junit.framework.TestCase;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class ArtifactMetadataTest
     extends TestCase
 {
     public void testTestJar()
     {
-        ArtifactMetadata md = new ArtifactMetadata("a:a:1::test-jar");
-        
+        ArtifactMetadata md = new ArtifactMetadata( "a:a:1::test-jar" );
+
         assertEquals( "tests", md.getClassifier() );
-        
+
         assertEquals( "jar", md.getType() );
     }
 }

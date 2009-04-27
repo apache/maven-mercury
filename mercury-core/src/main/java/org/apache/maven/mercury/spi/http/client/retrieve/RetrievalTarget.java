@@ -19,7 +19,6 @@
 
 package org.apache.maven.mercury.spi.http.client.retrieve;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,57 +44,69 @@ import org.apache.maven.mercury.transport.api.Server;
 import org.mortbay.jetty.HttpHeaders;
 import org.mortbay.jetty.client.HttpExchange;
 
-
-
 /**
  * RetrievalTarget
  * <p/>
- * A RetrievalTarget is a remote file that must be downloaded locally, checksummed
- * and then atomically moved to its final location. The RetrievalTarget encapsulates
- * the temporary local file to which the remote file is downloaded, and also the
- * retrieval of the checksum file(s) and the checksum calculation(s).
+ * A RetrievalTarget is a remote file that must be downloaded locally, checksummed and then atomically moved to its
+ * final location. The RetrievalTarget encapsulates the temporary local file to which the remote file is downloaded, and
+ * also the retrieval of the checksum file(s) and the checksum calculation(s).
  */
 public abstract class RetrievalTarget
 {
     private static final IMercuryLogger log = MercuryLoggerManager.getLogger( RetrievalTarget.class );
+
     public static final String __PREFIX = "JTY_";
+
     public static final String __TEMP_SUFFIX = ".tmp";
+
     public static final int __START_STATE = 1;
+
     public static final int __REQUESTED_STATE = 2;
+
     public static final int __READY_STATE = 3;
 
     protected int _checksumState;
+
     protected int _targetState;
-    
+
     protected Server _server;
+
     protected HttpClientException _exception;
+
     protected Binding _binding;
+
     protected File _tempFile;
+
     protected DefaultRetriever _retriever;
+
     protected boolean _complete;
+
     protected HttpExchange _exchange;
+
     protected Set<Validator> _validators;
+
     protected Set<StreamObserver> _observers = new HashSet<StreamObserver>();
+
     protected List<StreamVerifier> _verifiers = new ArrayList<StreamVerifier>();
+
     protected Map<StreamVerifier, String> _verifierMap = new HashMap<StreamVerifier, String>();
- 
-    
+
     public abstract void onComplete();
 
     public abstract void onError( HttpClientException exception );
 
     /**
      * Constructor
-     *
+     * 
      * @param binding
      * @param callback
      */
-    public RetrievalTarget( Server server, DefaultRetriever retriever, Binding binding, Set<Validator> validators, Set<StreamObserver> observers )
+    public RetrievalTarget( Server server, DefaultRetriever retriever, Binding binding, Set<Validator> validators,
+                            Set<StreamObserver> observers )
     {
-        if ( binding == null || 
-                (binding.getRemoteResource() == null) || 
-                (binding.isFile() && (binding.getLocalFile() == null)) ||
-                (binding.isInMemory() && (binding.getLocalOutputStream() == null)))
+        if ( binding == null || ( binding.getRemoteResource() == null )
+            || ( binding.isFile() && ( binding.getLocalFile() == null ) )
+            || ( binding.isInMemory() && ( binding.getLocalOutputStream() == null ) ) )
         {
             throw new IllegalArgumentException( "Nothing to retrieve" );
         }
@@ -103,20 +114,21 @@ public abstract class RetrievalTarget
         _retriever = retriever;
         _binding = binding;
         _validators = validators;
-       
-        //sift out the potential checksum verifiers
-        for (StreamObserver o: observers)
+
+        // sift out the potential checksum verifiers
+        for ( StreamObserver o : observers )
         {
-            if (StreamVerifier.class.isAssignableFrom(o.getClass()))
-                _verifiers.add((StreamVerifier)o);
+            if ( StreamVerifier.class.isAssignableFrom( o.getClass() ) )
+                _verifiers.add( (StreamVerifier) o );
             else
-                _observers.add(o);
+                _observers.add( o );
         }
-        
-        if (_binding.isFile())
+
+        if ( _binding.isFile() )
         {
-            _tempFile = new File( _binding.getLocalFile().getParentFile(),
-                                  __PREFIX + _binding.getLocalFile().getName() + __TEMP_SUFFIX );        
+            _tempFile =
+                new File( _binding.getLocalFile().getParentFile(), __PREFIX + _binding.getLocalFile().getName()
+                    + __TEMP_SUFFIX );
             _tempFile.deleteOnExit();
             if ( !_tempFile.getParentFile().exists() )
             {
@@ -129,13 +141,11 @@ public abstract class RetrievalTarget
             }
             else if ( !_tempFile.getParentFile().canWrite() )
             {
-                onError( new HttpClientException( binding,
-                        "Unable to write to dir " + _tempFile.getParentFile().getAbsolutePath() ) );
+                onError( new HttpClientException( binding, "Unable to write to dir "
+                    + _tempFile.getParentFile().getAbsolutePath() ) );
             }
         }
     }
-
-   
 
     public File getTempFile()
     {
@@ -147,32 +157,31 @@ public abstract class RetrievalTarget
         return _binding.getRemoteResource().toExternalForm();
     }
 
-
     /** Start by getting the appropriate checksums */
     public void retrieve()
     {
-        //if there are no checksum verifiers configured, proceed directly to get the file
-        if (_verifiers.size() == 0)
+        // if there are no checksum verifiers configured, proceed directly to get the file
+        if ( _verifiers.size() == 0 )
         {
             _checksumState = __READY_STATE;
-            updateTargetState(__START_STATE, null);
+            updateTargetState( __START_STATE, null );
         }
         else
         {
             _checksumState = __START_STATE;
-            updateChecksumState(-1, null);
+            updateChecksumState( -1, null );
         }
     }
-
 
     /** Move the temporary file to its final location */
     public boolean move()
     {
-        if (_binding.isFile())
+        if ( _binding.isFile() )
         {
             boolean ok = _tempFile.renameTo( _binding.getLocalFile() );
-            if (log.isDebugEnabled())
-                log.debug("Renaming "+_tempFile.getAbsolutePath()+" to "+_binding.getLocalFile().getAbsolutePath()+": "+ok);
+            if ( log.isDebugEnabled() )
+                log.debug( "Renaming " + _tempFile.getAbsolutePath() + " to "
+                    + _binding.getLocalFile().getAbsolutePath() + ": " + ok );
             return ok;
         }
         else
@@ -199,7 +208,7 @@ public abstract class RetrievalTarget
         return "T:" + _binding.getRemoteResource() + ":" + _targetState + ":" + _checksumState + ":" + _complete;
     }
 
-    private void updateChecksumState (int index, Throwable ex)
+    private void updateChecksumState( int index, Throwable ex )
     {
         if ( _exception == null && ex != null )
         {
@@ -212,72 +221,66 @@ public abstract class RetrievalTarget
                 _exception = new HttpClientException( _binding, ex );
             }
         }
-        
-        if (ex != null)
+
+        if ( ex != null )
         {
             _checksumState = __READY_STATE;
-            onError(_exception);
+            onError( _exception );
         }
         else
-        {     
+        {
             boolean proceedWithTargetFile = false;
-            if (index >= 0)
+            if ( index >= 0 )
             {
-                //check if the just-completed retrieval means that we can stop trying to download checksums 
-                StreamVerifier v = _verifiers.get(index);
-                if (_verifierMap.containsKey(v) && v.getAttributes().isSufficient())
+                // check if the just-completed retrieval means that we can stop trying to download checksums
+                StreamVerifier v = _verifiers.get( index );
+                if ( _verifierMap.containsKey( v ) && v.getAttributes().isSufficient() )
                     proceedWithTargetFile = true;
             }
 
             index++;
-            
-            if ((index < _verifiers.size()) && !proceedWithTargetFile)
+
+            if ( ( index < _verifiers.size() ) && !proceedWithTargetFile )
             {
-                retrieveChecksum(index);
+                retrieveChecksum( index );
             }
             else
             {
                 _checksumState = __READY_STATE;
 
-                //finished retrieving all possible checksums. Add all verifiers
-                //that had matching checksums into the observers list
-                _observers.addAll(_verifierMap.keySet());
+                // finished retrieving all possible checksums. Add all verifiers
+                // that had matching checksums into the observers list
+                _observers.addAll( _verifierMap.keySet() );
 
-                //now get the file now we have the checksum sorted out
+                // now get the file now we have the checksum sorted out
                 updateTargetState( __START_STATE, null );
             }
         }
     }
-    
-    
-   
-   
 
     /**
      * Check the actual checksum against the expected checksum
-     *
+     * 
      * @return
-     * @throws StreamVerifierException 
+     * @throws StreamVerifierException
      */
     public boolean verifyChecksum()
-    throws StreamVerifierException
+        throws StreamVerifierException
     {
         boolean ok = true;
-        
-        synchronized (_verifierMap)
+
+        synchronized ( _verifierMap )
         {
             Iterator<Map.Entry<StreamVerifier, String>> itor = _verifierMap.entrySet().iterator();
-            while (itor.hasNext() && ok)
-            {               
+            while ( itor.hasNext() && ok )
+            {
                 Map.Entry<StreamVerifier, String> e = itor.next();
                 ok = e.getKey().verifySignature();
             }
         }
-        
+
         return ok;
     }
-        
-    
 
     public boolean validate( List<String> errors )
     {
@@ -286,10 +289,10 @@ public abstract class RetrievalTarget
             return true;
         }
 
-        String ext =  _binding.getRemoteResource().toString();
-        if (ext.endsWith("/"))
-            ext = ext.substring(0, ext.length()-1);
-        
+        String ext = _binding.getRemoteResource().toString();
+        if ( ext.endsWith( "/" ) )
+            ext = ext.substring( 0, ext.length() - 1 );
+
         int i = ext.lastIndexOf( "." );
         ext = ( i > 0 ? ext.substring( i + 1 ) : "" );
 
@@ -300,17 +303,17 @@ public abstract class RetrievalTarget
             {
                 try
                 {
-                    if (_binding.isFile())
+                    if ( _binding.isFile() )
                     {
                         if ( !v.validate( _tempFile.getCanonicalPath(), errors ) )
                         {
                             return false;
                         }
                     }
-                    else if (_binding.isInMemory())
+                    else if ( _binding.isInMemory() )
                     {
-                        //TODO Validation on in memory content?
-                        //v.validate(_binding.getInboundContent()) 
+                        // TODO Validation on in memory content?
+                        // v.validate(_binding.getInboundContent())
                     }
                 }
                 catch ( IOException e )
@@ -322,8 +325,6 @@ public abstract class RetrievalTarget
         }
         return true;
     }
-
-  
 
     protected synchronized void updateTargetState( int state, Throwable ex )
     {
@@ -344,8 +345,8 @@ public abstract class RetrievalTarget
         {
             _exchange = retrieveTargetFile();
         }
-        //if both checksum and target file are ready, we're ready to return callback
-        else if (_targetState == __READY_STATE )
+        // if both checksum and target file are ready, we're ready to return callback
+        else if ( _targetState == __READY_STATE )
         {
             _complete = true;
             if ( _exception == null )
@@ -360,110 +361,112 @@ public abstract class RetrievalTarget
     }
 
     /** Asynchronously fetch the checksum for the target file. */
-    private HttpExchange retrieveChecksum(final int index)
-    {    
+    private HttpExchange retrieveChecksum( final int index )
+    {
         HttpExchange exchange = new HttpExchange.ContentExchange()
         {
             protected void onException( Throwable ex )
             {
-                //if the checksum is mandatory, then propagate the exception and stop processing
-                if (!_verifiers.get(index).getAttributes().isLenient())
+                // if the checksum is mandatory, then propagate the exception and stop processing
+                if ( !_verifiers.get( index ).getAttributes().isLenient() )
                 {
-                    updateChecksumState(index, ex);
+                    updateChecksumState( index, ex );
                 }
                 else
-                    updateChecksumState(index, null);
-                
+                    updateChecksumState( index, null );
+
             }
 
-            protected void onResponseComplete() throws IOException
+            protected void onResponseComplete()
+                throws IOException
             {
                 super.onResponseComplete();
-                StreamVerifier v = _verifiers.get(index);
-                
+                StreamVerifier v = _verifiers.get( index );
+
                 if ( getResponseStatus() == HttpServletResponse.SC_OK )
                 {
-                    //We got a checksum so match it up with the verifier it is for
-                    synchronized (_verifierMap)
+                    // We got a checksum so match it up with the verifier it is for
+                    synchronized ( _verifierMap )
                     {
-                        if( v.getAttributes().isSufficient() )
-                            _verifierMap.clear(); //remove all other entries, we only need one checksum
-                        
-                        String actualSignature = getResponseContent().trim(); 
+                        if ( v.getAttributes().isSufficient() )
+                            _verifierMap.clear(); // remove all other entries, we only need one checksum
+
+                        String actualSignature = getResponseContent().trim();
                         try
                         { // Oleg: verifier need to be loaded upfront
-                          v.initSignature( actualSignature );
+                            v.initSignature( actualSignature );
                         }
-                        catch( StreamVerifierException e )
+                        catch ( StreamVerifierException e )
                         {
-                          throw new IOException(e.getMessage());
+                            throw new IOException( e.getMessage() );
                         }
                         _verifierMap.put( v, actualSignature );
                     }
-                    updateChecksumState(index, null);
+                    updateChecksumState( index, null );
                 }
-                else 
+                else
                 {
-                    if (!v.getAttributes().isLenient()) 
+                    if ( !v.getAttributes().isLenient() )
                     {
-                        //checksum file MUST be present, fail
-                        updateChecksumState(index, new Exception ("Mandatory checksum file not found "+this.getURI()));
+                        // checksum file MUST be present, fail
+                        updateChecksumState( index,
+                                             new Exception( "Mandatory checksum file not found " + this.getURI() ) );
                     }
                     else
-                        updateChecksumState(index, null);
+                        updateChecksumState( index, null );
                 }
             }
         };
-        
-        exchange.setURL( getChecksumFileURLAsString( _verifiers.get(index)) );
+
+        exchange.setURL( getChecksumFileURLAsString( _verifiers.get( index ) ) );
 
         try
         {
-            SecureSender.send(_server, _retriever.getHttpClient(), exchange);
+            SecureSender.send( _server, _retriever.getHttpClient(), exchange );
         }
         catch ( Exception ex )
         {
-            updateChecksumState(index, ex);
+            updateChecksumState( index, ex );
         }
         return exchange;
     }
-
 
     /** Asynchronously fetch the target file. */
     private HttpExchange retrieveTargetFile()
     {
         updateTargetState( __REQUESTED_STATE, null );
 
-        //get the file, calculating the digest for it on the fly
-        FileExchange exchange = new FileGetExchange( _server, _binding, getTempFile(), _observers, _retriever.getHttpClient() )
-        {
-            public void onFileComplete( String url, File localFile )
+        // get the file, calculating the digest for it on the fly
+        FileExchange exchange =
+            new FileGetExchange( _server, _binding, getTempFile(), _observers, _retriever.getHttpClient() )
             {
-                //we got the target file ok, so tell our main callback
-                _targetState = __READY_STATE;
-                updateTargetState( __READY_STATE, null );
-            }
+                public void onFileComplete( String url, File localFile )
+                {
+                    // we got the target file ok, so tell our main callback
+                    _targetState = __READY_STATE;
+                    updateTargetState( __READY_STATE, null );
+                }
 
-            public void onFileError( String url, Exception e )
-            {
-                //an error occurred whilst fetching the file, return an error
-                _targetState = __READY_STATE;
-                updateTargetState( __READY_STATE, e );
-            }
-        };
+                public void onFileError( String url, Exception e )
+                {
+                    // an error occurred whilst fetching the file, return an error
+                    _targetState = __READY_STATE;
+                    updateTargetState( __READY_STATE, e );
+                }
+            };
 
-        if( _server != null && _server.hasUserAgent() )
-          exchange.setRequestHeader( HttpHeaders.USER_AGENT, _server.getUserAgent() );
+        if ( _server != null && _server.hasUserAgent() )
+            exchange.setRequestHeader( HttpHeaders.USER_AGENT, _server.getUserAgent() );
 
         exchange.send();
         return exchange;
     }
 
-    private String getChecksumFileURLAsString (StreamVerifier verifier)
+    private String getChecksumFileURLAsString( StreamVerifier verifier )
     {
         String extension = verifier.getAttributes().getExtension();
-        if (extension.charAt(0) != '.')
-            extension = "."+extension;
+        if ( extension.charAt( 0 ) != '.' )
+            extension = "." + extension;
         return _binding.getRemoteResource().toString() + extension;
     }
 
@@ -471,12 +474,12 @@ public abstract class RetrievalTarget
     {
         if ( _tempFile != null && _tempFile.exists() )
         {
-            boolean ok =  _tempFile.delete();
-            if (log.isDebugEnabled())
-                log.debug("Deleting file "+_tempFile.getAbsolutePath()+" : "+ok);
+            boolean ok = _tempFile.delete();
+            if ( log.isDebugEnabled() )
+                log.debug( "Deleting file " + _tempFile.getAbsolutePath() + " : " + ok );
             return ok;
         }
         return false;
     }
-    
+
 }

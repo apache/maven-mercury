@@ -24,7 +24,6 @@ import java.util.Set;
 import org.apache.maven.mercury.spi.http.validate.Validator;
 import org.apache.maven.mercury.transport.api.Binding;
 
-
 /**
  * RetrievalRequest
  * <p/>
@@ -35,6 +34,6 @@ public interface DeployRequest
     public abstract Set<Binding> getBindings();
 
     public abstract boolean isFailFast();
-    
+
     public Set<Validator> getValidators();
 }

@@ -22,25 +22,27 @@ package org.apache.maven.mercury.spi.http.client;
 import org.apache.maven.mercury.spi.http.client.deploy.DefaultDeployer;
 import org.apache.maven.mercury.spi.http.server.SecurePutServer;
 
-public class SecureJettyDeployerTest extends JettyDeployerTest
+public class SecureJettyDeployerTest
+    extends JettyDeployerTest
 {
-    public SecureJettyDeployerTest() throws Exception
+    public SecureJettyDeployerTest()
+        throws Exception
     {
         super();
     }
-    
-    protected void setUp() throws Exception
-    {        
+
+    protected void setUp()
+        throws Exception
+    {
         _HOST_FRAGMENT = "https://localhost:";
-        
+
         setUpFiles();
         _deployer = new DefaultDeployer();
         _putServer = new SecurePutServer();
         _putServer.start();
-        _port = String.valueOf(_putServer.getPort());
+        _port = String.valueOf( _putServer.getPort() );
         setUpServerType();
-        //super.setUp();
+        // super.setUp();
     }
 
-   
 }

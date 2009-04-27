@@ -60,252 +60,279 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 public class LocalRepositoryWriterM2
-extends AbstractRepositoryWriter
-implements RepositoryWriter
+    extends AbstractRepositoryWriter
+    implements RepositoryWriter
 {
-  public static final String SYSTEM_PROPERTY_PARALLEL_WORKERS = "mercury.local.repo.workers";
-  public static final int  PARALLEL_WORKERS = Integer.parseInt( System.getProperty( SYSTEM_PROPERTY_PARALLEL_WORKERS, "4" ) );
-  
-  public static final long SLEEP_FOR_WORKERS_TICK = 20l;
+    public static final String SYSTEM_PROPERTY_PARALLEL_WORKERS = "mercury.local.repo.workers";
 
-  public static final String SYSTEM_PROPERTY_SLEEP_FOR_LOCK = "mercury.local.lock.wait.millis";
-  public static final long SLEEP_FOR_LOCK = Long.parseLong(  System.getProperty( SYSTEM_PROPERTY_SLEEP_FOR_LOCK, "5000" ) );
-  
-  public static final long SLEEP_FOR_LOCK_TICK = 5l;
+    public static final int PARALLEL_WORKERS =
+        Integer.parseInt( System.getProperty( SYSTEM_PROPERTY_PARALLEL_WORKERS, "4" ) );
 
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryWriterM2.class ); 
-  private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterM2.class );
-  //---------------------------------------------------------------------------------------------------------------
-  private static final String [] _protocols = new String [] { "file" };
-  
-  private final LocalRepository _repo;
-  private final File _repoDir;
-  private final ArtifactQueue _aq;
+    public static final long SLEEP_FOR_WORKERS_TICK = 20l;
 
-  private static final ArifactWriteData LAST_ARTIFACT = new ArifactWriteData( null, null );
-  //---------------------------------------------------------------------------------------------------------------
-  public LocalRepositoryWriterM2( LocalRepository repo )
-  {
-    if( repo == null )
-      throw new IllegalArgumentException("localRepo cannot be null");
-    
-    _repoDir = repo.getDirectory();
-    if( _repoDir == null )
-      throw new IllegalArgumentException("localRepo directory cannot be null");
-    
-    if( !_repoDir.exists() )
-      throw new IllegalArgumentException("localRepo directory \""+_repoDir.getAbsolutePath()+"\" should exist");
+    public static final String SYSTEM_PROPERTY_SLEEP_FOR_LOCK = "mercury.local.lock.wait.millis";
 
-    _repo = repo;
-    _aq = null;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  private LocalRepositoryWriterM2( LocalRepository repo, File repoDir, ArtifactQueue aq )
-  {
-    _repo = repo;
-    _repoDir = repoDir;
-    _aq = aq;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public Repository getRepository()
-  {
-    return _repo;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public boolean canHandle( String protocol )
-  {
-    return AbstractRepository.DEFAULT_LOCAL_READ_PROTOCOL.equals( protocol );
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public String[] getProtocols()
-  {
-    return _protocols;
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public void close()
-  {
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public void writeArtifacts( Collection<Artifact> artifacts )
-      throws RepositoryException
-  {
-    if( artifacts == null || artifacts.size() < 1 )
-      return;
-    
-    int nWorkers = PARALLEL_WORKERS;
-    if( artifacts.size() < nWorkers )
-      nWorkers = artifacts.size();
-    
-    ArtifactQueue aq = new ArtifactQueue();
-    LocalRepositoryWriterM2 [] workers = new LocalRepositoryWriterM2[ nWorkers ];
-    
-    for( int i=0; i<nWorkers; i++ )
-      workers[ i ] = new LocalRepositoryWriterM2( _repo, _repoDir, aq );
-    
-    for( Artifact artifact : artifacts )
+    public static final long SLEEP_FOR_LOCK =
+        Long.parseLong( System.getProperty( SYSTEM_PROPERTY_SLEEP_FOR_LOCK, "5000" ) );
+
+    public static final long SLEEP_FOR_LOCK_TICK = 5l;
+
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( LocalRepositoryWriterM2.class );
+
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterM2.class );
+
+    // ---------------------------------------------------------------------------------------------------------------
+    private static final String[] _protocols = new String[] { "file" };
+
+    private final LocalRepository _repo;
+
+    private final File _repoDir;
+
+    private final ArtifactQueue _aq;
+
+    private static final ArifactWriteData LAST_ARTIFACT = new ArifactWriteData( null, null );
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public LocalRepositoryWriterM2( LocalRepository repo )
     {
-      Set<StreamVerifierFactory> vFacs = null;
-      Server server = _repo.getServer();
-      if( server != null && server.hasWriterStreamVerifierFactories() )
-        vFacs = server.getWriterStreamVerifierFactories();
-      
-      if( vFacs == null ) // let it be empty, but not null
-        vFacs = new HashSet<StreamVerifierFactory>(1);
+        if ( repo == null )
+            throw new IllegalArgumentException( "localRepo cannot be null" );
 
-      aq.addArtifact( new ArifactWriteData( artifact, vFacs ) );
+        _repoDir = repo.getDirectory();
+        if ( _repoDir == null )
+            throw new IllegalArgumentException( "localRepo directory cannot be null" );
+
+        if ( !_repoDir.exists() )
+            throw new IllegalArgumentException( "localRepo directory \"" + _repoDir.getAbsolutePath()
+                + "\" should exist" );
+
+        _repo = repo;
+        _aq = null;
     }
-    aq.addArtifact( LAST_ARTIFACT );
-    
-    for( int i=0; i<nWorkers; i++ )
-      workers[ i ].start();
-    
-    boolean alive = true;
-    while( alive )
+
+    // ---------------------------------------------------------------------------------------------------------------
+    private LocalRepositoryWriterM2( LocalRepository repo, File repoDir, ArtifactQueue aq )
     {
-      alive = false;
-      for( int i=0; i<nWorkers; i++ )
-        if( workers[ i ].isAlive() )
+        _repo = repo;
+        _repoDir = repoDir;
+        _aq = aq;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public Repository getRepository()
+    {
+        return _repo;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public boolean canHandle( String protocol )
+    {
+        return AbstractRepository.DEFAULT_LOCAL_READ_PROTOCOL.equals( protocol );
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public String[] getProtocols()
+    {
+        return _protocols;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public void close()
+    {
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public void writeArtifacts( Collection<Artifact> artifacts )
+        throws RepositoryException
+    {
+        if ( artifacts == null || artifacts.size() < 1 )
+            return;
+
+        int nWorkers = PARALLEL_WORKERS;
+        if ( artifacts.size() < nWorkers )
+            nWorkers = artifacts.size();
+
+        ArtifactQueue aq = new ArtifactQueue();
+        LocalRepositoryWriterM2[] workers = new LocalRepositoryWriterM2[nWorkers];
+
+        for ( int i = 0; i < nWorkers; i++ )
+            workers[i] = new LocalRepositoryWriterM2( _repo, _repoDir, aq );
+
+        for ( Artifact artifact : artifacts )
         {
-          alive = true;
-          try { sleep( SLEEP_FOR_WORKERS_TICK ); } catch( InterruptedException ie ) {}
+            Set<StreamVerifierFactory> vFacs = null;
+            Server server = _repo.getServer();
+            if ( server != null && server.hasWriterStreamVerifierFactories() )
+                vFacs = server.getWriterStreamVerifierFactories();
+
+            if ( vFacs == null ) // let it be empty, but not null
+                vFacs = new HashSet<StreamVerifierFactory>( 1 );
+
+            aq.addArtifact( new ArifactWriteData( artifact, vFacs ) );
+        }
+        aq.addArtifact( LAST_ARTIFACT );
+
+        for ( int i = 0; i < nWorkers; i++ )
+            workers[i].start();
+
+        boolean alive = true;
+        while ( alive )
+        {
+            alive = false;
+            for ( int i = 0; i < nWorkers; i++ )
+                if ( workers[i].isAlive() )
+                {
+                    alive = true;
+                    try
+                    {
+                        sleep( SLEEP_FOR_WORKERS_TICK );
+                    }
+                    catch ( InterruptedException ie )
+                    {
+                    }
+                }
         }
     }
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  /* (non-Javadoc)
-   * @see java.lang.Thread#run()
-   */
-  @Override
-  public void run()
-  {
-    try
-    {
-      for(;;)
-      {
-        ArifactWriteData awd = _aq.getArtifact();
 
-        if( awd == null || awd.artifact == null )
-            break;
-        
-        writeArtifact( awd.artifact, awd.vFacs );
-      }
-    }
-    catch (InterruptedException e)
+    // ---------------------------------------------------------------------------------------------------------------
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Thread#run()
+     */
+    @Override
+    public void run()
     {
-    }
-    catch( RepositoryException e )
-    {
-      throw new RuntimeException(e);
-    }
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  public void writeArtifact( final Artifact artifact, final Set<StreamVerifierFactory> vFacs )
-      throws RepositoryException
-  {
-    if( artifact == null )
-      return;
-    
-    boolean isPom = "pom".equals( artifact.getType() );
-    
-    byte [] pomBlob = artifact.getPomBlob();
-    boolean hasPomBlob = pomBlob != null && pomBlob.length > 0;
-    
-    InputStream in = artifact.getStream();
-    if( in == null )
-    {
-      File aFile = artifact.getFile();
-      if( aFile == null && !isPom )
-      {
-        throw new RepositoryException( LANG.getMessage( "artifact.no.stream", artifact.toString() ) );
-      }
-
-      try
-      {
-        in = new FileInputStream( aFile );
-      }
-      catch( FileNotFoundException e )
-      {
-        if( !isPom )
-          throw new RepositoryException( e );
-      }
-    }
-    DefaultArtifactVersion dav = new DefaultArtifactVersion( artifact.getVersion() );
-    Quality aq = dav.getQuality();
-    boolean isSnapshot = aq.equals( Quality.SNAPSHOT_QUALITY ) || aq.equals( Quality.SNAPSHOT_TS_QUALITY );
-
-    String relGroupPath = artifact.getGroupId().replace( '.', '/' )+"/"+artifact.getArtifactId();
-    String versionDirName = isSnapshot ? (dav.getBase()+'-'+Artifact.SNAPSHOT_VERSION) : artifact.getVersion();
-    String relVersionPath = relGroupPath + '/' + versionDirName;
-    
-    String lockDir = null;
-    FileLockBundle fLock = null;
-
-    try
-    {
-
-      if( isPom )
-      {
-        if( in == null && !hasPomBlob )
-          throw new RepositoryException( LANG.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
-        
-        if( in != null )
+        try
         {
-          byte [] pomBlobBytes = FileUtil.readRawData( in );
-          hasPomBlob = pomBlobBytes != null && pomBlobBytes.length > 0;
-          if( hasPomBlob )
-            pomBlob = pomBlobBytes;
+            for ( ;; )
+            {
+                ArifactWriteData awd = _aq.getArtifact();
+
+                if ( awd == null || awd.artifact == null )
+                    break;
+
+                writeArtifact( awd.artifact, awd.vFacs );
+            }
         }
-      }
-
-      // create folders
-      lockDir = _repoDir.getAbsolutePath()+'/'+relGroupPath;
-
-      File gav = new File( lockDir );
-      gav.mkdirs();
-
-//    haveLock = FileUtil.lockDir( lockDir, SLEEP_FOR_LOCK, SLEEP_FOR_LOCK_TICK );
-//    if( !haveLock )
-//      throw new RepositoryException( _lang.getMessage( "cannot.lock.gav", lockDir, ""+SLEEP_FOR_LOCK ) );
-      fLock = FileUtil.lockDir( lockDir, SLEEP_FOR_LOCK, SLEEP_FOR_LOCK_TICK );
-      if( fLock == null )
-        throw new RepositoryException( LANG.getMessage( "cannot.lock.gav", lockDir, ""+SLEEP_FOR_LOCK ) );
-
-      String fName = _repoDir.getAbsolutePath()+'/'+relVersionPath+'/'+artifact.getBaseName()+'.'+artifact.getType();
-      
-      if( !isPom ) // first - take care of the binary
-      {
-        FileUtil.writeAndSign( fName, in, vFacs );
-        artifact.setFile( new File(fName) );
-      }
-
-      // GA metadata
-      File mdFile = new File( _repoDir, relGroupPath+'/'+_repo.getMetadataName() );
-      updateGAMetadata( mdFile, artifact, versionDirName, aq, vFacs );
-
-      // now - GAV metadata
-      mdFile = new File( _repoDir, relVersionPath+'/'+_repo.getMetadataName() );
-      updateGAVMetadata( mdFile, artifact, aq, vFacs );
-
-      // if classier - nothing else to do :)
-      if( artifact.hasClassifier() )
-        return;
-      
-      if( hasPomBlob )
-      {
-        FileUtil.writeAndSign( _repoDir.getAbsolutePath()+'/'+relVersionPath
-                              +'/'+artifact.getArtifactId()+'-'+artifact.getVersion()+".pom", pomBlob, vFacs
-                              );
-      }
-        
+        catch ( InterruptedException e )
+        {
+        }
+        catch ( RepositoryException e )
+        {
+            throw new RuntimeException( e );
+        }
     }
-    catch( Exception e )
+
+    // ---------------------------------------------------------------------------------------------------------------
+    public void writeArtifact( final Artifact artifact, final Set<StreamVerifierFactory> vFacs )
+        throws RepositoryException
     {
-      throw new RepositoryException( e );
-    }
-    finally
-    {
-      if( fLock != null )
-        fLock.release();
+        if ( artifact == null )
+            return;
+
+        boolean isPom = "pom".equals( artifact.getType() );
+
+        byte[] pomBlob = artifact.getPomBlob();
+        boolean hasPomBlob = pomBlob != null && pomBlob.length > 0;
+
+        InputStream in = artifact.getStream();
+        if ( in == null )
+        {
+            File aFile = artifact.getFile();
+            if ( aFile == null && !isPom )
+            {
+                throw new RepositoryException( LANG.getMessage( "artifact.no.stream", artifact.toString() ) );
+            }
+
+            try
+            {
+                in = new FileInputStream( aFile );
+            }
+            catch ( FileNotFoundException e )
+            {
+                if ( !isPom )
+                    throw new RepositoryException( e );
+            }
+        }
+        DefaultArtifactVersion dav = new DefaultArtifactVersion( artifact.getVersion() );
+        Quality aq = dav.getQuality();
+        boolean isSnapshot = aq.equals( Quality.SNAPSHOT_QUALITY ) || aq.equals( Quality.SNAPSHOT_TS_QUALITY );
+
+        String relGroupPath = artifact.getGroupId().replace( '.', '/' ) + "/" + artifact.getArtifactId();
+        String versionDirName =
+            isSnapshot ? ( dav.getBase() + '-' + Artifact.SNAPSHOT_VERSION ) : artifact.getVersion();
+        String relVersionPath = relGroupPath + '/' + versionDirName;
+
+        String lockDir = null;
+        FileLockBundle fLock = null;
+
+        try
+        {
+
+            if ( isPom )
+            {
+                if ( in == null && !hasPomBlob )
+                    throw new RepositoryException( LANG.getMessage( "pom.artifact.no.stream", artifact.toString() ) );
+
+                if ( in != null )
+                {
+                    byte[] pomBlobBytes = FileUtil.readRawData( in );
+                    hasPomBlob = pomBlobBytes != null && pomBlobBytes.length > 0;
+                    if ( hasPomBlob )
+                        pomBlob = pomBlobBytes;
+                }
+            }
+
+            // create folders
+            lockDir = _repoDir.getAbsolutePath() + '/' + relGroupPath;
+
+            File gav = new File( lockDir );
+            gav.mkdirs();
+
+            // haveLock = FileUtil.lockDir( lockDir, SLEEP_FOR_LOCK, SLEEP_FOR_LOCK_TICK );
+            // if( !haveLock )
+            // throw new RepositoryException( _lang.getMessage( "cannot.lock.gav", lockDir, ""+SLEEP_FOR_LOCK ) );
+            fLock = FileUtil.lockDir( lockDir, SLEEP_FOR_LOCK, SLEEP_FOR_LOCK_TICK );
+            if ( fLock == null )
+                throw new RepositoryException( LANG.getMessage( "cannot.lock.gav", lockDir, "" + SLEEP_FOR_LOCK ) );
+
+            String fName =
+                _repoDir.getAbsolutePath() + '/' + relVersionPath + '/' + artifact.getBaseName() + '.'
+                    + artifact.getType();
+
+            if ( !isPom ) // first - take care of the binary
+            {
+                FileUtil.writeAndSign( fName, in, vFacs );
+                artifact.setFile( new File( fName ) );
+            }
+
+            // GA metadata
+            File mdFile = new File( _repoDir, relGroupPath + '/' + _repo.getMetadataName() );
+            updateGAMetadata( mdFile, artifact, versionDirName, aq, vFacs );
+
+            // now - GAV metadata
+            mdFile = new File( _repoDir, relVersionPath + '/' + _repo.getMetadataName() );
+            updateGAVMetadata( mdFile, artifact, aq, vFacs );
+
+            // if classier - nothing else to do :)
+            if ( artifact.hasClassifier() )
+                return;
+
+            if ( hasPomBlob )
+            {
+                FileUtil.writeAndSign( _repoDir.getAbsolutePath() + '/' + relVersionPath + '/'
+                    + artifact.getArtifactId() + '-' + artifact.getVersion() + ".pom", pomBlob, vFacs );
+            }
+
+        }
+        catch ( Exception e )
+        {
+            throw new RepositoryException( e );
+        }
+        finally
+        {
+            if ( fLock != null )
+                fLock.release();
             if ( in != null )
             {
                 try
@@ -317,133 +344,132 @@ implements RepositoryWriter
                     // ignore, tried our best to clean up
                 }
             }
-    }
-    
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  private void updateGAMetadata(  final File mdFile
-                                , final Artifact artifact
-                                , final String version
-                                , final Quality aq
-                                , final Set<StreamVerifierFactory> vFacs
-                              )
-  throws MetadataException, IOException, StreamObserverException
-  {
-    Metadata md = null;
-    
-    if( mdFile.exists() )
-    {
-      try
-      {
-        byte [] mdBytes = FileUtil.readRawData( mdFile );
-        
-        if( mdBytes == null )
-          throw new MetadataException( LANG.getMessage( "file.is.empty", mdFile.getAbsolutePath() ));
-        
-        md = MetadataBuilder.read( new ByteArrayInputStream(mdBytes) );
-      }
-      catch( MetadataException e )
-      {
-        throw e;
-      }
-    }
-    else
-    {
-      md = new Metadata();
-      md.setGroupId( artifact.getGroupId() );
-      md.setArtifactId( artifact.getArtifactId() );
-    }
-    
-    MetadataOperation mdOp = new AddVersionOperation( new StringOperand( version ) ); 
-    
-    byte [] resBytes = MetadataBuilder.changeMetadata( md, mdOp );
+        }
 
-    FileUtil.writeAndSign( mdFile.getAbsolutePath(), resBytes, vFacs );
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  private void updateGAVMetadata( final File mdFile
-                                , final Artifact artifact
-                                , final Quality aq
-                                , final Set<StreamVerifierFactory> vFacs
-                              )
-  throws MetadataException, IOException, StreamObserverException
-  {
-    Metadata md = null;
-    
-    if( mdFile.exists() )
-    {
-      byte [] mdBytes = FileUtil.readRawData( mdFile );
-      md = MetadataBuilder.read( new ByteArrayInputStream(mdBytes) );
     }
-    else
+
+    // ---------------------------------------------------------------------------------------------------------------
+    private void updateGAMetadata( final File mdFile, final Artifact artifact, final String version, final Quality aq,
+                                   final Set<StreamVerifierFactory> vFacs )
+        throws MetadataException, IOException, StreamObserverException
     {
-      md = new Metadata();
-      md.setGroupId( artifact.getGroupId() );
-      md.setArtifactId( artifact.getArtifactId() );
-      md.setVersion( artifact.getVersion() );
+        Metadata md = null;
+
+        if ( mdFile.exists() )
+        {
+            try
+            {
+                byte[] mdBytes = FileUtil.readRawData( mdFile );
+
+                if ( mdBytes == null )
+                    throw new MetadataException( LANG.getMessage( "file.is.empty", mdFile.getAbsolutePath() ) );
+
+                md = MetadataBuilder.read( new ByteArrayInputStream( mdBytes ) );
+            }
+            catch ( MetadataException e )
+            {
+                throw e;
+            }
+        }
+        else
+        {
+            md = new Metadata();
+            md.setGroupId( artifact.getGroupId() );
+            md.setArtifactId( artifact.getArtifactId() );
+        }
+
+        MetadataOperation mdOp = new AddVersionOperation( new StringOperand( version ) );
+
+        byte[] resBytes = MetadataBuilder.changeMetadata( md, mdOp );
+
+        FileUtil.writeAndSign( mdFile.getAbsolutePath(), resBytes, vFacs );
     }
-    List<MetadataOperation> mdOps = new ArrayList<MetadataOperation>(2);
-    
-    if( aq.equals( Quality.SNAPSHOT_TS_QUALITY ) )
+
+    // ---------------------------------------------------------------------------------------------------------------
+    private void updateGAVMetadata( final File mdFile, final Artifact artifact, final Quality aq,
+                                    final Set<StreamVerifierFactory> vFacs )
+        throws MetadataException, IOException, StreamObserverException
     {
-      Snapshot sn = MetadataBuilder.createSnapshot( artifact.getVersion() );
-      sn.setLocalCopy( true );
-      mdOps.add( new SetSnapshotOperation( new SnapshotOperand(sn) ) );
+        Metadata md = null;
+
+        if ( mdFile.exists() )
+        {
+            byte[] mdBytes = FileUtil.readRawData( mdFile );
+            md = MetadataBuilder.read( new ByteArrayInputStream( mdBytes ) );
+        }
+        else
+        {
+            md = new Metadata();
+            md.setGroupId( artifact.getGroupId() );
+            md.setArtifactId( artifact.getArtifactId() );
+            md.setVersion( artifact.getVersion() );
+        }
+        List<MetadataOperation> mdOps = new ArrayList<MetadataOperation>( 2 );
+
+        if ( aq.equals( Quality.SNAPSHOT_TS_QUALITY ) )
+        {
+            Snapshot sn = MetadataBuilder.createSnapshot( artifact.getVersion() );
+            sn.setLocalCopy( true );
+            mdOps.add( new SetSnapshotOperation( new SnapshotOperand( sn ) ) );
+        }
+
+        mdOps.add( new AddVersionOperation( new StringOperand( artifact.getVersion() ) ) );
+
+        // System.out.println("added "+artifact.getVersion());
+        // System.out.flush();
+        byte[] resBytes = MetadataBuilder.changeMetadata( md, mdOps );
+        FileUtil.writeAndSign( mdFile.getAbsolutePath(), resBytes, vFacs );
     }
-    
-    mdOps.add( new AddVersionOperation( new StringOperand(artifact.getVersion()) ) ); 
- 
-//System.out.println("added "+artifact.getVersion());
-//System.out.flush();
-    byte [] resBytes = MetadataBuilder.changeMetadata( md, mdOps );
-    FileUtil.writeAndSign( mdFile.getAbsolutePath(), resBytes, vFacs );
-  }
-  //---------------------------------------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------
 }
-//=================================================================================================================
+
+// =================================================================================================================
 class ArifactWriteData
 {
-  Artifact artifact;
-  Set<StreamVerifierFactory> vFacs;
-  
-  public ArifactWriteData(Artifact artifact, Set<StreamVerifierFactory> vFacs)
-  {
-    this.artifact = artifact;
-    this.vFacs = vFacs;
-  }
+    Artifact artifact;
+
+    Set<StreamVerifierFactory> vFacs;
+
+    public ArifactWriteData( Artifact artifact, Set<StreamVerifierFactory> vFacs )
+    {
+        this.artifact = artifact;
+        this.vFacs = vFacs;
+    }
 }
-//=================================================================================================================
+
+// =================================================================================================================
 class ArtifactQueue
 {
-  LinkedList<ArifactWriteData> queue = new LinkedList<ArifactWriteData>();
-  boolean empty = false;
-  
-  public synchronized void addArtifact( ArifactWriteData awd )
-  {
-    queue.addLast( awd );
-    empty = false;
-    notify();
-  }
+    LinkedList<ArifactWriteData> queue = new LinkedList<ArifactWriteData>();
 
-  public synchronized ArifactWriteData getArtifact()
-  throws InterruptedException
-  {
-    if( empty )
-      return null;
+    boolean empty = false;
 
-    while( queue.isEmpty() )
-      wait();
-    
-    ArifactWriteData res = queue.removeFirst();
-    
-    if( res.artifact == null )
+    public synchronized void addArtifact( ArifactWriteData awd )
     {
-      empty = true;
-      return null;
+        queue.addLast( awd );
+        empty = false;
+        notify();
     }
 
-    return res;
-  }
+    public synchronized ArifactWriteData getArtifact()
+        throws InterruptedException
+    {
+        if ( empty )
+            return null;
+
+        while ( queue.isEmpty() )
+            wait();
+
+        ArifactWriteData res = queue.removeFirst();
+
+        if ( res.artifact == null )
+        {
+            empty = true;
+            return null;
+        }
+
+        return res;
+    }
 }
-//=================================================================================================================
+// =================================================================================================================

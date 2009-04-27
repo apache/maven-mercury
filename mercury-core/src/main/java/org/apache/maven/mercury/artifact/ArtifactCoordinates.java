@@ -85,7 +85,7 @@ public class ArtifactCoordinates
     {
         this.version = version;
     }
-    
+
     public String getClassifier()
     {
         return classifier;

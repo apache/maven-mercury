@@ -25,7 +25,7 @@ import org.apache.maven.mercury.artifact.QualityRange;
 
 /**
  * lack of IoC container makes me throw this class in.
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -47,7 +47,7 @@ public class VersionRangeFactory
     // --------------------------------------------------------------------------------------------
     /**
      * helpful latest version calculator
-     *
+     * 
      * @param versions
      * @param noSnapshots
      * @return
@@ -64,8 +64,8 @@ public class VersionRangeFactory
             // RELEASE?
             if ( noSnapshots )
             {
-                if( vn.endsWith( Artifact.SNAPSHOT_VERSION ) || vn.matches( Artifact.SNAPSHOT_TS_REGEX ) )
-                continue;
+                if ( vn.endsWith( Artifact.SNAPSHOT_VERSION ) || vn.matches( Artifact.SNAPSHOT_TS_REGEX ) )
+                    continue;
             }
 
             if ( version == null )

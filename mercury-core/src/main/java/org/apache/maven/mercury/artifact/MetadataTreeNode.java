@@ -82,7 +82,7 @@ public class MetadataTreeNode
      * actual found versions
      */
     List<MetadataTreeNode> children;
-    
+
     /** unique name of this node. Used in SAT solver */
     String name;
 
@@ -267,7 +267,7 @@ public class MetadataTreeNode
         return real;
     }
 
-    public void setReal( boolean real)
+    public void setReal( boolean real )
     {
         this.real = real;
     }
@@ -305,7 +305,7 @@ public class MetadataTreeNode
     public static final void showNode( MetadataTreeNode n, int level, Writer wr )
         throws IOException
     {
-        if( n == null )
+        if ( n == null )
         {
             wr.write( "null node" );
             return;
@@ -360,7 +360,7 @@ public class MetadataTreeNode
             for ( MetadataTreeNode kid : node.getChildren() )
                 reNum( kid, num );
     }
-    
+
     public String getName()
     {
         return name;
@@ -368,14 +368,14 @@ public class MetadataTreeNode
 
     public void createNames( int level, int seq )
     {
-        name = md.toScopedString()+":"+level+"."+seq;
-        
-        if( hasChildren() )
+        name = md.toScopedString() + ":" + level + "." + seq;
+
+        if ( hasChildren() )
         {
             int no = 0;
-            
-            for( MetadataTreeNode kid : children )
-                kid.createNames( level+1, no++ );
+
+            for ( MetadataTreeNode kid : children )
+                kid.createNames( level + 1, no++ );
         }
     }
     // ------------------------------------------------------------------------

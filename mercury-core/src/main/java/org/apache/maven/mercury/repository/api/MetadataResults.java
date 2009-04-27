@@ -55,8 +55,7 @@ public class MetadataResults
     {
     }
 
-    public static MetadataResults add( final MetadataResults res, final ArtifactMetadata key,
-                                            final Exception err )
+    public static MetadataResults add( final MetadataResults res, final ArtifactMetadata key, final Exception err )
     {
         MetadataResults ret = res;
         if ( res == null )
@@ -68,7 +67,7 @@ public class MetadataResults
     }
 
     public static MetadataResults add( final MetadataResults res, final ArtifactMetadata key,
-                                            final List<ArtifactMetadata> result )
+                                       final List<ArtifactMetadata> result )
     {
         MetadataResults ret = res;
         if ( res == null )
@@ -80,7 +79,7 @@ public class MetadataResults
     }
 
     public static MetadataResults add( final MetadataResults res, final ArtifactMetadata key,
-                                            final ArtifactMetadata result )
+                                       final ArtifactMetadata result )
     {
         MetadataResults ret = res;
         if ( res == null )

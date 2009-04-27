@@ -19,7 +19,6 @@
 
 package org.apache.maven.mercury.spi.http.client.deploy;
 
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -51,12 +50,15 @@ import org.mortbay.jetty.client.HttpClient;
  * <p/>
  * Implementation of Deployer using Jetty async HttpClient.
  */
-public class DefaultDeployer implements Deployer
+public class DefaultDeployer
+    implements Deployer
 {
     private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( DefaultDeployer.class );
-    
+
     private HttpClient _httpClient;
+
     private BatchIdGenerator _idGenerator;
+
     private Set<Server> _servers = new HashSet<Server>();
 
     public DefaultDeployer()
@@ -65,7 +67,7 @@ public class DefaultDeployer implements Deployer
         _idGenerator = new RandomBatchIdGenerator();
         _httpClient = new HttpClient();
         _httpClient.setConnectorType( HttpClient.CONNECTOR_SELECT_CHANNEL );
-        _httpClient.registerListener( "org.mortbay.jetty.client.webdav.WebdavListener");
+        _httpClient.registerListener( "org.mortbay.jetty.client.webdav.WebdavListener" );
         try
         {
             _httpClient.start();
@@ -108,29 +110,28 @@ public class DefaultDeployer implements Deployer
     {
         return _httpClient;
     }
-    
-    public void setServers (Set<Server>servers)
+
+    public void setServers( Set<Server> servers )
     {
         _servers.clear();
-        _servers.addAll(servers);
-        _httpClient.setRealmResolver(new DestinationRealmResolver(_servers));
+        _servers.addAll( servers );
+        _httpClient.setRealmResolver( new DestinationRealmResolver( _servers ) );
     }
-    
+
     public Set<Server> getServers()
     {
         return _servers;
     }
 
     /**
-     * Deploy a set files synchronously. This call will return when either all
-     * files have been successfully deployed, or one or more failures have
-     * occurred, depending on the failFast setting of the DeployRequest.
-     *
+     * Deploy a set files synchronously. This call will return when either all files have been successfully deployed, or
+     * one or more failures have occurred, depending on the failFast setting of the DeployRequest.
+     * 
      * @see org.apache.maven.mercury.spi.http.client.deploy.Deployer#deploy(org.apache.maven.mercury.spi.http.client.deploy.DeployRequest)
      */
     public DeployResponse deploy( DeployRequest request )
     {
-        final DeployResponse[] response = new DeployResponse[]{null};
+        final DeployResponse[] response = new DeployResponse[] { null };
 
         deploy( request, new DeployCallback()
         {
@@ -162,11 +163,11 @@ public class DefaultDeployer implements Deployer
     }
 
     /**
-     * Deploy a set of files, returning immediately. The callback will be called when
-     * all the files have been deployed or one or more errors occur (depends on the FailFast
-     * setting of the DeployRequest).
-     *
-     * @see org.apache.maven.mercury.spi.http.client.deploy.Deployer#deploy(org.apache.maven.mercury.spi.http.client.deploy.DeployRequest, org.apache.maven.mercury.spi.http.client.deploy.DeployCallback)
+     * Deploy a set of files, returning immediately. The callback will be called when all the files have been deployed
+     * or one or more errors occur (depends on the FailFast setting of the DeployRequest).
+     * 
+     * @see org.apache.maven.mercury.spi.http.client.deploy.Deployer#deploy(org.apache.maven.mercury.spi.http.client.deploy.DeployRequest,
+     *      org.apache.maven.mercury.spi.http.client.deploy.DeployCallback)
      */
     public void deploy( final DeployRequest request, final DeployCallback callback )
     {
@@ -194,32 +195,33 @@ public class DefaultDeployer implements Deployer
             DeploymentTarget target = null;
             try
             {
-                Server server = resolveServer(binding);
-                
-                Set<StreamObserver> observers = createStreamObservers( server, binding.isExempt() );
-                
-                target = new DeploymentTarget( server, _httpClient, batchId, binding, request.getValidators(), observers )
-                {
-                    public void onComplete()
-                    {
-                        if ( getRemoteJettyUrl() != null )
-                        {
-                            remoteHandshakeUrls.add( getRemoteJettyUrl() );
-                        }
-                        //uploaded the file - have we uploaded all of them?
-                        checkComplete( callback, batchId, count, request, response, remoteHandshakeUrls );
-                    }
+                Server server = resolveServer( binding );
 
-                    public void onError( HttpClientException exception )
+                Set<StreamObserver> observers = createStreamObservers( server, binding.isExempt() );
+
+                target =
+                    new DeploymentTarget( server, _httpClient, batchId, binding, request.getValidators(), observers )
                     {
-                        if ( getRemoteJettyUrl() != null )
+                        public void onComplete()
                         {
-                            remoteHandshakeUrls.add( getRemoteJettyUrl() );
+                            if ( getRemoteJettyUrl() != null )
+                            {
+                                remoteHandshakeUrls.add( getRemoteJettyUrl() );
+                            }
+                            // uploaded the file - have we uploaded all of them?
+                            checkComplete( callback, batchId, count, request, response, remoteHandshakeUrls );
                         }
-                        response.add( exception );
-                        checkComplete( callback, batchId, count, request, response, remoteHandshakeUrls );
-                    }
-                };
+
+                        public void onError( HttpClientException exception )
+                        {
+                            if ( getRemoteJettyUrl() != null )
+                            {
+                                remoteHandshakeUrls.add( getRemoteJettyUrl() );
+                            }
+                            response.add( exception );
+                            checkComplete( callback, batchId, count, request, response, remoteHandshakeUrls );
+                        }
+                    };
                 targets.add( target );
             }
             catch ( Exception e )
@@ -231,15 +233,12 @@ public class DefaultDeployer implements Deployer
 
         for ( final DeploymentTarget target : targets )
         {
-            target.deploy(); //upload file
+            target.deploy(); // upload file
         }
     }
 
-    private synchronized void checkComplete( final DeployCallback callback,
-                                             String batchId,
-                                             AtomicInteger count,
-                                             DeployRequest request,
-                                             DeployResponse response,
+    private synchronized void checkComplete( final DeployCallback callback, String batchId, AtomicInteger count,
+                                             DeployRequest request, DeployResponse response,
                                              Set<String> remoteHandshakeUrls )
     {
         int x = count.decrementAndGet();
@@ -256,14 +255,12 @@ public class DefaultDeployer implements Deployer
     }
 
     /**
-     * Send message to remote server (if Jetty) to indicate all
-     * files uploaded should now be commited or discarded if there were exceptions.
-     *
+     * Send message to remote server (if Jetty) to indicate all files uploaded should now be commited or discarded if
+     * there were exceptions.
+     * 
      * @param batchId
      */
-    private void commit( final DeployCallback callback,
-                         final DeployResponse response,
-                         final String batchId,
+    private void commit( final DeployCallback callback, final DeployResponse response, final String batchId,
                          final Set<String> remoteHandshakeUrls )
     {
         if ( remoteHandshakeUrls.isEmpty() )
@@ -274,7 +271,7 @@ public class DefaultDeployer implements Deployer
         {
             final AtomicInteger count = new AtomicInteger( remoteHandshakeUrls.size() );
             Map<String, String> headers = new HashMap<String, String>();
-            //if no errors, then commit, otherwise send a discard message
+            // if no errors, then commit, otherwise send a discard message
             if ( response.getExceptions().isEmpty() )
             {
                 headers.put( FileExchange.__BATCH_COMMIT_HEADER, batchId );
@@ -303,9 +300,7 @@ public class DefaultDeployer implements Deployer
         }
     }
 
-
-    private void checkHandshakeComplete( final DeployCallback callback,
-                                         final DeployResponse response,
+    private void checkHandshakeComplete( final DeployCallback callback, final DeployResponse response,
                                          AtomicInteger count )
     {
         boolean completor = count.decrementAndGet() == 0;
@@ -314,63 +309,63 @@ public class DefaultDeployer implements Deployer
             callback.onComplete( response );
         }
     }
- 
-    private Server resolveServer (Binding binding)
-    throws MalformedURLException
+
+    private Server resolveServer( Binding binding )
+        throws MalformedURLException
     {
-        if (binding.getRemoteResource() == null)
-        return null;
-        
+        if ( binding.getRemoteResource() == null )
+            return null;
+
         URL bindingURL = binding.getRemoteResource();
         Iterator<Server> itor = _servers.iterator();
         Server server = null;
-        while(itor.hasNext() && server==null)
+        while ( itor.hasNext() && server == null )
         {
             Server s = itor.next();
-            if (bindingURL.getProtocol().equalsIgnoreCase(s.getURL().getProtocol()) 
-                    && bindingURL.getHost().equalsIgnoreCase(s.getURL().getHost())
-                    && bindingURL.getPort() == s.getURL().getPort())
+            if ( bindingURL.getProtocol().equalsIgnoreCase( s.getURL().getProtocol() )
+                && bindingURL.getHost().equalsIgnoreCase( s.getURL().getHost() )
+                && bindingURL.getPort() == s.getURL().getPort() )
                 server = s;
         }
         return server;
     }
-    
+
     private Set<StreamObserver> createStreamObservers( Server server, boolean exempt )
-    throws StreamObserverException
+        throws StreamObserverException
     {
         HashSet<StreamObserver> observers = new HashSet<StreamObserver>();
-        
-        if( server == null )
-          return observers;
-        
-        if( (!exempt) && server.hasWriterStreamVerifierFactories() )
+
+        if ( server == null )
+            return observers;
+
+        if ( ( !exempt ) && server.hasWriterStreamVerifierFactories() )
         {
-          Set<StreamVerifierFactory> factories = server.getWriterStreamVerifierFactories();
-          for (StreamVerifierFactory f:factories)
-          {
-              observers.add( f.newInstance() );
-          }
+            Set<StreamVerifierFactory> factories = server.getWriterStreamVerifierFactories();
+            for ( StreamVerifierFactory f : factories )
+            {
+                observers.add( f.newInstance() );
+            }
         }
-        
-        if( server.hasWriterStreamObserverFactories() )
+
+        if ( server.hasWriterStreamObserverFactories() )
         {
-          Set<StreamObserverFactory> factories = server.getWriterStreamObserverFactories();
-          for (StreamObserverFactory f:factories)
-          {
-              observers.add( f.newInstance() );
-          }
+            Set<StreamObserverFactory> factories = server.getWriterStreamObserverFactories();
+            for ( StreamObserverFactory f : factories )
+            {
+                observers.add( f.newInstance() );
+            }
         }
         return observers;
     }
-    
+
     public void stop()
     {
-        if( _httpClient == null )
+        if ( _httpClient == null )
             return;
-        
-        if( _httpClient.isStopped() || _httpClient.isStopping() )
+
+        if ( _httpClient.isStopped() || _httpClient.isStopping() )
             return;
-        
+
         try
         {
             _httpClient.stop();
@@ -379,7 +374,7 @@ public class DefaultDeployer implements Deployer
         {
             LOG.error( e.getMessage() );
         }
-            
+
     }
 
 }

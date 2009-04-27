@@ -38,26 +38,26 @@ public class ClasspathContainer
 
     private ArtifactScopeEnum scope;
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     public ClasspathContainer( ArtifactScopeEnum scope )
     {
         this.scope = ArtifactScopeEnum.checkScope( scope );
     }
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     public ClasspathContainer( List<ArtifactMetadata> classpath, ArtifactScopeEnum scope )
     {
         this( scope );
         this.classpath = classpath;
     }
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     public Iterator<ArtifactMetadata> iterator()
     {
         return classpath == null ? null : classpath.iterator();
     }
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     public ClasspathContainer add( ArtifactMetadata md )
     {
         if ( classpath == null )
@@ -70,13 +70,13 @@ public class ClasspathContainer
         return this;
     }
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     public List<ArtifactMetadata> getClasspath()
     {
         return classpath;
     }
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     public MetadataTreeNode getClasspathAsTree()
     {
         if ( classpath == null || classpath.size() < 1 )
@@ -88,9 +88,9 @@ public class ClasspathContainer
 
         for ( ArtifactMetadata md : classpath )
         {
-          // TODO Oleg: is null for query good here ??
+            // TODO Oleg: is null for query good here ??
             node = new MetadataTreeNode( md, parent, null );
-            
+
             if ( tree == null )
             {
                 tree = node;
@@ -122,7 +122,7 @@ public class ClasspathContainer
         this.scope = scope;
     }
 
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     @Override
     public String toString()
     {
@@ -136,6 +136,6 @@ public class ClasspathContainer
         sb.append( ']' );
         return sb.toString();
     }
-    //-------------------------------------------------------------------------------------------
-    //-------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 }

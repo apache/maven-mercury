@@ -28,41 +28,43 @@ import org.apache.maven.mercury.spi.http.server.AuthenticatingTestServer;
 import org.apache.maven.mercury.transport.api.Credentials;
 import org.apache.maven.mercury.transport.api.Server;
 
-public class ProxyJettyRetrieverTest extends JettyRetrieverTest
+public class ProxyJettyRetrieverTest
+    extends JettyRetrieverTest
 {
     AuthenticatingProxyServer _proxyServer;
+
     String _proxyPort;
-    
-    public void setUp ()
-    throws Exception
-    {  
-        //Set up a proxy server (which requires authentication)
+
+    public void setUp()
+        throws Exception
+    {
+        // Set up a proxy server (which requires authentication)
         _proxyServer = new AuthenticatingProxyServer();
         _proxyServer.start();
-        _proxyPort = String.valueOf(_proxyServer.getPort());
-        
-        //Set up the real target server (which requires authentication)
+        _proxyPort = String.valueOf( _proxyServer.getPort() );
+
+        // Set up the real target server (which requires authentication)
         server = new AuthenticatingTestServer();
         server.start();
-        _port=String.valueOf(server.getPort()); 
+        _port = String.valueOf( server.getPort() );
 
         HashSet<Server> remoteServerTypes = new HashSet<Server>();
-        remoteServerType = new Server( "test", new URL(__HOST_FRAGMENT+_port), 
-                                       false, 
-                                       false, 
-                                       new Credentials(((AuthenticatingTestServer)server).getUsername(), ((AuthenticatingTestServer)server).getPassword()),
-                                       new URL(__HOST_FRAGMENT+_proxyPort),
-                                       new Credentials(_proxyServer.getUsername(), _proxyServer.getPassword()));        
+        remoteServerType =
+            new Server( "test", new URL( __HOST_FRAGMENT + _port ), false, false,
+                        new Credentials( ( (AuthenticatingTestServer) server ).getUsername(),
+                                         ( (AuthenticatingTestServer) server ).getPassword() ),
+                        new URL( __HOST_FRAGMENT + _proxyPort ), new Credentials( _proxyServer.getUsername(),
+                                                                                  _proxyServer.getPassword() ) );
         factories = new HashSet<StreamVerifierFactory>();
 
-        remoteServerTypes.add(remoteServerType);
+        remoteServerTypes.add( remoteServerType );
 
         retriever = new DefaultRetriever();
-        retriever.setServers(remoteServerTypes);
+        retriever.setServers( remoteServerTypes );
     }
 
-
-    protected void tearDown() throws Exception
+    protected void tearDown()
+        throws Exception
     {
         _proxyServer.stop();
         super.tearDown();

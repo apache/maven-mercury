@@ -48,9 +48,9 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.AbstracRepositoryReader;
 import org.apache.maven.mercury.repository.api.AbstractRepOpResult;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
-import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
@@ -124,33 +124,31 @@ public class LocalRepositoryReaderM2
         {
             final boolean noSnapshots = Artifact.RELEASE_VERSION.equals( loc.getVersion() );
             loc.setVersion( null );
-            
+
             final TreeSet<String> ts = new TreeSet<String>( new VersionComparator() );
 
-            gaDir.listFiles(
-                     new FilenameFilter()
-                     {
-                        public boolean accept( File dir, String name )
-                        {   
-                            if( new File(dir,name).isDirectory() )
-                            {
-                                if( noSnapshots && name.endsWith( Artifact.SNAPSHOT_VERSION ) )
-                                    return false;
-                                
-                                ts.add( name );
-                                return true;
-                            }
+            gaDir.listFiles( new FilenameFilter()
+            {
+                public boolean accept( File dir, String name )
+                {
+                    if ( new File( dir, name ).isDirectory() )
+                    {
+                        if ( noSnapshots && name.endsWith( Artifact.SNAPSHOT_VERSION ) )
                             return false;
-                        }
-                         
-                     }
-                           );
-            
-            if( !ts.isEmpty() )
+
+                        ts.add( name );
+                        return true;
+                    }
+                    return false;
+                }
+
+            } );
+
+            if ( !ts.isEmpty() )
                 loc.setVersion( ts.last() );
             else
             {
-                if( LOG.isDebugEnabled() )
+                if ( LOG.isDebugEnabled() )
                     LOG.debug( LANG.getMessage( "gav.not.found", bmd.toString(), loc.getGaPath() ) );
                 return null;
             }
@@ -173,11 +171,11 @@ public class LocalRepositoryReaderM2
             File gavDir = new File( gaDir, loc.getVersion() );
             if ( !gavDir.exists() )
             {
-//                res.addError( bmd, new RepositoryException( LANG.getMessage( "gavdir.not.found", bmd.toString(),
-//                                                                             gavDir.getAbsolutePath() ) ) );
-                if( LOG.isDebugEnabled() )
+                // res.addError( bmd, new RepositoryException( LANG.getMessage( "gavdir.not.found", bmd.toString(),
+                // gavDir.getAbsolutePath() ) ) );
+                if ( LOG.isDebugEnabled() )
                     LOG.debug( LANG.getMessage( "gavdir.not.found", bmd.toString(), gavDir.getAbsolutePath() ) );
-                
+
                 return null;
             }
 
@@ -210,7 +208,7 @@ public class LocalRepositoryReaderM2
 
         for ( ArtifactMetadata md : query )
         {
-            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+            if ( !_repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
                 continue;
 
             DefaultArtifact da = md instanceof DefaultArtifact ? (DefaultArtifact) md : new DefaultArtifact( md );
@@ -225,15 +223,16 @@ public class LocalRepositoryReaderM2
             // binary calculated
             if ( !binary.exists() )
             {
-//                res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(),
-//                                                                             binary.getAbsolutePath() ) ) );
-                if( LOG.isDebugEnabled() )
+                // res.addError( bmd, new RepositoryException( LANG.getMessage( "binary.not.found", bmd.toString(),
+                // binary.getAbsolutePath() ) ) );
+                if ( LOG.isDebugEnabled() )
                     LOG.debug( LANG.getMessage( "binary.not.found", md.toString(), binary.getAbsolutePath() ) );
 
                 continue;
             }
 
-            try // reading pom if one exists
+            try
+            // reading pom if one exists
             {
                 if ( checkFile( binary, vFacs ) )
                 {
@@ -374,17 +373,18 @@ public class LocalRepositoryReaderM2
         File pomFile = null;
         for ( ArtifactMetadata md : query )
         {
-            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+            if ( !_repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
                 continue;
 
             String pomPath =
-                md.getGroupId().replace( '.', '/' ) + "/" + md.getArtifactId() + "/" + ArtifactLocation.calculateVersionDir( md.getVersion() ) + "/"
-                    + md.getArtifactId() + '-' + md.getVersion() + ".pom";
+                md.getGroupId().replace( '.', '/' ) + "/" + md.getArtifactId() + "/"
+                    + ArtifactLocation.calculateVersionDir( md.getVersion() ) + "/" + md.getArtifactId() + '-'
+                    + md.getVersion() + ".pom";
 
             pomFile = new File( _repoDir, pomPath );
             if ( !pomFile.exists() )
             {
-                if( LOG.isDebugEnabled() )
+                if ( LOG.isDebugEnabled() )
                     LOG.debug( "file \"" + pomPath + "\" does not exist in local repo" );
                 continue;
             }
@@ -394,15 +394,15 @@ public class LocalRepositoryReaderM2
                 List<ArtifactMetadata> deps =
                     _mdProcessor.getDependencies( md, _mdReader == null ? this : _mdReader, System.getenv(),
                                                   System.getProperties() );
-// for(ArtifactBasicMetadata d : deps )
-// {
-// System.out.println("======> "+d.getScope() );
-// }
+                // for(ArtifactBasicMetadata d : deps )
+                // {
+                // System.out.println("======> "+d.getScope() );
+                // }
                 ror = MetadataResults.add( ror, md, deps );
             }
             catch ( Exception e )
             {
-                if( LOG.isDebugEnabled() )
+                if ( LOG.isDebugEnabled() )
                     LOG.debug( "error reading " + md.toString() + " dependencies", e );
                 continue;
             }
@@ -416,81 +416,80 @@ public class LocalRepositoryReaderM2
     private boolean findLatestSnapshot( final ArtifactMetadata md, final ArtifactLocation loc, AbstractRepOpResult res )
     {
         File snapshotFile = new File( loc.getAbsPath() );
-        
+
         boolean virtualRequested = md.isVirtual();
-        
+
         final boolean virtualExists = snapshotFile.exists();
-        
-        final long  virtualLM = virtualExists ? snapshotFile.lastModified() : 0L;
+
+        final long virtualLM = virtualExists ? snapshotFile.lastModified() : 0L;
         final String virtualTS = virtualExists ? TimeUtil.defaultToSnTs( virtualLM ) : "00000000.000000";
 
         // TS exists - return it
-        if ( ! virtualRequested )
+        if ( !virtualRequested )
             return snapshotFile.exists();
 
-        if( virtualExists &&  ((LocalRepositoryM2)_repo).getSnapshotAlwaysWins() )
+        if ( virtualExists && ( (LocalRepositoryM2) _repo ).getSnapshotAlwaysWins() )
             return true;
-        
+
         // no real SNAPSHOT file, let's try to find one
         File gavDir = new File( loc.getAbsGavPath() );
-        
-        String classifier = Util.isEmpty( md.getClassifier() ) ? "" : '-'+md.getClassifier();
-        
-        final String regEx = Artifact.SNAPSHOT_TS_REGEX + classifier + "\\."+md.getCheckedType();
-        
+
+        String classifier = Util.isEmpty( md.getClassifier() ) ? "" : '-' + md.getClassifier();
+
+        final String regEx = Artifact.SNAPSHOT_TS_REGEX + classifier + "\\." + md.getCheckedType();
+
         final TreeSet<String> ts = new TreeSet<String>( new VersionComparator() );
-        
+
         final int pos = md.getArtifactId().length() + 1;
-        
+
         gavDir.listFiles( new FilenameFilter()
-                            {
-                                public boolean accept( File dir, String name )
-                                {
-                                    if( name.matches( regEx ) )
-                                    {
-                                        String ver = name.substring( pos, name.lastIndexOf( '.' ) );
-                                        
-                                        if( !virtualExists )
-                                        {
-                                            ts.add( ver );
-                                            
-                                            return true;
-                                        }
-                                        
-                                        // otherwise - only add it if older'n the SNAPSHOT
-                                        String fTS = ArtifactLocation.getFileTS( name );
-                                        
-                                        if( fTS.compareTo( virtualTS ) >= 0 )
-                                        {
-                                            ts.add( ver );
-                                            
-                                            return true;
-                                        }
-                                        
-                                        return false;
-                                        
-                                    }
-    
-                                    return false;
-                                }
-                                
-                            }
-                          );
-        
-        if( ts.isEmpty() )
         {
-            if( virtualExists ) // none were older'n the snapshot
+            public boolean accept( File dir, String name )
+            {
+                if ( name.matches( regEx ) )
+                {
+                    String ver = name.substring( pos, name.lastIndexOf( '.' ) );
+
+                    if ( !virtualExists )
+                    {
+                        ts.add( ver );
+
+                        return true;
+                    }
+
+                    // otherwise - only add it if older'n the SNAPSHOT
+                    String fTS = ArtifactLocation.getFileTS( name );
+
+                    if ( fTS.compareTo( virtualTS ) >= 0 )
+                    {
+                        ts.add( ver );
+
+                        return true;
+                    }
+
+                    return false;
+
+                }
+
+                return false;
+            }
+
+        } );
+
+        if ( ts.isEmpty() )
+        {
+            if ( virtualExists ) // none were older'n the snapshot
             {
                 md.setTimeStamp( virtualTS );
                 return true;
             }
-            
-            if( LOG.isErrorEnabled() )
-                LOG.error( LANG.getMessage( "snapshot.not.found", md.toString(), gavDir.getAbsolutePath() )  );
-            
+
+            if ( LOG.isErrorEnabled() )
+                LOG.error( LANG.getMessage( "snapshot.not.found", md.toString(), gavDir.getAbsolutePath() ) );
+
             return false;
         }
-        
+
         // at east one is older - return it
         loc.setVersion( ts.last() );
 
@@ -512,7 +511,7 @@ public class LocalRepositoryReaderM2
         File gaDir = null;
         for ( ArtifactMetadata md : query )
         {
-            if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+            if ( !_repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
                 continue;
 
             gaDir = new File( _repoDir, md.getGroupId().replace( '.', '/' ) + "/" + md.getArtifactId() );
@@ -589,11 +588,12 @@ public class LocalRepositoryReaderM2
     {
         return readRawData( md, classifier, type, false );
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( ArtifactMetadata md, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
-        if( ! _repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
+        if ( !_repo.getRepositoryQualityRange().isAcceptedQuality( md.getRequestedQuality() ) )
             return null;
 
         return readRawData( relPathOf( md, classifier, type ), exempt );
@@ -603,25 +603,27 @@ public class LocalRepositoryReaderM2
     private static String relPathOf( ArtifactMetadata bmd, String classifier, String type )
     {
         String bmdPath =
-            bmd.getGroupId().replace( '.', '/' ) + '/' + bmd.getArtifactId() + '/' + ArtifactLocation.calculateVersionDir( bmd.getVersion() );
+            bmd.getGroupId().replace( '.', '/' ) + '/' + bmd.getArtifactId() + '/'
+                + ArtifactLocation.calculateVersionDir( bmd.getVersion() );
 
         String path = bmdPath + '/' + bmd.getBaseName( classifier ) + '.' + ( type == null ? bmd.getType() : type );
-        
-        if( LOG.isDebugEnabled() )
-            LOG.debug( bmd.toString()+" path is "+ path);
+
+        if ( LOG.isDebugEnabled() )
+            LOG.debug( bmd.toString() + " path is " + path );
 
         return path;
     }
 
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( String path )
-    throws MetadataReaderException
+        throws MetadataReaderException
     {
         return readRawData( path, false );
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( String path, boolean exempt )
-    throws MetadataReaderException
+        throws MetadataReaderException
     {
         File file = new File( _repoDir, path );
 
@@ -683,5 +685,5 @@ public class LocalRepositoryReaderM2
     {
     }
     // ---------------------------------------------------------------------------------------------------------------
-    
+
 }

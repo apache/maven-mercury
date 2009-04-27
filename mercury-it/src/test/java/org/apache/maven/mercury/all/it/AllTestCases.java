@@ -15,7 +15,7 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.all.it;
 
@@ -36,10 +36,9 @@ import org.apache.maven.mercury.repository.tests.VirtualRepositoryReaderIntegrat
 
 /**
  * adopted from Maven ITs structure
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class AllTestCases
     extends AbstractTestCase
@@ -50,17 +49,17 @@ public class AllTestCases
     {
         super.setUp();
     }
-    
+
     @Override
     protected void tearDown()
         throws Exception
     {
         super.tearDown();
     }
-    
+
     public void testConfig()
     {
-        
+
     }
 
     public static Test suite()
@@ -73,10 +72,9 @@ public class AllTestCases
         suite.addTestSuite( DavServerTest.class );
 
         /*
-         * Add tests in reverse alpha order by number below. This makes testing new
-         * ITs quicker and since it counts down to zero, it's easier to judge how close
-         * the tests are to finishing. Newer tests are also more likely to fail, so this is
-         * a fail fast technique as well.
+         * Add tests in reverse alpha order by number below. This makes testing new ITs quicker and since it counts down
+         * to zero, it's easier to judge how close the tests are to finishing. Newer tests are also more likely to fail,
+         * so this is a fail fast technique as well.
          */
         suite.addTestSuite( LocalRepositoryReaderM2Test.class );
         suite.addTestSuite( LocalRepositoryWriterM2Test.class );
@@ -88,7 +86,6 @@ public class AllTestCases
         suite.addTestSuite( VirtualRepositoryReaderIntegratedTest.class );
         suite.addTestSuite( DefaultPlexusMercuryTest.class );
         suite.addTestSuite( ComprehensiveRepositoryTest.class );
-
 
         /*
          * Add tests in reverse alpha order above.

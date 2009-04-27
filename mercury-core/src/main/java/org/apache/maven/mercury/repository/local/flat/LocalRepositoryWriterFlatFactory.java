@@ -28,23 +28,25 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 public class LocalRepositoryWriterFlatFactory
-implements RepositoryWriterFactory
+    implements RepositoryWriterFactory
 {
-  private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterFlatFactory.class );
-  private static final LocalRepositoryWriterFlatFactory FACTORY = new LocalRepositoryWriterFlatFactory();
-  
-  static 
-  {
-    AbstractRepository.register( LocalRepositoryFlat.FLAT_REPOSITORY_TYPE, FACTORY  );
-  }
-  
-  public RepositoryWriter getWriter( Repository repo )
-  throws RepositoryException
-  {
-    if( repo == null || !(repo instanceof LocalRepository) )
-      throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
-    
-    return new LocalRepositoryWriterFlat( (LocalRepository)repo );
-  }
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterFlatFactory.class );
+
+    private static final LocalRepositoryWriterFlatFactory FACTORY = new LocalRepositoryWriterFlatFactory();
+
+    static
+    {
+        AbstractRepository.register( LocalRepositoryFlat.FLAT_REPOSITORY_TYPE, FACTORY );
+    }
+
+    public RepositoryWriter getWriter( Repository repo )
+        throws RepositoryException
+    {
+        if ( repo == null || !( repo instanceof LocalRepository ) )
+            throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null"
+                            : repo.getClass().getName() ) );
+
+        return new LocalRepositoryWriterFlat( (LocalRepository) repo );
+    }
 
 }

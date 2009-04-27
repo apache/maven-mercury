@@ -27,58 +27,60 @@ import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
 
 public class AuthenticatingTestServer
-extends SimpleTestServer
+    extends SimpleTestServer
 {
     private static final String __username = "foo";
+
     private static final String __password = "bar";
+
     private static final String __role = "foomeister";
-    
+
     public void secure()
     {
-      HashUserRealm realm = new HashUserRealm();
-      realm.put (__username, __password);
-      realm.addUserToRole(__username, __role);
-      realm.setName("foorealm");
-      
-      SecurityHandler securityHandler = new SecurityHandler();
-      securityHandler.setAuthenticator(new BasicAuthenticator());
-      securityHandler.setUserRealm(realm);
-      Constraint constraint = new Constraint();
-      constraint.setAuthenticate(true);
-      constraint.setRoles(new String[]{__role});
-      ConstraintMapping cm = new ConstraintMapping();
-      cm.setConstraint(constraint);
-      cm.setPathSpec("/*");
-      securityHandler.setConstraintMappings(new ConstraintMapping[]{cm});
-      context.addHandler(securityHandler);
+        HashUserRealm realm = new HashUserRealm();
+        realm.put( __username, __password );
+        realm.addUserToRole( __username, __role );
+        realm.setName( "foorealm" );
+
+        SecurityHandler securityHandler = new SecurityHandler();
+        securityHandler.setAuthenticator( new BasicAuthenticator() );
+        securityHandler.setUserRealm( realm );
+        Constraint constraint = new Constraint();
+        constraint.setAuthenticate( true );
+        constraint.setRoles( new String[] { __role } );
+        ConstraintMapping cm = new ConstraintMapping();
+        cm.setConstraint( constraint );
+        cm.setPathSpec( "/*" );
+        securityHandler.setConstraintMappings( new ConstraintMapping[] { cm } );
+        context.addHandler( securityHandler );
     }
-    
+
     public AuthenticatingTestServer( int port, File localBase, String remotePathFragment, boolean secured )
-    throws Exception
+        throws Exception
     {
-      super( port, localBase, remotePathFragment );
-      if( secured )
-          secure();
+        super( port, localBase, remotePathFragment );
+        if ( secured )
+            secure();
     }
-    
+
     public AuthenticatingTestServer( int port, File localBase, String remotePathFragment )
-    throws Exception
+        throws Exception
     {
-      this( port, localBase, remotePathFragment, true );
+        this( port, localBase, remotePathFragment, true );
     }
 
     public AuthenticatingTestServer()
-    throws Exception
+        throws Exception
     {
-      super();
-      secure();
+        super();
+        secure();
     }
 
     public String getUsername()
     {
         return __username;
     }
-    
+
     public String getPassword()
     {
         return __password;

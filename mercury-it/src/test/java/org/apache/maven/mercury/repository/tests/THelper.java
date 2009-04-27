@@ -24,16 +24,13 @@ import java.util.List;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class THelper
 {
-  public static List<ArtifactMetadata> toList( ArtifactMetadata... bmds)
-  {
-    return Arrays.asList( bmds );
-  }
+    public static List<ArtifactMetadata> toList( ArtifactMetadata... bmds )
+    {
+        return Arrays.asList( bmds );
+    }
 }

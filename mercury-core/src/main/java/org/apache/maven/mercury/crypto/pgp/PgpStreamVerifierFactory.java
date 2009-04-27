@@ -34,122 +34,116 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class PgpStreamVerifierFactory
-extends AbstractStreamVerifierFactory
-implements StreamVerifierFactory
+    extends AbstractStreamVerifierFactory
+    implements StreamVerifierFactory
 {
 
-  public static final String DEFAULT_EXTENSION = PgpHelper.EXTENSION;
+    public static final String DEFAULT_EXTENSION = PgpHelper.EXTENSION;
 
-  private static final Language LANG = new DefaultLanguage( PgpStreamVerifierFactory.class );
+    private static final Language LANG = new DefaultLanguage( PgpStreamVerifierFactory.class );
 
-  private PGPPublicKeyRingCollection  trustedPublicKeyRing;
-  
-  private PGPPrivateKey privateKey;
-  
-  private int algorithm = 0;
-  
-  private int digestAlgorithm = PGPUtil.SHA1;
-  
-  //--------------------------------------------------------------------------------------------
-  public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
-                                  , InputStream trustedPublicKeyRingStream
-                                  )
-  throws StreamVerifierException
-  {
-    super( attributes );
-    init( trustedPublicKeyRingStream );
-    
-  }
-  //--------------------------------------------------------------------------------------------
-  public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
-                                  , PGPPublicKeyRingCollection publicKeyRing
-                                  )
-  throws StreamVerifierException
-  {
-    super( attributes );
-    this.trustedPublicKeyRing = publicKeyRing;
-  }
-  //--------------------------------------------------------------------------------------------
-  public PgpStreamVerifierFactory( StreamVerifierAttributes attributes
-                                  , InputStream secretKeyRingStream
-                                  , String secretKeyId
-                                  , String secretKeyPass
-                                  )
-  throws StreamVerifierException
-  {
-    super( attributes );
-    init( secretKeyRingStream, secretKeyId, secretKeyPass );
-  }
-  //--------------------------------------------------------------------------------------------
-  public void init(  InputStream trustedPublicKeyRingStream )
-  throws StreamVerifierException
-  {
-    try
+    private PGPPublicKeyRingCollection trustedPublicKeyRing;
+
+    private PGPPrivateKey privateKey;
+
+    private int algorithm = 0;
+
+    private int digestAlgorithm = PGPUtil.SHA1;
+
+    // --------------------------------------------------------------------------------------------
+    public PgpStreamVerifierFactory( StreamVerifierAttributes attributes, InputStream trustedPublicKeyRingStream )
+        throws StreamVerifierException
     {
-      if( trustedPublicKeyRingStream != null )
-      {
-        trustedPublicKeyRing = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(trustedPublicKeyRingStream));
-        if( trustedPublicKeyRing == null )
-          throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.verify.empty" ) );
-      }
-      else
-        throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.verify" ) );
+        super( attributes );
+        init( trustedPublicKeyRingStream );
+
     }
-    catch( Exception e )
+
+    // --------------------------------------------------------------------------------------------
+    public PgpStreamVerifierFactory( StreamVerifierAttributes attributes, PGPPublicKeyRingCollection publicKeyRing )
+        throws StreamVerifierException
     {
-      throw new StreamVerifierException(e);
+        super( attributes );
+        this.trustedPublicKeyRing = publicKeyRing;
     }
-  }
-  //--------------------------------------------------------------------------------------------
-  public void init( InputStream secretKeyRingStream
-                  , String secretKeyId
-                  , String secretKeyPass
-                  )
-  throws StreamVerifierException
-  {
-    try
+
+    // --------------------------------------------------------------------------------------------
+    public PgpStreamVerifierFactory( StreamVerifierAttributes attributes, InputStream secretKeyRingStream,
+                                     String secretKeyId, String secretKeyPass )
+        throws StreamVerifierException
     {
-      if( secretKeyRingStream != null && secretKeyId != null && secretKeyPass != null )
-      {
-        PGPSecretKeyRing secRing = PgpHelper.readKeyRing( secretKeyRingStream, secretKeyId );
-        PGPSecretKey secKey = secRing.getSecretKey( PgpHelper.hexToId( secretKeyId ) );
-        privateKey = secKey.extractPrivateKey( secretKeyPass.toCharArray(), PgpHelper.PROVIDER );
-        algorithm =  secKey.getPublicKey().getAlgorithm();
-      }
-      else
-        throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.generate" ) );
+        super( attributes );
+        init( secretKeyRingStream, secretKeyId, secretKeyPass );
     }
-    catch( Exception e )
+
+    // --------------------------------------------------------------------------------------------
+    public void init( InputStream trustedPublicKeyRingStream )
+        throws StreamVerifierException
     {
-      throw new StreamVerifierException(e);
+        try
+        {
+            if ( trustedPublicKeyRingStream != null )
+            {
+                trustedPublicKeyRing =
+                    new PGPPublicKeyRingCollection( PGPUtil.getDecoderStream( trustedPublicKeyRingStream ) );
+                if ( trustedPublicKeyRing == null )
+                    throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.verify.empty" ) );
+            }
+            else
+                throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.verify" ) );
+        }
+        catch ( Exception e )
+        {
+            throw new StreamVerifierException( e );
+        }
     }
-  }
-  //--------------------------------------------------------------------------------------------
-  public String getDefaultExtension()
-  {
-    return DEFAULT_EXTENSION;
-  }
-  //--------------------------------------------------------------------------------------------
-  public StreamVerifier newInstance()
-  throws StreamVerifierException
-  {
-    PgpStreamVerifier sv = new PgpStreamVerifier( attributes );
-    
-    if( privateKey != null )
-      sv.init( privateKey, algorithm, digestAlgorithm );
-    
-    if( trustedPublicKeyRing != null )
-      sv.init( trustedPublicKeyRing );
-    
-    return sv;
-  }
-  //--------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------------------
+    public void init( InputStream secretKeyRingStream, String secretKeyId, String secretKeyPass )
+        throws StreamVerifierException
+    {
+        try
+        {
+            if ( secretKeyRingStream != null && secretKeyId != null && secretKeyPass != null )
+            {
+                PGPSecretKeyRing secRing = PgpHelper.readKeyRing( secretKeyRingStream, secretKeyId );
+                PGPSecretKey secKey = secRing.getSecretKey( PgpHelper.hexToId( secretKeyId ) );
+                privateKey = secKey.extractPrivateKey( secretKeyPass.toCharArray(), PgpHelper.PROVIDER );
+                algorithm = secKey.getPublicKey().getAlgorithm();
+            }
+            else
+                throw new StreamVerifierException( LANG.getMessage( "bad.factory.init.generate" ) );
+        }
+        catch ( Exception e )
+        {
+            throw new StreamVerifierException( e );
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------
+    public String getDefaultExtension()
+    {
+        return DEFAULT_EXTENSION;
+    }
+
+    // --------------------------------------------------------------------------------------------
+    public StreamVerifier newInstance()
+        throws StreamVerifierException
+    {
+        PgpStreamVerifier sv = new PgpStreamVerifier( attributes );
+
+        if ( privateKey != null )
+            sv.init( privateKey, algorithm, digestAlgorithm );
+
+        if ( trustedPublicKeyRing != null )
+            sv.init( trustedPublicKeyRing );
+
+        return sv;
+    }
+    // --------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
 }

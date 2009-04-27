@@ -34,7 +34,7 @@ public class SetSnapshotOperation
     private static final Language LANG = new DefaultLanguage( SetSnapshotOperation.class );
 
     private Snapshot snapshot;
-    
+
     private String snapshotPomName;
 
     /**
@@ -45,28 +45,28 @@ public class SetSnapshotOperation
     {
         setOperand( data );
     }
-    
+
     public SetSnapshotOperation( StringOperand data )
-    	throws MetadataException
+        throws MetadataException
     {
-    	setOperand( data );
+        setOperand( data );
     }
 
     public void setOperand( Object data )
         throws MetadataException
     {
-        if ( data != null && data instanceof SnapshotOperand  )
+        if ( data != null && data instanceof SnapshotOperand )
         {
-        	snapshot = ( (SnapshotOperand) data ).getOperand();
+            snapshot = ( (SnapshotOperand) data ).getOperand();
         }
         else if ( data != null && data instanceof StringOperand )
         {
-        	snapshotPomName = ( (StringOperand) data ).getOperand();
+            snapshotPomName = ( (StringOperand) data ).getOperand();
         }
         else
         {
             throw new MetadataException( LANG.getMessage( "bad.operand", "SnapshotOperand", data == null ? "null"
-                    : data.getClass().getName() ) );
+                            : data.getClass().getName() ) );
         }
 
     }
@@ -85,7 +85,7 @@ public class SetSnapshotOperation
         {
             return false;
         }
-        
+
         Versioning vs = metadata.getVersioning();
 
         if ( vs == null )
@@ -94,63 +94,62 @@ public class SetSnapshotOperation
 
             metadata.setVersioning( vs );
         }
-        
+
         if ( snapshotPomName != null )
         {
-        	return updateSnapshot( snapshotPomName, metadata );
+            return updateSnapshot( snapshotPomName, metadata );
         }
         else
         {
-        	return updateSnapshot( snapshot, vs );
+            return updateSnapshot( snapshot, vs );
         }
-        
+
     }
-    
+
     private boolean updateSnapshot( String snapshotVersion, Metadata metadata )
     {
-    	Snapshot snapshot = buildSnapshot( snapshotVersion, metadata );
-    	
-    	Snapshot oldSnapshot = metadata.getVersioning().getSnapshot();
-    	
-    	if ( needUpdateSnapshot( oldSnapshot, snapshot) )
-    	{
-    		return updateSnapshot( snapshot, metadata.getVersioning() );
-    	}
-    	
-    	return false;
-    	
-    	
+        Snapshot snapshot = buildSnapshot( snapshotVersion, metadata );
+
+        Snapshot oldSnapshot = metadata.getVersioning().getSnapshot();
+
+        if ( needUpdateSnapshot( oldSnapshot, snapshot ) )
+        {
+            return updateSnapshot( snapshot, metadata.getVersioning() );
+        }
+
+        return false;
+
     }
-    
+
     private boolean updateSnapshot( Snapshot snapshot, Versioning vs )
     {
-    	vs.setSnapshot( snapshot );
-    	
-    	vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
-    	
-    	return true;
+        vs.setSnapshot( snapshot );
+
+        vs.setLastUpdated( TimeUtil.getUTCTimestamp() );
+
+        return true;
     }
-    
+
     private boolean needUpdateSnapshot( Snapshot oldSnapshot, Snapshot newSnapshot )
     {
-    	if ( newSnapshot == null )
-    	{
-    		return false;
-    	}
-    	
-    	if ( oldSnapshot == null )
-    	{
-    		return true;
-    	}
-    	
-    	if ( oldSnapshot.getBuildNumber() < newSnapshot.getBuildNumber() )
-    	{
-    		return true;
-    	}
-    	
-    	return false;
+        if ( newSnapshot == null )
+        {
+            return false;
+        }
+
+        if ( oldSnapshot == null )
+        {
+            return true;
+        }
+
+        if ( oldSnapshot.getBuildNumber() < newSnapshot.getBuildNumber() )
+        {
+            return true;
+        }
+
+        return false;
     }
-    
+
     private Snapshot buildSnapshot( String pomName, Metadata md )
     {
         // skip files like groupId-artifactId-versionSNAPSHOT.pom
@@ -158,35 +157,34 @@ public class SetSnapshotOperation
         {
             return null;
         }
-        
+
         Snapshot result = new Snapshot();
-        
+
         int lastHyphenPos = pomName.lastIndexOf( '-' );
-        
+
         try
         {
-            int buildNumber = Integer.parseInt( pomName.substring(
-                lastHyphenPos + 1,
-                pomName.length() - 4 ) );
-            
-            String timestamp = pomName.substring( ( md.getArtifactId() + '-' + md.getVersion() + '-' )
-                    .length()
-                    - "-SNAPSHOT".length(), lastHyphenPos );
-            
+            int buildNumber = Integer.parseInt( pomName.substring( lastHyphenPos + 1, pomName.length() - 4 ) );
+
+            String timestamp =
+                pomName.substring(
+                                   ( md.getArtifactId() + '-' + md.getVersion() + '-' ).length() - "-SNAPSHOT".length(),
+                                   lastHyphenPos );
+
             result.setLocalCopy( false );
-            
+
             result.setBuildNumber( buildNumber );
-            
+
             result.setTimestamp( timestamp );
-            
+
             return result;
         }
         catch ( Exception e )
         {
             // skip any exception because of illegal version numbers
-        	return null;
-        }        
-        
+            return null;
+        }
+
     }
 
 }

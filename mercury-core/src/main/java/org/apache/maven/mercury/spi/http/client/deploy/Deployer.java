@@ -29,17 +29,16 @@ public interface Deployer
     /** Deploy a set of files and return when all done. */
     DeployResponse deploy( DeployRequest request );
 
-
     /**
-     * Deploy a set of files and return immediately without waiting.
-     * The callback will be called when files are ready or an error
-     * has occurred.
+     * Deploy a set of files and return immediately without waiting. The callback will be called when files are ready or
+     * an error has occurred.
      */
     void deploy( DeployRequest request, DeployCallback callback );
-    
+
     /**
      * stop and release all resources
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     void stop();
 }

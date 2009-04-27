@@ -64,7 +64,7 @@ import org.codehaus.plexus.lang.Language;
 /**
  * this helper class hides the necessity to talk to localRepo and a bunch of remoteRepos. It also adds discrete
  * convenience methods, hiding batch nature of RepositoryReader
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -109,7 +109,7 @@ public class VirtualRepositoryReader
     private LocalRepository _localRepository;
 
     private RepositoryWriter _localRepositoryWriter;
-    
+
     private RemoteRepositoryReaderM2 _idleReader;
 
     private RepositoryMetadataCache _mdCache;
@@ -267,30 +267,32 @@ public class VirtualRepositoryReader
 
             _repositoryReaders[i++] = rr;
         }
-        
+
         try
         {
-            _idleReader = (RemoteRepositoryReaderM2) new RemoteRepositoryM2( "http://localhost", DependencyProcessor.NULL_PROCESSOR ).getReader();
+            _idleReader =
+                (RemoteRepositoryReaderM2) new RemoteRepositoryM2( "http://localhost",
+                                                                   DependencyProcessor.NULL_PROCESSOR ).getReader();
         }
         catch ( MalformedURLException e )
         {
             throw new RepositoryException( e );
         }
-        
+
         _initialized = true;
     }
-    
+
     /**
      * close all readers is they are started
      */
     public void close()
     {
-        if( ! _initialized )
+        if ( !_initialized )
             return;
-        
+
         try
         {
-            for( RepositoryReader rr : _repositoryReaders )
+            for ( RepositoryReader rr : _repositoryReaders )
                 rr.close();
         }
         finally
@@ -392,14 +394,11 @@ public class VirtualRepositoryReader
                             {
                                 res.add( key, rorRes );
                             }
-                            
-                            if ( 
-                                  ( !key.isVirtual() && key.isSingleton() )
-                                  ||
-                                  ( key.isVirtual() && rr.getRepository().isSufficient() )
-                               )
+
+                            if ( ( !key.isVirtual() && key.isSingleton() )
+                                || ( key.isVirtual() && rr.getRepository().isSufficient() ) )
                             {
-                                // fixed release is found or virtual is found 
+                                // fixed release is found or virtual is found
                                 // in a sufficient repo - no more scanning
                                 qList.remove( key );
                             }
@@ -445,7 +444,7 @@ public class VirtualRepositoryReader
             return;
         }
 
-        Map<ArtifactMetadata, List<ArtifactMetadata> > m = res.getResults();
+        Map<ArtifactMetadata, List<ArtifactMetadata>> m = res.getResults();
 
         for ( ArtifactMetadata key : m.keySet() )
         {
@@ -461,48 +460,45 @@ public class VirtualRepositoryReader
             return;
         }
 
-        TreeSet<ArtifactMetadata> ts = new TreeSet<ArtifactMetadata>(
-                        new Comparator<ArtifactMetadata>()
-                        {
-                            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
-                            {
-                                String v1 = o1.getVersion();
-                                String v2 = o2.getVersion();
-                                
-                                if( o1.isVirtualSnapshot() && o1.getTimeStamp() != null )
-                                    v1 = v1.replace( Artifact.SNAPSHOT_VERSION, o1.getTimeStamp()+"-00" );
-                                
-                                if( o2.isVirtualSnapshot() && o2.getTimeStamp() != null )
-                                    v2 = v2.replace( Artifact.SNAPSHOT_VERSION, o2.getTimeStamp()+"-00" );
-                                
-                                  DefaultArtifactVersion av1 = new DefaultArtifactVersion( v1 );
-                                  DefaultArtifactVersion av2 = new DefaultArtifactVersion( v2 );
+        TreeSet<ArtifactMetadata> ts = new TreeSet<ArtifactMetadata>( new Comparator<ArtifactMetadata>()
+        {
+            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+            {
+                String v1 = o1.getVersion();
+                String v2 = o2.getVersion();
 
-                                  return av1.compareTo( av2 );
-                            }
+                if ( o1.isVirtualSnapshot() && o1.getTimeStamp() != null )
+                    v1 = v1.replace( Artifact.SNAPSHOT_VERSION, o1.getTimeStamp() + "-00" );
 
-                        }
-                                                                      );
+                if ( o2.isVirtualSnapshot() && o2.getTimeStamp() != null )
+                    v2 = v2.replace( Artifact.SNAPSHOT_VERSION, o2.getTimeStamp() + "-00" );
+
+                DefaultArtifactVersion av1 = new DefaultArtifactVersion( v1 );
+                DefaultArtifactVersion av2 = new DefaultArtifactVersion( v2 );
+
+                return av1.compareTo( av2 );
+            }
+
+        } );
         ts.addAll( res );
 
         ArtifactMetadata single = ts.last();
-        
-        // Oleg: -SNAPSHOT should always win        
-//        if( key.isVirtualSnapshot() )
-//        {
-//            ArtifactMetadata first = ts.first();
-//            
-//            if( first.isVirtualSnapshot() )
-//                single = first;
-//        }
-            
+
+        // Oleg: -SNAPSHOT should always win
+        // if( key.isVirtualSnapshot() )
+        // {
+        // ArtifactMetadata first = ts.first();
+        //            
+        // if( first.isVirtualSnapshot() )
+        // single = first;
+        // }
 
         res.clear();
 
         res.add( single );
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------------------
     public ArtifactMetadata readDependencies( ArtifactMetadata bmd )
         throws IllegalArgumentException, RepositoryException
     {
@@ -555,29 +551,29 @@ public class VirtualRepositoryReader
 
                     if ( res != null )
                     {
-                        if( res.hasExceptions() )
+                        if ( res.hasExceptions() )
                         {
                             if ( LOG.isWarnEnabled() )
                             {
                                 LOG.warn( bmd + " dependecies: error : " + res.getExceptions().toString() );
                             }
                         }
-                        
-                        if( res.hasResults( bmd ) )
+
+                        if ( res.hasResults( bmd ) )
                         {
                             md.setDependencies( res.getResult( bmd ) );
                             md.setTracker( rr );
-    
+
                             if ( _eventManager != null )
                             {
                                 eventRead.setInfo( eventRead.getInfo() + ", found: " + md.getDependencies() );
                             }
-    
+
                             if ( LOG.isDebugEnabled() )
                             {
                                 LOG.debug( bmd + " dependecies found : " + md.getDependencies() );
                             }
-    
+
                             return md;
                         }
                     }
@@ -669,10 +665,10 @@ public class VirtualRepositoryReader
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
-    // TODO: Oleg: this is a copy of readArtifacts - optimize for the particular 
-    //             purpose - reading non-qualified virtuals, remove
+    // TODO: Oleg: this is a copy of readArtifacts - optimize for the particular
+    // purpose - reading non-qualified virtuals, remove
     //
-    // Now this can also be used to read artifacts without pooling them if there is such 
+    // Now this can also be used to read artifacts without pooling them if there is such
     //
     public ArtifactResults readArtifactsNoBatch( Collection<? extends ArtifactMetadata> query )
         throws RepositoryException
@@ -734,8 +730,8 @@ public class VirtualRepositoryReader
                     if ( rrRes.hasExceptions() )
                     {
                         throw new RepositoryException( LANG.getMessage( "error.reading.existing.artifact",
-                                                                         rrRes.getExceptions().toString(),
-                                                                         rr.getRepository().getId() ) );
+                                                                        rrRes.getExceptions().toString(),
+                                                                        rr.getRepository().getId() ) );
                     }
 
                     if ( rrRes.hasResults() )
@@ -787,10 +783,9 @@ public class VirtualRepositoryReader
                     }
                 }
 
-
                 if ( virtuals != null )
                 {
-                    // this makes them qualified because tracker will point to 
+                    // this makes them qualified because tracker will point to
                     // the repository
                     MetadataResults virtRes = readVersions( virtuals );
 
@@ -802,7 +797,8 @@ public class VirtualRepositoryReader
                     {
                         if ( virtRes.hasResults() )
                         {
-                            Map<ArtifactMetadata, ArtifactMetadata> sMap = new HashMap<ArtifactMetadata, ArtifactMetadata>();
+                            Map<ArtifactMetadata, ArtifactMetadata> sMap =
+                                new HashMap<ArtifactMetadata, ArtifactMetadata>();
 
                             for ( ArtifactMetadata md : virtRes.getResults().keySet() )
                             {
@@ -943,29 +939,26 @@ public class VirtualRepositoryReader
             {
                 return res;
             }
-            
+
             int qSize = query.size();
-            
+
             List<ArtifactMetadata> qualified = new ArrayList<ArtifactMetadata>( qSize );
-            
+
             List<ArtifactMetadata> leftovers = new ArrayList<ArtifactMetadata>( qSize );
-            
-            for( ArtifactMetadata md : query )
+
+            for ( ArtifactMetadata md : query )
             {
                 Object tracker = md.getTracker();
-    
+
                 // do we know where this metadata came from ?
-                if ( tracker != null 
-                     && RemoteRepositoryReaderM2.class.isAssignableFrom( tracker.getClass() )
-                     && !md.isVirtual()
-                     && md.isSingleton()
-                )
+                if ( tracker != null && RemoteRepositoryReaderM2.class.isAssignableFrom( tracker.getClass() )
+                    && !md.isVirtual() && md.isSingleton() )
                     qualified.add( md );
                 else
                     leftovers.add( md );
             }
 
-            if ( qualified.isEmpty()  && leftovers.isEmpty() )
+            if ( qualified.isEmpty() && leftovers.isEmpty() )
             {
                 throw new RepositoryException( LANG.getMessage( "internal.error.sorting.query", query.toString() ) );
             }
@@ -977,50 +970,52 @@ public class VirtualRepositoryReader
             // first read repository-qualified Artifacts
             GenericEvent eventRead = null;
 
-            if( qualified.size() > 0 )
-            try
-            {
-                if ( _eventManager != null )
-                    eventRead = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_ARTIFACTS, ""+qualified );
-                
-                ArtifactResults rrRes = new ArtifactResults();
-                
-                _idleReader.readQualifiedArtifacts( qualified, rrRes );
-
-                if ( rrRes.hasExceptions() )
+            if ( qualified.size() > 0 )
+                try
                 {
-                    throw new RepositoryException( LANG.getMessage( "error.reading.existing.artifact",
-                                                                     rrRes.getExceptions().toString(),
-                                                                     "multiple.server.internal.repo" ) );
-                }
+                    if ( _eventManager != null )
+                        eventRead =
+                            new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_ARTIFACTS, ""
+                                + qualified );
 
-                if ( rrRes.hasResults() )
-                {
-                    for ( ArtifactMetadata bm : rrRes.getResults().keySet() )
+                    ArtifactResults rrRes = new ArtifactResults();
+
+                    _idleReader.readQualifiedArtifacts( qualified, rrRes );
+
+                    if ( rrRes.hasExceptions() )
                     {
-                        List<Artifact> al = rrRes.getResults( bm );
+                        throw new RepositoryException( LANG.getMessage( "error.reading.existing.artifact",
+                                                                        rrRes.getExceptions().toString(),
+                                                                        "multiple.server.internal.repo" ) );
+                    }
 
-                        res.addAll( bm, al );
-
-                        if ( _localRepositoryWriter != null )
+                    if ( rrRes.hasResults() )
+                    {
+                        for ( ArtifactMetadata bm : rrRes.getResults().keySet() )
                         {
-                            _localRepositoryWriter.writeArtifacts( al );
+                            List<Artifact> al = rrRes.getResults( bm );
+
+                            res.addAll( bm, al );
+
+                            if ( _localRepositoryWriter != null )
+                            {
+                                _localRepositoryWriter.writeArtifacts( al );
+                            }
                         }
                     }
                 }
-            }
-            catch ( Exception e )
-            {
-                throw new RepositoryException( e );
-            }
-            finally
-            {
-                if ( _eventManager != null )
+                catch ( Exception e )
                 {
-                    eventRead.stop();
-                    _eventManager.fireEvent( eventRead );
+                    throw new RepositoryException( e );
                 }
-            }
+                finally
+                {
+                    if ( _eventManager != null )
+                    {
+                        eventRead.stop();
+                        _eventManager.fireEvent( eventRead );
+                    }
+                }
 
             // then process unqualified virtuals
             if ( !Util.isEmpty( leftovers ) )
@@ -1040,7 +1035,6 @@ public class VirtualRepositoryReader
                     }
                 }
 
-
                 if ( virtuals != null )
                 {
                     MetadataResults virtRes = readVersions( virtuals );
@@ -1053,7 +1047,8 @@ public class VirtualRepositoryReader
                     {
                         if ( virtRes.hasResults() )
                         {
-                            Map<ArtifactMetadata, ArtifactMetadata> sMap = new HashMap<ArtifactMetadata, ArtifactMetadata>();
+                            Map<ArtifactMetadata, ArtifactMetadata> sMap =
+                                new HashMap<ArtifactMetadata, ArtifactMetadata>();
 
                             for ( ArtifactMetadata md : virtRes.getResults().keySet() )
                             {
@@ -1181,17 +1176,17 @@ public class VirtualRepositoryReader
         return readMetadata( bmd, false );
     }
 
-    public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt  )
+    public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt )
         throws MetadataReaderException
     {
         if ( LOG.isDebugEnabled() )
         {
             LOG.debug( "Asking for pom: " + bmd );
         }
-        
-        byte [] res = readRawData( bmd, "", "pom", exempt ); 
 
-        return res; 
+        byte[] res = readRawData( bmd, "", "pom", exempt );
+
+        return res;
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -1230,13 +1225,13 @@ public class VirtualRepositoryReader
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_RAW, eventTag );
             }
 
-            ArtifactMetadata bmdQuery = new ArtifactMetadata(bmd);
-            
-            if( !Util.isEmpty( type ))
+            ArtifactMetadata bmdQuery = new ArtifactMetadata( bmd );
+
+            if ( !Util.isEmpty( type ) )
                 bmdQuery.setType( type );
-            
+
             // pom cannot have classifiers
-            if( "pom".equals( bmdQuery.getType() ) )
+            if ( "pom".equals( bmdQuery.getType() ) )
                 bmdQuery.setClassifier( null );
 
             try
@@ -1253,18 +1248,18 @@ public class VirtualRepositoryReader
 
             if ( LOG.isDebugEnabled() )
             {
-                LOG.debug( "quality calculated as " + (vq.getQuality() == null ? "null" : vq.getQuality().name()) );
+                LOG.debug( "quality calculated as " + ( vq.getQuality() == null ? "null" : vq.getQuality().name() ) );
             }
 
             if ( Quality.SNAPSHOT_QUALITY.equals( vq ) )
             {
                 List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
-                
+
                 ArtifactMetadata nBmd = new ArtifactMetadata( bmdQuery );
-                
-                if( !Util.isEmpty( type ))
+
+                if ( !Util.isEmpty( type ) )
                     nBmd.setType( type );
-                
+
                 query.add( nBmd );
 
                 try
@@ -1277,22 +1272,22 @@ public class VirtualRepositoryReader
                             LOG.debug( "no snapshots found - throw exception" );
                         }
 
-                        throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(),
-                                                                             classifier, type ) );
+                        throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(), classifier,
+                                                                            type ) );
                     }
 
                     if ( vRes.hasResults( nBmd ) )
                     {
                         List<ArtifactMetadata> versions = vRes.getResult( nBmd );
-                        
+
                         processSingletons( nBmd, versions );
 
-//                        TreeSet<ArtifactMetadata> snapshots =
-//                            new TreeSet<ArtifactMetadata>( new MetadataVersionComparator() );
-//                        snapshots.addAll( versions );
-//
-//                        bmdQuery = snapshots.last();
-                        
+                        // TreeSet<ArtifactMetadata> snapshots =
+                        // new TreeSet<ArtifactMetadata>( new MetadataVersionComparator() );
+                        // snapshots.addAll( versions );
+                        //
+                        // bmdQuery = snapshots.last();
+
                         bmdQuery = versions.get( 0 );
                     }
                     else
@@ -1302,8 +1297,8 @@ public class VirtualRepositoryReader
                             LOG.debug( "no snapshots found - throw exception" );
                         }
 
-                        throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(),
-                                                                             classifier, type ) );
+                        throw new MetadataReaderException( LANG.getMessage( "no.snapshots", bmd.toString(), classifier,
+                                                                            type ) );
                     }
                 }
                 catch ( Exception e )
@@ -1372,11 +1367,13 @@ public class VirtualRepositoryReader
             }
         }
     }
+
     // ----------------------------------------------------------------------------------------------------------------------------
     public RepositoryMetadataCache getCache()
     {
         return _mdCache;
     }
+
     // ----------------------------------------------------------------------------------------------------------------------------
     public void register( MercuryEventListener listener )
     {

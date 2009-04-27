@@ -19,11 +19,8 @@
 package org.apache.maven.mercury.builder.api;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class MetadataReaderException
     extends Exception

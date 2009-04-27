@@ -30,110 +30,100 @@ import org.apache.maven.mercury.artifact.api.Configurable;
 import org.apache.maven.mercury.event.MercuryEventListener;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface DependencyBuilder
-extends Configurable
+    extends Configurable
 {
-  public static final String TREE_BUILD_EVENT = "tree.build";
-  public static final String TREE_NODE_BUILD_EVENT = "tree.node.build";
-  public static final String TREE_NODE_VERSION_REPLACE_EVENT = "tree.node.build.version.replace";
+    public static final String TREE_BUILD_EVENT = "tree.build";
 
-  public static final String SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES = "mercury.circular.allow";
+    public static final String TREE_NODE_BUILD_EVENT = "tree.node.build";
 
-  public static final String CONFIGURATION_PROPERTY_VERSION_MAP = "mercury.version.map";
-  //------------------------------------------------------------------------
-  /**
-   * build the tree, using the repositories specified in the
-   * constructor
-   * 
-   * @param startMD - root of the tree to build
-   * @param targetPlatform - limitations to use when retrieving metadata. Format is G:A=V, where V is Version Range
-   * @return the root of the tree built
-   * @throws MetadataTreeException
-   */
-  public abstract MetadataTreeNode buildTree( ArtifactMetadata startMD, ArtifactScopeEnum scope )
-  throws MetadataTreeException;
+    public static final String TREE_NODE_VERSION_REPLACE_EVENT = "tree.node.build.version.replace";
 
-  /**
-   * hard to believe, but this actually resolves the conflicts, removing all duplicate GAVs from the tree
-   * 
-   * @param root the tree to resolve conflicts on
-   * @return list of resolved GAVs
-   * @throws MetadataTreeException
-   */
-  public abstract List<ArtifactMetadata> resolveConflicts( MetadataTreeNode root )
-  throws MetadataTreeException;
+    public static final String SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES = "mercury.circular.allow";
 
-  /**
-   * consolidated entry point: give it a collection of GAVs, it 
-   * will create a classpath out of it
-   * 
-   * @param root the tree to resolve conflicts on
-   * @return list of resolved GAVs
-   * @throws MetadataTreeException
-   */
-  public abstract List<ArtifactMetadata> resolveConflicts( 
-                                          ArtifactScopeEnum   scope
-                                        , ArtifactQueryList artifacts
-                                        , ArtifactInclusionList inclusions
-                                        , ArtifactExclusionList exclusions
-                                        )
+    public static final String CONFIGURATION_PROPERTY_VERSION_MAP = "mercury.version.map";
 
-  throws MetadataTreeException;
+    // ------------------------------------------------------------------------
+    /**
+     * build the tree, using the repositories specified in the constructor
+     * 
+     * @param startMD - root of the tree to build
+     * @param targetPlatform - limitations to use when retrieving metadata. Format is G:A=V, where V is Version Range
+     * @return the root of the tree built
+     * @throws MetadataTreeException
+     */
+    public abstract MetadataTreeNode buildTree( ArtifactMetadata startMD, ArtifactScopeEnum scope )
+        throws MetadataTreeException;
 
-  /**
-   * consolidated entry point: give it a collection of GAVs, it 
-   * will create a tree out of it
-   * 
-   * @param root the tree to resolve conflicts on
-   * @return resolved metadata tree
-   * @throws MetadataTreeException
-   */
-  public abstract MetadataTreeNode resolveConflictsAsTree( 
-                                          ArtifactScopeEnum   scope
-                                        , ArtifactQueryList artifacts
-                                        , ArtifactInclusionList inclusions
-                                        , ArtifactExclusionList exclusions
-                                        )
+    /**
+     * hard to believe, but this actually resolves the conflicts, removing all duplicate GAVs from the tree
+     * 
+     * @param root the tree to resolve conflicts on
+     * @return list of resolved GAVs
+     * @throws MetadataTreeException
+     */
+    public abstract List<ArtifactMetadata> resolveConflicts( MetadataTreeNode root )
+        throws MetadataTreeException;
 
-  throws MetadataTreeException;
+    /**
+     * consolidated entry point: give it a collection of GAVs, it will create a classpath out of it
+     * 
+     * @param root the tree to resolve conflicts on
+     * @return list of resolved GAVs
+     * @throws MetadataTreeException
+     */
+    public abstract List<ArtifactMetadata> resolveConflicts( ArtifactScopeEnum scope, ArtifactQueryList artifacts,
+                                                             ArtifactInclusionList inclusions,
+                                                             ArtifactExclusionList exclusions )
 
-  /**
-   *  this one resolves the conflicts, removing all duplicate GAVs from the tree and
-   *  returning a copy of the resulting subtree - original tree should be intact
-   * 
-   * @param root the tree to resolve conflicts on
-   * @return resolved subtree
-   * @throws MetadataTreeException
-   */
-  public abstract MetadataTreeNode resolveConflictsAsTree( MetadataTreeNode root )
-  throws MetadataTreeException;
-  
-  /**
-   * register a listener for dependency events 
-   * 
-   * @param listener
-   */
-  public abstract void register( MercuryEventListener listener );
-  
-  /**
-   * remove a listener 
-   * 
-   * @param listener
-   */
-  public abstract void unRegister( MercuryEventListener listener );
-  
-  /**
-   * release all resources 
-   * 
-   */
-  public abstract void close();
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+        throws MetadataTreeException;
+
+    /**
+     * consolidated entry point: give it a collection of GAVs, it will create a tree out of it
+     * 
+     * @param root the tree to resolve conflicts on
+     * @return resolved metadata tree
+     * @throws MetadataTreeException
+     */
+    public abstract MetadataTreeNode resolveConflictsAsTree( ArtifactScopeEnum scope, ArtifactQueryList artifacts,
+                                                             ArtifactInclusionList inclusions,
+                                                             ArtifactExclusionList exclusions )
+
+        throws MetadataTreeException;
+
+    /**
+     * this one resolves the conflicts, removing all duplicate GAVs from the tree and returning a copy of the resulting
+     * subtree - original tree should be intact
+     * 
+     * @param root the tree to resolve conflicts on
+     * @return resolved subtree
+     * @throws MetadataTreeException
+     */
+    public abstract MetadataTreeNode resolveConflictsAsTree( MetadataTreeNode root )
+        throws MetadataTreeException;
+
+    /**
+     * register a listener for dependency events
+     * 
+     * @param listener
+     */
+    public abstract void register( MercuryEventListener listener );
+
+    /**
+     * remove a listener
+     * 
+     * @param listener
+     */
+    public abstract void unRegister( MercuryEventListener listener );
+
+    /**
+     * release all resources
+     */
+    public abstract void close();
+    // -----------------------------------------------------
+    // -----------------------------------------------------
 
 }

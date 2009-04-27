@@ -41,34 +41,47 @@ import org.mortbay.jetty.HttpHeaders;
 import org.mortbay.jetty.client.HttpClient;
 
 public abstract class DeploymentTarget
-{    
-    private static final IMercuryLogger log = MercuryLoggerManager.getLogger(DeploymentTarget.class);
-    protected Server _server;
-    protected HttpClient _httpClient;
-    protected String _batchId;
-    protected Binding _binding;
-    protected Set<Validator> _validators;
-    protected TargetState _targetState;
-    protected TargetState _checksumState;
-    protected HttpClientException _exception;
-    protected String _remoteJettyUrl;
-    protected Set<StreamObserver> _observers = new HashSet<StreamObserver>();
-    protected List<StreamVerifier> _verifiers = new ArrayList<StreamVerifier>();
-    protected int _checkSumFilesDeployed = -1; 
+{
+    private static final IMercuryLogger log = MercuryLoggerManager.getLogger( DeploymentTarget.class );
 
-    
+    protected Server _server;
+
+    protected HttpClient _httpClient;
+
+    protected String _batchId;
+
+    protected Binding _binding;
+
+    protected Set<Validator> _validators;
+
+    protected TargetState _targetState;
+
+    protected TargetState _checksumState;
+
+    protected HttpClientException _exception;
+
+    protected String _remoteJettyUrl;
+
+    protected Set<StreamObserver> _observers = new HashSet<StreamObserver>();
+
+    protected List<StreamVerifier> _verifiers = new ArrayList<StreamVerifier>();
+
+    protected int _checkSumFilesDeployed = -1;
+
     public abstract void onComplete();
 
     public abstract void onError( HttpClientException exception );
 
-
     public class TargetState
     {
         public static final int __START_STATE = 1;
+
         public static final int __REQUESTED_STATE = 2;
+
         public static final int __READY_STATE = 3;
 
         private int _state;
+
         private Exception _exception;
 
         public TargetState()
@@ -128,37 +141,38 @@ public abstract class DeploymentTarget
         }
     }
 
-    public DeploymentTarget( Server server, HttpClient client, String batchId, Binding binding, Set<Validator> validators, Set<StreamObserver> observers )
+    public DeploymentTarget( Server server, HttpClient client, String batchId, Binding binding,
+                             Set<Validator> validators, Set<StreamObserver> observers )
     {
         _server = server;
         _httpClient = client;
         _batchId = batchId;
         _binding = binding;
         _validators = validators;
-        
-        for (StreamObserver o:observers)
+
+        for ( StreamObserver o : observers )
         {
-            if (StreamVerifier.class.isAssignableFrom(o.getClass()))
-                _verifiers.add((StreamVerifier)o);
-            _observers.add(o);
+            if ( StreamVerifier.class.isAssignableFrom( o.getClass() ) )
+                _verifiers.add( (StreamVerifier) o );
+            _observers.add( o );
         }
-      
+
         if ( _binding == null )
         {
             throw new IllegalArgumentException( "Nothing to deploy - null binding" );
         }
-        
-        if ( _binding.isFile() && (_binding.getLocalFile() == null || !_binding.getLocalFile().exists()) )
+
+        if ( _binding.isFile() && ( _binding.getLocalFile() == null || !_binding.getLocalFile().exists() ) )
         {
             throw new IllegalArgumentException( "Nothing to deploy - local file not found: " + _binding.getLocalFile() );
         }
-        if( _binding.isInMemory() && _binding.getLocalInputStream() == null )
+        if ( _binding.isInMemory() && _binding.getLocalInputStream() == null )
         {
             throw new IllegalArgumentException( "Nothing to deploy - inMemory binding with null stream" );
         }
         _targetState = new TargetState();
         _checksumState = new TargetState();
-        if (_verifiers.isEmpty())
+        if ( _verifiers.isEmpty() )
             _checksumState.ready();
     }
 
@@ -174,33 +188,37 @@ public abstract class DeploymentTarget
 
     private synchronized void updateState( Throwable t )
     {
-  
-        if (log.isDebugEnabled())
+
+        if ( log.isDebugEnabled() )
         {
-            log.debug("updateState: exception="+t+" targetState="+_targetState.getState()+" checksumState="+_checksumState.getState()+" verifiers="+_verifiers.size()+" checksumsdeployed="+_checkSumFilesDeployed);
+            log.debug( "updateState: exception=" + t + " targetState=" + _targetState.getState() + " checksumState="
+                + _checksumState.getState() + " verifiers=" + _verifiers.size() + " checksumsdeployed="
+                + _checkSumFilesDeployed );
         }
         if ( t != null && _exception == null )
         {
-            _exception = ( t instanceof HttpClientException ? (HttpClientException) t : new HttpClientException( _binding, t ) );
+            _exception =
+                ( t instanceof HttpClientException ? (HttpClientException) t : new HttpClientException( _binding, t ) );
         }
 
-        if (_exception != null)
+        if ( _exception != null )
         {
-            onError(_exception);
+            onError( _exception );
         }
         else
         {
-            //if the target file can be uploaded, then upload it, calculating checksums on the fly as necessary
+            // if the target file can be uploaded, then upload it, calculating checksums on the fly as necessary
             if ( _targetState.isStart() )
             {
                 deployLocalFile();
             }
-            //Upload the checksums
-            else if ( _targetState.isReady() && (_verifiers.size()>0) && (_checkSumFilesDeployed < (_verifiers.size() -1)) )
+            // Upload the checksums
+            else if ( _targetState.isReady() && ( _verifiers.size() > 0 )
+                && ( _checkSumFilesDeployed < ( _verifiers.size() - 1 ) ) )
             {
                 deployNextChecksumFile();
             }
-            else if ( _targetState.isReady() && (_checksumState.isReady()))
+            else if ( _targetState.isReady() && ( _checksumState.isReady() ) )
             {
                 onComplete();
             }
@@ -209,88 +227,88 @@ public abstract class DeploymentTarget
 
     private void deployLocalFile()
     {
-        FilePutExchange fileExchange = new FilePutExchange( _server, _batchId, _binding, _binding.getLocalFile(), _observers, _httpClient )
-        {
-            public void onFileComplete( String url, File localFile )
+        FilePutExchange fileExchange =
+            new FilePutExchange( _server, _batchId, _binding, _binding.getLocalFile(), _observers, _httpClient )
             {
-                
-                DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
-                _targetState.ready();
-                updateState( null );
-            }
+                public void onFileComplete( String url, File localFile )
+                {
 
-            public void onFileError( String url, Exception e )
-            {
-                
-                DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
-                _targetState.ready( e );
-                updateState( e );
-            }
-        };
+                    DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
+                    _targetState.ready();
+                    updateState( null );
+                }
 
-        if( _server != null && _server.hasUserAgent() )
-          fileExchange.setRequestHeader( HttpHeaders.USER_AGENT, _server.getUserAgent() );
+                public void onFileError( String url, Exception e )
+                {
+
+                    DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
+                    _targetState.ready( e );
+                    updateState( e );
+                }
+            };
+
+        if ( _server != null && _server.hasUserAgent() )
+            fileExchange.setRequestHeader( HttpHeaders.USER_AGENT, _server.getUserAgent() );
 
         _targetState.requested();
-        
+
         fileExchange.send();
     }
-
 
     private void deployNextChecksumFile()
     {
         Binding binding = _binding;
         File file = null;
-        StreamVerifier v =  _verifiers.get(++_checkSumFilesDeployed);
+        StreamVerifier v = _verifiers.get( ++_checkSumFilesDeployed );
 
-        //No local checksum file, so make a temporary one using the checksum we 
-        //calculated as we uploaded the file
+        // No local checksum file, so make a temporary one using the checksum we
+        // calculated as we uploaded the file
         try
         {
             URL url = _binding.getRemoteResource();
-            if (url != null)
+            if ( url != null )
             {
                 url = new URL( url.toString() + v.getAttributes().getExtension() );
             }
-      
-            String localFileName = getFileName(url);
-            
+
+            String localFileName = getFileName( url );
+
             file = File.createTempFile( localFileName, ".tmp" );
             file.deleteOnExit();
             OutputStreamWriter fw = new OutputStreamWriter( new FileOutputStream( file ), "UTF-8" );
             fw.write( v.getSignature() );
             fw.close();
-            binding = new Binding(url, file);
+            binding = new Binding( url, file );
         }
         catch ( Exception e )
         {
             _checksumState.ready( e );
         }
 
-
-        //upload the checksum file
+        // upload the checksum file
         Set<StreamObserver> emptySet = Collections.emptySet();
-        FilePutExchange checksumExchange = new FilePutExchange( _server, _batchId, binding, file, emptySet, _httpClient )
-        {
-            public void onFileComplete( String url, File localFile )
-            {      
-                DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
-                if (_checkSumFilesDeployed == (_verifiers.size() - 1))
-                    _checksumState.ready();
-                updateState( null );
-            }
+        FilePutExchange checksumExchange =
+            new FilePutExchange( _server, _batchId, binding, file, emptySet, _httpClient )
+            {
+                public void onFileComplete( String url, File localFile )
+                {
+                    DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
+                    if ( _checkSumFilesDeployed == ( _verifiers.size() - 1 ) )
+                        _checksumState.ready();
+                    updateState( null );
+                }
 
-            public void onFileError( String url, Exception e )
-            {             
-                DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
-                if (_checkSumFilesDeployed == (_verifiers.size() - 1))
-                    _checksumState.ready( e );
-                updateState( e );
-            }
-        };
+                public void onFileError( String url, Exception e )
+                {
+                    DeploymentTarget.this._remoteJettyUrl = getRemoteJettyUrl();
+                    if ( _checkSumFilesDeployed == ( _verifiers.size() - 1 ) )
+                        _checksumState.ready( e );
+                    updateState( e );
+                }
+            };
 
-        if( _server != null && _server.hasUserAgent() )
-          checksumExchange.setRequestHeader( HttpHeaders.USER_AGENT, _server.getUserAgent() );
+        if ( _server != null && _server.hasUserAgent() )
+            checksumExchange.setRequestHeader( HttpHeaders.USER_AGENT, _server.getUserAgent() );
 
         _checksumState.requested();
         checksumExchange.send();
@@ -310,26 +328,27 @@ public abstract class DeploymentTarget
     {
         return ( _checksumState.isReady() && _targetState.isReady() );
     }
-    
-    public String getFileName (URL url)
+
+    public String getFileName( URL url )
     {
-        if (url==null)
+        if ( url == null )
             return "";
         String localFileName = url.getFile();
-        int i = localFileName.indexOf('?');
-        if (i > 0)
-            localFileName = localFileName.substring(0, i);
-        if (localFileName.endsWith("/"))
-            localFileName = localFileName.substring(0, localFileName.length()-1);
-        i = localFileName.lastIndexOf('/');
-        if (i >= 0)
-            localFileName = localFileName.substring(i+1);
+        int i = localFileName.indexOf( '?' );
+        if ( i > 0 )
+            localFileName = localFileName.substring( 0, i );
+        if ( localFileName.endsWith( "/" ) )
+            localFileName = localFileName.substring( 0, localFileName.length() - 1 );
+        i = localFileName.lastIndexOf( '/' );
+        if ( i >= 0 )
+            localFileName = localFileName.substring( i + 1 );
         return localFileName;
     }
 
     public String toString()
     {
-        return "DeploymentTarget:" + _binding.getRemoteResource() + ":" + _targetState + ":" + _checksumState + ":" + isComplete();
+        return "DeploymentTarget:" + _binding.getRemoteResource() + ":" + _targetState + ":" + _checksumState + ":"
+            + isComplete();
     }
-   
+
 }

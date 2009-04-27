@@ -24,14 +24,15 @@ import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
 
-public class PomValidator implements Validator
+public class PomValidator
+    implements Validator
 {
     public String getFileExtension()
     {
         return "pom";
     }
 
-    public boolean validate(String stagedFile, List<String> errors)
+    public boolean validate( String stagedFile, List<String> errors )
     {
         try
         {

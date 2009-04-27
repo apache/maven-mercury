@@ -20,40 +20,39 @@ package org.apache.maven.mercury.logging;
 
 /**
  * A copy of plexus default container logger interface. Need it to externalize the logging system
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface IMercuryLogger
 {
-  void debug( String message );
+    void debug( String message );
 
-  void debug( String message, Throwable throwable );
+    void debug( String message, Throwable throwable );
 
-  boolean isDebugEnabled();
+    boolean isDebugEnabled();
 
-  void info( String message );
+    void info( String message );
 
-  void info( String message, Throwable throwable );
+    void info( String message, Throwable throwable );
 
-  boolean isInfoEnabled();
+    boolean isInfoEnabled();
 
-  void warn( String message );
+    void warn( String message );
 
-  void warn( String message, Throwable throwable );
+    void warn( String message, Throwable throwable );
 
-  boolean isWarnEnabled();
+    boolean isWarnEnabled();
 
-  void error( String message );
+    void error( String message );
 
-  void error( String message, Throwable throwable );
+    void error( String message, Throwable throwable );
 
-  boolean isErrorEnabled();
+    boolean isErrorEnabled();
 
-  void fatal( String message );
+    void fatal( String message );
 
-  void fatal( String message, Throwable throwable );
+    void fatal( String message, Throwable throwable );
 
-  boolean isFatalEnabled();
+    boolean isFatalEnabled();
 }

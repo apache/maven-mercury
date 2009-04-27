@@ -35,83 +35,80 @@ import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class LocalRepositoryWriterM2Test
-extends AbstractRepositoryWriterM2Test
+    extends AbstractRepositoryWriterM2Test
 {
-  public static final String SYSTEM_PARAMETER_SKIP_LOCK_TESTS = "maven.mercury.tests.skip.lock";
-  boolean skipLockTests = Boolean.parseBoolean( System.getProperty( SYSTEM_PARAMETER_SKIP_LOCK_TESTS, "true" ) );
-  
-  //------------------------------------------------------------------------------
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    super.setUp();
+    public static final String SYSTEM_PARAMETER_SKIP_LOCK_TESTS = "maven.mercury.tests.skip.lock";
 
-    targetDirectory = new File("./target/test-classes/tempRepo");
-    FileUtil.copy( new File("./target/test-classes/repo"), targetDirectory, true );
-    FileUtil.delete( new File(targetDirectory, "org") );
-    
-    query = new ArrayList<ArtifactMetadata>();
-    
-    server = new Server( "test", targetDirectory.toURL() );
-    // verifiers
-    factories = new HashSet<StreamVerifierFactory>();       
-    factories.add( 
-        new PgpStreamVerifierFactory(
-                new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
-                , getClass().getResourceAsStream( secretKeyFile )
-                , keyId
-                , secretKeyPass
-                                    )
-                  );
-    factories.add( new SHA1VerifierFactory(false,false) );
-    server.setWriterStreamVerifierFactories(factories);
-      
-    repo = new LocalRepositoryM2( server, new MavenDependencyProcessor() );
-    mdProcessor = new MetadataProcessorMock();
-    repo.setDependencyProcessor( mdProcessor );
-    
-    reader = repo.getReader();
-    writer = repo.getWriter();
-  }
+    boolean skipLockTests = Boolean.parseBoolean( System.getProperty( SYSTEM_PARAMETER_SKIP_LOCK_TESTS, "true" ) );
 
-  @Override
-  void setReleases()
-      throws MalformedURLException
-  {
-  }
+    // ------------------------------------------------------------------------------
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
 
-  @Override
-  void setSnapshots()
-      throws MalformedURLException
-  {
-  }
-  //-------------------------------------------------------------------------
-  @Override
-  public void testWriteContentionMultipleArtifacts()
-      throws Exception
-  {
-    if( skipLockTests )
-      System.out.println("skipping");
-    else
-      super.testWriteContentionMultipleArtifacts();
-  }
-  
-  @Override
-  public void testWriteContentionSingleArtifact()
-      throws Exception
-  {
-    if( skipLockTests )
-      System.out.println("skipping");
-    else
-      super.testWriteContentionSingleArtifact();
-  }
-  
+        targetDirectory = new File( "./target/test-classes/tempRepo" );
+        FileUtil.copy( new File( "./target/test-classes/repo" ), targetDirectory, true );
+        FileUtil.delete( new File( targetDirectory, "org" ) );
+
+        query = new ArrayList<ArtifactMetadata>();
+
+        server = new Server( "test", targetDirectory.toURL() );
+        // verifiers
+        factories = new HashSet<StreamVerifierFactory>();
+        factories.add( new PgpStreamVerifierFactory(
+                                                     new StreamVerifierAttributes(
+                                                                                   PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                   false, true ),
+                                                     getClass().getResourceAsStream( secretKeyFile ), keyId,
+                                                     secretKeyPass ) );
+        factories.add( new SHA1VerifierFactory( false, false ) );
+        server.setWriterStreamVerifierFactories( factories );
+
+        repo = new LocalRepositoryM2( server, new MavenDependencyProcessor() );
+        mdProcessor = new MetadataProcessorMock();
+        repo.setDependencyProcessor( mdProcessor );
+
+        reader = repo.getReader();
+        writer = repo.getWriter();
+    }
+
+    @Override
+    void setReleases()
+        throws MalformedURLException
+    {
+    }
+
+    @Override
+    void setSnapshots()
+        throws MalformedURLException
+    {
+    }
+
+    // -------------------------------------------------------------------------
+    @Override
+    public void testWriteContentionMultipleArtifacts()
+        throws Exception
+    {
+        if ( skipLockTests )
+            System.out.println( "skipping" );
+        else
+            super.testWriteContentionMultipleArtifacts();
+    }
+
+    @Override
+    public void testWriteContentionSingleArtifact()
+        throws Exception
+    {
+        if ( skipLockTests )
+            System.out.println( "skipping" );
+        else
+            super.testWriteContentionSingleArtifact();
+    }
+
 }

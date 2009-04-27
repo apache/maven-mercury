@@ -45,53 +45,53 @@ public class Dependency
 
     /** dependency processor type, if any */
     protected String _processor;
-    
+
     protected List<String> _inclusions;
-    
+
     protected List<String> _exclusions;
-    
+
     private static long _count = 0L;
-    
+
     public ArtifactMetadata getMetadata()
     {
         _amd.setInclusions( getInclusions() );
-        
+
         _amd.setExclusions( getExclusions() );
-        
+
         return _amd;
     }
-    
+
     private Collection<ArtifactMetadata> getExclusions()
     {
-        if( Util.isEmpty( _exclusions ))
+        if ( Util.isEmpty( _exclusions ) )
             return null;
-        
+
         List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( _exclusions.size() );
-        
-        for( String name : _exclusions )
-            res.add( new ArtifactMetadata(name) );
-        
+
+        for ( String name : _exclusions )
+            res.add( new ArtifactMetadata( name ) );
+
         return res;
     }
 
     private Collection<ArtifactMetadata> getInclusions()
     {
-        if( Util.isEmpty( _inclusions ))
+        if ( Util.isEmpty( _inclusions ) )
             return null;
-        
+
         List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( _inclusions.size() );
-        
-        for( String name : _inclusions )
-            res.add( new ArtifactMetadata(name) );
-        
+
+        for ( String name : _inclusions )
+            res.add( new ArtifactMetadata( name ) );
+
         return res;
     }
 
     public void setName( String name )
     {
-        if( _pom != null )
+        if ( _pom != null )
             throw new IllegalArgumentException( LANG.getMessage( "dependency.amd.pom.exists", _pom, name ) );
-        
+
         _amd = new ArtifactMetadata( name );
 
         _amd.setOptional( _optional );
@@ -114,11 +114,11 @@ public class Dependency
 
     public void setPom( String pom )
     {
-        if( _amd != null )
+        if ( _amd != null )
             throw new IllegalArgumentException( LANG.getMessage( "dependency.pom.amd.exists", _amd.toString(), pom ) );
 
-        setId( "__ant_fake:_ant_fake:" + (_count++)+"::pom" );
-        
+        setId( "__ant_fake:_ant_fake:" + ( _count++ ) + "::pom" );
+
         int pos = pom.indexOf( ':' );
 
         if ( pos != -1 )
@@ -176,12 +176,12 @@ public class Dependency
 
         _amd.setVersion( version );
     }
-    
+
     public void addConfiguredExclusions( Exclusions ex )
     {
         _exclusions = ex._list;
     }
-    
+
     public void addConfiguredInclusions( Inclusions in )
     {
         _inclusions = in._list;

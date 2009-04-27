@@ -80,9 +80,9 @@ public class Dep
     private Storage _pomStorage;
 
     private Dependency _sourceDependency;
-    
+
     List<String> _inclusions;
-    
+
     List<String> _exclusions;
 
     private List<ArtifactMetadata> getDependencies( VirtualRepositoryReader vr )
@@ -120,7 +120,7 @@ public class Dep
                 try
                 {
                     _pomStorage.add( key, pomFile );
-                    
+
                     d._amd.setTracker( _pomRepo.getReader() );
 
                     deps = vr.readDependencies( d._amd );
@@ -195,21 +195,20 @@ public class Dep
         repos.add( 0, _pomRepo );
 
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
-        
+
         _pomRepo.setMetadataReader( vr );
 
         List<ArtifactMetadata> depList = getDependencies( vr );
-        
+
         ArtifactQueryList aql = new ArtifactQueryList( depList );
-        
+
         ArtifactInclusionList ail = getInclusions();
-        
+
         ArtifactExclusionList ael = getExclusions();
 
         List<ArtifactMetadata> res =
-            _transitive ? db.resolveConflicts( scope, aql, ail, ael )
-                            : toArtifactMetadataList( depList );
-            
+            _transitive ? db.resolveConflicts( scope, aql, ail, ael ) : toArtifactMetadataList( depList );
+
         db.close();
 
         if ( Util.isEmpty( res ) )
@@ -231,9 +230,9 @@ public class Dep
 
         if ( !aRes.hasResults() )
         {
-            if( aRes.hasExceptions() )
+            if ( aRes.hasExceptions() )
                 throw new Exception( LANG.getMessage( "vr.error", aRes.getExceptions().toString() ) );
-            
+
             return null;
         }
 
@@ -274,18 +273,18 @@ public class Dep
 
     private ArtifactExclusionList getExclusions()
     {
-        if( Util.isEmpty( _exclusions ) )
+        if ( Util.isEmpty( _exclusions ) )
             return null;
-        
-        return new ArtifactExclusionList( _exclusions.toArray( new String [_exclusions.size()] ) );
+
+        return new ArtifactExclusionList( _exclusions.toArray( new String[_exclusions.size()] ) );
     }
 
     private ArtifactInclusionList getInclusions()
     {
-        if( Util.isEmpty( _inclusions ) )
+        if ( Util.isEmpty( _inclusions ) )
             return null;
-        
-        return new ArtifactInclusionList( _inclusions.toArray( new String [_inclusions.size()] ) );
+
+        return new ArtifactInclusionList( _inclusions.toArray( new String[_inclusions.size()] ) );
     }
 
     /**
@@ -316,19 +315,19 @@ public class Dep
         this._scope = scope;
     }
 
-//    @Override
-//    public void setId( String id )
-//    {
-//        super.setId( id );
-//
-//        if ( _sourceDependency != null )
-//            _sourceDependency.setId( id );
-//    }
+    // @Override
+    // public void setId( String id )
+    // {
+    // super.setId( id );
+    //
+    // if ( _sourceDependency != null )
+    // _sourceDependency.setId( id );
+    // }
 
     public void setSource( String pom )
     {
         _sourceDependency = createDependency();
-        
+
         _sourceDependency.setSource( pom );
     }
 
@@ -336,12 +335,12 @@ public class Dep
     {
         this._transitive = val;
     }
-    
+
     public void addConfiguredExclusions( Exclusions ex )
     {
         _exclusions = ex._list;
     }
-    
+
     public void addConfiguredInclusions( Inclusions in )
     {
         _inclusions = in._list;
@@ -354,7 +353,7 @@ public class Dep
 
     protected void setExclusions( List<String> exList )
     {
-        if( _exclusions == null )
+        if ( _exclusions == null )
             _exclusions = exList;
         else
             _exclusions.addAll( exList );
@@ -362,7 +361,7 @@ public class Dep
 
     protected void setInclusions( List<String> inList )
     {
-        if( _inclusions == null )
+        if ( _inclusions == null )
             _inclusions = inList;
         else
             _inclusions.addAll( inList );

@@ -29,101 +29,99 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class LocalRepositoryM2Test
     extends TestCase
 {
-  File dir;
-  LocalRepositoryM2 repo;
+    File dir;
 
-  /* (non-Javadoc)
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp()
-      throws Exception
-  {
-    dir = new File("./target/test-classes/repoLocalM2");
-    
-    repo = new LocalRepositoryM2( "test", dir, new MetadataProcessorMock() );
-    
-  }
-  
-  
-  /**
-   * this does not fully test this use case, full test belongs to ITs. See http://jira.codehaus.org/browse/MERCURY-47
-   * 
-   * @throws Exception
-   */
-  public void testReadTwice()
-  throws Exception
-  {
-    String artifactId = "a:a:4";
-    
-    ArtifactMetadata bmd = new ArtifactMetadata(artifactId);
-    
-    ArrayList<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>();
-    
-    q.add( bmd );
-    
-    ArtifactResults res = repo.getReader().readArtifacts( q );
-    
-    assertNotNull( res );
-    
-   assertFalse( res.hasExceptions() );
-   
-   assertTrue( res.hasResults() );
-   
-   List<Artifact> arts = res.getResults( bmd );
-   
-   assertNotNull( arts );
-   
-   assertEquals( 1, arts.size() );
-   
-   Artifact a = arts.get( 0 );
-   
-   assertNotNull( a );
-   
-   File f = a.getFile();
-   
-   assertNotNull( f );
-   
-   assertTrue( f.exists() );
-   
-   assertEquals( 14800, f.length() );
-   
-   // second time
-   
-   res = repo.getReader().readArtifacts( q );
-   
-   assertNotNull( res );
-   
-  assertFalse( res.hasExceptions() );
-  
-  assertTrue( res.hasResults() );
-  
-  arts = res.getResults( bmd );
-  
-  assertNotNull( arts );
-  
-  assertEquals( 1, arts.size() );
-  
-  a = arts.get( 0 );
-  
-  assertNotNull( a );
-  
-  f = a.getFile();
-  
-  assertNotNull( f );
-  
-  assertTrue( f.exists() );
-  
-  assertEquals( 14800, f.length() );
-  
-  }
+    LocalRepositoryM2 repo;
+
+    /*
+     * (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp()
+        throws Exception
+    {
+        dir = new File( "./target/test-classes/repoLocalM2" );
+
+        repo = new LocalRepositoryM2( "test", dir, new MetadataProcessorMock() );
+
+    }
+
+    /**
+     * this does not fully test this use case, full test belongs to ITs. See http://jira.codehaus.org/browse/MERCURY-47
+     * 
+     * @throws Exception
+     */
+    public void testReadTwice()
+        throws Exception
+    {
+        String artifactId = "a:a:4";
+
+        ArtifactMetadata bmd = new ArtifactMetadata( artifactId );
+
+        ArrayList<ArtifactMetadata> q = new ArrayList<ArtifactMetadata>();
+
+        q.add( bmd );
+
+        ArtifactResults res = repo.getReader().readArtifacts( q );
+
+        assertNotNull( res );
+
+        assertFalse( res.hasExceptions() );
+
+        assertTrue( res.hasResults() );
+
+        List<Artifact> arts = res.getResults( bmd );
+
+        assertNotNull( arts );
+
+        assertEquals( 1, arts.size() );
+
+        Artifact a = arts.get( 0 );
+
+        assertNotNull( a );
+
+        File f = a.getFile();
+
+        assertNotNull( f );
+
+        assertTrue( f.exists() );
+
+        assertEquals( 14800, f.length() );
+
+        // second time
+
+        res = repo.getReader().readArtifacts( q );
+
+        assertNotNull( res );
+
+        assertFalse( res.hasExceptions() );
+
+        assertTrue( res.hasResults() );
+
+        arts = res.getResults( bmd );
+
+        assertNotNull( arts );
+
+        assertEquals( 1, arts.size() );
+
+        a = arts.get( 0 );
+
+        assertNotNull( a );
+
+        f = a.getFile();
+
+        assertNotNull( f );
+
+        assertTrue( f.exists() );
+
+        assertEquals( 14800, f.length() );
+
+    }
 
 }

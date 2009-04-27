@@ -19,8 +19,6 @@
 
 package org.apache.maven.mercury.crypto.basic;
 
-
-
 public class ChecksumCalculator
 {
     private static final byte[] __HEX_DIGITS = "0123456789abcdef".getBytes();
@@ -33,8 +31,8 @@ public class ChecksumCalculator
 
         for ( int i = 0, j = 0; i < l; i++ )
         {
-            raw[j++] = __HEX_DIGITS[ ( 0xF0 & bytes[i] ) >>> 4 ];
-            raw[j++] = __HEX_DIGITS[ 0x0F & bytes[i] ];
+            raw[j++] = __HEX_DIGITS[( 0xF0 & bytes[i] ) >>> 4];
+            raw[j++] = __HEX_DIGITS[0x0F & bytes[i]];
         }
 
         return new String( raw );

@@ -15,7 +15,7 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.metadata;
 
@@ -27,15 +27,12 @@ import java.util.Map;
 import org.apache.maven.mercury.util.Util;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class ArtifactFilterList
 {
-    List<MetadataTreeArtifactFilter> _filters = new ArrayList<MetadataTreeArtifactFilter>(4);
+    List<MetadataTreeArtifactFilter> _filters = new ArrayList<MetadataTreeArtifactFilter>( 4 );
 
     public ArtifactFilterList()
     {
@@ -43,10 +40,10 @@ public class ArtifactFilterList
 
     public ArtifactFilterList( Map<String, Collection<String>> filter )
     {
-        if( Util.isEmpty( filter ) )
+        if ( Util.isEmpty( filter ) )
             return;
-        
-        _filters.add( new MetadataTreeArtifactFilterMap(filter) );
+
+        _filters.add( new MetadataTreeArtifactFilterMap( filter ) );
     }
 
 }

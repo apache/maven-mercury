@@ -28,39 +28,36 @@ import org.apache.maven.mercury.transport.api.TransportTransaction;
 import org.apache.maven.mercury.transport.api.WriterTransport;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class HttpWriterTransport
-extends AbstractTransport
-implements WriterTransport
+    extends AbstractTransport
+    implements WriterTransport
 {
-  
-  DefaultDeployer _deployer;
 
-  public TransportTransaction write( TransportTransaction trx )
-  throws TransportException
-  {
-    DefaultDeployRequest req = new DefaultDeployRequest();
-//    req.setBindings( trx.getBindings() );
-    
-    return null;
-  }
+    DefaultDeployer _deployer;
 
-  public void init()
-  throws InitializationException
-  {
-    try
+    public TransportTransaction write( TransportTransaction trx )
+        throws TransportException
     {
-      _deployer = new DefaultDeployer();
+        DefaultDeployRequest req = new DefaultDeployRequest();
+        // req.setBindings( trx.getBindings() );
+
+        return null;
     }
-    catch( HttpClientException e )
+
+    public void init()
+        throws InitializationException
     {
-      throw new InitializationException(e);
+        try
+        {
+            _deployer = new DefaultDeployer();
+        }
+        catch ( HttpClientException e )
+        {
+            throw new InitializationException( e );
+        }
     }
-  }
 
 }

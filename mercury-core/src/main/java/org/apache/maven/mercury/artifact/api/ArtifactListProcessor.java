@@ -25,7 +25,7 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * generic interface to be implemented by helper components
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -39,7 +39,7 @@ public interface ArtifactListProcessor
 
     /**
      * initialize it if required
-     *
+     * 
      * @throws ArtifactListProcessorException
      */
     public void init( Map<String, String> env )
@@ -51,7 +51,7 @@ public interface ArtifactListProcessor
 
     /**
      * actually do that
-     *
+     * 
      * @throws ArtifactListProcessorException
      */
     public List<ArtifactMetadata> process( List<ArtifactMetadata> artifacts )

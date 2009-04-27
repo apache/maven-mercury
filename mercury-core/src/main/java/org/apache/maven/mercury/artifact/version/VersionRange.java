@@ -22,7 +22,7 @@ import org.apache.maven.mercury.artifact.api.Configurable;
 
 /**
  * interface to the version range processor. To be implemented for various syntaxes/interpreters
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -31,7 +31,7 @@ public interface VersionRange
 {
     /**
      * returns true if the supplied version fits into the range
-     *
+     * 
      * @param version to test
      * @return
      */

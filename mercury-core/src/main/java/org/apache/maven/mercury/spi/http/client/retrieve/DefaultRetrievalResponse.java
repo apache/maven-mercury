@@ -25,7 +25,8 @@ import java.util.Set;
 
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
 
-public class DefaultRetrievalResponse implements RetrievalResponse
+public class DefaultRetrievalResponse
+    implements RetrievalResponse
 {
     private Set<HttpClientException> _exceptions = Collections.synchronizedSet( new HashSet<HttpClientException>() );
 
@@ -47,7 +48,7 @@ public class DefaultRetrievalResponse implements RetrievalResponse
     {
         return _exceptions.toString();
     }
-    
+
     public boolean hasExceptions()
     {
         return _exceptions.size() > 0;

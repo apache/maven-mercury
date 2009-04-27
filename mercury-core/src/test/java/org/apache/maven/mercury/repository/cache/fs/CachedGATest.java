@@ -29,57 +29,53 @@ import org.apache.maven.mercury.repository.metadata.MetadataBuilder;
 import org.apache.maven.mercury.util.FileUtil;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class CachedGATest
     extends TestCase
 {
-  
-  byte [] mdBytes;
-  
-  CachedGAMetadata gam;
-  
-  Metadata omd;
 
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    InputStream is = CachedGATest.class.getResourceAsStream( "/ga-metadata.xml" );
-    
-    mdBytes = FileUtil.readRawData( is );
-    
-    omd = MetadataBuilder.getMetadata( mdBytes );
-    
-    gam = new CachedGAMetadata( new RepositoryGAMetadata(omd) );
-  }
-  
-  public void testData()
-  throws Exception
-  {
-    assertEquals( omd.getGroupId(), gam.getGA().getGroupId() );
-    assertEquals( omd.getArtifactId(), gam.getGA().getArtifactId() );
-    
-    assertEquals( omd.getVersioning().getVersions().size(), gam.getVersions().size() );
-  }
-  
-  public void testRead()
-  throws Exception
-  {
-    File mf = File.createTempFile( "test-ga-", ".xml", new File("./target") );
-    gam.cm.save( mf );
-    
-    CachedGAMetadata gam2 = new CachedGAMetadata( mf );
+    byte[] mdBytes;
 
-    assertEquals( omd.getGroupId(), gam2.getGA().getGroupId() );
-    assertEquals( omd.getArtifactId(), gam2.getGA().getArtifactId() );
-    
-    assertEquals( omd.getVersioning().getVersions().size(), gam2.getVersions().size() );
-  }
-  
-  
+    CachedGAMetadata gam;
+
+    Metadata omd;
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        InputStream is = CachedGATest.class.getResourceAsStream( "/ga-metadata.xml" );
+
+        mdBytes = FileUtil.readRawData( is );
+
+        omd = MetadataBuilder.getMetadata( mdBytes );
+
+        gam = new CachedGAMetadata( new RepositoryGAMetadata( omd ) );
+    }
+
+    public void testData()
+        throws Exception
+    {
+        assertEquals( omd.getGroupId(), gam.getGA().getGroupId() );
+        assertEquals( omd.getArtifactId(), gam.getGA().getArtifactId() );
+
+        assertEquals( omd.getVersioning().getVersions().size(), gam.getVersions().size() );
+    }
+
+    public void testRead()
+        throws Exception
+    {
+        File mf = File.createTempFile( "test-ga-", ".xml", new File( "./target" ) );
+        gam.cm.save( mf );
+
+        CachedGAMetadata gam2 = new CachedGAMetadata( mf );
+
+        assertEquals( omd.getGroupId(), gam2.getGA().getGroupId() );
+        assertEquals( omd.getArtifactId(), gam2.getGA().getArtifactId() );
+
+        assertEquals( omd.getVersioning().getVersions().size(), gam2.getVersions().size() );
+    }
+
 }

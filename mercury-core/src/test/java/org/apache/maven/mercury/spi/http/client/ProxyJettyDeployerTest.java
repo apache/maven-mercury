@@ -28,55 +28,62 @@ import org.apache.maven.mercury.spi.http.server.AuthenticatingProxyServer;
 import org.apache.maven.mercury.spi.http.server.AuthenticatingPutServer;
 import org.apache.maven.mercury.transport.api.Credentials;
 
-public class ProxyJettyDeployerTest extends JettyDeployerTest
+public class ProxyJettyDeployerTest
+    extends JettyDeployerTest
 {
 
-    
     AuthenticatingProxyServer _proxyServer;
+
     String _proxyPort;
 
-    
-    public ProxyJettyDeployerTest() throws Exception
+    public ProxyJettyDeployerTest()
+        throws Exception
     {
         super();
     }
-    protected void setUp() throws Exception
-    {        
+
+    protected void setUp()
+        throws Exception
+    {
         setUpFiles();
-        //Set up a proxy server (which requires authentication)
+        // Set up a proxy server (which requires authentication)
         _proxyServer = new AuthenticatingProxyServer();
         _proxyServer.start();
-        _proxyPort = String.valueOf(_proxyServer.getPort());
-        
+        _proxyPort = String.valueOf( _proxyServer.getPort() );
+
         _deployer = new DefaultDeployer();
-        
-        //set up a target server (which requires authentication)
+
+        // set up a target server (which requires authentication)
         _putServer = new AuthenticatingPutServer();
         _putServer.start();
-        _port = String.valueOf(_putServer.getPort());
+        _port = String.valueOf( _putServer.getPort() );
         setUpServerType();
     }
 
-  
-    
-    protected void setUpServerType () throws Exception
+    protected void setUpServerType()
+        throws Exception
     {
-        HashSet<org.apache.maven.mercury.transport.api.Server> remoteServerTypes = new HashSet<org.apache.maven.mercury.transport.api.Server>();
-        remoteServerType = new org.apache.maven.mercury.transport.api.Server( "test", 
-                new URL(_HOST_FRAGMENT+_port), 
-                false, 
-                false, 
-                new Credentials(((AuthenticatingPutServer)_putServer).getUsername(), ((AuthenticatingPutServer)_putServer).getPassword()),
-                new URL(_HOST_FRAGMENT+_proxyPort),
-                new Credentials(_proxyServer.getUsername(), _proxyServer.getPassword()));
-        factories = new HashSet<StreamVerifierFactory>();       
-        remoteServerTypes.add(remoteServerType);
-        _deployer.setServers(remoteServerTypes);
+        HashSet<org.apache.maven.mercury.transport.api.Server> remoteServerTypes =
+            new HashSet<org.apache.maven.mercury.transport.api.Server>();
+        remoteServerType =
+            new org.apache.maven.mercury.transport.api.Server(
+                                                               "test",
+                                                               new URL( _HOST_FRAGMENT + _port ),
+                                                               false,
+                                                               false,
+                                                               new Credentials(
+                                                                                ( (AuthenticatingPutServer) _putServer ).getUsername(),
+                                                                                ( (AuthenticatingPutServer) _putServer ).getPassword() ),
+                                                               new URL( _HOST_FRAGMENT + _proxyPort ),
+                                                               new Credentials( _proxyServer.getUsername(),
+                                                                                _proxyServer.getPassword() ) );
+        factories = new HashSet<StreamVerifierFactory>();
+        remoteServerTypes.add( remoteServerType );
+        _deployer.setServers( remoteServerTypes );
     }
-    
-   
 
-    protected void tearDown() throws Exception
+    protected void tearDown()
+        throws Exception
     {
         _proxyServer.stop();
         super.tearDown();

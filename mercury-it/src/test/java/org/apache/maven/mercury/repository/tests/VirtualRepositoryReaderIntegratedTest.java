@@ -29,8 +29,8 @@ import junit.framework.TestCase;
 import org.apache.maven.mercury.MavenDependencyProcessor;
 import org.apache.maven.mercury.artifact.ArtifactMetadata;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
-import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryMetadataCache;
 import org.apache.maven.mercury.repository.api.RepositoryUpdateIntervalPolicy;
@@ -48,205 +48,213 @@ import org.apache.maven.mercury.util.FileUtil;
 import org.apache.maven.mercury.util.Util;
 
 public class VirtualRepositoryReaderIntegratedTest
-extends TestCase
+    extends TestCase
 {
-  File _testBase;
-  File _localRepoBase;
-  
-  public String _port;
-  HttpTestServer _server;
-  
-  List<ArtifactMetadata> _query;
-  
-  RemoteRepositoryM2 _remoteRepo;
-  LocalRepositoryM2  _localRepo;
-  
-  
-  VirtualRepositoryReader _vr;
+    File _testBase;
 
-  //-------------------------------------------------------------------------
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    _testBase = new File("./target/test-classes/repoVr");
-    _localRepoBase = new File("./target/localRepo");
-    
-    FileUtil.delete( _localRepoBase );
-    _localRepoBase.mkdirs();
-    
-    _server = new HttpTestServer( _testBase, "/repo" );
-    _server.start();
-    _port = String.valueOf( _server.getPort() );
+    File _localRepoBase;
 
-    _query = new ArrayList<ArtifactMetadata>();
+    public String _port;
 
-    DependencyProcessor mdProcessor = new MetadataProcessorMock();
+    HttpTestServer _server;
 
-    Server server = new Server( "testRemoteRepo", new URL("http://localhost:"+_port+"/repo") );
-    _remoteRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
-    _remoteRepo.setUpdatePolicy( new RepositoryUpdateIntervalPolicy("interval2").setInterval( 2000L ) );
-    _remoteRepo.setDependencyProcessor( mdProcessor );
-    
-    _localRepo = new LocalRepositoryM2( "testLocalRepo", _localRepoBase, new MavenDependencyProcessor() );
-    _localRepo.setDependencyProcessor( mdProcessor );
-    
-    List<Repository> reps = new ArrayList<Repository>();
-    reps.add( _remoteRepo );
-    reps.add( _localRepo );
+    List<ArtifactMetadata> _query;
 
-    _vr = new VirtualRepositoryReader( reps );
-  }
-  //-------------------------------------------------------------------------
-  @Override
-  protected void tearDown()
-  throws Exception
-  {
-    super.tearDown();
-    _server.stop();
-    _server.destroy();
-  }
-  //-------------------------------------------------------------------------
-  public void testReadArtifact()
-  throws Exception
-  {
-    try
+    RemoteRepositoryM2 _remoteRepo;
+
+    LocalRepositoryM2 _localRepo;
+
+    VirtualRepositoryReader _vr;
+
+    // -------------------------------------------------------------------------
+    @Override
+    protected void setUp()
+        throws Exception
     {
-    ArtifactMetadata bmd = new ArtifactMetadata("a:a:[1,)");
-    List<ArtifactMetadata> q = THelper.toList( bmd );
-    
-    MetadataResults vres = _vr.readVersions( q );
-     
-    assertNotNull( vres );
-     
-    assertFalse( vres.hasExceptions() );
-    
-    assertTrue( vres.hasResults() );
-    
-    assertTrue( vres.hasResults(bmd) );
-    
-    List<ArtifactMetadata> versions = vres.getResult( bmd );
-    
-    assertNotNull( versions );
-    
-    assertEquals( 5, versions.size() );
-    
-    // add version 6 to GA metadata
-    File mdf = new File( _testBase, "a/a/maven-metadata.xml");
-    Metadata md = MetadataBuilder.getMetadata( FileUtil.readRawData( mdf ) );
-    
-    byte [] newBytes = MetadataBuilder.changeMetadata( md, new AddVersionOperation(new StringOperand("6")) );
-    
-    FileUtil.writeRawData( mdf, newBytes );
-    
-    // version MD is in memory, there should be still be 5 versions
-    vres = _vr.readVersions( q );
-    
-    assertNotNull( vres );
-     
-    assertFalse( vres.hasExceptions() );
-    
-    assertTrue( vres.hasResults() );
-    
-    assertTrue( vres.hasResults(bmd) );
-    
-    versions = vres.getResult( bmd );
-    
-    assertNotNull( versions );
-    
-    assertEquals( 5, versions.size() );
-    
-    // clean in-memory cache, so that on-disk expiration rules apply
-    RepositoryMetadataCache cache = _vr.getCache();
-    
-    cache.clearSession();
-    
-    Thread.sleep( 4000L );
-    
-    // We are past the expiration point of 5 sec - should now have 6 versions.  
-    vres = _vr.readVersions( q );
-    
-    assertNotNull( vres );
-     
-    assertFalse( vres.hasExceptions() );
-    
-    assertTrue( vres.hasResults() );
-    
-    assertTrue( vres.hasResults(bmd) );
-    
-    versions = vres.getResult( bmd );
-    
-    assertNotNull( versions );
-    
-    assertEquals( 6, versions.size() );
-    
+        _testBase = new File( "./target/test-classes/repoVr" );
+        _localRepoBase = new File( "./target/localRepo" );
+
+        FileUtil.delete( _localRepoBase );
+        _localRepoBase.mkdirs();
+
+        _server = new HttpTestServer( _testBase, "/repo" );
+        _server.start();
+        _port = String.valueOf( _server.getPort() );
+
+        _query = new ArrayList<ArtifactMetadata>();
+
+        DependencyProcessor mdProcessor = new MetadataProcessorMock();
+
+        Server server = new Server( "testRemoteRepo", new URL( "http://localhost:" + _port + "/repo" ) );
+        _remoteRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
+        _remoteRepo.setUpdatePolicy( new RepositoryUpdateIntervalPolicy( "interval2" ).setInterval( 2000L ) );
+        _remoteRepo.setDependencyProcessor( mdProcessor );
+
+        _localRepo = new LocalRepositoryM2( "testLocalRepo", _localRepoBase, new MavenDependencyProcessor() );
+        _localRepo.setDependencyProcessor( mdProcessor );
+
+        List<Repository> reps = new ArrayList<Repository>();
+        reps.add( _remoteRepo );
+        reps.add( _localRepo );
+
+        _vr = new VirtualRepositoryReader( reps );
     }
-    finally
+
+    // -------------------------------------------------------------------------
+    @Override
+    protected void tearDown()
+        throws Exception
     {
-      // restore back 5 versions
-      File mdf = new File( _testBase, "a/a/maven-metadata.xml");
-      InputStream in = VirtualRepositoryReaderIntegratedTest.class.getResourceAsStream( "/repoVr/a.a-maven-metadata.xml" );
-      FileUtil.writeRawData( in, mdf );
+        super.tearDown();
+        _server.stop();
+        _server.destroy();
     }
-  }
-  //-------------------------------------------------------------------------
-  public void testReadBadVersions()
-  {
-    ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
-    List<ArtifactMetadata> q = THelper.toList( bmd );
-    
-    MetadataResults vres = null;
-    try
+
+    // -------------------------------------------------------------------------
+    public void testReadArtifact()
+        throws Exception
     {
-        vres = _vr.readVersions( q );
+        try
+        {
+            ArtifactMetadata bmd = new ArtifactMetadata( "a:a:[1,)" );
+            List<ArtifactMetadata> q = THelper.toList( bmd );
+
+            MetadataResults vres = _vr.readVersions( q );
+
+            assertNotNull( vres );
+
+            assertFalse( vres.hasExceptions() );
+
+            assertTrue( vres.hasResults() );
+
+            assertTrue( vres.hasResults( bmd ) );
+
+            List<ArtifactMetadata> versions = vres.getResult( bmd );
+
+            assertNotNull( versions );
+
+            assertEquals( 5, versions.size() );
+
+            // add version 6 to GA metadata
+            File mdf = new File( _testBase, "a/a/maven-metadata.xml" );
+            Metadata md = MetadataBuilder.getMetadata( FileUtil.readRawData( mdf ) );
+
+            byte[] newBytes = MetadataBuilder.changeMetadata( md, new AddVersionOperation( new StringOperand( "6" ) ) );
+
+            FileUtil.writeRawData( mdf, newBytes );
+
+            // version MD is in memory, there should be still be 5 versions
+            vres = _vr.readVersions( q );
+
+            assertNotNull( vres );
+
+            assertFalse( vres.hasExceptions() );
+
+            assertTrue( vres.hasResults() );
+
+            assertTrue( vres.hasResults( bmd ) );
+
+            versions = vres.getResult( bmd );
+
+            assertNotNull( versions );
+
+            assertEquals( 5, versions.size() );
+
+            // clean in-memory cache, so that on-disk expiration rules apply
+            RepositoryMetadataCache cache = _vr.getCache();
+
+            cache.clearSession();
+
+            Thread.sleep( 4000L );
+
+            // We are past the expiration point of 5 sec - should now have 6 versions.
+            vres = _vr.readVersions( q );
+
+            assertNotNull( vres );
+
+            assertFalse( vres.hasExceptions() );
+
+            assertTrue( vres.hasResults() );
+
+            assertTrue( vres.hasResults( bmd ) );
+
+            versions = vres.getResult( bmd );
+
+            assertNotNull( versions );
+
+            assertEquals( 6, versions.size() );
+
+        }
+        finally
+        {
+            // restore back 5 versions
+            File mdf = new File( _testBase, "a/a/maven-metadata.xml" );
+            InputStream in =
+                VirtualRepositoryReaderIntegratedTest.class.getResourceAsStream( "/repoVr/a.a-maven-metadata.xml" );
+            FileUtil.writeRawData( in, mdf );
+        }
     }
-    catch ( Exception e )
+
+    // -------------------------------------------------------------------------
+    public void testReadBadVersions()
     {
-        fail("reading non-existing artifact throws an exception");
+        ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+        List<ArtifactMetadata> q = THelper.toList( bmd );
+
+        MetadataResults vres = null;
+        try
+        {
+            vres = _vr.readVersions( q );
+        }
+        catch ( Exception e )
+        {
+            fail( "reading non-existing artifact throws an exception" );
+        }
+
+        assertNull( vres );
+
     }
-     
-    assertNull( vres );
-    
-  }
-  //-------------------------------------------------------------------------
-  public void testReadBadDependencies()
-  {
-    ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
-    
-    ArtifactMetadata vres = null;
-    try
+
+    // -------------------------------------------------------------------------
+    public void testReadBadDependencies()
     {
-        vres = _vr.readDependencies( bmd );
+        ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+
+        ArtifactMetadata vres = null;
+        try
+        {
+            vres = _vr.readDependencies( bmd );
+        }
+        catch ( Exception e )
+        {
+            fail( "reading non-existing artifact throws an exception" );
+        }
+
+        assertTrue( Util.isEmpty( vres.getDependencies() ) );
+
     }
-    catch ( Exception e )
+
+    // -------------------------------------------------------------------------
+    public void testReadBadArtifact()
     {
-        fail("reading non-existing artifact throws an exception");
+        ArtifactMetadata bmd = new ArtifactMetadata( "does.not:exist:1.0" );
+        List<ArtifactMetadata> q = THelper.toList( bmd );
+
+        ArtifactResults vres = null;
+        try
+        {
+            vres = _vr.readArtifacts( q );
+        }
+        catch ( Exception e )
+        {
+            fail( "reading non-existing artifact throws an exception" );
+        }
+
+        assertNotNull( vres );
+
+        assertFalse( vres.hasResults() );
+
     }
-     
-    assertTrue( Util.isEmpty( vres.getDependencies() ) );
-    
-  }
-  //-------------------------------------------------------------------------
-  public void testReadBadArtifact()
-  {
-      ArtifactMetadata bmd = new ArtifactMetadata("does.not:exist:1.0");
-      List<ArtifactMetadata> q = THelper.toList( bmd );
-      
-    ArtifactResults vres = null;
-    try
-    {
-        vres = _vr.readArtifacts(  q );
-    }
-    catch ( Exception e )
-    {
-        fail("reading non-existing artifact throws an exception");
-    }
-    
-    assertNotNull( vres );
-    
-    assertFalse( vres.hasResults() );
-    
-  }
-  //-------------------------------------------------------------------------
-  //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 }

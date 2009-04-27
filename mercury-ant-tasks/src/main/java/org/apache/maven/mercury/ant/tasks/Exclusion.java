@@ -15,27 +15,24 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.ant.tasks;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 
 public class Exclusion
 {
     String _name;
-    
+
     public void setId( String val )
     {
         _name = val;
     }
-    
+
     public void setName( String val )
     {
         _name = val;

@@ -24,18 +24,16 @@ import java.util.Set;
 import org.apache.maven.mercury.spi.http.validate.Validator;
 import org.apache.maven.mercury.transport.api.Binding;
 
-
 /**
  * RetrievalRequest
  * <p/>
- * A set of files to retrieve from remote locations
- * and a set of validators to apply to them.
+ * A set of files to retrieve from remote locations and a set of validators to apply to them.
  */
 public interface RetrievalRequest
-{    
+{
     Set<Binding> getBindings();
 
     boolean isFailFast();
-    
+
     Set<Validator> getValidators();
 }

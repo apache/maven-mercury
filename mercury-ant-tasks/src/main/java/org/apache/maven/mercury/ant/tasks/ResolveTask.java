@@ -60,7 +60,7 @@ public class ResolveTask
 
     private boolean _hasPathId = false;
 
-//    private String _refPathId;
+    // private String _refPathId;
 
     private String _configId;
 
@@ -73,11 +73,11 @@ public class ResolveTask
     private List<Dependency> _dependencies;
 
     private Dependency _sourceDependency;
-    
+
     List<String> _inclusions;
-    
+
     List<String> _exclusions;
-    
+
     // ----------------------------------------------------------------------------------------
     @Override
     public String getDescription()
@@ -139,16 +139,16 @@ public class ResolveTask
                 return;
             }
         }
-//        else if ( !Util.isEmpty( _refPathId ) )
-//        {
-//            Object p = getProject().getReference( _refPathId );
-//
-//            if ( p == null )
-//            {
-//                throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
-//                return;
-//            }
-//        }
+        // else if ( !Util.isEmpty( _refPathId ) )
+        // {
+        // Object p = getProject().getReference( _refPathId );
+        //
+        // if ( p == null )
+        // {
+        // throwIfEnabled( LANG.getMessage( "no.path.ref", _refPathId ) );
+        // return;
+        // }
+        // }
         else
         {
             _pathId = Config.DEFAULT_PATH_ID;
@@ -157,17 +157,18 @@ public class ResolveTask
         try
         {
             Config config = AbstractAntTask.findConfig( getProject(), _configId );
-            
-if( LOG.isDebugEnabled() )
-{
-    for( Repository r : config.getRepositories() )
-        LOG.debug( "Repository: " + (r.getServer() == null ? r.getClass().getName() : r.getServer().getURL()) );
-}
+
+            if ( LOG.isDebugEnabled() )
+            {
+                for ( Repository r : config.getRepositories() )
+                    LOG.debug( "Repository: "
+                        + ( r.getServer() == null ? r.getClass().getName() : r.getServer().getURL() ) );
+            }
 
             dep.setTransitive( _transitive );
-            
+
             dep.setInclusions( _inclusions );
-            
+
             dep.setExclusions( _exclusions );
 
             ArtifactScopeEnum[] scopes = _scope == null ? SCOPES : new ArtifactScopeEnum[] { _scope };
@@ -181,15 +182,15 @@ if( LOG.isDebugEnabled() )
                     continue;
                 }
 
-                if( _hasPathId && _scope != null )
+                if ( _hasPathId && _scope != null )
                 {
-                    createPath( _pathId, _pathId+".fileset", artifacts );
+                    createPath( _pathId, _pathId + ".fileset", artifacts );
                     continue;
                 }
 
                 if ( ArtifactScopeEnum.compile.equals( sc ) )
                 {
-                    createPath( _pathId, _pathId+".fileset", artifacts );
+                    createPath( _pathId, _pathId + ".fileset", artifacts );
                 }
 
                 createPath( _pathId + "." + sc.getScope(), _pathId + ".fileset." + sc.getScope(), artifacts );
@@ -205,10 +206,10 @@ if( LOG.isDebugEnabled() )
     private File findRoot( File f )
     {
         File root = f;
-        
-        while( root.getParentFile() != null )
+
+        while ( root.getParentFile() != null )
             root = root.getParentFile();
-        
+
         return root;
     }
 
@@ -240,7 +241,7 @@ if( LOG.isDebugEnabled() )
         {
             if ( dir == null )
                 dir = findRoot( a.getFile() );
-                
+
             String aPath = a.getFile().getCanonicalPath();
 
             FileList.FileName fn = new FileList.FileName();
@@ -248,20 +249,19 @@ if( LOG.isDebugEnabled() )
             fn.setName( aPath );
 
             pathFileList.addConfiguredFile( fn );
-            
+
         }
 
         pathFileList.setDir( dir );
-        
-        
+
         // fileset is trickier as it wants a dir
         fSet.setDir( dir );
-        
-        String dirName = dir.getCanonicalPath(); 
-        
+
+        String dirName = dir.getCanonicalPath();
+
         int dirLen = dirName.length();
-        
-        for( String fn : pathFileList.getFiles( getProject() ) )
+
+        for ( String fn : pathFileList.getFiles( getProject() ) )
         {
             fSet.createInclude().setName( fn.substring( dirLen ) );
         }
@@ -302,24 +302,24 @@ if( LOG.isDebugEnabled() )
     public void setPathId( String pathId )
     {
         this._pathId = pathId;
-        
+
         _hasPathId = true;
     }
 
-//    public void setRefpathid( String refPathId )
-//    {
-//        this._refPathId = refPathId;
-//    }
-//
-//    public void setRefpathId( String refPathId )
-//    {
-//        this._refPathId = refPathId;
-//    }
-//
-//    public void setRefPathId( String refPathId )
-//    {
-//        this._refPathId = refPathId;
-//    }
+    // public void setRefpathid( String refPathId )
+    // {
+    // this._refPathId = refPathId;
+    // }
+    //
+    // public void setRefpathId( String refPathId )
+    // {
+    // this._refPathId = refPathId;
+    // }
+    //
+    // public void setRefPathId( String refPathId )
+    // {
+    // this._refPathId = refPathId;
+    // }
 
     public void setDepid( String depid )
     {
@@ -371,12 +371,12 @@ if( LOG.isDebugEnabled() )
 
         return dependency;
     }
-    
+
     public void addConfiguredExclusions( Exclusions ex )
     {
         _exclusions = ex._list;
     }
-    
+
     public void addConfiguredInclusions( Inclusions in )
     {
         _inclusions = in._list;

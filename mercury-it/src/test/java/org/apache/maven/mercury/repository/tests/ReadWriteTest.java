@@ -46,138 +46,141 @@ import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class ReadWriteTest
-extends TestCase
+    extends TestCase
 {
-  private static final IMercuryLogger log = MercuryLoggerManager.getLogger( ReadWriteTest.class ); 
+    private static final IMercuryLogger log = MercuryLoggerManager.getLogger( ReadWriteTest.class );
 
-  File remoteRepoBase = new File("./target/test-classes/repo");
-  public String port;
-  HttpTestServer httpServer;
+    File remoteRepoBase = new File( "./target/test-classes/repo" );
 
-  RemoteRepository rr;
-  LocalRepository  lr;
+    public String port;
 
-  DependencyProcessor mdProcessor;
-  RepositoryReader reader;
+    HttpTestServer httpServer;
 
-  File localRepoBase;
-  RepositoryWriter writer;
+    RemoteRepository rr;
 
-  List<ArtifactMetadata> query;
-  
-  ArtifactMetadata bmd;
-  
-  Server server;
-  
-  /* (non-Javadoc)
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp()
-      throws Exception
-  {
-    httpServer = new HttpTestServer( remoteRepoBase, "/repo" );
-    httpServer.start();
-    port = String.valueOf( httpServer.getPort() );
+    LocalRepository lr;
 
-    server = new Server( "test", new URL("http://localhost:"+port+"/repo") );
-    rr = new RemoteRepositoryM2( "testRepo", server, new MavenDependencyProcessor() );
+    DependencyProcessor mdProcessor;
 
-    mdProcessor = new MetadataProcessorMock();
-    rr.setDependencyProcessor( mdProcessor );
-    reader = rr.getReader();
-    
-    localRepoBase = File.createTempFile( "local", "repo" );
-    localRepoBase.delete();
-    localRepoBase.mkdir();
-    log.info("local repo is in "+localRepoBase);
-    
-    lr = new LocalRepositoryM2( "lr", localRepoBase, new MavenDependencyProcessor() );
-    writer = lr.getWriter(); 
+    RepositoryReader reader;
 
-    query = new ArrayList<ArtifactMetadata>();
-  }
+    File localRepoBase;
 
-  protected void tearDown()
-  throws Exception
-  {
-    super.tearDown();
-    httpServer.stop();
-    httpServer.destroy();
-    FileUtil.delete( localRepoBase );
-  }
-  
-  public void testOneArtifact()
-  throws IllegalArgumentException, RepositoryException
-  {
-    bmd = new ArtifactMetadata("a:a:4");
-    query.add( bmd );
-    
-    ArtifactResults res = reader.readArtifacts( query );
-    
-    assertTrue( res != null );
-    assertFalse( res.hasExceptions() );
-    assertTrue( res.hasResults() );
-    
-    Map< ArtifactMetadata, List<Artifact>> resMap = res.getResults();
-    
-    assertNotNull( resMap );
-    assertFalse( resMap.isEmpty() );
-    
-    List<Artifact> al = resMap.get( bmd );
-    
-    assertNotNull( al );
-    assertFalse( al.isEmpty() );
-    
-    Artifact a = al.get( 0 );
-    
-    writer.writeArtifacts( al );
-    
-    File aBin = new File( localRepoBase, "a/a/4/a-4.jar" );
-    assertTrue( aBin.exists() );
-    
-    File aPom = new File( localRepoBase, "a/a/4/a-4.pom" );
-    assertTrue( aPom.exists() );
-    
-    assertNotNull( a.getPomBlob() );
-    assertTrue( a.getPomBlob().length > 10 );
-    log.info( a+" - pom length is "+a.getPomBlob().length );
-  }
-  
-  public void testOneArtifactWithClassifier()
-  throws IllegalArgumentException, RepositoryException
-  {
-    ArtifactMetadata bm = new ArtifactMetadata("a:a:4:sources");
-    query.add( bm );
-    
-    ArtifactResults res = reader.readArtifacts( query );
-    
-    assertTrue( res != null );
-    assertFalse( res.hasExceptions() );
-    assertTrue( res.hasResults() );
-    
-    Map< ArtifactMetadata, List<Artifact>> resMap = res.getResults();
-    
-    assertNotNull( resMap );
-    assertFalse( resMap.isEmpty() );
-    
-    List<Artifact> al = resMap.get( bm );
-    
-    assertNotNull( al );
-    assertFalse( al.isEmpty() );
-    
-    Artifact a = al.get( 0 );
-    
-    writer.writeArtifacts( al );
-    
-    File aBin = new File( localRepoBase, "a/a/4/a-4-sources.jar" );
-    assertTrue( aBin.exists() );
-  }
+    RepositoryWriter writer;
+
+    List<ArtifactMetadata> query;
+
+    ArtifactMetadata bmd;
+
+    Server server;
+
+    /*
+     * (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp()
+        throws Exception
+    {
+        httpServer = new HttpTestServer( remoteRepoBase, "/repo" );
+        httpServer.start();
+        port = String.valueOf( httpServer.getPort() );
+
+        server = new Server( "test", new URL( "http://localhost:" + port + "/repo" ) );
+        rr = new RemoteRepositoryM2( "testRepo", server, new MavenDependencyProcessor() );
+
+        mdProcessor = new MetadataProcessorMock();
+        rr.setDependencyProcessor( mdProcessor );
+        reader = rr.getReader();
+
+        localRepoBase = File.createTempFile( "local", "repo" );
+        localRepoBase.delete();
+        localRepoBase.mkdir();
+        log.info( "local repo is in " + localRepoBase );
+
+        lr = new LocalRepositoryM2( "lr", localRepoBase, new MavenDependencyProcessor() );
+        writer = lr.getWriter();
+
+        query = new ArrayList<ArtifactMetadata>();
+    }
+
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        httpServer.stop();
+        httpServer.destroy();
+        FileUtil.delete( localRepoBase );
+    }
+
+    public void testOneArtifact()
+        throws IllegalArgumentException, RepositoryException
+    {
+        bmd = new ArtifactMetadata( "a:a:4" );
+        query.add( bmd );
+
+        ArtifactResults res = reader.readArtifacts( query );
+
+        assertTrue( res != null );
+        assertFalse( res.hasExceptions() );
+        assertTrue( res.hasResults() );
+
+        Map<ArtifactMetadata, List<Artifact>> resMap = res.getResults();
+
+        assertNotNull( resMap );
+        assertFalse( resMap.isEmpty() );
+
+        List<Artifact> al = resMap.get( bmd );
+
+        assertNotNull( al );
+        assertFalse( al.isEmpty() );
+
+        Artifact a = al.get( 0 );
+
+        writer.writeArtifacts( al );
+
+        File aBin = new File( localRepoBase, "a/a/4/a-4.jar" );
+        assertTrue( aBin.exists() );
+
+        File aPom = new File( localRepoBase, "a/a/4/a-4.pom" );
+        assertTrue( aPom.exists() );
+
+        assertNotNull( a.getPomBlob() );
+        assertTrue( a.getPomBlob().length > 10 );
+        log.info( a + " - pom length is " + a.getPomBlob().length );
+    }
+
+    public void testOneArtifactWithClassifier()
+        throws IllegalArgumentException, RepositoryException
+    {
+        ArtifactMetadata bm = new ArtifactMetadata( "a:a:4:sources" );
+        query.add( bm );
+
+        ArtifactResults res = reader.readArtifacts( query );
+
+        assertTrue( res != null );
+        assertFalse( res.hasExceptions() );
+        assertTrue( res.hasResults() );
+
+        Map<ArtifactMetadata, List<Artifact>> resMap = res.getResults();
+
+        assertNotNull( resMap );
+        assertFalse( resMap.isEmpty() );
+
+        List<Artifact> al = resMap.get( bm );
+
+        assertNotNull( al );
+        assertFalse( al.isEmpty() );
+
+        Artifact a = al.get( 0 );
+
+        writer.writeArtifacts( al );
+
+        File aBin = new File( localRepoBase, "a/a/4/a-4-sources.jar" );
+        assertTrue( aBin.exists() );
+    }
 
 }

@@ -30,8 +30,8 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.repository.api.AbstracRepositoryReader;
 import org.apache.maven.mercury.repository.api.AbstractRepository;
-import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
@@ -66,34 +66,38 @@ public class LocalRepositoryReaderMap
         _repo = (LocalRepositoryMap) repo;
 
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public Repository getRepository()
     {
         return _repo;
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public boolean canHandle( String protocol )
     {
         return AbstractRepository.DEFAULT_LOCAL_READ_PROTOCOL.equals( protocol );
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public String[] getProtocols()
     {
         return _protocols;
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public ArtifactResults readArtifacts( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
-        if( Util.isEmpty( query ) )
+        if ( Util.isEmpty( query ) )
             return null;
-        
-        if( Util.isEmpty( _repo._storage ) )
+
+        if ( Util.isEmpty( _repo._storage ) )
             return null;
-        
+
         ArtifactResults res = new ArtifactResults();
-        
-        for( ArtifactMetadata md : query )
+
+        for ( ArtifactMetadata md : query )
         {
             Artifact a;
             try
@@ -102,24 +106,26 @@ public class LocalRepositoryReaderMap
             }
             catch ( Exception e )
             {
-                throw new RepositoryException(e);
+                throw new RepositoryException( e );
             }
-            
-            if( a != null )
+
+            if ( a != null )
                 res.add( md, a );
         }
 
         return res;
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( String path )
-    throws MetadataReaderException
+        throws MetadataReaderException
     {
         return readRawData( path, false );
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( String path, boolean exempt )
-    throws MetadataReaderException
+        throws MetadataReaderException
     {
         try
         {
@@ -127,70 +133,68 @@ public class LocalRepositoryReaderMap
         }
         catch ( StorageException e )
         {
-            throw new MetadataReaderException(e);
+            throw new MetadataReaderException( e );
         }
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
         throws MetadataReaderException
     {
         return readRawData( bmd, classifier, type, false );
     }
+
     // ---------------------------------------------------------------------------------------------------------------
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
+    public byte[] readRawData( ArtifactMetadata md, String classifier, String type, boolean exempt )
         throws MetadataReaderException
     {
-        
-        String key =  bmd.getGroupId()
-            + ":"+bmd.getArtifactId()
-            + ":"+bmd.getVersion()
-            + ":"+ (classifier == null ? "" : classifier)
-            + ":"+ (type == null ? bmd.getType() : type)
-        ;
-        
+        String key = LocalRepositoryMap.calculateStorageKey( md, classifier, type );
+
         return readRawData( key, exempt );
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public MetadataResults readDependencies( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
-        if( Util.isEmpty( query ) )
+        if ( Util.isEmpty( query ) )
             return null;
-        
+
         DependencyProcessor dp = _repo.getDependencyProcessor();
-        
+
         MetadataResults res = new MetadataResults( query.size() );
-        
-        for( ArtifactMetadata bmd : query )
+
+        for ( ArtifactMetadata bmd : query )
         {
             try
             {
                 MetadataReader mdr = _repo._mdReader == null ? this : _repo._mdReader;
-                
+
                 List<ArtifactMetadata> deps = dp.getDependencies( bmd, mdr, System.getenv(), System.getProperties() );
-                
+
                 res.add( bmd, deps );
             }
             catch ( Exception e )
             {
                 LOG.error( e.getMessage() );
-                
+
                 res.addError( bmd, e );
             }
         }
-        
+
         return res;
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws RepositoryException
     {
         return null;
     }
+
     // ---------------------------------------------------------------------------------------------------------------
     public void close()
     {
     }
-    // ---------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------
 }

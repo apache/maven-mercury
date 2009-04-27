@@ -29,6 +29,7 @@ import org.apache.maven.mercury.artifact.Quality;
 public interface RepositoryUpdatePolicy
 {
     public static final String SYSTEM_PROPERTY_UPDATE_POLICY = "mercury.repository.update.policy";
+
     /**
      * initialize this calculator
      * 

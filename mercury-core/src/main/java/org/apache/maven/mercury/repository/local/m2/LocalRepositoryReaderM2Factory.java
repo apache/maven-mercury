@@ -29,23 +29,25 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 public class LocalRepositoryReaderM2Factory
-implements RepositoryReaderFactory
+    implements RepositoryReaderFactory
 {
-  private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderM2Factory.class );
-  private static final LocalRepositoryReaderM2Factory FACTORY = new LocalRepositoryReaderM2Factory();
-  
-  static 
-  {
-    AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, FACTORY  );
-  }
-  
-  public RepositoryReader getReader( Repository repo, DependencyProcessor mdProcessor)
-  throws RepositoryException
-  {
-    if( repo == null || !(repo instanceof LocalRepository) )
-      throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
-    
-    return new LocalRepositoryReaderM2( (LocalRepository)repo, mdProcessor );
-  }
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryReaderM2Factory.class );
+
+    private static final LocalRepositoryReaderM2Factory FACTORY = new LocalRepositoryReaderM2Factory();
+
+    static
+    {
+        AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, FACTORY );
+    }
+
+    public RepositoryReader getReader( Repository repo, DependencyProcessor mdProcessor )
+        throws RepositoryException
+    {
+        if ( repo == null || !( repo instanceof LocalRepository ) )
+            throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null"
+                            : repo.getClass().getName() ) );
+
+        return new LocalRepositoryReaderM2( (LocalRepository) repo, mdProcessor );
+    }
 
 }

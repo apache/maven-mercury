@@ -28,7 +28,7 @@ import org.codehaus.plexus.lang.Language;
 public class QualityRange
 {
     private static final Language LANG = new DefaultLanguage( QualityRange.class );
-    
+
     public static final QualityRange SNAPSHOTS_ONLY =
         new QualityRange( Quality.SNAPSHOT_QUALITY, true, Quality.SNAPSHOT_TS_QUALITY, true );
 
@@ -66,18 +66,16 @@ public class QualityRange
         this.qualityTo = qualityTo;
         this.toInclusive = toInclusive;
     }
-    
+
     public static QualityRange create( boolean releases, boolean snapshots )
     {
-        if( releases && snapshots )
+        if ( releases && snapshots )
             return ALL;
-        else
-            if( releases )
-                return new QualityRange( Quality.ALPHA_QUALITY, true, Quality.RELEASE_QUALITY, true );
-            else
-                if( snapshots )
-                    return new QualityRange( Quality.SNAPSHOT_QUALITY, true, Quality.SNAPSHOT_TS_QUALITY, true );
-        
+        else if ( releases )
+            return new QualityRange( Quality.ALPHA_QUALITY, true, Quality.RELEASE_QUALITY, true );
+        else if ( snapshots )
+            return new QualityRange( Quality.SNAPSHOT_QUALITY, true, Quality.SNAPSHOT_TS_QUALITY, true );
+
         throw new IllegalArgumentException( LANG.getMessage( "quality.no.sn.no.rel" ) );
     }
 

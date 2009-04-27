@@ -42,6 +42,7 @@ import org.codehaus.plexus.util.WriterFactory;
 public class MetadataBuilder
 {
     private static final Language LANG = new DefaultLanguage( MetadataBuilder.class );
+
     /**
      * instantiate Metadata from a stream
      * 
@@ -265,22 +266,22 @@ public class MetadataBuilder
         }
 
         int pos = version.lastIndexOf( '-' );
-        
-        if( pos == -1 )
+
+        if ( pos == -1 )
             throw new IllegalArgumentException( LANG.getMessage( "bad.snapshot.version", version ) );
 
         String sbn = version.substring( pos + 1 );
-        
+
         int bn = Integer.parseInt( sbn );
         sn.setBuildNumber( bn );
-        
-        String sts = version.substring( 0, pos);
+
+        String sts = version.substring( 0, pos );
         pos = sts.lastIndexOf( '-' );
-        
-        if( pos == -1 )
+
+        if ( pos == -1 )
             throw new IllegalArgumentException( LANG.getMessage( "bad.snapshot.version", version ) );
-        
-        sn.setTimestamp( sts.substring( pos+1 ) );
+
+        sn.setTimestamp( sts.substring( pos + 1 ) );
 
         return sn;
     }

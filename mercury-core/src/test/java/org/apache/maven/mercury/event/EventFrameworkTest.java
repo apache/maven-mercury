@@ -27,181 +27,171 @@ import junit.framework.TestCase;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class EventFrameworkTest
-extends TestCase
+    extends TestCase
 {
-  static final int THREAD_COUNT = 5;
-  static final int EVENT_COUNT  = 10;
-  
-  ExecutorService es;
-  
-  EventManager em;
-  
-  Listener listener;
-  
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    es = Executors.newFixedThreadPool( THREAD_COUNT );
-  }
-  
-  public void testListenAllEvents()
-  throws Exception
-  {
-    runTest( null, null, THREAD_COUNT * EventFrameworkTest.EVENT_COUNT,  THREAD_COUNT * EventFrameworkTest.EVENT_COUNT );
-  }
+    static final int THREAD_COUNT = 5;
 
-  public void testListenMaskedListenerEvents()
-  throws Exception
-  {
-    runTest(  null
-            , new MercuryEvent.EventMask(EventTypeEnum.localRepository)
-            , THREAD_COUNT * EventFrameworkTest.EVENT_COUNT
-            , 0
-           );
-  }
+    static final int EVENT_COUNT = 10;
 
-  public void testListenMaskedManagerEvents()
-  throws Exception
-  {
-    runTest( new MercuryEvent.EventMask(EventTypeEnum.remoteRepository)
-            , null
-            , 0
-            , THREAD_COUNT * EventFrameworkTest.EVENT_COUNT
-       );
-  }
+    ExecutorService es;
 
-  public void testListenMismatchedMaskEvents()
-  throws Exception
-  {
-    runTest( new MercuryEvent.EventMask(EventTypeEnum.remoteRepository)
-            , new MercuryEvent.EventMask(EventTypeEnum.localRepository)
-            , 0
-            , 0
-          );
-  }
-  //-------------------------------------------------------------------------------------------------------------------------------
-  private void runTest( MercuryEvent.EventMask emMask, MercuryEvent.EventMask listenerMask, int expectedLocal, int expectedRemote )
-  throws Exception
-  {
-    em = new EventManager( emMask );
-    
-    listener = new Listener( listenerMask  );
-    
-    em.register( listener );
+    EventManager em;
 
-    for( int i=0; i<THREAD_COUNT; i++ )
+    Listener listener;
+
+    @Override
+    protected void setUp()
+        throws Exception
     {
-      es.execute( new Generator( em, EventTypeEnum.localRepository, ""+i ) );
+        es = Executors.newFixedThreadPool( THREAD_COUNT );
     }
 
-    for( int i=0; i<THREAD_COUNT; i++ )
+    public void testListenAllEvents()
+        throws Exception
     {
-      es.execute( new Generator( em, EventTypeEnum.remoteRepository, ""+i ) );
+        runTest( null, null, THREAD_COUNT * EventFrameworkTest.EVENT_COUNT, THREAD_COUNT
+            * EventFrameworkTest.EVENT_COUNT );
     }
-    
-    es.awaitTermination( 2, TimeUnit.SECONDS );
-    
-    assertEquals( expectedLocal, listener.localRepoCount );
-    assertEquals( expectedRemote, listener.remoteRepoCount );
-  }
+
+    public void testListenMaskedListenerEvents()
+        throws Exception
+    {
+        runTest( null, new MercuryEvent.EventMask( EventTypeEnum.localRepository ), THREAD_COUNT
+            * EventFrameworkTest.EVENT_COUNT, 0 );
+    }
+
+    public void testListenMaskedManagerEvents()
+        throws Exception
+    {
+        runTest( new MercuryEvent.EventMask( EventTypeEnum.remoteRepository ), null, 0, THREAD_COUNT
+            * EventFrameworkTest.EVENT_COUNT );
+    }
+
+    public void testListenMismatchedMaskEvents()
+        throws Exception
+    {
+        runTest( new MercuryEvent.EventMask( EventTypeEnum.remoteRepository ),
+                 new MercuryEvent.EventMask( EventTypeEnum.localRepository ), 0, 0 );
+    }
+
+    // -------------------------------------------------------------------------------------------------------------------------------
+    private void runTest( MercuryEvent.EventMask emMask, MercuryEvent.EventMask listenerMask, int expectedLocal,
+                          int expectedRemote )
+        throws Exception
+    {
+        em = new EventManager( emMask );
+
+        listener = new Listener( listenerMask );
+
+        em.register( listener );
+
+        for ( int i = 0; i < THREAD_COUNT; i++ )
+        {
+            es.execute( new Generator( em, EventTypeEnum.localRepository, "" + i ) );
+        }
+
+        for ( int i = 0; i < THREAD_COUNT; i++ )
+        {
+            es.execute( new Generator( em, EventTypeEnum.remoteRepository, "" + i ) );
+        }
+
+        es.awaitTermination( 2, TimeUnit.SECONDS );
+
+        assertEquals( expectedLocal, listener.localRepoCount );
+        assertEquals( expectedRemote, listener.remoteRepoCount );
+    }
 }
 
-//=====================  helper classes  =====================
+// ===================== helper classes =====================
 class Listener
-implements MercuryEventListener
+    implements MercuryEventListener
 {
-  MercuryEvent.EventMask _mask;
-  
-  int localRepoCount = 0;
-  
-  int remoteRepoCount = 0;
-  
-  public Listener( MercuryEvent.EventMask mask )
-  {
-    _mask = mask;
-  }
+    MercuryEvent.EventMask _mask;
 
-  public void fire( MercuryEvent event )
-  {
-//    System.out.println( EventManager.toString( event ) );
-//    System.out.flush();
-    
-    if( event.getType().equals( EventTypeEnum.localRepository ) )
-      ++localRepoCount;
-    else
-      if( event.getType().equals( EventTypeEnum.remoteRepository ) )
-        ++remoteRepoCount;
-  }
+    int localRepoCount = 0;
 
-  public EventMask getMask()
-  {
-    return _mask;
-  }
-  
+    int remoteRepoCount = 0;
+
+    public Listener( MercuryEvent.EventMask mask )
+    {
+        _mask = mask;
+    }
+
+    public void fire( MercuryEvent event )
+    {
+        // System.out.println( EventManager.toString( event ) );
+        // System.out.flush();
+
+        if ( event.getType().equals( EventTypeEnum.localRepository ) )
+            ++localRepoCount;
+        else if ( event.getType().equals( EventTypeEnum.remoteRepository ) )
+            ++remoteRepoCount;
+    }
+
+    public EventMask getMask()
+    {
+        return _mask;
+    }
+
 }
 
 class Generator
-implements Runnable, EventGenerator
+    implements Runnable, EventGenerator
 {
-  
-  EventManager _eventManager;
-  
-  String _msg;
-  
-  EventTypeEnum _myType;
-  
-  public Generator( EventManager em, EventTypeEnum type, String msg  )
-  {
-    _eventManager = em;
-    _msg = msg;
-    _myType = type;
-  }
-  
-  public void run()
-  {
-    for( int i=0; i< EventFrameworkTest.EVENT_COUNT; i++ )
-      try
-      {
-        GenericEvent event = new GenericEvent( _myType, _msg );
-        Thread.sleep( (int)(100.0*Math.random()) );
-        event.stop();
-        _eventManager.fireEvent( event );
-      }
-      catch( InterruptedException e )
-      {
-        return;
-      }
-  }
 
-  public void register( MercuryEventListener listener )
-  {
-    if( _eventManager == null )
-      _eventManager = new EventManager();
-      
-    _eventManager.register( listener );
-  }
+    EventManager _eventManager;
 
-  public void unRegister( MercuryEventListener listener )
-  {
-    if( _eventManager != null )
-      _eventManager.unRegister( listener );
-  }
-  
-  public void setEventManager( EventManager eventManager )
-  {
-    if( _eventManager == null )
-      _eventManager = eventManager;
-    else
-      _eventManager.getListeners().addAll( eventManager.getListeners() );
-      
-  }
+    String _msg;
+
+    EventTypeEnum _myType;
+
+    public Generator( EventManager em, EventTypeEnum type, String msg )
+    {
+        _eventManager = em;
+        _msg = msg;
+        _myType = type;
+    }
+
+    public void run()
+    {
+        for ( int i = 0; i < EventFrameworkTest.EVENT_COUNT; i++ )
+            try
+            {
+                GenericEvent event = new GenericEvent( _myType, _msg );
+                Thread.sleep( (int) ( 100.0 * Math.random() ) );
+                event.stop();
+                _eventManager.fireEvent( event );
+            }
+            catch ( InterruptedException e )
+            {
+                return;
+            }
+    }
+
+    public void register( MercuryEventListener listener )
+    {
+        if ( _eventManager == null )
+            _eventManager = new EventManager();
+
+        _eventManager.register( listener );
+    }
+
+    public void unRegister( MercuryEventListener listener )
+    {
+        if ( _eventManager != null )
+            _eventManager.unRegister( listener );
+    }
+
+    public void setEventManager( EventManager eventManager )
+    {
+        if ( _eventManager == null )
+            _eventManager = eventManager;
+        else
+            _eventManager.getListeners().addAll( eventManager.getListeners() );
+
+    }
 }
-

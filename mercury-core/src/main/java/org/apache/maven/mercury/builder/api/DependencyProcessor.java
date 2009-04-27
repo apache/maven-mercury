@@ -29,7 +29,7 @@ public interface DependencyProcessor
     public static final DependencyProcessor NULL_PROCESSOR = new DependencyProcessor()
     {
         public List<ArtifactMetadata> getDependencies( ArtifactMetadata bmd, MetadataReader mdReader,
-                                                            Map<String, String> env, Map<?, ?> sysProps )
+                                                       Map<String, String> env, Map<?, ?> sysProps )
             throws MetadataReaderException, DependencyProcessorException
         {
             return null;
@@ -37,9 +37,9 @@ public interface DependencyProcessor
     };
 
     // TODO: shouldn't sysProps be changed to Properties because of System.getProperties() API?
-    // Oleg: sysProp may help to experiment with Objects, different from Strings, so I'd 
-    //  stay with the Map until this is stable enough
+    // Oleg: sysProp may help to experiment with Objects, different from Strings, so I'd
+    // stay with the Map until this is stable enough
     public List<ArtifactMetadata> getDependencies( ArtifactMetadata bmd, MetadataReader mdReader,
-                                                        Map<String, String> env, Map<?, ?> sysProps )
+                                                   Map<String, String> env, Map<?, ?> sysProps )
         throws MetadataReaderException, DependencyProcessorException;
 }

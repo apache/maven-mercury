@@ -22,7 +22,7 @@ import java.util.StringTokenizer;
 
 /**
  * multiple ranges. Not sure if we need need it - will delete later ..
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */

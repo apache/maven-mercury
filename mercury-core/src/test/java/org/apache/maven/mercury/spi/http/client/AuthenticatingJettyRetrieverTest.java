@@ -27,28 +27,31 @@ import org.apache.maven.mercury.spi.http.server.AuthenticatingTestServer;
 import org.apache.maven.mercury.transport.api.Credentials;
 import org.apache.maven.mercury.transport.api.Server;
 
-public class AuthenticatingJettyRetrieverTest extends JettyRetrieverTest
-{    
-    public void setUp ()
-    throws Exception
+public class AuthenticatingJettyRetrieverTest
+    extends JettyRetrieverTest
+{
+    public void setUp()
+        throws Exception
     {
         server = new AuthenticatingTestServer();
         server.start();
-        _port=String.valueOf(server.getPort()); 
+        _port = String.valueOf( server.getPort() );
 
         HashSet<Server> remoteServerTypes = new HashSet<Server>();
-        remoteServerType = new Server( "test", new URL(__HOST_FRAGMENT+_port), false, false, 
-                                       new Credentials(((AuthenticatingTestServer)server).getUsername(), ((AuthenticatingTestServer)server).getPassword()));        
+        remoteServerType =
+            new Server( "test", new URL( __HOST_FRAGMENT + _port ), false, false,
+                        new Credentials( ( (AuthenticatingTestServer) server ).getUsername(),
+                                         ( (AuthenticatingTestServer) server ).getPassword() ) );
         factories = new HashSet<StreamVerifierFactory>();
 
-        remoteServerTypes.add(remoteServerType);
+        remoteServerTypes.add( remoteServerType );
 
         retriever = new DefaultRetriever();
-        retriever.setServers(remoteServerTypes);
+        retriever.setServers( remoteServerTypes );
     }
 
-
-    protected void tearDown() throws Exception
+    protected void tearDown()
+        throws Exception
     {
         super.tearDown();
     }

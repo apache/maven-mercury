@@ -15,7 +15,7 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.repository.tests;
 
@@ -30,24 +30,15 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.sonatype.webdav.WebdavServlet;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class WebDavServer
-extends Server
+    extends Server
 {
-    public WebDavServer( int port
-                         , File base
-                         , String remotePathFragment
-                         , PlexusContainer container
-                         , int debugLevel
-                         , String fileCollectionHint
-                         , String fileCollectionBase
-                         )
-    throws Exception
+    public WebDavServer( int port, File base, String remotePathFragment, PlexusContainer container, int debugLevel,
+                         String fileCollectionHint, String fileCollectionBase )
+        throws Exception
     {
         super( port );
 
@@ -56,46 +47,45 @@ extends Server
             base.mkdirs();
         }
 
-        if( ! base.isDirectory() )
+        if ( !base.isDirectory() )
         {
             throw new IllegalArgumentException( "Specified base is not a directory: " + base.getCanonicalPath() );
         }
-        
-//        HandlerCollection handlers = new HandlerCollection();
-//        setHandler( handlers );
-//
-//        Context context = new Context( handlers, remotePathFragment );
-//        handlers.addHandler( new DefaultHandler() );
-        
-        
+
+        // HandlerCollection handlers = new HandlerCollection();
+        // setHandler( handlers );
+        //
+        // Context context = new Context( handlers, remotePathFragment );
+        // handlers.addHandler( new DefaultHandler() );
+
         ContextHandlerCollection contexts = new ContextHandlerCollection();
-        setHandler(contexts);
-        
+        setHandler( contexts );
+
         Context context = new Context( contexts, remotePathFragment, Context.SESSIONS );
-        context.addServlet(new ServletHolder( new WebdavServlet() ), "/*");
+        context.addServlet( new ServletHolder( new WebdavServlet() ), "/*" );
         context.setAttribute( PlexusConstants.PLEXUS_KEY, container );
         context.setResourceBase( base.getCanonicalPath() );
-        
-        if( fileCollectionBase != null )
+
+        if ( fileCollectionBase != null )
         {
             context.setAttribute( "resourceCollectionBase", fileCollectionBase );
-            System.out.println("webDav resource base: "+fileCollectionBase);
+            System.out.println( "webDav resource base: " + fileCollectionBase );
         }
         else
         {
             context.setAttribute( "resourceCollectionHint", fileCollectionHint );
-            System.out.println("webDav resource hint: "+fileCollectionHint);
+            System.out.println( "webDav resource hint: " + fileCollectionHint );
         }
 
-        context.setAttribute( "debug", debugLevel+"" );
+        context.setAttribute( "debug", debugLevel + "" );
 
-//        Map<String,String> initParams = new HashMap<String, String>(8);
-//        
-//        initParams.put( "resourceCollectionHint", fileCollectionHint );
-//        initParams.put( "debug", debugLevel+"" );
-//        
-//        context.setInitParams( initParams  );
-        
+        // Map<String,String> initParams = new HashMap<String, String>(8);
+        //        
+        // initParams.put( "resourceCollectionHint", fileCollectionHint );
+        // initParams.put( "debug", debugLevel+"" );
+        //        
+        // context.setInitParams( initParams );
+
     }
 
     public int getPort()

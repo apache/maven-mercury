@@ -32,19 +32,19 @@ public class HttpTestServer
         super( 0 );
 
         System.out.println( base );
-        
+
         if ( !base.exists() )
         {
             throw new IllegalArgumentException( "Specified base directory does not exist: " + base.getCanonicalPath() );
         }
-        
+
         HandlerCollection handlers = new HandlerCollection();
         setHandler( handlers );
 
         Context context = new Context( handlers, remotePathFragment );
         handlers.addHandler( new DefaultHandler() );
 
-        context.addServlet( DefaultServlet.class, "/" );               
+        context.addServlet( DefaultServlet.class, "/" );
         context.setResourceBase( base.getCanonicalPath() );
     }
 

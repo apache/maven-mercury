@@ -30,55 +30,59 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.servlet.PutFilter;
 
-public class SecurePutServer extends SimplePutServer
+public class SecurePutServer
+    extends SimplePutServer
 {
     private File _base;
-    
-    public SecurePutServer() throws Exception
-    {       
+
+    public SecurePutServer()
+        throws Exception
+    {
         SslSocketConnector connector = new SslSocketConnector();
-        String keystore = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator
-        + "secureServer" + File.separator + "keystore";
+        String keystore =
+            System.getProperty( "user.dir" ) + File.separator + "src" + File.separator + "test" + File.separator
+                + "resources" + File.separator + "secureServer" + File.separator + "keystore";
 
-        connector.setPort(0);
-        connector.setKeystore(keystore);
-        connector.setPassword("storepwd");
-        connector.setKeyPassword("keypwd");
+        connector.setPort( 0 );
+        connector.setKeystore( keystore );
+        connector.setPassword( "storepwd" );
+        connector.setKeyPassword( "keypwd" );
 
-        setConnectors(new Connector[] { connector });        
-        
+        setConnectors( new Connector[] { connector } );
+
         HandlerCollection handlers = new HandlerCollection();
-        setHandler(handlers);
-        
-        Context context = new Context(handlers,"/maven2/repo");
-        handlers.addHandler(new DefaultHandler());
+        setHandler( handlers );
 
-        _base = File.createTempFile("securePutServer",null);
+        Context context = new Context( handlers, "/maven2/repo" );
+        handlers.addHandler( new DefaultHandler() );
+
+        _base = File.createTempFile( "securePutServer", null );
         _base.delete();
         _base.mkdir();
         _base.deleteOnExit();
-        FilterHolder holder = context.addFilter(PutFilter.class, "/*", 0);
-        holder.setInitParameter("delAllowed","true");
-        context.addServlet(DefaultServlet.class,"/");
-        context.setResourceBase(_base.getCanonicalPath());
+        FilterHolder holder = context.addFilter( PutFilter.class, "/*", 0 );
+        holder.setInitParameter( "delAllowed", "true" );
+        context.addServlet( DefaultServlet.class, "/" );
+        context.setResourceBase( _base.getCanonicalPath() );
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.apache.maven.mercury.spi.http.server.PutServer#getPutDir()
      */
-    public File getPutDir ()
+    public File getPutDir()
     {
         return _base;
     }
-    
-    public void destroy ()
+
+    public void destroy()
     {
         super.destroy();
-        destroy(_base);
+        destroy( _base );
     }
-    
-    public static void main(String[] args)
-    throws Exception
+
+    public static void main( String[] args )
+        throws Exception
     {
         SecurePutServer server = new SecurePutServer();
         server.start();

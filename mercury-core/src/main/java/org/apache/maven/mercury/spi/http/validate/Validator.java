@@ -30,14 +30,14 @@ public interface Validator
 {
     /**
      * The file extension the validator will process
-     *
+     * 
      * @return String file extension
      */
     public String getFileExtension();
 
     /**
      * validation for a given file target with errors being able to be logged in the list
-     *
+     * 
      * @param stagedFile
      * @param errors
      * @return true if target file is valid

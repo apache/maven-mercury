@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.maven.mercury.artifact.MetadataTreeNode;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
-import org.apache.maven.mercury.artifact.api.Configurable;
 import org.apache.maven.mercury.artifact.api.ConfigurationException;
 import org.apache.maven.mercury.artifact.api.ConfigurationUtil;
 import org.apache.maven.mercury.repository.api.Repository;
@@ -34,69 +33,58 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class DependencyBuilderFactory
 {
-  public static final String JAVA_DEPENDENCY_MODEL = "java";
-  public static final String OSGI_DEPENDENCY_MODEL = "osgi";
+    public static final String JAVA_DEPENDENCY_MODEL = "java";
 
-  private static final Language LANG = new DefaultLanguage( DependencyBuilderFactory.class);
-  
-  public static final DependencyBuilder create(
-        String dependencyModel
-      , Collection<Repository> repositories
-                     )
-  throws RepositoryException
-  {
-      return create( dependencyModel, repositories, null, null, null );
-  }
-  
-  public static final DependencyBuilder create(
-        String dependencyModel
-      , Collection<Repository> repositories
-      , Collection<MetadataTreeArtifactFilter> filters
-      , List<Comparator<MetadataTreeNode>> comparators
-      , Map<String,ArtifactListProcessor> processors
-                     )
-  throws RepositoryException
-  {
-      return create( dependencyModel, repositories, null, null, null, null );
-  }
-  
-  // TODO: oleg: switch to request/response paradigm - too many parameters
-  //
-  public static final DependencyBuilder create(
-        String dependencyModel
-      , Collection<Repository> repositories
-      , Collection<MetadataTreeArtifactFilter> filters
-      , List<Comparator<MetadataTreeNode>> comparators
-      , Map<String,ArtifactListProcessor> processors
-      , Map<String,Object> config 
-                     )
-  throws RepositoryException
-  {
-    if( JAVA_DEPENDENCY_MODEL.equals( dependencyModel ) )
+    public static final String OSGI_DEPENDENCY_MODEL = "osgi";
+
+    private static final Language LANG = new DefaultLanguage( DependencyBuilderFactory.class );
+
+    public static final DependencyBuilder create( String dependencyModel, Collection<Repository> repositories )
+        throws RepositoryException
     {
-        DependencyBuilder db = new DependencyTreeBuilder( repositories,  filters, comparators, processors );
-        
-        try
-        {
-            ConfigurationUtil.configure( db, config );
-        }
-        catch ( ConfigurationException e )
-        {
-            throw new RepositoryException( e );
-        }
-        
-        return db;
+        return create( dependencyModel, repositories, null, null, null );
     }
-    
-    throw new IllegalArgumentException( LANG.getMessage( "dependency.model.not.implemented", dependencyModel ) );
-  }
+
+    public static final DependencyBuilder create( String dependencyModel, Collection<Repository> repositories,
+                                                  Collection<MetadataTreeArtifactFilter> filters,
+                                                  List<Comparator<MetadataTreeNode>> comparators,
+                                                  Map<String, ArtifactListProcessor> processors )
+        throws RepositoryException
+    {
+        return create( dependencyModel, repositories, null, null, null, null );
+    }
+
+    // TODO: oleg: switch to request/response paradigm - too many parameters
+    //
+    public static final DependencyBuilder create( String dependencyModel, Collection<Repository> repositories,
+                                                  Collection<MetadataTreeArtifactFilter> filters,
+                                                  List<Comparator<MetadataTreeNode>> comparators,
+                                                  Map<String, ArtifactListProcessor> processors,
+                                                  Map<String, Object> config )
+        throws RepositoryException
+    {
+        if ( JAVA_DEPENDENCY_MODEL.equals( dependencyModel ) )
+        {
+            DependencyBuilder db = new DependencyTreeBuilder( repositories, filters, comparators, processors );
+
+            try
+            {
+                ConfigurationUtil.configure( db, config );
+            }
+            catch ( ConfigurationException e )
+            {
+                throw new RepositoryException( e );
+            }
+
+            return db;
+        }
+
+        throw new IllegalArgumentException( LANG.getMessage( "dependency.model.not.implemented", dependencyModel ) );
+    }
 
 }

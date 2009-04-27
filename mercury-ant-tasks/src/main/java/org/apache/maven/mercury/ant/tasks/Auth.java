@@ -41,7 +41,7 @@ public class Auth
 
     private static final String DEFAULT_AUTH_ID =
         System.getProperty( "mercury.default.auth.id", "mercury.default.auth.id." + System.currentTimeMillis() );
-    
+
     public static final String METHOD_BASIC = "basic";
 
     String _method;
@@ -51,11 +51,11 @@ public class Auth
     String _pass;
 
     String _certfile;
-    
+
     public Auth()
     {
     }
-    
+
     public Auth( String auth )
     {
         setSource( auth );
@@ -63,31 +63,31 @@ public class Auth
 
     public void setSource( String auth )
     {
-        if( auth == null )
+        if ( auth == null )
             throw new IllegalArgumentException( LANG.getMessage( "auth.null.auth" ) );
-        
+
         int colon = auth.indexOf( ':' );
-        
+
         String paramStr = null;
-        
-        if( colon == -1 )
+
+        if ( colon == -1 )
         {
             _method = METHOD_BASIC;
-            
+
             paramStr = auth;
         }
         else
-            paramStr = auth.substring( colon+1 );
-        
-        if( METHOD_BASIC.regionMatches( 0, _method, 0, METHOD_BASIC.length() ) )
+            paramStr = auth.substring( colon + 1 );
+
+        if ( METHOD_BASIC.regionMatches( 0, _method, 0, METHOD_BASIC.length() ) )
         {
             StringTokenizer st = new StringTokenizer( paramStr, "/" );
-            
-            if( st.countTokens() != 2 )
+
+            if ( st.countTokens() != 2 )
                 throw new IllegalArgumentException( LANG.getMessage( "auth.bad.basic.params" ) );
-            
+
             _name = st.nextToken();
-            
+
             _pass = st.nextToken();
         }
     }

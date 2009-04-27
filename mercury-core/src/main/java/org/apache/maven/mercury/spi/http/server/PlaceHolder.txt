@@ -1,0 +1,5 @@
+this package contains the server side transaction support. Had to move it out to
+tests because it depends on jetty server.
+
+In jetty-6.1.15 there is a special assembly to avoid this dependency, in jetty-7 the
+code is refactored and we can change dependencies and bring this code back in.  

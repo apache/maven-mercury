@@ -23,91 +23,88 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggingLevelEnum;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class MercuryConsoleLogger
-extends AbstractMercuryLogger
-implements IMercuryLogger
+    extends AbstractMercuryLogger
+    implements IMercuryLogger
 {
-  
-  @SuppressWarnings("unchecked")
-  public MercuryConsoleLogger( Class clazz )
-  {
-    super( clazz );
-  }
-  
-  private static final void say( MercuryLoggingLevelEnum level, String message, Throwable throwable )
-  {
-    System.out.print( "["+level.name()+"] " );
-    System.out.println( message );
-    if( throwable != null )
+
+    @SuppressWarnings( "unchecked" )
+    public MercuryConsoleLogger( Class clazz )
     {
-      throwable.printStackTrace( System.out );
+        super( clazz );
     }
-  }
 
-  public void debug( String message )
-  {
-    if( isDebugEnabled() )
-      say( MercuryLoggingLevelEnum.debug, message, null );
-  }
+    private static final void say( MercuryLoggingLevelEnum level, String message, Throwable throwable )
+    {
+        System.out.print( "[" + level.name() + "] " );
+        System.out.println( message );
+        if ( throwable != null )
+        {
+            throwable.printStackTrace( System.out );
+        }
+    }
 
-  public void debug( String message, Throwable throwable )
-  {
-    if( isDebugEnabled() )
-      say( MercuryLoggingLevelEnum.debug, message, throwable );
-  }
+    public void debug( String message )
+    {
+        if ( isDebugEnabled() )
+            say( MercuryLoggingLevelEnum.debug, message, null );
+    }
 
-  public void error( String message )
-  {
-      if( isErrorEnabled() )
-          say( MercuryLoggingLevelEnum.error, message, null );
-  }
+    public void debug( String message, Throwable throwable )
+    {
+        if ( isDebugEnabled() )
+            say( MercuryLoggingLevelEnum.debug, message, throwable );
+    }
 
-  public void error( String message, Throwable throwable )
-  {
-      if( isErrorEnabled() )
-          say( MercuryLoggingLevelEnum.error, message, throwable );
-  }
+    public void error( String message )
+    {
+        if ( isErrorEnabled() )
+            say( MercuryLoggingLevelEnum.error, message, null );
+    }
 
-  public void fatal( String message )
-  {
-      if( isErrorEnabled() )
-          say( MercuryLoggingLevelEnum.error, message, null );
-  }
+    public void error( String message, Throwable throwable )
+    {
+        if ( isErrorEnabled() )
+            say( MercuryLoggingLevelEnum.error, message, throwable );
+    }
 
-  public void fatal( String message, Throwable throwable )
-  {
-      if( isErrorEnabled() )
-          say( MercuryLoggingLevelEnum.error, message, throwable );
-  }
+    public void fatal( String message )
+    {
+        if ( isErrorEnabled() )
+            say( MercuryLoggingLevelEnum.error, message, null );
+    }
 
-  public void info( String message )
-  {
-      if( isInfoEnabled() )
-          say( MercuryLoggingLevelEnum.info, message, null );
-  }
+    public void fatal( String message, Throwable throwable )
+    {
+        if ( isErrorEnabled() )
+            say( MercuryLoggingLevelEnum.error, message, throwable );
+    }
 
-  public void info( String message, Throwable throwable )
-  {
-      if( isInfoEnabled() )
-          say( MercuryLoggingLevelEnum.info, message, throwable );
-  }
+    public void info( String message )
+    {
+        if ( isInfoEnabled() )
+            say( MercuryLoggingLevelEnum.info, message, null );
+    }
 
-  public void warn( String message )
-  {
-      if( isWarnEnabled() )
-          say( MercuryLoggingLevelEnum.warn, message, null );
-  }
+    public void info( String message, Throwable throwable )
+    {
+        if ( isInfoEnabled() )
+            say( MercuryLoggingLevelEnum.info, message, throwable );
+    }
 
-  public void warn( String message, Throwable throwable )
-  {
-      if( isWarnEnabled() )
-          say( MercuryLoggingLevelEnum.warn, message, throwable );
-  }
+    public void warn( String message )
+    {
+        if ( isWarnEnabled() )
+            say( MercuryLoggingLevelEnum.warn, message, null );
+    }
+
+    public void warn( String message, Throwable throwable )
+    {
+        if ( isWarnEnabled() )
+            say( MercuryLoggingLevelEnum.warn, message, throwable );
+    }
 
 }

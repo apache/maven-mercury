@@ -1,11 +1,8 @@
 package org.apache.maven.mercury.repository.local.map;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class StorageException
     extends Exception

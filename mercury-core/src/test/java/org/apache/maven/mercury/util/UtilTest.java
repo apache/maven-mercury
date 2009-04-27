@@ -15,18 +15,15 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.util;
 
 import junit.framework.TestCase;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class UtilTest
     extends TestCase
@@ -35,13 +32,13 @@ public class UtilTest
     {
         String s = Util.convertLength( 25L );
         assertEquals( "25 bytes", s );
-        
+
         s = Util.convertLength( 4999L );
         assertEquals( "4999 bytes", s );
-        
+
         s = Util.convertLength( 5800L );
         assertEquals( "6 kb", s );
-        
+
         s = Util.convertLength( 6400L );
         assertEquals( "6 kb", s );
     }

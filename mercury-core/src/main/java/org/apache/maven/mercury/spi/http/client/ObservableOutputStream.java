@@ -17,7 +17,6 @@
  * under the License.
  */
 
-
 package org.apache.maven.mercury.spi.http.client;
 
 import java.io.FilterOutputStream;
@@ -30,77 +29,79 @@ import java.util.Set;
 import org.apache.maven.mercury.crypto.api.StreamObserver;
 import org.apache.maven.mercury.crypto.api.StreamObserverException;
 
-
-
-public class ObservableOutputStream extends FilterOutputStream
+public class ObservableOutputStream
+    extends FilterOutputStream
 {
     Set<StreamObserver> observers = new HashSet<StreamObserver>();
-    
-    
-    public ObservableOutputStream(OutputStream out)
+
+    public ObservableOutputStream( OutputStream out )
     {
-        super(out);
+        super( out );
     }
 
-    public void write(int b) throws IOException 
+    public void write( int b )
+        throws IOException
     {
-        notifyListeners(b);
-        this.out.write(b);
+        notifyListeners( b );
+        this.out.write( b );
     }
 
-    public void write(byte[] b, int off, int len) throws IOException 
-    {  
-        notifyListeners(b, off, len);
-        this.out.write(b, off, len);
-    }
-    public void addObserver (StreamObserver o)
+    public void write( byte[] b, int off, int len )
+        throws IOException
     {
-        synchronized (this.observers)
+        notifyListeners( b, off, len );
+        this.out.write( b, off, len );
+    }
+
+    public void addObserver( StreamObserver o )
+    {
+        synchronized ( this.observers )
         {
-            this.observers.add(o);
+            this.observers.add( o );
         }
     }
-    
-    public void addObservers (Collection<? extends StreamObserver> observers)
+
+    public void addObservers( Collection<? extends StreamObserver> observers )
     {
-        synchronized (this.observers)
+        synchronized ( this.observers )
         {
-            this.observers.addAll(observers);
+            this.observers.addAll( observers );
         }
     }
-    private void notifyListeners (byte[]b, int off, int len)
-    throws IOException
+
+    private void notifyListeners( byte[] b, int off, int len )
+        throws IOException
     {
-        synchronized (this.observers)
+        synchronized ( this.observers )
         {
-            for (StreamObserver o: this.observers)
+            for ( StreamObserver o : this.observers )
             {
                 try
                 {
-                  o.bytesReady(b, off, len);
+                    o.bytesReady( b, off, len );
                 }
-                catch( StreamObserverException e )
+                catch ( StreamObserverException e )
                 {
-                  throw new IOException(e.getMessage());
+                    throw new IOException( e.getMessage() );
                 }
             }
         }
     }
 
-    private void notifyListeners (int b)
-    throws IOException
+    private void notifyListeners( int b )
+        throws IOException
     {
-        synchronized (this.observers)
+        synchronized ( this.observers )
         {
-            for (StreamObserver o: this.observers)
+            for ( StreamObserver o : this.observers )
             {
                 try
                 {
-                  o.byteReady(b);
+                    o.byteReady( b );
                 }
-                catch( StreamObserverException e )
+                catch ( StreamObserverException e )
                 {
-                  throw new IOException(e.getMessage());
+                    throw new IOException( e.getMessage() );
                 }
             }
         }

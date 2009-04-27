@@ -32,33 +32,35 @@ import org.mortbay.util.IO;
 public class SimpleTestServer
     extends Server
 {
-  
-  final static String LOCAL_PATH = "/testRepo/";
-  final static String REMOTE_SEG = "/maven2/repo";
-  
-  File base;
-  Context context;
-    
+
+    final static String LOCAL_PATH = "/testRepo/";
+
+    final static String REMOTE_SEG = "/maven2/repo";
+
+    File base;
+
+    Context context;
+
     public SimpleTestServer( int port )
-    throws Exception
+        throws Exception
     {
-      this( port, LOCAL_PATH, REMOTE_SEG );
+        this( port, LOCAL_PATH, REMOTE_SEG );
     }
-    
+
     public SimpleTestServer()
-    throws Exception
+        throws Exception
     {
-      this( 0, LOCAL_PATH, REMOTE_SEG );
+        this( 0, LOCAL_PATH, REMOTE_SEG );
     }
 
     public SimpleTestServer( String localPathFragment, String remotePathFragment )
-    throws Exception
+        throws Exception
     {
-      this( 0, localPathFragment, remotePathFragment );
+        this( 0, localPathFragment, remotePathFragment );
     }
-    
+
     public SimpleTestServer( int port, String localPathFragment, String remotePathFragment )
-    throws Exception
+        throws Exception
     {
         super( port );
 
@@ -91,13 +93,13 @@ public class SimpleTestServer
     }
 
     public SimpleTestServer( File localBase, String remotePathFragment )
-    throws Exception
+        throws Exception
     {
-      this( 0, localBase, remotePathFragment ); 
+        this( 0, localBase, remotePathFragment );
     }
 
     public SimpleTestServer( int port, File localBase, String remotePathFragment )
-    throws Exception
+        throws Exception
     {
         super( port );
 
@@ -115,28 +117,27 @@ public class SimpleTestServer
     {
         return getConnectors()[0].getLocalPort();
     }
-    
+
     public void destroy()
     {
         super.destroy();
-        destroy(base);
+        destroy( base );
     }
-    
-    public void destroy (File f)
+
+    public void destroy( File f )
     {
-        if (f == null)
+        if ( f == null )
             return;
-        if (f.isDirectory())
+        if ( f.isDirectory() )
         {
             File[] files = f.listFiles();
-            for (int i=0;files!=null && i<files.length; i++)
+            for ( int i = 0; files != null && i < files.length; i++ )
             {
-                destroy (files[i]);
-            }  
+                destroy( files[i] );
+            }
         }
-        f.delete(); 
+        f.delete();
     }
-    
 
     public static void main( String[] args )
         throws Exception

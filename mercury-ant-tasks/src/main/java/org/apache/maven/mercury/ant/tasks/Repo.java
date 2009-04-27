@@ -96,9 +96,8 @@ public class Repo
     private transient boolean _registered = false;
 
     private static final String[] SUPPORTED_LAYOUTS = new String[] { DEFAULT_LAYOUT, "m2", "flat" };
-    
+
     private Validation _validation;
-    
 
     public Repo()
     {
@@ -107,7 +106,7 @@ public class Repo
     public Repo( boolean managed, Validation validation )
     {
         _managed = managed;
-        
+
         _validation = validation;
     }
 
@@ -149,7 +148,7 @@ public class Repo
 
         processDefaults();
     }
-    
+
     public void setSnapshots( boolean snapshots )
     {
         this._snapshots = snapshots;
@@ -203,18 +202,18 @@ public class Repo
             setUrl( path );
         }
     }
-    
+
     public void setAuthentication( String auth )
     {
         Auth a = new Auth( auth );
-        
-        String authId = "auth."+System.currentTimeMillis()+"." + (int)(Math.random()*10000);
-        
+
+        String authId = "auth." + System.currentTimeMillis() + "." + (int) ( Math.random() * 10000 );
+
         getProject().addReference( authId, a );
-        
+
         setAuthid( authId );
     }
-    
+
     public void setAuthid( String authid )
     {
         this._authid = authid;
@@ -256,7 +255,7 @@ public class Repo
 
         processDefaults();
     }
-    
+
     public void setUpdatePolicy( String updatePolicy )
     {
         this._updatePolicy = updatePolicy;
@@ -269,33 +268,33 @@ public class Repo
         return ( _dir != null );
     }
 
-//    public Verify createVerifywrite()
-//    {
-//        if ( _writeVerifiers == null )
-//        {
-//            _writeVerifiers = new ArrayList<Verify>( 2 );
-//        }
-//
-//        Verify v = new Verify();
-//
-//        _writeVerifiers.add( v );
-//
-//        return v;
-//    }
+    // public Verify createVerifywrite()
+    // {
+    // if ( _writeVerifiers == null )
+    // {
+    // _writeVerifiers = new ArrayList<Verify>( 2 );
+    // }
+    //
+    // Verify v = new Verify();
+    //
+    // _writeVerifiers.add( v );
+    //
+    // return v;
+    // }
 
-//    public Verify createVerifyread()
-//    {
-//        if ( _readVerifiers == null )
-//        {
-//            _readVerifiers = new ArrayList<Verify>( 2 );
-//        }
-//
-//        Verify v = new Verify();
-//
-//        _readVerifiers.add( v );
-//
-//        return v;
-//    }
+    // public Verify createVerifyread()
+    // {
+    // if ( _readVerifiers == null )
+    // {
+    // _readVerifiers = new ArrayList<Verify>( 2 );
+    // }
+    //
+    // Verify v = new Verify();
+    //
+    // _readVerifiers.add( v );
+    //
+    // return v;
+    // }
 
     private Set<StreamVerifierFactory> getVerifiers( List<Verify> vlist )
     {
@@ -318,15 +317,15 @@ public class Repo
     public Repository getRepository()
     {
         Repository r = null;
-        
+
         updateReadVerifiers( _validation );
-        
+
         updateWriteVerifiers( _validation );
-        
+
         String id = getId();
-        
-        if( id == null )
-            setId( "temp."+System.currentTimeMillis()+"." + (int)( Math.random()*10000. ) );
+
+        if ( id == null )
+            setId( "temp." + System.currentTimeMillis() + "." + (int) ( Math.random() * 10000. ) );
 
         if ( isLocal() )
         {
@@ -339,7 +338,7 @@ public class Repo
 
                 server.setReaderStreamVerifierFactories( getVerifiers( _readVerifiers ) );
                 server.setWriterStreamVerifierFactories( getVerifiers( _writeVerifiers ) );
-                    
+
             }
             catch ( MalformedURLException e )
             {
@@ -347,9 +346,9 @@ public class Repo
             }
 
             r = new LocalRepositoryM2( server, dp );
-            
+
             QualityRange qr = QualityRange.create( _releases, _snapshots );
-            
+
             r.setRepositoryQualityRange( qr );
         }
         else
@@ -416,14 +415,14 @@ public class Repo
             }
 
             r = new RemoteRepositoryM2( server, dp );
-            
+
             _updatePolicy = System.getProperty( RepositoryUpdatePolicy.SYSTEM_PROPERTY_UPDATE_POLICY, _updatePolicy );
-            
-            if( !Util.isEmpty( _updatePolicy) )
-                ((RemoteRepositoryM2)r).setUpdatePolicy( RepositoryUpdatePolicyFactory.create( _updatePolicy ) );
-            
+
+            if ( !Util.isEmpty( _updatePolicy ) )
+                ( (RemoteRepositoryM2) r ).setUpdatePolicy( RepositoryUpdatePolicyFactory.create( _updatePolicy ) );
+
             QualityRange qr = QualityRange.create( _releases, _snapshots );
-            
+
             r.setRepositoryQualityRange( qr );
         }
 
@@ -435,33 +434,26 @@ public class Repo
      */
     private void updateReadVerifiers( Validation validation )
     {
-        if( validation == null 
-            ||
-            (
-              validation._sha1Validation == false
-              && 
-              validation._pgpValidation == false
-            ) 
-        )
+        if ( validation == null || ( validation._sha1Validation == false && validation._pgpValidation == false ) )
             return;
 
-        if( _readVerifiers == null )
-            _readVerifiers = new ArrayList<Verify>(2);
-        
-        if( validation._sha1Validation )
+        if ( _readVerifiers == null )
+            _readVerifiers = new ArrayList<Verify>( 2 );
+
+        if ( validation._sha1Validation )
         {
             Verify v = new Verify( Validation.TYPE_SHA1 );
-            
+
             _readVerifiers.add( v );
         }
-        
-        if( validation._pgpValidation )
+
+        if ( validation._pgpValidation )
         {
-            Verify v = new Verify( Validation.TYPE_PGP, prop("keyring", validation._pgpPublicKeyring ) );
-            
+            Verify v = new Verify( Validation.TYPE_PGP, prop( "keyring", validation._pgpPublicKeyring ) );
+
             _readVerifiers.add( v );
         }
-            
+
     }
 
     /**
@@ -469,37 +461,29 @@ public class Repo
      */
     private void updateWriteVerifiers( Validation validation )
     {
-        if( validation == null 
-            ||
-            (
-            validation._sha1Signature == false
-            &&
-            Util.isEmpty( validation._pgpSecretKeyPass ) 
-            ) 
-        )
+        if ( validation == null
+            || ( validation._sha1Signature == false && Util.isEmpty( validation._pgpSecretKeyPass ) ) )
             return;
 
-        if( _writeVerifiers == null )
-            _writeVerifiers = new ArrayList<Verify>(2);
-        
-        if( validation._sha1Signature )
+        if ( _writeVerifiers == null )
+            _writeVerifiers = new ArrayList<Verify>( 2 );
+
+        if ( validation._sha1Signature )
         {
             Verify v = new Verify( Validation.TYPE_SHA1 );
-            
+
             _writeVerifiers.add( v );
         }
-        
-        if( ! Util.isEmpty( validation._pgpSecretKeyPass ) )
+
+        if ( !Util.isEmpty( validation._pgpSecretKeyPass ) )
         {
-            Verify v = new Verify( Validation.TYPE_PGP
-                                   , prop( "keyring", validation._pgpSecretKeyring )
-                                   , prop( "pass",    validation._pgpSecretKeyPass )
-                                   , prop( "key",     validation._pgpSecretKey )
-                                 );
-            
+            Verify v =
+                new Verify( Validation.TYPE_PGP, prop( "keyring", validation._pgpSecretKeyring ),
+                            prop( "pass", validation._pgpSecretKeyPass ), prop( "key", validation._pgpSecretKey ) );
+
             _writeVerifiers.add( v );
         }
-            
+
     }
 
     public Auth createAuth()
@@ -530,15 +514,15 @@ public class Repo
     {
         return createProxyauth();
     }
-    
+
     public static final Property prop( String name, String val )
     {
         Property prop = new Property();
-        
+
         prop.setName( name );
-        
+
         prop.setValue( val );
-        
+
         return prop;
     }
 
@@ -552,13 +536,13 @@ public class Repo
         boolean _sufficient = false;
 
         Map<String, String> _properties;
-        
+
         public Verify( String type, Property... properties )
         {
             setType( type );
-            
-            if( properties != null )
-                for( Property p : properties )
+
+            if ( properties != null )
+                for ( Property p : properties )
                     addConfiguredProperty( p );
         }
 
@@ -606,7 +590,7 @@ public class Repo
             if ( Validation.TYPE_PGP.equals( _type ) )
             {
 
-                if ( Util.isEmpty(  _properties ) )
+                if ( Util.isEmpty( _properties ) )
                 {
                     throw new BuildException( LANG.getMessage( "config.repo.verifier.no.properties", _type ) );
                 }

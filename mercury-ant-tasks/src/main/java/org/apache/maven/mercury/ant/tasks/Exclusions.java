@@ -15,18 +15,15 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.ant.tasks;
 
 import java.util.List;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class Exclusions
     extends StringList
@@ -35,7 +32,7 @@ public class Exclusions
     {
         return _list;
     }
-    
+
     public void addConfiguredExclusion( Exclusion ex )
     {
         addString( ex._name );

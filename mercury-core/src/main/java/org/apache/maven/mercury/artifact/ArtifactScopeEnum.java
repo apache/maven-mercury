@@ -21,7 +21,7 @@ package org.apache.maven.mercury.artifact;
 /**
  * Type safe reincarnation of Artifact scope. Also supplies the <code>DEFAULT_SCOPE<code> as well
  * as convenience method to deal with scope relationships.
- *
+ * 
  * @author <a href="oleg@codehaus.org">Oleg Gusakov</a>
  */
 public enum ArtifactScopeEnum
@@ -45,7 +45,7 @@ public enum ArtifactScopeEnum
 
     /**
      * Helper method to simplify null processing
-     *
+     * 
      * @return
      */
     public static final ArtifactScopeEnum checkScope( ArtifactScopeEnum scope )
@@ -90,7 +90,7 @@ public enum ArtifactScopeEnum
 
     /**
      * scope relationship function. Used by the graph conflict resolution policies
-     *
+     * 
      * @param scope
      * @return true is supplied scope is an inclusive sub-scope of current one.
      */

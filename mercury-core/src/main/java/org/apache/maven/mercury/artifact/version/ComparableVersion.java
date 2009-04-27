@@ -62,7 +62,7 @@ public class ComparableVersion
     private static class IntegerItem
         implements Item
     {
-    	private static final BigInteger BigInteger_ZERO = new BigInteger( "0" );
+        private static final BigInteger BigInteger_ZERO = new BigInteger( "0" );
 
         private final BigInteger value;
 
@@ -70,7 +70,7 @@ public class ComparableVersion
 
         private IntegerItem()
         {
-        	this.value = BigInteger_ZERO;
+            this.value = BigInteger_ZERO;
         }
 
         public IntegerItem( String str )
@@ -175,15 +175,12 @@ public class ComparableVersion
         }
 
         /**
-         * Returns a comparable for a qualifier.
-         *
-         * This method both takes into account the ordering of known qualifiers as well as lexical ordering for unknown
-         * qualifiers.
-         *
-         * just returning an Integer with the index here is faster, but requires a lot of if/then/else to check for -1
-         * or QUALIFIERS.size and then resort to lexical ordering. Most comparisons are decided by the first character,
-         * so this is still fast. If more characters are needed then it requires a lexical sort anyway.
-         *
+         * Returns a comparable for a qualifier. This method both takes into account the ordering of known qualifiers as
+         * well as lexical ordering for unknown qualifiers. just returning an Integer with the index here is faster, but
+         * requires a lot of if/then/else to check for -1 or QUALIFIERS.size and then resort to lexical ordering. Most
+         * comparisons are decided by the first character, so this is still fast. If more characters are needed then it
+         * requires a lexical sort anyway.
+         * 
          * @param qualifier
          * @return
          */

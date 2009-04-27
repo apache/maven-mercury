@@ -18,11 +18,8 @@
  */
 package org.apache.maven.mercury.util;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * @author Oleg Gusakov
@@ -101,7 +98,7 @@ public class TimeUtil
 
         return dts.getTime();
     }
-    
+
     /**
      * conver SNAPSHOT timestampt into millis
      * 
@@ -110,44 +107,46 @@ public class TimeUtil
      * @throws ParseException
      */
     public static long snTstoMillis( String ts )
-    throws ParseException
+        throws ParseException
     {
-        if( ts == null )
+        if ( ts == null )
             return 0;
-        
+
         int dot = ts.indexOf( '.' );
-        
+
         int dash = ts.indexOf( '-' );
-        
+
         int lastInd = dash == -1 ? ts.length() : dash;
-        
-        if( dot == -1 )
+
+        if ( dot == -1 )
             return toMillis( ts );
-        
-        return toMillis( ts.substring( 0, dot )+ts.substring( dot+1, lastInd ) );
+
+        return toMillis( ts.substring( 0, dot ) + ts.substring( dot + 1, lastInd ) );
     }
-    
+
     /**
      * convert current millis to UTC timestamp
+     * 
      * @param local
      * @return
      */
     public static String defaultToSnTs( long local )
     {
-      Date lDate = new Date(local);
+        Date lDate = new Date( local );
 
-      SN_TS_FORMAT.setTimeZone( TS_TZ );
-      return SN_TS_FORMAT.format(lDate);
+        SN_TS_FORMAT.setTimeZone( TS_TZ );
+        return SN_TS_FORMAT.format( lDate );
     }
 
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args )
+        throws Exception
     {
-        if( args == null || args.length < 0 )
+        if ( args == null || args.length < 0 )
             return;
-        
-        if( "-t".equals( args[0] ) )
+
+        if ( "-t".equals( args[0] ) )
         {
-            System.out.println( args[1]+" => " + new Date( toMillis( args[1] ) ) ) ;
+            System.out.println( args[1] + " => " + new Date( toMillis( args[1] ) ) );
             return;
         }
     }

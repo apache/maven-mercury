@@ -41,30 +41,43 @@ import org.apache.maven.mercury.transport.api.Binding;
 import org.apache.maven.mercury.transport.api.Server;
 import org.mortbay.util.IO;
 
-public class JettyRetrieverTest extends TestCase
+public class JettyRetrieverTest
+    extends TestCase
 {
     public static final String __HOST_FRAGMENT = "http://localhost:";
-    public static final String __PATH_FRAGMENT = "/maven2/repo/";
-    
-    private static final String publicKeyFile = "/pgp/pubring.gpg";
-    
-    public String _port;
-    File file0;
-    File file1;
-    File file2;
-    File file3;
-    File file4;
-    File file5;
-    File file6;
-    
-    DefaultRetriever retriever;
-    SimpleTestServer server;
-    Server remoteServerType;
-    HashSet<StreamVerifierFactory> factories;
-    File dir;
-    
 
-    public class TxtValidator implements Validator 
+    public static final String __PATH_FRAGMENT = "/maven2/repo/";
+
+    private static final String publicKeyFile = "/pgp/pubring.gpg";
+
+    public String _port;
+
+    File file0;
+
+    File file1;
+
+    File file2;
+
+    File file3;
+
+    File file4;
+
+    File file5;
+
+    File file6;
+
+    DefaultRetriever retriever;
+
+    SimpleTestServer server;
+
+    Server remoteServerType;
+
+    HashSet<StreamVerifierFactory> factories;
+
+    File dir;
+
+    public class TxtValidator
+        implements Validator
     {
 
         public String getFileExtension()
@@ -72,84 +85,84 @@ public class JettyRetrieverTest extends TestCase
             return "txt";
         }
 
-        public boolean validate(String stagedFile, List<String> errors)
+        public boolean validate( String stagedFile, List<String> errors )
         {
-            if (stagedFile==null)
+            if ( stagedFile == null )
                 return true;
-            int i = stagedFile.lastIndexOf(".");
-            String ext = (i>=0?stagedFile.substring(i+1):"");
-            if ("txt".equalsIgnoreCase(ext))
+            int i = stagedFile.lastIndexOf( "." );
+            String ext = ( i >= 0 ? stagedFile.substring( i + 1 ) : "" );
+            if ( "txt".equalsIgnoreCase( ext ) )
             {
-                //just accept any file contents
-                File f = new File(stagedFile);
+                // just accept any file contents
+                File f = new File( stagedFile );
                 return f.isFile();
             }
-            
+
             return false;
         }
-        
+
     }
-    
-    public class AlwaysFalseTxtValidator extends TxtValidator
+
+    public class AlwaysFalseTxtValidator
+        extends TxtValidator
     {
         public String getFileExtension()
         {
             return "txt";
         }
 
-        public boolean validate(String stagedFile, List<String> errors)
+        public boolean validate( String stagedFile, List<String> errors )
         {
-            errors.add("Always false");
+            errors.add( "Always false" );
             return false;
         }
     }
-    
-    public void setUp ()
-    throws Exception
+
+    public void setUp()
+        throws Exception
     {
         server = new SimpleTestServer();
         server.start();
-        _port=String.valueOf(server.getPort()); 
-        
+        _port = String.valueOf( server.getPort() );
+
         HashSet<Server> remoteServerTypes = new HashSet<Server>();
-        remoteServerType = new Server( "test", new URL(__HOST_FRAGMENT+_port));
+        remoteServerType = new Server( "test", new URL( __HOST_FRAGMENT + _port ) );
         factories = new HashSet<StreamVerifierFactory>();
-            
-        remoteServerTypes.add(remoteServerType);
-        
+
+        remoteServerTypes.add( remoteServerType );
+
         retriever = new DefaultRetriever();
-        retriever.setServers(remoteServerTypes);
+        retriever.setServers( remoteServerTypes );
     }
-    
-    
-    protected void tearDown() throws Exception
+
+    protected void tearDown()
+        throws Exception
     {
         super.tearDown();
         server.stop();
         server.destroy();
-        destroy(dir);
+        destroy( dir );
     }
-    
-    
-    public void destroy (File f)
+
+    public void destroy( File f )
     {
-        if (f == null)
+        if ( f == null )
             return;
-        if (f.isDirectory())
+        if ( f.isDirectory() )
         {
             File[] files = f.listFiles();
-            for (int i=0;files!=null && i<files.length; i++)
+            for ( int i = 0; files != null && i < files.length; i++ )
             {
-                destroy (files[i]);
-            }  
+                destroy( files[i] );
+            }
         }
-        f.delete(); 
+        f.delete();
     }
 
     public File mkTempDir()
-    throws Exception
+        throws Exception
     {
-        File dir = File.createTempFile("mercury", "tmp");
+        File dir = File.createTempFile( "mercury", "tmp" );
         dir.delete();
         dir.mkdir();
         dir.deleteOnExit();
@@ -161,465 +174,488 @@ public class JettyRetrieverTest extends TestCase
     }
 
     public void testSyncRetrievalAllGood()
-    throws Exception
+        throws Exception
     {
-        factories.add( new SHA1VerifierFactory(false, true) ); //!lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new SHA1VerifierFactory( false, true ) ); // !lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
+        file0 = new File( dir, "file0.txt" );
+        file1 = new File( dir, "file1.txt" );
+        file2 = new File( dir, "file2.txt" );
+        file3 = new File( dir, "file3.jar" );
+        file4 = new File( dir, "file4.so" );
+        file5 = new File( dir, "file5.jpg" );
 
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
-        
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"),file1); //has no sha file
-        bindings.add(binding1);
-       
-        Binding binding2 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file2.txt"), file2); //has wrong sha file
-        bindings.add(binding2);
-      
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), file3);
-        bindings.add(binding3);
-        
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
-       
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
-          
-        request.setBindings(bindings);
-        
-        RetrievalResponse response = retriever.retrieve(request);
-        
-//        System.err.println("--------- testSyncRetrievalAllGood --------------");
-//        for (HttpClientException t:response.getExceptions())
-//            t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ), file0 );
+        bindings.add( binding0 );
+
+        Binding binding1 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file1.txt" ), file1 ); // has
+                                                                                                                     // no
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding1 );
+
+        Binding binding2 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file2.txt" ), file2 ); // has
+                                                                                                                     // wrong
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding2 );
+
+        Binding binding3 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file3.jar" ), file3 );
+        bindings.add( binding3 );
+
+        Binding binding4 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file4.so" ), file4 );
+        bindings.add( binding4 );
+
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file5 );
+        bindings.add( binding5 );
+
+        request.setBindings( bindings );
+
+        RetrievalResponse response = retriever.retrieve( request );
+
+        // System.err.println("--------- testSyncRetrievalAllGood --------------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
         assertEquals( 2, response.getExceptions().size() );
-        assertTrue(!file0.exists());
-        assertTrue(!file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(!file3.exists());
-        assertTrue(!file4.exists());
-        assertTrue(!file5.exists());
+        assertTrue( !file0.exists() );
+        assertTrue( !file1.exists() );
+        assertTrue( !file2.exists() );
+        assertTrue( !file3.exists() );
+        assertTrue( !file4.exists() );
+        assertTrue( !file5.exists() );
     }
 
-    
     public void testSyncRetrievalPgpGood()
-    throws Exception
+        throws Exception
     {
-      factories.add( 
-          new PgpStreamVerifierFactory(
-                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
-                  , getClass().getResourceAsStream( publicKeyFile )
-                                      )
-                    );
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new PgpStreamVerifierFactory(
+                                                     new StreamVerifierAttributes(
+                                                                                   PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                   false, true ),
+                                                     getClass().getResourceAsStream( publicKeyFile ) ) );
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
-        file6 = new File(dir, "file6.gif");
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file6.gif"), file6);
-        bindings.add(binding0);
-          
-        request.setBindings(bindings);
-        
-        RetrievalResponse response = retriever.retrieve(request);
-        
+        file6 = new File( dir, "file6.gif" );
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file6.gif" ), file6 );
+        bindings.add( binding0 );
+
+        request.setBindings( bindings );
+
+        RetrievalResponse response = retriever.retrieve( request );
+
         assertEquals( 0, response.getExceptions().size() );
         assertTrue( file6.exists() );
-       
+
     }
 
-    
     public void testSyncRetrievalPgpBad()
-    throws Exception
+        throws Exception
     {
-      factories.add( 
-          new PgpStreamVerifierFactory(
-                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
-                  , getClass().getResourceAsStream( publicKeyFile )
-                                      )
-                    );
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new PgpStreamVerifierFactory(
+                                                     new StreamVerifierAttributes(
+                                                                                   PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                   false, true ),
+                                                     getClass().getResourceAsStream( publicKeyFile ) ) );
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
         file6 = new File( dir, "file5.jpg" );
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file6);
-        bindings.add(binding0);
-          
-        request.setBindings(bindings);
-        
-        RetrievalResponse response = retriever.retrieve(request);
-        
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file6 );
+        bindings.add( binding0 );
+
+        request.setBindings( bindings );
+
+        RetrievalResponse response = retriever.retrieve( request );
+
         assertEquals( 1, response.getExceptions().size() );
         assertFalse( file6.exists() );
-       
+
     }
-    
+
     public void testSyncRetrievalPgpBadExempt()
-    throws Exception
+        throws Exception
     {
-      factories.add( 
-          new PgpStreamVerifierFactory(
-                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, true )
-                  , getClass().getResourceAsStream( publicKeyFile )
-                                      )
-                    );
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new PgpStreamVerifierFactory(
+                                                     new StreamVerifierAttributes(
+                                                                                   PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                   false, true ),
+                                                     getClass().getResourceAsStream( publicKeyFile ) ) );
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
         file6 = new File( dir, "file5.jpg" );
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file6, true );
-        bindings.add(binding0);
-          
-        request.setBindings(bindings);
-        
-        RetrievalResponse response = retriever.retrieve(request);
-        
+        Binding binding0 =
+            new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file6, true );
+        bindings.add( binding0 );
+
+        request.setBindings( bindings );
+
+        RetrievalResponse response = retriever.retrieve( request );
+
         assertEquals( 0, response.getExceptions().size() );
         assertTrue( file6.exists() );
-       
-    }
 
+    }
 
     public void testSyncRetrievalFailFast()
         throws Exception
     {
-        factories.add(new SHA1VerifierFactory(false, true)); //!lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new SHA1VerifierFactory( false, true ) ); // !lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
-        
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
+        file0 = new File( dir, "file0.txt" );
+        file1 = new File( dir, "file1.txt" );
+        file2 = new File( dir, "file2.txt" );
+        file3 = new File( dir, "file3.jar" );
+        file4 = new File( dir, "file4.so" );
+        file5 = new File( dir, "file5.jpg" );
 
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"), file1); //has no sha file
-        bindings.add(binding1);
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ), file0 );
+        bindings.add( binding0 );
 
-        Binding binding2 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file2.txt"), file2); //has wrong sha file
-        bindings.add(binding2);
+        Binding binding1 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file1.txt" ), file1 ); // has
+                                                                                                                     // no
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding1 );
 
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), file3);
-        bindings.add(binding3);
+        Binding binding2 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file2.txt" ), file2 ); // has
+                                                                                                                     // wrong
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding2 );
 
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
+        Binding binding3 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file3.jar" ), file3 );
+        bindings.add( binding3 );
 
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
+        Binding binding4 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file4.so" ), file4 );
+        bindings.add( binding4 );
 
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file5 );
+        bindings.add( binding5 );
 
         request = new DefaultRetrievalRequest();
-        request.setBindings(bindings);
-        request.setFailFast(true);
+        request.setBindings( bindings );
+        request.setFailFast( true );
 
-        request.setBindings(bindings);
-        
-        RetrievalResponse response = retriever.retrieve(request);
+        request.setBindings( bindings );
 
-//        System.err.println("--------- testSyncRetrievalFailFast -------------");
-//        for (HttpClientException t:response.getExceptions())
-//           t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        RetrievalResponse response = retriever.retrieve( request );
 
-        assertTrue(!file0.exists());
-        assertTrue(!file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(!file3.exists());
-        assertTrue(!file4.exists());
-        assertTrue(!file5.exists());
-        
-        Thread.sleep(100);
+        // System.err.println("--------- testSyncRetrievalFailFast -------------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
+
+        assertTrue( !file0.exists() );
+        assertTrue( !file1.exists() );
+        assertTrue( !file2.exists() );
+        assertTrue( !file3.exists() );
+        assertTrue( !file4.exists() );
+        assertTrue( !file5.exists() );
+
+        Thread.sleep( 100 );
     }
 
     public void testSyncRetrievalLenient0()
         throws Exception
     {
-        factories.add(new SHA1VerifierFactory(true, true)); //lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new SHA1VerifierFactory( true, true ) ); // lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
+        file0 = new File( dir, "file0.txt" );
+        file1 = new File( dir, "file1.txt" );
+        file2 = new File( dir, "file2.txt" );
+        file3 = new File( dir, "file3.jar" );
+        file4 = new File( dir, "file4.so" );
+        file5 = new File( dir, "file5.jpg" );
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ), file0 );
+        bindings.add( binding0 );
 
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"), file1); //has no sha file
-        bindings.add(binding1);
+        Binding binding1 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file1.txt" ), file1 ); // has
+                                                                                                                     // no
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding1 );
 
-        Binding binding2 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file2.txt"), file2); //has wrong sha file
-        bindings.add(binding2);
+        Binding binding2 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file2.txt" ), file2 ); // has
+                                                                                                                     // wrong
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding2 );
 
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"),file3 );
-        bindings.add(binding3);
+        Binding binding3 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file3.jar" ), file3 );
+        bindings.add( binding3 );
 
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
+        Binding binding4 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file4.so" ), file4 );
+        bindings.add( binding4 );
 
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file5 );
+        bindings.add( binding5 );
 
-        request.setBindings(bindings);
-        request.setFailFast(false);
-        RetrievalResponse response = retriever.retrieve(request);
+        request.setBindings( bindings );
+        request.setFailFast( false );
+        RetrievalResponse response = retriever.retrieve( request );
 
-//        System.err.println("--------- testSyncRetrievalLenient0 -------------");
-//        for (HttpClientException t:response.getExceptions())
-//           t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        // System.err.println("--------- testSyncRetrievalLenient0 -------------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
 
-        assertEquals(1,response.getExceptions().size());
-        assertEquals(binding2,response.getExceptions().iterator().next().getBinding());
-        assertTrue(!file0.exists());
-        assertTrue(!file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(!file3.exists());
-        assertTrue(!file4.exists());
-        assertTrue(!file5.exists());
+        assertEquals( 1, response.getExceptions().size() );
+        assertEquals( binding2, response.getExceptions().iterator().next().getBinding() );
+        assertTrue( !file0.exists() );
+        assertTrue( !file1.exists() );
+        assertTrue( !file2.exists() );
+        assertTrue( !file3.exists() );
+        assertTrue( !file4.exists() );
+        assertTrue( !file5.exists() );
     }
 
     public void testSyncRetrievalLenient1()
-    throws Exception
+        throws Exception
     {
-        factories.add(new SHA1VerifierFactory(true, true)); //lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        //make local dir to put stuff in
+        factories.add( new SHA1VerifierFactory( true, true ) ); // lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
 
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
+        file0 = new File( dir, "file0.txt" );
+        file1 = new File( dir, "file1.txt" );
+        file2 = new File( dir, "file2.txt" );
+        file3 = new File( dir, "file3.jar" );
+        file4 = new File( dir, "file4.so" );
+        file5 = new File( dir, "file5.jpg" );
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ), file0 );
+        bindings.add( binding0 );
 
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"), file1); //has no sha file
-        bindings.add(binding1);
+        Binding binding1 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file1.txt" ), file1 ); // has
+                                                                                                                     // no
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding1 );
 
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), file3);
-        bindings.add(binding3);
+        Binding binding3 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file3.jar" ), file3 );
+        bindings.add( binding3 );
 
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
+        Binding binding4 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file4.so" ), file4 );
+        bindings.add( binding4 );
 
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file5 );
+        bindings.add( binding5 );
 
-        request.setBindings(bindings);
-        request.setFailFast(false);
-        RetrievalResponse response = retriever.retrieve(request);
+        request.setBindings( bindings );
+        request.setFailFast( false );
+        RetrievalResponse response = retriever.retrieve( request );
 
-//        System.err.println("------------- testSyncRetrievalLenient1 ---------");
-//        for (HttpClientException t:response.getExceptions())
-//            t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        // System.err.println("------------- testSyncRetrievalLenient1 ---------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
 
-        assertEquals(0,response.getExceptions().size());
-        assertTrue(file0.exists());
-        assertTrue(file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(file3.exists());
-        assertTrue(file4.exists());
-        assertTrue(file5.exists());
+        assertEquals( 0, response.getExceptions().size() );
+        assertTrue( file0.exists() );
+        assertTrue( file1.exists() );
+        assertTrue( !file2.exists() );
+        assertTrue( file3.exists() );
+        assertTrue( file4.exists() );
+        assertTrue( file5.exists() );
 
     }
-   
-    public void testValidatorSuccess() throws Exception
-    {
-        factories.add(new SHA1VerifierFactory(true, true)); //lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
 
-        //make local dir to put stuff in
+    public void testValidatorSuccess()
+        throws Exception
+    {
+        factories.add( new SHA1VerifierFactory( true, true ) ); // lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
         HashSet<Validator> validators = new HashSet<Validator>();
-        validators.add(new TxtValidator());
-        request.setValidators(validators);
+        validators.add( new TxtValidator() );
+        request.setValidators( validators );
 
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
-        
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
+        file0 = new File( dir, "file0.txt" );
+        file1 = new File( dir, "file1.txt" );
+        file2 = new File( dir, "file2.txt" );
+        file3 = new File( dir, "file3.jar" );
+        file4 = new File( dir, "file4.so" );
+        file5 = new File( dir, "file5.jpg" );
 
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"), file1); //has no sha file
-        bindings.add(binding1);
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ), file0 );
+        bindings.add( binding0 );
 
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), file3);
-        bindings.add(binding3);
+        Binding binding1 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file1.txt" ), file1 ); // has
+                                                                                                                     // no
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding1 );
 
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
+        Binding binding3 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file3.jar" ), file3 );
+        bindings.add( binding3 );
 
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
+        Binding binding4 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file4.so" ), file4 );
+        bindings.add( binding4 );
 
-        request.setFailFast(false);
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file5 );
+        bindings.add( binding5 );
 
-        request.setBindings(bindings);
-        RetrievalResponse response = retriever.retrieve(request);
+        request.setFailFast( false );
 
-//        System.err.println("------------ testValidatorSuccess ---------------");
-//        for (HttpClientException t:response.getExceptions())
-//            t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        request.setBindings( bindings );
+        RetrievalResponse response = retriever.retrieve( request );
 
-        assertEquals(0,response.getExceptions().size());
-        assertTrue(file0.exists());
-        assertTrue(file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(file3.exists());
-        assertTrue(file4.exists());
-        assertTrue(file5.exists());
+        // System.err.println("------------ testValidatorSuccess ---------------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
+
+        assertEquals( 0, response.getExceptions().size() );
+        assertTrue( file0.exists() );
+        assertTrue( file1.exists() );
+        assertTrue( !file2.exists() );
+        assertTrue( file3.exists() );
+        assertTrue( file4.exists() );
+        assertTrue( file5.exists() );
     }
-   
-    public void testValidatorFailure () throws Exception
+
+    public void testValidatorFailure()
+        throws Exception
     {
-        factories.add(new SHA1VerifierFactory(true, true)); //lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
-        
-        //make local dir to put stuff in
+        factories.add( new SHA1VerifierFactory( true, true ) ); // lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
         HashSet<Validator> validators = new HashSet<Validator>();
-        validators.add(new AlwaysFalseTxtValidator());
-        request.setValidators(validators);
+        validators.add( new AlwaysFalseTxtValidator() );
+        request.setValidators( validators );
 
-        file0 = new File(dir, "file0.txt");
-        file1 = new File(dir, "file1.txt");
-        file2 = new File(dir, "file2.txt");
-        file3 = new File(dir, "file3.jar");
-        file4 = new File(dir, "file4.so");
-        file5 = new File(dir, "file5.jpg");
-        
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"), file0);
-        bindings.add(binding0);
+        file0 = new File( dir, "file0.txt" );
+        file1 = new File( dir, "file1.txt" );
+        file2 = new File( dir, "file2.txt" );
+        file3 = new File( dir, "file3.jar" );
+        file4 = new File( dir, "file4.so" );
+        file5 = new File( dir, "file5.jpg" );
 
-        Binding binding1 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file1.txt"), file1); //has no sha file
-        bindings.add(binding1);
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ), file0 );
+        bindings.add( binding0 );
 
-        Binding binding3 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file3.jar"), file3);
-        bindings.add(binding3);
+        Binding binding1 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file1.txt" ), file1 ); // has
+                                                                                                                     // no
+                                                                                                                     // sha
+                                                                                                                     // file
+        bindings.add( binding1 );
 
-        Binding binding4 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file4.so"), file4);
-        bindings.add(binding4);
+        Binding binding3 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file3.jar" ), file3 );
+        bindings.add( binding3 );
 
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"), file5);
-        bindings.add(binding5);
+        Binding binding4 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file4.so" ), file4 );
+        bindings.add( binding4 );
 
-        request.setFailFast(false);
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ), file5 );
+        bindings.add( binding5 );
 
-        request.setBindings(bindings);
-        RetrievalResponse response = retriever.retrieve(request);
+        request.setFailFast( false );
 
-//        System.err.println("---------- testValidatorFail --------------------");
-//        for (HttpClientException t:response.getExceptions())
-//            t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        request.setBindings( bindings );
+        RetrievalResponse response = retriever.retrieve( request );
 
-        assertEquals(2,response.getExceptions().size());
-        assertTrue(!file0.exists());
-        assertTrue(!file1.exists());
-        assertTrue(!file2.exists());
-        assertTrue(!file3.exists());
-        assertTrue(!file4.exists());
-        assertTrue(!file5.exists());
+        // System.err.println("---------- testValidatorFail --------------------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
+
+        assertEquals( 2, response.getExceptions().size() );
+        assertTrue( !file0.exists() );
+        assertTrue( !file1.exists() );
+        assertTrue( !file2.exists() );
+        assertTrue( !file3.exists() );
+        assertTrue( !file4.exists() );
+        assertTrue( !file5.exists() );
     }
-   
-    public void testMemoryRetrieval () throws Exception
-    {
-        factories.add(new SHA1VerifierFactory(true, true)); //lenient, sufficient
-        remoteServerType.setReaderStreamVerifierFactories(factories);
 
-        //make local dir to put stuff in
+    public void testMemoryRetrieval()
+        throws Exception
+    {
+        factories.add( new SHA1VerifierFactory( true, true ) ); // lenient, sufficient
+        remoteServerType.setReaderStreamVerifierFactories( factories );
+
+        // make local dir to put stuff in
         dir = mkTempDir();
         DefaultRetrievalRequest request = new DefaultRetrievalRequest();
         HashSet<Binding> bindings = new HashSet<Binding>();
         HashSet<Validator> validators = new HashSet<Validator>();
-        validators.add(new TxtValidator());
-        request.setValidators(validators);
-        
-        Binding binding0 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file0.txt"));
-        bindings.add(binding0);
+        validators.add( new TxtValidator() );
+        request.setValidators( validators );
 
-        Binding binding5 = new Binding(new URL(__HOST_FRAGMENT+_port+__PATH_FRAGMENT+"file5.jpg"));
-        bindings.add(binding5);
+        Binding binding0 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file0.txt" ) );
+        bindings.add( binding0 );
 
-        request.setFailFast(false);
+        Binding binding5 = new Binding( new URL( __HOST_FRAGMENT + _port + __PATH_FRAGMENT + "file5.jpg" ) );
+        bindings.add( binding5 );
 
-        request.setBindings(bindings);
-        RetrievalResponse response = retriever.retrieve(request);
+        request.setFailFast( false );
 
-//        System.err.println("--------- testMemoryRetrieval -------------------");
-//        for (HttpClientException t:response.getExceptions())
-//            t.printStackTrace();
-//        System.err.println("-------------------------------------------------");
+        request.setBindings( bindings );
+        RetrievalResponse response = retriever.retrieve( request );
 
-        assertEquals(0,response.getExceptions().size());
-        
-        
-        InputStream is = this.getClass().getResourceAsStream("/testRepo/file0.txt");
+        // System.err.println("--------- testMemoryRetrieval -------------------");
+        // for (HttpClientException t:response.getExceptions())
+        // t.printStackTrace();
+        // System.err.println("-------------------------------------------------");
+
+        assertEquals( 0, response.getExceptions().size() );
+
+        InputStream is = this.getClass().getResourceAsStream( "/testRepo/file0.txt" );
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        IO.copy(is, os);
-        assertEquals(os.toByteArray().length, binding0.getInboundContent().length);
+        IO.copy( is, os );
+        assertEquals( os.toByteArray().length, binding0.getInboundContent().length );
         is.close();
         os.close();
 
-        is = this.getClass().getResourceAsStream("/testRepo/file5.jpg");
+        is = this.getClass().getResourceAsStream( "/testRepo/file5.jpg" );
         os.reset();
-        IO.copy(is,os);
-        assertEquals(os.toByteArray().length, binding5.getInboundContent().length);
+        IO.copy( is, os );
+        assertEquals( os.toByteArray().length, binding5.getInboundContent().length );
         is.close();
         os.close();
     }
-  
+
 }

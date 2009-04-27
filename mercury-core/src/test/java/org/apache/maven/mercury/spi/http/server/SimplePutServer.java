@@ -29,86 +29,87 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.servlet.PutFilter;
 
-public class SimplePutServer extends Server
+public class SimplePutServer
+    extends Server
 {
     protected File _base;
+
     protected Context context;
-    
-    
+
     public SimplePutServer()
-    throws Exception
+        throws Exception
     {
-      this("/maven2/repo", null );
+        this( "/maven2/repo", null );
     }
-    
+
     /**
      * @param string
      * @param targetDirectory
      */
     public SimplePutServer( String contextPath, File targetDirectory )
-    throws Exception
+        throws Exception
     {
-      super(0);
+        super( 0 );
 
-      HandlerCollection handlers = new HandlerCollection();
-      setHandler(handlers);
+        HandlerCollection handlers = new HandlerCollection();
+        setHandler( handlers );
 
-      context = new Context( handlers, contextPath );
-      handlers.addHandler(new DefaultHandler());
+        context = new Context( handlers, contextPath );
+        handlers.addHandler( new DefaultHandler() );
 
-      if( targetDirectory == null )
-      {
-        _base = File.createTempFile("simplePutServer",null);
-        _base.delete();
-        _base.mkdir();
-        _base.deleteOnExit();
-      }
-      else
-      {
-        _base = targetDirectory;
-      }
-      
-      if( _base == null || !_base.exists() || !_base.isDirectory() )
-        throw new Exception("File not appropriate for base directory: "+_base);
+        if ( targetDirectory == null )
+        {
+            _base = File.createTempFile( "simplePutServer", null );
+            _base.delete();
+            _base.mkdir();
+            _base.deleteOnExit();
+        }
+        else
+        {
+            _base = targetDirectory;
+        }
 
-      FilterHolder holder = context.addFilter(PutFilter.class, "/*", 0);
-      holder.setInitParameter("delAllowed","true");
-      context.addServlet(DefaultServlet.class,"/");
-      context.setResourceBase(_base.getCanonicalPath());
+        if ( _base == null || !_base.exists() || !_base.isDirectory() )
+            throw new Exception( "File not appropriate for base directory: " + _base );
+
+        FilterHolder holder = context.addFilter( PutFilter.class, "/*", 0 );
+        holder.setInitParameter( "delAllowed", "true" );
+        context.addServlet( DefaultServlet.class, "/" );
+        context.setResourceBase( _base.getCanonicalPath() );
     }
 
-    public void destroy ()
+    public void destroy()
     {
         super.destroy();
-        destroy(_base);
+        destroy( _base );
     }
-    
-    public void destroy (File f)
+
+    public void destroy( File f )
     {
-        if (f == null)
+        if ( f == null )
             return;
-        if (f.isDirectory())
+        if ( f.isDirectory() )
         {
             File[] files = f.listFiles();
-            for (int i=0;files!=null && i<files.length; i++)
+            for ( int i = 0; files != null && i < files.length; i++ )
             {
-                destroy (files[i]);
-            }  
+                destroy( files[i] );
+            }
         }
-        f.delete(); 
+        f.delete();
     }
-    
-  
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.apache.maven.mercury.spi.http.server.PutServer#getPutDir()
      */
-    public File getPutDir ()
+    public File getPutDir()
     {
         return _base;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.apache.maven.mercury.spi.http.server.PutServer#getPort()
      */
     public int getPort()
@@ -116,8 +117,8 @@ public class SimplePutServer extends Server
         return getConnectors()[0].getLocalPort();
     }
 
-    public static void main(String[] args)
-    throws Exception
+    public static void main( String[] args )
+        throws Exception
     {
         SimplePutServer server = new SimplePutServer();
         server.start();

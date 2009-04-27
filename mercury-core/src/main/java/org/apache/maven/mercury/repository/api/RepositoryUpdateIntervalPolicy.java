@@ -67,7 +67,7 @@ public class RepositoryUpdateIntervalPolicy
     private static final long NEVER = -1L;
 
     private static final long ALWAYS = 0L;
-    
+
     private static final long DAYLY = 3600000L * 24L;
 
     protected long interval = DAYLY;
@@ -124,7 +124,7 @@ public class RepositoryUpdateIntervalPolicy
 
     public boolean timestampExpired( long lastUpdateMillis, Quality quality )
     {
-        // save a couple of nannos 
+        // save a couple of nannos
         if ( interval == NEVER )
             return false;
 

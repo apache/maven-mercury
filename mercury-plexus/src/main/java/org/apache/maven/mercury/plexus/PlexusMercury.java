@@ -150,7 +150,6 @@ public interface PlexusMercury
     public List<Repository> constructRepositories( String localDir, String... urls )
         throws RepositoryException;
 
-
     /**
      * write (deploy) given Artifact(s) to the repository
      * 
@@ -197,9 +196,7 @@ public interface PlexusMercury
 
     public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
-                                           ArtifactExclusionList exclusions
-                                           , Map<String, ?> config
-                                           )
+                                           ArtifactExclusionList exclusions, Map<String, ?> config )
         throws RepositoryException;
 
     public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
@@ -209,9 +206,7 @@ public interface PlexusMercury
 
     public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
-                                           ArtifactExclusionList exclusions
-                                           , Map<String, ?> config
-                                           )
+                                           ArtifactExclusionList exclusions, Map<String, ?> config )
         throws RepositoryException;
 
     public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )

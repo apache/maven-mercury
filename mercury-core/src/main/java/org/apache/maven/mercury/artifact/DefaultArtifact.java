@@ -35,10 +35,9 @@ public class DefaultArtifact
     private String inheritedScope;
 
     private byte[] pomBlob;
-    
-    /** 
-     * for temporary holding the reference
-     *  to the pom file during data transfer
+
+    /**
+     * for temporary holding the reference to the pom file during data transfer
      */
     transient private File pomFile;
 

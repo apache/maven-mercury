@@ -35,14 +35,11 @@ import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.FileUtil;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class RemoteRepositoryWriterM2Test
-extends AbstractRepositoryWriterM2Test
+    extends AbstractRepositoryWriterM2Test
 {
     static final String _davContext = "/webdav";
 
@@ -54,107 +51,111 @@ extends AbstractRepositoryWriterM2Test
 
     RemoteRepositoryM2 _davRepo;
 
-  String _basePath = "./target/webdav";
+    String _basePath = "./target/webdav";
 
-  //------------------------------------------------------------------------------
-  @Override
-  void setReleases()
-  throws Exception
-  {
-  }
-  //------------------------------------------------------------------------------
-  @Override
-  void setSnapshots()
-  throws Exception
-  {
-  }
-  //---------------------------------------------------------------------------------------------
-  protected void startDavServer( String basePath, String baseHint )
-  throws Exception
-  {
-      targetDirectory = new File( basePath );
+    // ------------------------------------------------------------------------------
+    @Override
+    void setReleases()
+        throws Exception
+    {
+    }
 
-      FileUtil.delete( targetDirectory );
+    // ------------------------------------------------------------------------------
+    @Override
+    void setSnapshots()
+        throws Exception
+    {
+    }
 
-      targetDirectory.mkdirs();
-      
-      _dav = new WebDavServer( 0, targetDirectory, _davContext, getContainer(), 9, baseHint, null );
-      
-      _dav.start();
-      
-      Credentials user = new Credentials(_user,_pass);
-      
-      server = new Server("dav", new URL("http://localhost:"+_dav.getPort()+_davContext), false, false, user );
-      
-System.out.println("Server: "+server.getURL() + " ==> " + basePath );
-      
-      mdProcessor = new MetadataProcessorMock();
-      
-      repo = new RemoteRepositoryM2( server, mdProcessor );
-      
-      // verifiers
-      factories = new HashSet<StreamVerifierFactory>();       
-      factories.add( 
-          new PgpStreamVerifierFactory(
-                  new StreamVerifierAttributes( PgpStreamVerifierFactory.DEFAULT_EXTENSION, false, false )
-                  , getClass().getResourceAsStream( secretKeyFile )
-                  , keyId
-                  , secretKeyPass
-                                      )
-                    );
-      factories.add( new SHA1VerifierFactory(false,false) );
-      server.setWriterStreamVerifierFactories(factories);
-        
-      reader = repo.getReader();
-      writer = repo.getWriter();
-      
-  }
-  //---------------------------------------------------------------------------------------------
-  protected void stopDavServer()
-  throws Exception
-  {
-      if( _dav != null )
-      {
-          _dav.stop();
-          _dav.destroy();
-          _dav = null;
-      }  
-  }
-  //------------------------------------------------------------------------------
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    super.setUp();
+    // ---------------------------------------------------------------------------------------------
+    protected void startDavServer( String basePath, String baseHint )
+        throws Exception
+    {
+        targetDirectory = new File( basePath );
 
-    query = new ArrayList<ArtifactMetadata>();
+        FileUtil.delete( targetDirectory );
 
-    startDavServer( _basePath, "mercury-test"  );
-  }
-  //-------------------------------------------------------------------------
-  @Override
-  protected void tearDown()
-  throws Exception
-  {
-    super.tearDown();
-    
-    stopDavServer();
-  }
-  //-------------------------------------------------------------------------
-  @Override
-  public void testWriteContentionMultipleArtifacts()
-      throws Exception
-  {
-    System.out.println("Mutliple Artifacts contention does not apply to remote repo client");
-  }
-  
-  @Override
-  public void testWriteContentionSingleArtifact()
-      throws Exception
-  {
-    System.out.println("Single Artifacts contention does not apply to remote repo client");
-  }
-  
-  //-------------------------------------------------------------------------
-  //-------------------------------------------------------------------------
+        targetDirectory.mkdirs();
+
+        _dav = new WebDavServer( 0, targetDirectory, _davContext, getContainer(), 9, baseHint, null );
+
+        _dav.start();
+
+        Credentials user = new Credentials( _user, _pass );
+
+        server = new Server( "dav", new URL( "http://localhost:" + _dav.getPort() + _davContext ), false, false, user );
+
+        System.out.println( "Server: " + server.getURL() + " ==> " + basePath );
+
+        mdProcessor = new MetadataProcessorMock();
+
+        repo = new RemoteRepositoryM2( server, mdProcessor );
+
+        // verifiers
+        factories = new HashSet<StreamVerifierFactory>();
+        factories.add( new PgpStreamVerifierFactory(
+                                                     new StreamVerifierAttributes(
+                                                                                   PgpStreamVerifierFactory.DEFAULT_EXTENSION,
+                                                                                   false, false ),
+                                                     getClass().getResourceAsStream( secretKeyFile ), keyId,
+                                                     secretKeyPass ) );
+        factories.add( new SHA1VerifierFactory( false, false ) );
+        server.setWriterStreamVerifierFactories( factories );
+
+        reader = repo.getReader();
+        writer = repo.getWriter();
+
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    protected void stopDavServer()
+        throws Exception
+    {
+        if ( _dav != null )
+        {
+            _dav.stop();
+            _dav.destroy();
+            _dav = null;
+        }
+    }
+
+    // ------------------------------------------------------------------------------
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        query = new ArrayList<ArtifactMetadata>();
+
+        startDavServer( _basePath, "mercury-test" );
+    }
+
+    // -------------------------------------------------------------------------
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+
+        stopDavServer();
+    }
+
+    // -------------------------------------------------------------------------
+    @Override
+    public void testWriteContentionMultipleArtifacts()
+        throws Exception
+    {
+        System.out.println( "Mutliple Artifacts contention does not apply to remote repo client" );
+    }
+
+    @Override
+    public void testWriteContentionSingleArtifact()
+        throws Exception
+    {
+        System.out.println( "Single Artifacts contention does not apply to remote repo client" );
+    }
+
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 }

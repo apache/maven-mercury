@@ -46,117 +46,129 @@ import org.apache.maven.mercury.util.FileUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 public class RemoteRepositoryReaderM2Test
-extends AbstractRepositoryReaderM2Test
+    extends AbstractRepositoryReaderM2Test
 {
-  MetadataXpp3Reader _reader;
-  File _testBase;
-  DefaultRetriever _retriever;
-  String _port;
-  HttpTestServer _server;
-  DefaultRetrievalRequest _request;
+    MetadataXpp3Reader _reader;
 
-  //-------------------------------------------------------------------------
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    _testBase = new File("./target/test-classes/repo");
-    FileUtil.copy( new File("src/test/resources/repo"), _testBase, false );
-    
-    _retriever = new DefaultRetriever();
-    _server = new HttpTestServer( _testBase, "/repo" );
-    _server.start();
-    _port = String.valueOf( _server.getPort() );
+    File _testBase;
 
-    _reader = new MetadataXpp3Reader();
-    _request = new DefaultRetrievalRequest();
+    DefaultRetriever _retriever;
 
-    mdProcessor = new MetadataProcessorMock();
+    String _port;
 
-    query = new ArrayList<ArtifactMetadata>();
+    HttpTestServer _server;
 
-    server = new Server( "test", new URL("http://localhost:"+_port+"/repo") );
-    repo = new RemoteRepositoryM2( "testRepo", server, new MavenDependencyProcessor() );
-    repo.setDependencyProcessor( mdProcessor );
-    reader = repo.getReader();
-    
-    super.setUp();
-  }
-  //-------------------------------------------------------------------------
-  @Override
-  protected void tearDown()
-  throws Exception
-  {
-      super.tearDown();
-      if( _server != null )
-      {
-          _server.stop();
-          _server.destroy();
-      }
-      _server = null;
-  }
-  //-------------------------------------------------------------------------
-  private void validateMmd( Metadata mmd )
-  {
-    assertNotNull( mmd );
-    assertEquals("a", mmd.getGroupId() );
-    assertEquals("a", mmd.getArtifactId() );
+    DefaultRetrievalRequest _request;
 
-    assertNotNull( mmd.getVersioning() );
-    
-    List<String> versions = mmd.getVersioning().getVersions();
-    
-    assertNotNull( versions );
-    assertTrue( versions.size() > 3 );
-  }
-  //-------------------------------------------------------------------------
-  public void testReadMd()
-  throws FileNotFoundException, IOException, XmlPullParserException
-  {
-     FileInputStream fis = new FileInputStream( new File( _testBase, "a/a/maven-metadata.xml") );
-     Metadata mmd = _reader.read( fis );
-     fis.close();
-     validateMmd( mmd );
-  }
-  //-------------------------------------------------------------------------
-  public void testReadRemoteMdViaHttpClient()
-  throws FileNotFoundException, IOException, XmlPullParserException
-  {
-    File temp = new File("./target/maven-metadata.temp" );
-    HashSet<Binding> bindings = new HashSet<Binding>();
-    
-    Binding aaMdBinding = new Binding( new URL("http://localhost:"+_port+"/repo/a/a/maven-metadata.xml"), temp);
-    bindings.add( aaMdBinding );
-    
-    _request.setBindings(bindings);
-    
-    RetrievalResponse response = _retriever.retrieve(_request);
-    
-    if( response.hasExceptions() )
-      fail("retrieval exceptions: "+response.getExceptions()+"\nReading from "+aaMdBinding.getRemoteResource() );
-    
-    Metadata mmd = _reader.read( new FileInputStream( temp ) );
-    temp.delete();
-    
-    validateMmd( mmd );
-    
-  }
-  //-------------------------------------------------------------------------
-  public void testReadRemoteMdViaRepositoryReader()
-  throws FileNotFoundException, IOException, XmlPullParserException, RepositoryException, MetadataReaderException
-  {
-    
-    byte [] mmBuf = reader.readRawData( "a/a/maven-metadata.xml", false );
-    
-    assertNotNull( mmBuf );
-    assertTrue( mmBuf.length > 1 );
-    
-    ByteArrayInputStream bais = new ByteArrayInputStream( mmBuf );
-    Metadata mmd = _reader.read( bais );
-    bais.close();
-    
-    validateMmd( mmd );
-  }
-  //-------------------------------------------------------------------------
-  //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        _testBase = new File( "./target/test-classes/repo" );
+        FileUtil.copy( new File( "src/test/resources/repo" ), _testBase, false );
+
+        _retriever = new DefaultRetriever();
+        _server = new HttpTestServer( _testBase, "/repo" );
+        _server.start();
+        _port = String.valueOf( _server.getPort() );
+
+        _reader = new MetadataXpp3Reader();
+        _request = new DefaultRetrievalRequest();
+
+        mdProcessor = new MetadataProcessorMock();
+
+        query = new ArrayList<ArtifactMetadata>();
+
+        server = new Server( "test", new URL( "http://localhost:" + _port + "/repo" ) );
+        repo = new RemoteRepositoryM2( "testRepo", server, new MavenDependencyProcessor() );
+        repo.setDependencyProcessor( mdProcessor );
+        reader = repo.getReader();
+
+        super.setUp();
+    }
+
+    // -------------------------------------------------------------------------
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        if ( _server != null )
+        {
+            _server.stop();
+            _server.destroy();
+        }
+        _server = null;
+    }
+
+    // -------------------------------------------------------------------------
+    private void validateMmd( Metadata mmd )
+    {
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+
+        assertNotNull( mmd.getVersioning() );
+
+        List<String> versions = mmd.getVersioning().getVersions();
+
+        assertNotNull( versions );
+        assertTrue( versions.size() > 3 );
+    }
+
+    // -------------------------------------------------------------------------
+    public void testReadMd()
+        throws FileNotFoundException, IOException, XmlPullParserException
+    {
+        FileInputStream fis = new FileInputStream( new File( _testBase, "a/a/maven-metadata.xml" ) );
+        Metadata mmd = _reader.read( fis );
+        fis.close();
+        validateMmd( mmd );
+    }
+
+    // -------------------------------------------------------------------------
+    public void testReadRemoteMdViaHttpClient()
+        throws FileNotFoundException, IOException, XmlPullParserException
+    {
+        File temp = new File( "./target/maven-metadata.temp" );
+        HashSet<Binding> bindings = new HashSet<Binding>();
+
+        Binding aaMdBinding =
+            new Binding( new URL( "http://localhost:" + _port + "/repo/a/a/maven-metadata.xml" ), temp );
+        bindings.add( aaMdBinding );
+
+        _request.setBindings( bindings );
+
+        RetrievalResponse response = _retriever.retrieve( _request );
+
+        if ( response.hasExceptions() )
+            fail( "retrieval exceptions: " + response.getExceptions() + "\nReading from "
+                + aaMdBinding.getRemoteResource() );
+
+        Metadata mmd = _reader.read( new FileInputStream( temp ) );
+        temp.delete();
+
+        validateMmd( mmd );
+
+    }
+
+    // -------------------------------------------------------------------------
+    public void testReadRemoteMdViaRepositoryReader()
+        throws FileNotFoundException, IOException, XmlPullParserException, RepositoryException, MetadataReaderException
+    {
+
+        byte[] mmBuf = reader.readRawData( "a/a/maven-metadata.xml", false );
+
+        assertNotNull( mmBuf );
+        assertTrue( mmBuf.length > 1 );
+
+        ByteArrayInputStream bais = new ByteArrayInputStream( mmBuf );
+        Metadata mmd = _reader.read( bais );
+        bais.close();
+
+        validateMmd( mmd );
+    }
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 }

@@ -19,7 +19,6 @@
 
 package org.apache.maven.mercury.spi.http.client.deploy;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,42 +39,47 @@ import org.mortbay.io.Buffer;
 import org.mortbay.jetty.HttpMethods;
 import org.mortbay.jetty.client.HttpClient;
 
-
 /**
  * FilePutExchange
  * <p/>
- * Asynchronously PUT a file to a remote server. The file that is being uploaded can also
- * have it's SHA-1 digest calculated as it is being streamed up.
+ * Asynchronously PUT a file to a remote server. The file that is being uploaded can also have it's SHA-1 digest
+ * calculated as it is being streamed up.
  */
-public abstract class FilePutExchange extends FileExchange
+public abstract class FilePutExchange
+    extends FileExchange
 {
     private static final int __readLimit = 1024;
-    private static final IMercuryLogger log = MercuryLoggerManager.getLogger(FilePutExchange.class);
+
+    private static final IMercuryLogger log = MercuryLoggerManager.getLogger( FilePutExchange.class );
+
     private String _batchId;
+
     private InputStream _inputStream;
+
     private String _remoteRepoUrl;
+
     private String _remoteBatchId;
+
     private Set<StreamObserver> _observers = new HashSet<StreamObserver>();
-    
+
     public abstract void onFileComplete( String url, File localFile );
 
     public abstract void onFileError( String url, Exception e );
 
-
-    public FilePutExchange( Server server, String batchId, Binding binding, File localFile, Set<StreamObserver> observers, HttpClient client )
+    public FilePutExchange( Server server, String batchId, Binding binding, File localFile,
+                            Set<StreamObserver> observers, HttpClient client )
     {
         super( server, binding, localFile, client );
-        
+
         _batchId = batchId;
-        
-        if( observers != null && ! observers.isEmpty() )
-            _observers.addAll(observers);
+
+        if ( observers != null && !observers.isEmpty() )
+            _observers.addAll( observers );
     }
 
-
     /**
-     * Start the upload. Ensure that the id of the mercury is set as a request header
-     * so all files part of the same mercury can be identified as an atomic unit.
+     * Start the upload. Ensure that the id of the mercury is set as a request header so all files part of the same
+     * mercury can be identified as an atomic unit.
      */
     public void send()
     {
@@ -83,21 +87,21 @@ public abstract class FilePutExchange extends FileExchange
         {
             setMethod( HttpMethods.PUT );
             setRequestHeader( "Content-Type", "application/octet-stream" );
-            if (_binding.isFile())
+            if ( _binding.isFile() )
             {
                 setRequestHeader( "Content-Length", String.valueOf( _localFile.length() ) );
-                if (log.isDebugEnabled())
-                    log.debug("PUT of "+_localFile.length()+" bytes");
-                
-                for (StreamObserver o: _observers)
-                    o.setLength(_localFile.length());
+                if ( log.isDebugEnabled() )
+                    log.debug( "PUT of " + _localFile.length() + " bytes" );
+
+                for ( StreamObserver o : _observers )
+                    o.setLength( _localFile.length() );
             }
 
-            if (log.isDebugEnabled())
-                log.debug("PUT: "+getURI());
-            
+            if ( log.isDebugEnabled() )
+                log.debug( "PUT: " + getURI() );
+
             setRequestContentSource( getInputStream() );
-            setRequestHeader( __BATCH_HEADER, _batchId );            
+            setRequestHeader( __BATCH_HEADER, _batchId );
             super.send();
         }
         catch ( Exception e )
@@ -116,7 +120,6 @@ public abstract class FilePutExchange extends FileExchange
         return _remoteRepoUrl;
     }
 
-
     protected void onResponseHeader( Buffer name, Buffer value )
     {
         if ( name.toString().equalsIgnoreCase( __BATCH_SUPPORTED_HEADER ) )
@@ -133,10 +136,11 @@ public abstract class FilePutExchange extends FileExchange
     {
         try
         {
-            if (_inputStream != null)
+            if ( _inputStream != null )
                 _inputStream.close();
-            
-            if ( _status != HttpServletResponse.SC_OK && _status != HttpServletResponse.SC_CREATED && _status != HttpServletResponse.SC_NO_CONTENT )
+
+            if ( _status != HttpServletResponse.SC_OK && _status != HttpServletResponse.SC_CREATED
+                && _status != HttpServletResponse.SC_NO_CONTENT )
             {
                 onFileError( _url, new HttpClientException( _binding, "Http status code=" + _status ) );
                 return;
@@ -144,12 +148,12 @@ public abstract class FilePutExchange extends FileExchange
 
             if ( _remoteBatchId != null && !_batchId.equals( _remoteBatchId ) )
             {
-                onFileError( _url, new HttpClientException( _binding,
-                    "Non matching mercury ids. Sent=" + _batchId + " received=" + _remoteBatchId ) );
+                onFileError( _url, new HttpClientException( _binding, "Non matching mercury ids. Sent=" + _batchId
+                    + " received=" + _remoteBatchId ) );
                 return;
             }
 
-            //we've uploaded the file
+            // we've uploaded the file
             onFileComplete( _url, _localFile );
         }
         catch ( Exception e )
@@ -158,53 +162,52 @@ public abstract class FilePutExchange extends FileExchange
         }
     }
 
-
     private InputStream getInputStream()
         throws IOException
     {
         if ( _inputStream == null )
         {
             InputStream is = null;
-            if (_binding.isFile())
+            if ( _binding.isFile() )
                 is = new FileInputStream( _localFile );
-            else if (_binding.isInMemory())
+            else if ( _binding.isInMemory() )
             {
                 is = _binding.getLocalInputStream();
-                if (!getRetryStatus())
-                {                 
-                    if (is.markSupported())
-                        is.mark(__readLimit);
+                if ( !getRetryStatus() )
+                {
+                    if ( is.markSupported() )
+                        is.mark( __readLimit );
                 }
                 else
                 {
-                    if (is.markSupported())
+                    if ( is.markSupported() )
                         is.reset();
                 }
             }
 
-            //if this request is being retried, then don't set up the observers a second
-            //time?
-            if (!getRetryStatus())
+            // if this request is being retried, then don't set up the observers a second
+            // time?
+            if ( !getRetryStatus() )
             {
                 ObservableInputStream ois = new ObservableInputStream( is );
                 _inputStream = ois;
-                ois.addObservers(_observers);
+                ois.addObservers( _observers );
             }
             else
                 _inputStream = is;
-        }    
+        }
         return _inputStream;
     }
 
-   
-    protected void onRetry() throws IOException
+    protected void onRetry()
+        throws IOException
     {
         super.onRetry();
-        if (_inputStream != null)
+        if ( _inputStream != null )
             _inputStream.close();
-        
+
         _inputStream = null;
-        setRequestContent(null);
-        setRequestContentSource(getInputStream());
+        setRequestContent( null );
+        setRequestContentSource( getInputStream() );
     }
 }

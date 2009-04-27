@@ -7,10 +7,9 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * storage for the repository
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface Storage
 {
@@ -35,27 +34,26 @@ public interface Storage
      * 
      * @param key
      * @return
-     * @throws StorageException 
+     * @throws StorageException
      */
-    public abstract byte[] findRaw( String key ) throws StorageException;
+    public abstract byte[] findRaw( String key )
+        throws StorageException;
 
     /**
-     * 
      * @param key
      * @param bytes
-     * @throws StorageException 
+     * @throws StorageException
      */
-    public abstract void add( String key, byte [] bytes )
-    throws StorageException;
-    
+    public abstract void add( String key, byte[] bytes )
+        throws StorageException;
+
     /**
-     * 
      * @param key
      * @param file
-     * @throws StorageException 
+     * @throws StorageException
      */
     public abstract void add( String key, File file )
-    throws StorageException;
+        throws StorageException;
 
     /**
      * delete this datum
@@ -63,6 +61,6 @@ public interface Storage
      * @param key
      */
     public abstract void removeRaw( String key )
-    throws StorageException;
+        throws StorageException;
 
 }

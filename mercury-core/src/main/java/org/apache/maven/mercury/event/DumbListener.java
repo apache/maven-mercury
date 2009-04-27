@@ -26,44 +26,41 @@ import java.io.Writer;
 import org.apache.maven.mercury.event.MercuryEvent.EventMask;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class DumbListener
-implements MercuryEventListener
+    implements MercuryEventListener
 {
-  
-  Writer wr;
-  
-  public DumbListener()
-  {
-    this( System.out );
-  }
-  
-  public DumbListener( OutputStream os )
-  {
-    wr = new OutputStreamWriter( os );
-  }
 
-  public void fire( MercuryEvent event )
-  {
-    try
-    {
-      wr.write( "mercury event: "+EventManager.toString( event )+"\n" );
-      wr.flush();
-    }
-    catch( IOException e )
-    {
-      e.printStackTrace();
-    }
-  }
+    Writer wr;
 
-  public EventMask getMask()
-  {
-    return null;
-  }
+    public DumbListener()
+    {
+        this( System.out );
+    }
+
+    public DumbListener( OutputStream os )
+    {
+        wr = new OutputStreamWriter( os );
+    }
+
+    public void fire( MercuryEvent event )
+    {
+        try
+        {
+            wr.write( "mercury event: " + EventManager.toString( event ) + "\n" );
+            wr.flush();
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public EventMask getMask()
+    {
+        return null;
+    }
 
 }

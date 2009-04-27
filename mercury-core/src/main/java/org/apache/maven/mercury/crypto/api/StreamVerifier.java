@@ -18,23 +18,22 @@
  */
 package org.apache.maven.mercury.crypto.api;
 
-
 public interface StreamVerifier
-extends StreamObserver
+    extends StreamObserver
 {
-  public StreamVerifierAttributes getAttributes();
+    public StreamVerifierAttributes getAttributes();
 
-  public String getSignature()
-  throws StreamVerifierException;
-  
-  // to verify stream: initSignature( InputStream signatureStream ), process stream, then verifySignature()
-  public void initSignature( String signatureStream )
-  throws StreamVerifierException;
-  
-  public boolean verifySignature()
-  throws StreamVerifierException;
-  
-//  public boolean verifySignature( String signature )
-//  throws StreamVerifierException;
+    public String getSignature()
+        throws StreamVerifierException;
+
+    // to verify stream: initSignature( InputStream signatureStream ), process stream, then verifySignature()
+    public void initSignature( String signatureStream )
+        throws StreamVerifierException;
+
+    public boolean verifySignature()
+        throws StreamVerifierException;
+
+    // public boolean verifySignature( String signature )
+    // throws StreamVerifierException;
 
 }

@@ -53,22 +53,22 @@ public class Config
 
     public static final String DEFAULT_CONFIG_ID =
         System.getProperty( "mercury.default.config.id", "mercury.default.config.id." + System.currentTimeMillis() );
-    
+
     public static final String USER_HOME = System.getProperty( "user.home" );
-    
+
     public static final String DEFAULT_PUBLIC_KEYRING = USER_HOME + "/.gnupg/pubring.gpg";
-    
+
     public static final String DEFAULT_SECRET_KEYRING = USER_HOME + "/.gnupg/secring.gpg";
-    
+
     private Collection<Repo> _repos;
 
     private Collection<Auth> _auths;
 
     private List<Repository> _repositories;
-    
+
     private Validation _validation = new Validation();
-    
-    //------------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------------
     public Config()
     {
     }
@@ -76,24 +76,23 @@ public class Config
     private Config( String localDir, String remoteUrl )
     {
         createDefaultLocalRepo( localDir );
-        
+
         createDefaultRemoteRepo( remoteUrl );
     }
-    
+
     private Repo createDefaultRemoteRepo( String remoteUrl )
     {
         Repo central = createRepo();
         central.setId( "central" );
 
         String centralUrl =
-            ( remoteUrl == null ) ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, DEFAULT_CENTRAL_URL )
-                            : remoteUrl;
+            ( remoteUrl == null ) ? System.getProperty( SYSTEM_PROPERTY_CENTRAL_URL, DEFAULT_CENTRAL_URL ) : remoteUrl;
 
         central.setUrl( centralUrl );
-        
+
         return central;
     }
-    
+
     private Repo createDefaultLocalRepo( String localDir )
     {
         Repo local = createRepo();
@@ -104,7 +103,7 @@ public class Config
                 + DEFAULT_LOCAL_DIR_NAME ) : localDir;
 
         local.setDir( localDirName );
-        
+
         return local;
     }
 
@@ -118,22 +117,22 @@ public class Config
 
         if ( Util.isEmpty( _repos ) )
         {
-            _repos = new ArrayList<Repo>(3);
+            _repos = new ArrayList<Repo>( 3 );
         }
-        
+
         boolean localExists = false;
         boolean remoteExists = false;
-        
-        for( Repo r : _repos )
-            if( r.isLocal() )
+
+        for ( Repo r : _repos )
+            if ( r.isLocal() )
                 localExists = true;
             else
                 remoteExists = true;
-        
-        if( ! localExists )
+
+        if ( !localExists )
             createDefaultLocalRepo( null );
-        
-        if( !remoteExists)
+
+        if ( !remoteExists )
             createDefaultRemoteRepo( null );
 
         _repositories = new ArrayList<Repository>( _repos.size() );

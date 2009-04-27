@@ -25,35 +25,34 @@ import org.codehaus.plexus.logging.LoggerManager;
 
 /**
  * mercury adaptor for plesux logger factory (manager)
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class MercuryPlexusLoggerFactory
-implements IMercuryLoggerFactory
+    implements IMercuryLoggerFactory
 {
-  LoggerManager _loggerManager;
-  
-  public MercuryPlexusLoggerFactory( LoggerManager loggerManager )
-  {
-    setLoggerFactory( loggerManager );
-  }
+    LoggerManager _loggerManager;
 
-  public IMercuryLogger getLogger( Class clazz )
-  {
-    return new MercuryPlexusLogger( _loggerManager.getLoggerForComponent( clazz.getName() ) );
-  }
+    public MercuryPlexusLoggerFactory( LoggerManager loggerManager )
+    {
+        setLoggerFactory( loggerManager );
+    }
 
-  public void setLoggerFactory( LoggerManager loggerManager )
-  {
-    this._loggerManager = loggerManager;
-  }
+    public IMercuryLogger getLogger( Class clazz )
+    {
+        return new MercuryPlexusLogger( _loggerManager.getLoggerForComponent( clazz.getName() ) );
+    }
 
-  public void setThreshold( MercuryLoggingLevelEnum threshold )
-  {
-    // TODO Auto-generated method stub
-    
-  }
+    public void setLoggerFactory( LoggerManager loggerManager )
+    {
+        this._loggerManager = loggerManager;
+    }
+
+    public void setThreshold( MercuryLoggingLevelEnum threshold )
+    {
+        // TODO Auto-generated method stub
+
+    }
 
 }

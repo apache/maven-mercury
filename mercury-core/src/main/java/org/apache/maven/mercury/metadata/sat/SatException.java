@@ -24,25 +24,25 @@ package org.apache.maven.mercury.metadata.sat;
 public class SatException
     extends Exception
 {
-  private static final long serialVersionUID = -2461839690564604496L;
+    private static final long serialVersionUID = -2461839690564604496L;
 
-  public SatException()
-  {
-  }
+    public SatException()
+    {
+    }
 
-  public SatException(String message)
-  {
-    super(message);
-  }
+    public SatException( String message )
+    {
+        super( message );
+    }
 
-  public SatException(Throwable cause)
-  {
-    super(cause);
-  }
+    public SatException( Throwable cause )
+    {
+        super( cause );
+    }
 
-  public SatException(String message, Throwable cause)
-  {
-    super(message, cause);
-  }
+    public SatException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
 }

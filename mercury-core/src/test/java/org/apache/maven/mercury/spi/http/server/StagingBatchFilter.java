@@ -33,22 +33,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.mortbay.util.IO;
 import org.mortbay.util.URIUtil;
 
-
 /**
  * DefaultBatchFilter
  * <p/>
- * Handles the atomic upload (using PUT messages) of a batch of files. "Atomic" means
- * that either all file uploads succeed or none do. This transactionality can only be
- * guaranteed when using the mercury client, as a "commit/discard" message
- * is sent from the client side to indicate how to terminate the mercury operation. If
- * a commit is received, then all files that form part of the batch - indicated by a
- * batch id in the PUT headers - are moved from a staging location to the final
- * location. If a discard is received, then all files forming part of the mercury will
- * be deleted. If the client side is not the jetty batcher, then the server side
- * cannot know when the batch has ended, and therefore will immediately copy files
- * to their final locations during the PUT.
+ * Handles the atomic upload (using PUT messages) of a batch of files. "Atomic" means that either all file uploads
+ * succeed or none do. This transactionality can only be guaranteed when using the mercury client, as a "commit/discard"
+ * message is sent from the client side to indicate how to terminate the mercury operation. If a commit is received,
+ * then all files that form part of the batch - indicated by a batch id in the PUT headers - are moved from a staging
+ * location to the final location. If a discard is received, then all files forming part of the mercury will be deleted.
+ * If the client side is not the jetty batcher, then the server side cannot know when the batch has ended, and therefore
+ * will immediately copy files to their final locations during the PUT.
  */
-public class StagingBatchFilter extends BatchFilter
+public class StagingBatchFilter
+    extends BatchFilter
 {
     private String _stagingDirURI;
 
@@ -57,7 +54,7 @@ public class StagingBatchFilter extends BatchFilter
     {
         super.init( config );
 
-        //allow tmp dir location to be configured
+        // allow tmp dir location to be configured
         String t = config.getInitParameter( "stagingDirURI" );
         if ( t != null )
         {
@@ -65,7 +62,7 @@ public class StagingBatchFilter extends BatchFilter
         }
         else
         {
-            //fall back to WEB-INF/lib
+            // fall back to WEB-INF/lib
             File f = new File( _context.getRealPath( "/" ) );
             File w = new File( f, "WEB-INF" );
             File l = new File( w, "lib" );
@@ -73,21 +70,17 @@ public class StagingBatchFilter extends BatchFilter
         }
     }
 
-
     /**
-     * Put the file to a staging area before doing move to final location
-     * on a commit.
-     *
-     * @see BatchFilter#putFile(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String, java.lang.String)
+     * Put the file to a staging area before doing move to final location on a commit.
+     * 
+     * @see BatchFilter#putFile(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     *      java.lang.String, java.lang.String)
      */
-    public void putFile( HttpServletRequest request,
-                         HttpServletResponse response,
-                         String pathInContext,
-                         String batchId )
+    public void putFile( HttpServletRequest request, HttpServletResponse response, String pathInContext, String batchId )
         throws Exception
     {
-        String stagedResource = URIUtil.addPaths( _stagingDirURI,
-            batchId ); //put the file into staging dir under the batchid
+        String stagedResource = URIUtil.addPaths( _stagingDirURI, batchId ); // put the file into staging dir under the
+                                                                             // batchid
         stagedResource = URIUtil.addPaths( stagedResource, pathInContext );
         File stagedFile = null;
 
@@ -127,18 +120,18 @@ public class StagingBatchFilter extends BatchFilter
         }
     }
 
-
     /**
      * Do the move of all files in mercury to a final location
-     *
-     * @see BatchFilter#commitFiles(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
+     * 
+     * @see BatchFilter#commitFiles(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     *      java.lang.String)
      */
     public boolean commitFiles( HttpServletRequest request, HttpServletResponse response, Batch batch )
         throws Exception
     {
         if ( batch == null )
         {
-            return true; //nothing to do
+            return true; // nothing to do
         }
 
         boolean ok = true;
@@ -152,30 +145,30 @@ public class StagingBatchFilter extends BatchFilter
             if ( !files[i].renameTo( dest ) )
             {
                 ok = false;
-                _context.log("Unable to rename file "+files[i].getAbsolutePath()+" to "+dest.getAbsolutePath());
+                _context.log( "Unable to rename file " + files[i].getAbsolutePath() + " to " + dest.getAbsolutePath() );
             }
         }
         if ( ok )
         {
             ok = batchDir.delete();
-            if (!ok)
-                _context.log("Unable to delete batch dir "+batchDir.getAbsolutePath());
+            if ( !ok )
+                _context.log( "Unable to delete batch dir " + batchDir.getAbsolutePath() );
         }
         return ok;
     }
 
-
     /**
      * Delete all files in the mercury from the staging area.
-     *
-     * @see BatchFilter#discardFiles(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
+     * 
+     * @see BatchFilter#discardFiles(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     *      java.lang.String)
      */
     public boolean discardFiles( HttpServletRequest request, HttpServletResponse response, Batch batch )
         throws Exception
     {
         if ( batch == null )
         {
-            return true; //nothing to do
+            return true; // nothing to do
         }
 
         String stagedResource = URIUtil.addPaths( _stagingDirURI, batch.getBatchId() );
@@ -188,10 +181,9 @@ public class StagingBatchFilter extends BatchFilter
         return ok;
     }
 
-
     /**
      * Recursively descend file hierarchy and delete all files.
-     *
+     * 
      * @param f
      * @return
      */
@@ -204,8 +196,8 @@ public class StagingBatchFilter extends BatchFilter
         if ( f.isFile() )
         {
             boolean ok = f.delete();
-            if (!ok)
-                _context.log("Unable to delete file "+f.getAbsolutePath());
+            if ( !ok )
+                _context.log( "Unable to delete file " + f.getAbsolutePath() );
             return ok;
         }
         else if ( f.isDirectory() )
@@ -223,7 +215,7 @@ public class StagingBatchFilter extends BatchFilter
             if ( !f.delete() )
             {
                 ok = false;
-                _context.log("Unable to delete dir "+f.getAbsolutePath());
+                _context.log( "Unable to delete dir " + f.getAbsolutePath() );
             }
 
             return ok;

@@ -15,42 +15,39 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.ant.tasks;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class Validation
 {
     public static final String TYPE_PGP = "pgp";
 
     public static final String TYPE_SHA1 = "sha1";
-    
+
     public static final String PROP_PUBLIC_KEYRING = "keyring";
-    
+
     public static final String PROP_SECRET_KEYRING = "secret-keyring";
-    
+
     public static final String PROP_SECRET_KEY_ID = "secret-keyring";
-    
+
     public static final String PROP_SECRET_KEY_PASS = "secret-keyring";
 
     protected boolean _pgpValidation = false;
-    
+
     protected String _pgpPublicKeyring = Config.DEFAULT_PUBLIC_KEYRING;
-    
+
     protected String _pgpSecretKeyring = Config.DEFAULT_SECRET_KEYRING;
-    
+
     protected String _pgpSecretKey;
-    
+
     protected String _pgpSecretKeyPass;
-    
+
     protected boolean _sha1Validation = false;
-    
-    protected boolean _sha1Signature  = true;
+
+    protected boolean _sha1Signature = true;
 }

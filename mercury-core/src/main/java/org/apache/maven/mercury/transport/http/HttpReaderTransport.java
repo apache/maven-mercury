@@ -28,34 +28,33 @@ import org.apache.maven.mercury.transport.api.TransportTransaction;
 
 /**
  * HTTP retriever adaptor: adopts DefaultRetriever to ReaderTransport API
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class HttpReaderTransport
-extends AbstractTransport
-implements ReaderTransport
+    extends AbstractTransport
+    implements ReaderTransport
 {
-  private DefaultRetriever _retriever;
-  
-  public TransportTransaction read( TransportTransaction trx )
-  throws TransportException
-  {
-    return null;
-  }
+    private DefaultRetriever _retriever;
 
-  public void init()
-  throws InitializationException
-  {
-    try
+    public TransportTransaction read( TransportTransaction trx )
+        throws TransportException
     {
-      _retriever = new DefaultRetriever();
+        return null;
     }
-    catch( HttpClientException e )
+
+    public void init()
+        throws InitializationException
     {
-      throw new InitializationException(e);
+        try
+        {
+            _retriever = new DefaultRetriever();
+        }
+        catch ( HttpClientException e )
+        {
+            throw new InitializationException( e );
+        }
     }
-  }
 
 }

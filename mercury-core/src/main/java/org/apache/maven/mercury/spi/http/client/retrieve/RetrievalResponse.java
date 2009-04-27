@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
 
-
 /**
  * RetrievalResponse
  * <p/>
@@ -32,13 +31,12 @@ import org.apache.maven.mercury.spi.http.client.HttpClientException;
 public interface RetrievalResponse
 {
     /**
-     * The set will be empty if the operation completed successfully,
-     * or will contain a single entry if the Request is failFast, otherwise
-     * there will be one exception for every Binding in the Request.
-     *
+     * The set will be empty if the operation completed successfully, or will contain a single entry if the Request is
+     * failFast, otherwise there will be one exception for every Binding in the Request.
+     * 
      * @return
      */
     Set<HttpClientException> getExceptions();
-    
+
     boolean hasExceptions();
 }

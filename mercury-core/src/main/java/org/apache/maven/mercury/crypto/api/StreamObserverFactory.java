@@ -20,6 +20,6 @@ package org.apache.maven.mercury.crypto.api;
 
 public interface StreamObserverFactory
 {
-  public StreamObserver newInstance()
-  throws StreamObserverException;
+    public StreamObserver newInstance()
+        throws StreamObserverException;
 }

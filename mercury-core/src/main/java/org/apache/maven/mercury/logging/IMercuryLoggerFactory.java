@@ -19,17 +19,14 @@
 package org.apache.maven.mercury.logging;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface IMercuryLoggerFactory
 {
-  @SuppressWarnings("unchecked")
-  IMercuryLogger getLogger( Class clazz );
-  
-  /** is not used for now */
-  void setThreshold( MercuryLoggingLevelEnum threshold );
+    @SuppressWarnings( "unchecked" )
+    IMercuryLogger getLogger( Class clazz );
+
+    /** is not used for now */
+    void setThreshold( MercuryLoggingLevelEnum threshold );
 }

@@ -25,14 +25,10 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 /**
- * Single range implementation, similar to OSGi specification:
- *
- * [1.2.3, 4.5.6) 1.2.3 <= x < 4.5.6
- * [1.2.3, 4.5.6] 1.2.3 <= x <= 4.5.6
- * (1.2.3, 4.5.6) 1.2.3 < x < 4.5.6
- * (1.2.3, 4.5.6] 1.2.3 < x <= 4.5.6
- * 1.2.3 1.2.3 <= x - this one is configurable nowadays
- *
+ * Single range implementation, similar to OSGi specification: [1.2.3, 4.5.6) 1.2.3 <= x < 4.5.6 [1.2.3, 4.5.6] 1.2.3 <=
+ * x <= 4.5.6 (1.2.3, 4.5.6) 1.2.3 < x < 4.5.6 (1.2.3, 4.5.6] 1.2.3 < x <= 4.5.6 1.2.3 1.2.3 <= x - this one is
+ * configurable nowadays
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -263,10 +259,11 @@ class MavenVersionRange
     {
         if ( SYSTEM_PARAMETER_OSGI_VERSION.equals( name ) )
         {
-            _osgiVersion = Boolean.parseBoolean( System.getProperty( (String)val, SYSTEM_PARAMETER_OSGI_VERSION_DEFAULT ) );
+            _osgiVersion =
+                Boolean.parseBoolean( System.getProperty( (String) val, SYSTEM_PARAMETER_OSGI_VERSION_DEFAULT ) );
         }
     }
-    
+
     public boolean isSingleton()
     {
         return _singleton;

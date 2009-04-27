@@ -47,8 +47,8 @@ import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.metadata.DependencyBuilder;
 import org.apache.maven.mercury.metadata.DependencyBuilderFactory;
 import org.apache.maven.mercury.metadata.MetadataTreeException;
-import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
@@ -110,16 +110,19 @@ public class DefaultPlexusMercury
     {
         return findDependencyProcessor( _defaultDpHint );
     }
+
     // ---------------------------------------------------------------
     public void setDefaultDependencyProcessorHint( String hint )
     {
         _defaultDpHint = hint;
     }
+
     // ---------------------------------------------------------------
     public void setAllowCircularDependencies( boolean allow )
     {
         _allowCircularDependencies = allow;
     }
+
     // ---------------------------------------------------------------
     public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
                                                            String serverPass, URL proxyUrl, String proxyUser,
@@ -268,12 +271,9 @@ public class DefaultPlexusMercury
     }
 
     // ---------------------------------------------------------------
-    public List<ArtifactMetadata> resolve( List<Repository> repos
-                                           , ArtifactScopeEnum scope
-                                           , ArtifactQueryList artifacts
-                                           , ArtifactInclusionList inclusions
-                                           , ArtifactExclusionList exclusions
-                                           )
+    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions )
         throws RepositoryException
     {
         return resolve( repos, scope, artifacts, inclusions, exclusions, null );
@@ -290,16 +290,19 @@ public class DefaultPlexusMercury
         try
         {
             DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
-                             , Util.mapOf( new Object [][] { 
-                                 {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies}
-                               , {DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, config}
-                                                          } 
-                                       ) 
-                                                );
+                DependencyBuilderFactory.create(
+                                                 DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL,
+                                                 repos,
+                                                 null,
+                                                 null,
+                                                 null,
+                                                 Util.mapOf( new Object[][] {
+                                                     { DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES,
+                                                         "" + _allowCircularDependencies },
+                                                     { DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, config } } ) );
 
             List<ArtifactMetadata> res = depBuilder.resolveConflicts( scope, artifacts, inclusions, exclusions );
-            
+
             depBuilder.close();
 
             return res;
@@ -321,16 +324,19 @@ public class DefaultPlexusMercury
         try
         {
             DependencyBuilder depBuilder =
-                DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, repos, null, null, null
-                       , Util.mapOf( new Object [][] { 
-                             {DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, ""+_allowCircularDependencies}
-                           , {DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, config}
-                                                      } 
-                                   ) 
-                );
+                DependencyBuilderFactory.create(
+                                                 DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL,
+                                                 repos,
+                                                 null,
+                                                 null,
+                                                 null,
+                                                 Util.mapOf( new Object[][] {
+                                                     { DependencyBuilder.SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES,
+                                                         "" + _allowCircularDependencies },
+                                                     { DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, config } } ) );
 
             MetadataTreeNode res = depBuilder.resolveConflictsAsTree( scope, artifacts, inclusions, exclusions );
-            
+
             depBuilder.close();
 
             return res;
@@ -342,15 +348,12 @@ public class DefaultPlexusMercury
     }
 
     // ---------------------------------------------------------------
-    public MetadataTreeNode resolveAsTree( List<Repository> repos
-                                           , ArtifactScopeEnum scope
-                                           , ArtifactQueryList artifacts
-                                           , ArtifactInclusionList inclusions
-                                           , ArtifactExclusionList exclusions
-                                           )
+    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
+                                           ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
+                                           ArtifactExclusionList exclusions )
         throws RepositoryException
     {
-            return resolveAsTree( repos, scope, artifacts, inclusions, exclusions, null );
+        return resolveAsTree( repos, scope, artifacts, inclusions, exclusions, null );
     }
 
     // ---------------------------------------------------------------

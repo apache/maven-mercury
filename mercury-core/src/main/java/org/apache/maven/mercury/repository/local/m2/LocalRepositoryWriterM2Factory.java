@@ -28,23 +28,25 @@ import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 
 public class LocalRepositoryWriterM2Factory
-implements RepositoryWriterFactory
+    implements RepositoryWriterFactory
 {
-  private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterM2Factory.class );
-  private static final LocalRepositoryWriterM2Factory FACTORY = new LocalRepositoryWriterM2Factory();
-  
-  static 
-  {
-    AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, FACTORY );
-  }
-  
-  public RepositoryWriter getWriter( Repository repo )
-  throws RepositoryException
-  {
-    if( repo == null || !(repo instanceof LocalRepository) )
-      throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null" : repo.getClass().getName() ) );
-    
-    return new LocalRepositoryWriterM2( (LocalRepository)repo );
-  }
+    private static final Language LANG = new DefaultLanguage( LocalRepositoryWriterM2Factory.class );
+
+    private static final LocalRepositoryWriterM2Factory FACTORY = new LocalRepositoryWriterM2Factory();
+
+    static
+    {
+        AbstractRepository.register( AbstractRepository.DEFAULT_REPOSITORY_TYPE, FACTORY );
+    }
+
+    public RepositoryWriter getWriter( Repository repo )
+        throws RepositoryException
+    {
+        if ( repo == null || !( repo instanceof LocalRepository ) )
+            throw new RepositoryException( LANG.getMessage( "bad.repository.type", repo == null ? "null"
+                            : repo.getClass().getName() ) );
+
+        return new LocalRepositoryWriterM2( (LocalRepository) repo );
+    }
 
 }

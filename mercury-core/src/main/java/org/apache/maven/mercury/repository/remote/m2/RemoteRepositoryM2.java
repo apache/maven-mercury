@@ -47,14 +47,13 @@ public class RemoteRepositoryM2
     protected boolean _workAroundBadMetadata = true;
 
     /** default update policy */
-    private RepositoryUpdatePolicy _updatePolicy =
-        RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY;
+    private RepositoryUpdatePolicy _updatePolicy = RepositoryUpdateIntervalPolicy.DEFAULT_UPDATE_POLICY;
 
     // ----------------------------------------------------------------------------------
     public RemoteRepositoryM2( String url, DependencyProcessor dependencyProcessor )
-    throws MalformedURLException
+        throws MalformedURLException
     {
-        this( new Server( new URL(url) ), dependencyProcessor );
+        this( new Server( new URL( url ) ), dependencyProcessor );
     }
 
     // ----------------------------------------------------------------------------------
@@ -150,9 +149,10 @@ public class RemoteRepositoryM2
     // ----------------------------------------------------------------------------------
     public void setUpdatePolicy( RepositoryUpdatePolicy updatePolicy )
     {
-        if( updatePolicy == null )
-            throw new IllegalArgumentException( LANG.getMessage( "null.update.policy", getId(), _server == null ? "no URL":_server.getURL()+"" ) );
-        
+        if ( updatePolicy == null )
+            throw new IllegalArgumentException( LANG.getMessage( "null.update.policy", getId(),
+                                                                 _server == null ? "no URL" : _server.getURL() + "" ) );
+
         this._updatePolicy = updatePolicy;
     }
 

@@ -28,31 +28,34 @@ import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
 
 public class LocalRepositoryFlat
-extends AbstractRepository
-implements LocalRepository
+    extends AbstractRepository
+    implements LocalRepository
 {
-  public static final String FLAT_REPOSITORY_TYPE = "flat";
-  
-  public static final String METADATA_FILE_NAME = "maven-metadata-local.xml";
-  
+    public static final String FLAT_REPOSITORY_TYPE = "flat";
+
+    public static final String METADATA_FILE_NAME = "maven-metadata-local.xml";
+
     private File directory;
-    
-    private boolean createPoms         = false;
+
+    private boolean createPoms = false;
+
     private boolean createGroupFolders = false;
 
-    //----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
     public LocalRepositoryFlat( File directory )
-    throws IOException
+        throws IOException
     {
         this( directory, false, false );
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public LocalRepositoryFlat( File directory, boolean createGroupFolders, boolean createPoms )
-    throws IOException
+        throws IOException
     {
         this( directory.getCanonicalPath(), directory, createGroupFolders, createPoms );
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public LocalRepositoryFlat( String id, File directory, boolean createGroupFolders, boolean createPoms )
     {
         super( id, FLAT_REPOSITORY_TYPE );
@@ -60,73 +63,87 @@ implements LocalRepository
         this.createGroupFolders = createGroupFolders;
         this.createPoms = createPoms;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public File getDirectory()
     {
         return directory;
     }
-    //----------------------------------------------------------------------------------
-    public RepositoryReader getReader() 
+
+    // ----------------------------------------------------------------------------------
+    public RepositoryReader getReader()
     {
-      return RepositoryReader.NULL_READER;
+        return RepositoryReader.NULL_READER;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public RepositoryReader getReader( String protocol )
     {
-       return RepositoryReader.NULL_READER;
+        return RepositoryReader.NULL_READER;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter()
     {
-      return new LocalRepositoryWriterFlat(this);
+        return new LocalRepositoryWriterFlat( this );
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public RepositoryWriter getWriter( String protocol )
         throws NonExistentProtocolException
     {
-      return getWriter();
+        return getWriter();
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public boolean isLocal()
     {
-      return true;
+        return true;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public boolean isReadable()
     {
-      return false;
+        return false;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public boolean isWriteable()
     {
-      return true;
+        return true;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public String getType()
     {
-      return DEFAULT_REPOSITORY_TYPE;
+        return DEFAULT_REPOSITORY_TYPE;
     }
-    //----------------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     public boolean isCreatePoms()
     {
-      return createPoms;
+        return createPoms;
     }
+
     public void setCreatePoms( boolean createPoms )
     {
-      this.createPoms = createPoms;
+        this.createPoms = createPoms;
     }
+
     public boolean isCreateGroupFolders()
     {
-      return createGroupFolders;
+        return createGroupFolders;
     }
+
     public void setCreateGroupFolders( boolean createGroupFolders )
     {
-      this.createGroupFolders = createGroupFolders;
+        this.createGroupFolders = createGroupFolders;
     }
+
     public String getMetadataName()
     {
-      return METADATA_FILE_NAME;
+        return METADATA_FILE_NAME;
     }
-    //----------------------------------------------------------------------------------
-    //----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 }

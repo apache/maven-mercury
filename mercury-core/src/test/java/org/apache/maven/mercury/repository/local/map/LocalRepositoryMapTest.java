@@ -45,33 +45,32 @@ public class LocalRepositoryMapTest
     File _dir;
 
     LocalRepositoryMap _repo;
-    
+
     RepositoryReader _rr;
-    
+
     ArtifactMetadata bmd;
-    
+
     File _pom;
 
     @Override
     protected void setUp()
         throws Exception
     {
-        bmd = new ArtifactMetadata("t:t:1.0::pom");
-        
-        _pom = new File("./target/test-classes/t-1.0.pom");
+        bmd = new ArtifactMetadata( "t:t:1.0::pom" );
+
+        _pom = new File( "./target/test-classes/t-1.0.pom" );
 
         _dir = File.createTempFile( "temp-", "-mercury-default-storage" );
         _dir.delete();
         _storage = new DefaultStorage( _dir );
-        
+
         _storage.add( bmd.getGAV(), _pom );
-        
+
         DependencyProcessor dp = new MetadataProcessorMock();
-        
-        _repo = new LocalRepositoryMap("testMapRepo", dp, _storage );
-        
+
+        _repo = new LocalRepositoryMap( "testMapRepo", dp, _storage );
+
         _rr = _repo.getReader();
-        
     }
 
     @Override
@@ -84,30 +83,30 @@ public class LocalRepositoryMapTest
     public void testReadMap()
         throws Exception
     {
-        Collection<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>(1);
-        
+        Collection<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
+
         query.add( bmd );
-        
-        MetadataResults res = _rr.readDependencies( query  );
-        
+
+        MetadataResults res = _rr.readDependencies( query );
+
         assertNotNull( res );
-        
+
         assertFalse( res.hasExceptions() );
-        
+
         assertTrue( res.hasResults() );
-        
-        Map<ArtifactMetadata, List<ArtifactMetadata>>  deps = res.getResults();
-        
+
+        Map<ArtifactMetadata, List<ArtifactMetadata>> deps = res.getResults();
+
         assertNotNull( deps );
-        
+
         assertEquals( 1, deps.size() );
-        
+
         List<ArtifactMetadata> myDeps = deps.get( bmd );
-        
+
         assertNotNull( myDeps );
-        
+
         assertEquals( 3, myDeps.size() );
-        
+
         System.out.println( res.getResults() );
     }
 

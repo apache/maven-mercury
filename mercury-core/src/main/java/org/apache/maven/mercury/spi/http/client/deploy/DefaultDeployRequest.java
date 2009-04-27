@@ -25,26 +25,26 @@ import org.apache.maven.mercury.spi.http.validate.Validator;
 import org.apache.maven.mercury.transport.api.Binding;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class DefaultDeployRequest
-implements DeployRequest
+    implements DeployRequest
 {
     private Set<Binding> _bindings = new HashSet<Binding>();
+
     private boolean _failFast;
-    
+
     public Set<Validator> getValidators()
     {
         return null;
     }
-    public void setBindings(Set<Binding> bindings)
+
+    public void setBindings( Set<Binding> bindings )
     {
-        _bindings=bindings;
+        _bindings = bindings;
     }
+
     public Set<Binding> getBindings()
     {
         return _bindings;
@@ -54,9 +54,9 @@ implements DeployRequest
     {
         return _failFast;
     }
-    
-    public void setFailFast (boolean f)
+
+    public void setFailFast( boolean f )
     {
-        _failFast=f;
+        _failFast = f;
     }
 }

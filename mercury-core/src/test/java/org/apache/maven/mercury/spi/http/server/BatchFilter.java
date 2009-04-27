@@ -46,41 +46,44 @@ import org.mortbay.util.URIUtil;
 /**
  * BatchFilter
  * <p/>
- * Base class for handling atomic uploads of batches of files.
- * Subclasses should implement their own means of making the
- * uploads atomic. The methods putFile, commitFiles, discardFiles
- * can be overridden/implemented in order to facilitate this.
- * For example, the DefaultBatchFilter subclass copies all files
- * to a staging area before moving them to their final locations
- * upon receipt of a Jetty-Batch-Commit message.
+ * Base class for handling atomic uploads of batches of files. Subclasses should implement their own means of making the
+ * uploads atomic. The methods putFile, commitFiles, discardFiles can be overridden/implemented in order to facilitate
+ * this. For example, the DefaultBatchFilter subclass copies all files to a staging area before moving them to their
+ * final locations upon receipt of a Jetty-Batch-Commit message.
  * <p/>
  * TODO consider having a scavenger thread to remove failed or incomplete uploads?
- *
+ * 
  * @see org.sonatype.mercury.server.jetty.DefaultBatchFilter
  */
-public abstract class BatchFilter extends PutFilter
+public abstract class BatchFilter
+    extends PutFilter
 {
     protected ConcurrentMap<String, Batch> _batches = new ConcurrentHashMap<String, Batch>();
+
     protected String _batchIdHeader = "Jetty-Batch-Id";
+
     protected String _batchSupportedHeader = "Jetty-Batch-Supported";
+
     protected String _batchCommitHeader = "Jetty-Batch-Commit";
+
     protected String _batchDiscardHeader = "Jetty-Batch-Discard";
 
     /**
      * Batch
      * <p/>
-     * Retains the status of a mercury. If a mercury succeeds it is removed
-     * from the list. If it fails, then it is retained in the list
-     * but marked as failed. If a mercury is not completed, then the
-     * timestamp can be used by a timer thread to clean up.
+     * Retains the status of a mercury. If a mercury succeeds it is removed from the list. If it fails, then it is
+     * retained in the list but marked as failed. If a mercury is not completed, then the timestamp can be used by a
+     * timer thread to clean up.
      */
     protected class Batch
     {
         protected String _batchId;
-        protected long _timestamp;
-        protected boolean _ok;
-        protected List<String> _files;
 
+        protected long _timestamp;
+
+        protected boolean _ok;
+
+        protected List<String> _files;
 
         public Batch( String batchId, long timestamp )
         {
@@ -126,10 +129,9 @@ public abstract class BatchFilter extends PutFilter
     }
 
     /**
-     * Implement this method to finish the upload of the files by making them
-     * available for download. When this method returns, all files forming part of
-     * the mercury should be available.
-     *
+     * Implement this method to finish the upload of the files by making them available for download. When this method
+     * returns, all files forming part of the mercury should be available.
+     * 
      * @param request
      * @param response
      * @param batchId
@@ -140,9 +142,9 @@ public abstract class BatchFilter extends PutFilter
         throws Exception;
 
     /**
-     * Implement this method to abort the upload of a mercury of files. When this method returns,
-     * none of the files forming part of the upload should be available for download.
-     *
+     * Implement this method to abort the upload of a mercury of files. When this method returns, none of the files
+     * forming part of the upload should be available for download.
+     * 
      * @param request
      * @param response
      * @param batchId
@@ -152,10 +154,9 @@ public abstract class BatchFilter extends PutFilter
     public abstract boolean discardFiles( HttpServletRequest request, HttpServletResponse response, Batch batch )
         throws Exception;
 
-
     /**
      * Initialize the filter. Read all configurable parameters.
-     *
+     * 
      * @see org.sonatype.servlet.PutFilter#init(javax.servlet.FilterConfig)
      */
     public void init( FilterConfig config )
@@ -163,7 +164,7 @@ public abstract class BatchFilter extends PutFilter
     {
         super.init( config );
 
-        //allow name of headers to be exchanged to be configured
+        // allow name of headers to be exchanged to be configured
         String s = config.getInitParameter( "batchIdHeader" );
         if ( s != null )
         {
@@ -186,11 +187,11 @@ public abstract class BatchFilter extends PutFilter
         }
     }
 
-
     /**
      * Run the filter.
-     *
-     * @see org.sonatype.servlet.PutFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     * 
+     * @see org.sonatype.servlet.PutFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+     *      javax.servlet.FilterChain)
      */
     public void doFilter( ServletRequest req, ServletResponse res, FilterChain chain )
         throws IOException, ServletException
@@ -198,36 +199,31 @@ public abstract class BatchFilter extends PutFilter
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        //if GET fall through to filter chain
+        // if GET fall through to filter chain
         if ( request.getMethod().equals( HttpMethods.GET ) )
         {
             chain.doFilter( req, res );
             return;
         }
 
-
         String batchId = request.getHeader( _batchIdHeader );
         String commitId = request.getHeader( _batchCommitHeader );
         String discardId = request.getHeader( _batchDiscardHeader );
 
-        //System.err.println("method="+request.getMethod()+" batchid="+batchId+" commitId="+commitId+" discardId="+discardId);
+        // System.err.println("method="+request.getMethod()+" batchid="+batchId+" commitId="+commitId+" discardId="+discardId);
 
-        //we can't do  atomic batches, handle as a normal PUT
+        // we can't do atomic batches, handle as a normal PUT
         if ( batchId == null && commitId == null && discardId == null )
         {
             super.doFilter( req, res, chain );
             return;
         }
 
-        /* TODO Is it worth handling this situation? This would mean that a directory was sent as the url 
-         * along with a batchId. The cost is that the pathContext would be calculated twice in this case.
-         
-        if (pathInContext.endsWith("/"))
-        {
-            super.doFilter(req,res,chain); 
-            return;
-        }
-        */
+        /*
+         * TODO Is it worth handling this situation? This would mean that a directory was sent as the url along with a
+         * batchId. The cost is that the pathContext would be calculated twice in this case. if
+         * (pathInContext.endsWith("/")) { super.doFilter(req,res,chain); return; }
+         */
 
         if ( batchId != null )
         {
@@ -247,21 +243,19 @@ public abstract class BatchFilter extends PutFilter
             return;
         }
 
-        //otherwise - shouldn't get here
+        // otherwise - shouldn't get here
         chain.doFilter( req, res );
     }
 
     /**
      * Handle a PUT request.
      * <p/>
-     * The batchId is saved to a list of currently active batchIds so that
-     * all files forming part of the mercury can be committed or discarded as a
-     * whole later on.
+     * The batchId is saved to a list of currently active batchIds so that all files forming part of the mercury can be
+     * committed or discarded as a whole later on.
      * <p/>
-     * If a file already exists, then status 200 is returned; if the file
-     * did not previously exist, then status 201 is returned, otherwise
-     * a 403 is returned.
-     *
+     * If a file already exists, then status 200 is returned; if the file did not previously exist, then status 201 is
+     * returned, otherwise a 403 is returned.
+     * 
      * @param request
      * @param response
      * @param batchId
@@ -294,7 +288,8 @@ public abstract class BatchFilter extends PutFilter
             {
                 contextPath += "/";
             }
-            String commitBatchUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + contextPath;
+            String commitBatchUrl =
+                request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + contextPath;
             response.setHeader( _batchSupportedHeader, commitBatchUrl );
             response.setStatus( exists ? HttpServletResponse.SC_OK : HttpServletResponse.SC_CREATED );
             response.flushBuffer();
@@ -308,7 +303,7 @@ public abstract class BatchFilter extends PutFilter
 
     /**
      * Client side wants us to discard all files in mercury.
-     *
+     * 
      * @param request
      * @param response
      * @param batchId
@@ -336,10 +331,9 @@ public abstract class BatchFilter extends PutFilter
         }
     }
 
-
     /**
      * Client side wants us to move files into final position.
-     *
+     * 
      * @param request
      * @param response
      * @param batchId
@@ -371,9 +365,8 @@ public abstract class BatchFilter extends PutFilter
     /**
      * Default behaviour is to put the file directly to it's final location.
      * <p/>
-     * Subclasses can choose to override this method and put the file
-     * into a staging area first.
-     *
+     * Subclasses can choose to override this method and put the file into a staging area first.
+     * 
      * @param request
      * @param response
      * @param pathInContext
@@ -381,10 +374,7 @@ public abstract class BatchFilter extends PutFilter
      * @throws Exception
      * @see org.sonatype.mercury.server.jetty.DefaultBatchFilter
      */
-    public void putFile( HttpServletRequest request,
-                         HttpServletResponse response,
-                         String pathInContext,
-                         String batchId )
+    public void putFile( HttpServletRequest request, HttpServletResponse response, String pathInContext, String batchId )
         throws Exception
     {
         String finalResource = URIUtil.addPaths( _baseURI, pathInContext );
@@ -408,7 +398,7 @@ public abstract class BatchFilter extends PutFilter
 
     /**
      * Remember a mercury, or update the count of files in the mercury.
-     *
+     * 
      * @param batchId
      */
     protected Batch addBatch( String batchId, String file )
@@ -424,12 +414,11 @@ public abstract class BatchFilter extends PutFilter
         return status;
     }
 
-
     /**
      * Update the status of the mercury.
-     *
+     * 
      * @param batchId
-     * @param ok      if true, the mercury job is removed from the list; otherwise it is marked as failed
+     * @param ok if true, the mercury job is removed from the list; otherwise it is marked as failed
      */
     protected void updateBatch( String batchId, boolean ok )
     {
@@ -446,7 +435,7 @@ public abstract class BatchFilter extends PutFilter
             }
             else
             {
-                status.failed(); //mark as failed
+                status.failed(); // mark as failed
             }
         }
     }

@@ -15,18 +15,15 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.repository.api;
 
 import junit.framework.TestCase;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class AbstractRepositoryTest
     extends TestCase
@@ -34,11 +31,11 @@ public class AbstractRepositoryTest
     public void testIdHash()
     {
         String res = AbstractRepository.hashId( "central" );
-        
+
         assertEquals( "central", res );
 
         res = AbstractRepository.hashId( "http://central" );
-        
+
         assertEquals( "3e447f03cb543932ff37403fe937841ff58ff788", res );
     }
 }

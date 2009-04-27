@@ -15,7 +15,7 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.ant.tasks;
 
@@ -23,22 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public abstract class StringList
     extends AbstractDataType
 {
     List<String> _list;
-    
+
     protected void addString( String str )
     {
-        if( _list == null )
-            _list = new ArrayList<String>(8);
-        
+        if ( _list == null )
+            _list = new ArrayList<String>( 8 );
+
         _list.add( str );
     }
 

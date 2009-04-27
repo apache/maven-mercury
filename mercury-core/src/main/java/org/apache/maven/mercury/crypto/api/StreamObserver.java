@@ -20,16 +20,18 @@ package org.apache.maven.mercury.crypto.api;
 
 public interface StreamObserver
 {
-    void byteReady(int b)
-    throws StreamObserverException;
-    
-    void bytesReady(byte[]b, int off, int len)
-    throws StreamObserverException;
-    
-    void setLength(long length);
+    void byteReady( int b )
+        throws StreamObserverException;
+
+    void bytesReady( byte[] b, int off, int len )
+        throws StreamObserverException;
+
+    void setLength( long length );
+
     long getLength();
-    
-    void setLastModified(String time);
+
+    void setLastModified( String time );
+
     String getLastModified();
 
 }

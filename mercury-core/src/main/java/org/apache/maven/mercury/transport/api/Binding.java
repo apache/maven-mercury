@@ -29,176 +29,177 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 
 /**
- * Binding <p/> A Binding represents a remote uri whose contents are to be
- * downloaded and stored in a locally, or a local resource whose contents are to
- * be uploaded to the remote uri.
+ * Binding
+ * <p/>
+ * A Binding represents a remote uri whose contents are to be downloaded and stored in a locally, or a local resource
+ * whose contents are to be uploaded to the remote uri.
  */
 public class Binding
 {
-  private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Binding.class );
-  
-  protected URL                 remoteResource;
+    private static final IMercuryLogger LOG = MercuryLoggerManager.getLogger( Binding.class );
 
-  protected File                localFile;
+    protected URL remoteResource;
 
-  /** 
-   * inbound in-memory binding for reading remote content.
-   * It is created by the constructor
-   */
-  protected ByteArrayOutputStream localOS;
+    protected File localFile;
 
-  /**
-   * this is outbound in-memory binding. IS is passed by the client
-   */
-  protected InputStream         localIS;
-  
-  /** indicates that this transfer is exempt from stream verification */
-  boolean exempt = false;
+    /**
+     * inbound in-memory binding for reading remote content. It is created by the constructor
+     */
+    protected ByteArrayOutputStream localOS;
 
-  protected Exception error;
+    /**
+     * this is outbound in-memory binding. IS is passed by the client
+     */
+    protected InputStream localIS;
 
-  public Binding()
-  {
-  }
+    /** indicates that this transfer is exempt from stream verification */
+    boolean exempt = false;
 
-  public Binding( URL remoteUrl, File localFile)
-  {
-    this.remoteResource = remoteUrl;
-    this.localFile = localFile;
-  }
+    protected Exception error;
 
-  public Binding( URL remoteUrl, File localFile, boolean exempt )
-  {
-      this( remoteUrl,localFile );
-      this.exempt = exempt;
-  }
+    public Binding()
+    {
+    }
 
-  /** 
-   * this is in-memory binding for writing remote content into localOS
-   * 
-   * @param remoteUrl
-   * @param lenientChecksum
-   */
-  public Binding( URL remoteUrl )
-  {
-    this.remoteResource = remoteUrl;
-    // let's assume 4k on average
-    this.localOS = new ByteArrayOutputStream( 4*1024 );
-  }
+    public Binding( URL remoteUrl, File localFile )
+    {
+        this.remoteResource = remoteUrl;
+        this.localFile = localFile;
+    }
 
-  public Binding( URL remoteUrl, boolean exempt )
-  {
-    this( remoteUrl );
-    this.exempt = exempt;
-  }
+    public Binding( URL remoteUrl, File localFile, boolean exempt )
+    {
+        this( remoteUrl, localFile );
+        this.exempt = exempt;
+    }
 
-  /**
-   * outbound constructor - send contents of the stream to remoteUrl
-   * 
-   * @param remoteUrl
-   * @param is
-   */
-  public Binding( URL remoteUrl, InputStream is )
-  {
-    this.remoteResource = remoteUrl;
-    this.localIS = is;
-  }
-  public Binding( URL remoteUrl, InputStream is, boolean exempt )
-  {
-    this( remoteUrl, is );
-    this.exempt = exempt;
-  }
+    /**
+     * this is in-memory binding for writing remote content into localOS
+     * 
+     * @param remoteUrl
+     * @param lenientChecksum
+     */
+    public Binding( URL remoteUrl )
+    {
+        this.remoteResource = remoteUrl;
+        // let's assume 4k on average
+        this.localOS = new ByteArrayOutputStream( 4 * 1024 );
+    }
 
-  /**
-   * inbound constructor - read contents of the remoteUrl to the stream
-   * 
-   * @param remoteUrl
-   * @param is
-   */
-  public Binding( URL remoteUrl, ByteArrayOutputStream os )
-  {
-    this.remoteResource = remoteUrl;
-    this.localOS = os;
-  }
+    public Binding( URL remoteUrl, boolean exempt )
+    {
+        this( remoteUrl );
+        this.exempt = exempt;
+    }
 
-  public Binding( URL remoteUrl, ByteArrayOutputStream os, boolean exempt  )
-  {
-    this( remoteUrl, os );
-    this.exempt = exempt;
-  }
+    /**
+     * outbound constructor - send contents of the stream to remoteUrl
+     * 
+     * @param remoteUrl
+     * @param is
+     */
+    public Binding( URL remoteUrl, InputStream is )
+    {
+        this.remoteResource = remoteUrl;
+        this.localIS = is;
+    }
 
-  public URL getRemoteResource()
-  {
-    return remoteResource;
-  }
+    public Binding( URL remoteUrl, InputStream is, boolean exempt )
+    {
+        this( remoteUrl, is );
+        this.exempt = exempt;
+    }
 
-  public void setRemoteResource( URL remoteResource )
-  {
-    this.remoteResource = remoteResource;
-  }
+    /**
+     * inbound constructor - read contents of the remoteUrl to the stream
+     * 
+     * @param remoteUrl
+     * @param is
+     */
+    public Binding( URL remoteUrl, ByteArrayOutputStream os )
+    {
+        this.remoteResource = remoteUrl;
+        this.localOS = os;
+    }
 
-  public Exception getError()
-  {
-    return error;
-  }
+    public Binding( URL remoteUrl, ByteArrayOutputStream os, boolean exempt )
+    {
+        this( remoteUrl, os );
+        this.exempt = exempt;
+    }
 
-  public void setError( Exception error )
-  {
-    this.error = error;
-  }
-  
-  public boolean isInMemory()
-  {
-    return (!isFile() && (localIS != null || localOS != null));
-  }
-  
-  public boolean isFile()
-  {
-    return localFile != null;
-  }
-  
-  public boolean isExempt()
-  {
-      return exempt;
-  }
-  
-  public void setExempt( boolean exempt )
-  {
-      this.exempt = exempt;
-  }
-  
-  public byte [] getInboundContent()
-  {
-    if( localOS != null )
-      return localOS.toByteArray();
-    
-    return null;
-  }
-  
-  public OutputStream getLocalOutputStream()
-  {
-      return localOS;
-  }
-  
-  public InputStream getLocalInputStream()
-  {
-      return localIS;
-  }
-  
-  public File getLocalFile ()
-  {
-      return localFile;
-  }
+    public URL getRemoteResource()
+    {
+        return remoteResource;
+    }
 
-  @Override
-  public String toString()
-  {
-    return '['
-            + (exempt ? "(exempt)" : "")
-            + (remoteResource == null ? "null URL" : remoteResource.toString() )+" <=> "
-            + (localFile == null ?  ( localIS == null ? (localOS == null ? "null local Res" : localOS) : "localIS" ) : localFile.getAbsolutePath() )
-            +']'
-    ;
-  }
+    public void setRemoteResource( URL remoteResource )
+    {
+        this.remoteResource = remoteResource;
+    }
+
+    public Exception getError()
+    {
+        return error;
+    }
+
+    public void setError( Exception error )
+    {
+        this.error = error;
+    }
+
+    public boolean isInMemory()
+    {
+        return ( !isFile() && ( localIS != null || localOS != null ) );
+    }
+
+    public boolean isFile()
+    {
+        return localFile != null;
+    }
+
+    public boolean isExempt()
+    {
+        return exempt;
+    }
+
+    public void setExempt( boolean exempt )
+    {
+        this.exempt = exempt;
+    }
+
+    public byte[] getInboundContent()
+    {
+        if ( localOS != null )
+            return localOS.toByteArray();
+
+        return null;
+    }
+
+    public OutputStream getLocalOutputStream()
+    {
+        return localOS;
+    }
+
+    public InputStream getLocalInputStream()
+    {
+        return localIS;
+    }
+
+    public File getLocalFile()
+    {
+        return localFile;
+    }
+
+    @Override
+    public String toString()
+    {
+        return '['
+            + ( exempt ? "(exempt)" : "" )
+            + ( remoteResource == null ? "null URL" : remoteResource.toString() )
+            + " <=> "
+            + ( localFile == null ? ( localIS == null ? ( localOS == null ? "null local Res" : localOS ) : "localIS" )
+                            : localFile.getAbsolutePath() ) + ']';
+    }
 
 }

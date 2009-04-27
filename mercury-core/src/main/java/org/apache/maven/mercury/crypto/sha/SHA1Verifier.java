@@ -28,92 +28,94 @@ import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 import org.apache.maven.mercury.crypto.api.StreamVerifierException;
 import org.apache.maven.mercury.crypto.basic.ChecksumCalculator;
 
-
 /**
  * SHA1Verifier
- *
- *
  */
 public class SHA1Verifier
-extends AbstractStreamVerifier
-implements StreamVerifier
+    extends AbstractStreamVerifier
+    implements StreamVerifier
 {
     public static final String digestAlgorithm = "SHA-1";
 
     private MessageDigest digest;
+
     private byte[] digestBytes;
-    private long length  = -1;
+
+    private long length = -1;
+
     private String lastModified;
-    
+
     private String sig;
-    
+
     public SHA1Verifier( StreamVerifierAttributes attributes )
     {
-      super( attributes );
+        super( attributes );
 
-      try
-      {
-          digest = MessageDigest.getInstance( digestAlgorithm );
-      }
-      catch (NoSuchAlgorithmException e)
-      {
-          //TODO
-      }
+        try
+        {
+            digest = MessageDigest.getInstance( digestAlgorithm );
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            // TODO
+        }
     }
 
-    private byte[] getSignatureBytes ()
+    private byte[] getSignatureBytes()
     {
-        if (digestBytes == null)
+        if ( digestBytes == null )
             digestBytes = digest.digest();
         return digestBytes;
     }
-    
+
     public String getSignature()
     {
         return ChecksumCalculator.encodeToAsciiHex( getSignatureBytes() );
     }
-    
+
     public void initSignature( String signatureString )
-    throws StreamVerifierException
+        throws StreamVerifierException
     {
-      if( signatureString == null || signatureString.length() < 1 )
-        throw new IllegalArgumentException("null signature stream");
-      
-      sig =  signatureString;
-    
+        if ( signatureString == null || signatureString.length() < 1 )
+            throw new IllegalArgumentException( "null signature stream" );
+
+        sig = signatureString;
+
     }
 
     public boolean verifySignature()
     {
         String calculatedSignature = getSignature();
 
-        if (calculatedSignature == null && sig == null)
+        if ( calculatedSignature == null && sig == null )
             return true;
 
-        if ((calculatedSignature != null) && calculatedSignature.equals(sig))
+        if ( ( calculatedSignature != null ) && calculatedSignature.equals( sig ) )
             return true;
-        
+
         return false;
     }
 
-    public void byteReady(int b)
+    public void byteReady( int b )
     {
-        if (digest != null)
-            digest.update((byte)b);
+        if ( digest != null )
+            digest.update( (byte) b );
     }
 
-    public void bytesReady(byte[] b, int off, int len)
+    public void bytesReady( byte[] b, int off, int len )
     {
-        if (digest != null)
-            digest.update(b, off, len);
+        if ( digest != null )
+            digest.update( b, off, len );
     }
-    //-----------------------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------------------
     public long getLength()
     {
         return length;
     }
-    //-----------------------------------------------------------------------------------
-    public void setLength(long length)
+
+    // -----------------------------------------------------------------------------------
+    public void setLength( long length )
     {
         this.length = length;
     }
@@ -123,7 +125,7 @@ implements StreamVerifier
         return lastModified;
     }
 
-    public void setLastModified(String time)
+    public void setLastModified( String time )
     {
         lastModified = time;
     }

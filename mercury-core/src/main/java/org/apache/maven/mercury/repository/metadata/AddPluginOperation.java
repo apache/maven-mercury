@@ -27,7 +27,7 @@ import org.codehaus.plexus.lang.Language;
 
 /**
  * adds new plugin to metadata
- *
+ * 
  * @author Oleg Gusakov
  * @version $Id$
  */
@@ -37,9 +37,9 @@ public class AddPluginOperation
     private static final Language LANG = new DefaultLanguage( AddPluginOperation.class );
 
     private Plugin plugin;
-    
+
     private static PluginComparator pluginComparator;
-    
+
     {
         pluginComparator = new PluginComparator();
     }
@@ -67,7 +67,7 @@ public class AddPluginOperation
 
     /**
      * add plugin to the in-memory metadata instance
-     *
+     * 
      * @param metadata
      * @param version
      * @return
@@ -96,10 +96,10 @@ public class AddPluginOperation
         plugins.add( plugin );
 
         Collections.sort( plugins, pluginComparator );
-        
+
         return true;
     }
-    
+
     class PluginComparator
         implements Comparator<Plugin>
     {
@@ -112,8 +112,8 @@ public class AddPluginOperation
 
             if ( p1.getArtifactId() == null || p2.getArtifactId() == null )
             {
-                throw new IllegalArgumentException( LANG.getMessage( "null.plugin.artifactId.to.compare", p1
-                    .getArtifactId(), p2.getArtifactId() ) );
+                throw new IllegalArgumentException( LANG.getMessage( "null.plugin.artifactId.to.compare",
+                                                                     p1.getArtifactId(), p2.getArtifactId() ) );
             }
 
             return p1.getArtifactId().compareTo( p2.getArtifactId() );

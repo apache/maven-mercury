@@ -30,15 +30,14 @@
 //See the License for the specific language governing permissions and
 //limitations under the License.
 //========================================================================
-
 package org.apache.maven.mercury.spi.http.client;
+
 import org.apache.maven.mercury.transport.api.Binding;
 
 /**
  * BatchException
  * <p/>
- * Exception that occurs whilst deploying or retrieving files
- * asynchronously.
+ * Exception that occurs whilst deploying or retrieving files asynchronously.
  */
 public class HttpClientException
     extends Exception
@@ -67,7 +66,6 @@ public class HttpClientException
     {
         return binding;
     }
-
 
     public String getMessage()
     {

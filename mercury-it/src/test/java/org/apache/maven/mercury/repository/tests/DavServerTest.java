@@ -15,7 +15,7 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.repository.tests;
 
@@ -38,122 +38,125 @@ import org.apache.maven.mercury.util.FileUtil;
 import org.codehaus.plexus.PlexusTestCase;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class DavServerTest
-extends PlexusTestCase
+    extends PlexusTestCase
 {
     static final String _user = "foo";
-    
+
     static final String _pass = "bar";
-    
+
     // repo1
     WebDavServer _dav;
-    
+
     File _base;
-    
+
     RemoteRepositoryM2 _davRepo;
-    
+
     // repo2
     WebDavServer _dav2;
-    
+
     File _base2;
-    
+
     RemoteRepositoryM2 _davRepo2;
 
     static final String _davContext = "/webdav";
-    
+
     static final String _davContext2 = "/webdav2test";
-    
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     protected void setUp()
-    throws Exception
+        throws Exception
     {
         super.setUp();
-        
+
         setUp1();
-        
+
         setUp2();
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     protected void setUp1()
-    throws Exception
+        throws Exception
     {
         _base = new File( "./target", _davContext );
-        
+
         FileUtil.delete( _base );
-        
+
         _base.mkdirs();
-        
+
         _dav = new WebDavServer( 0, _base, _davContext, getContainer(), 9, "mercury-test", null );
-        
+
         _dav.start();
-        
-        Credentials user = new Credentials(_user,_pass);
-        
-        Server server = new Server("dav", new URL("http://localhost:"+_dav.getPort()+_davContext), false, false, user );
-        
-        System.out.println("URL: "+server.getURL() );
-        
+
+        Credentials user = new Credentials( _user, _pass );
+
+        Server server =
+            new Server( "dav", new URL( "http://localhost:" + _dav.getPort() + _davContext ), false, false, user );
+
+        System.out.println( "URL: " + server.getURL() );
+
         _davRepo = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     protected void setUp2()
-    throws Exception
+        throws Exception
     {
         _base2 = new File( "./target", _davContext2 );
-        
+
         FileUtil.delete( _base2 );
-        
+
         _base2.mkdirs();
-        
+
         _dav2 = new WebDavServer( 0, _base2, _davContext2, getContainer(), 9, null, _base2.getAbsolutePath() );
-        
+
         _dav2.start();
-        
-        Credentials user = new Credentials(_user,_pass);
-        
-        Server server = new Server("dav2", new URL("http://localhost:"+_dav2.getPort()+_davContext2), false, false, user );
-        
-        System.out.println("URL: "+server.getURL() );
-        
+
+        Credentials user = new Credentials( _user, _pass );
+
+        Server server =
+            new Server( "dav2", new URL( "http://localhost:" + _dav2.getPort() + _davContext2 ), false, false, user );
+
+        System.out.println( "URL: " + server.getURL() );
+
         _davRepo2 = new RemoteRepositoryM2( server, new MavenDependencyProcessor() );
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     protected void tearDown()
-    throws Exception
+        throws Exception
     {
         super.tearDown();
-        
-        if( _dav != null )
+
+        if ( _dav != null )
         {
             _dav.stop();
             _dav.destroy();
             _dav = null;
-        }  
-        
-        if( _dav2 != null )
+        }
+
+        if ( _dav2 != null )
         {
             _dav2.stop();
             _dav2.destroy();
             _dav2 = null;
-        }  
+        }
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     public void testDavWrite()
-    throws Exception
+        throws Exception
     {
-        File jar = new File("./target/test.jar");
+        File jar = new File( "./target/test.jar" );
         FileUtil.writeRawData( jar, "test-jar" );
 
-        File pom = new File("./target/test.pom");
+        File pom = new File( "./target/test.pom" );
         FileUtil.writeRawData( pom, "test-pom" );
 
-        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("a:test:1.0") );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata( "a:test:1.0" ) );
         da.setFile( jar );
         da.setPomBlob( FileUtil.readRawData( pom ) );
 
@@ -167,37 +170,38 @@ extends PlexusTestCase
         File davJar = new File( _base, "a/test/1.0/test-1.0.jar" );
 
         assertTrue( davJar.exists() );
-        
+
         assertEquals( jar.length(), davJar.length() );
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     public void testDavRead()
-    throws Exception
+        throws Exception
     {
         testDavWrite();
-        
-        ArtifactMetadata bmd = new ArtifactMetadata("a:test:1.0");
-        
+
+        ArtifactMetadata bmd = new ArtifactMetadata( "a:test:1.0" );
+
         List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
 
         query.add( bmd );
-        
+
         RepositoryReader rr = _davRepo.getReader();
-        
+
         ArtifactResults res = rr.readArtifacts( query );
-        
+
         assertNotNull( res );
-        
+
         assertFalse( res.hasExceptions() );
-        
+
         assertTrue( res.hasResults() );
-        
+
         List<Artifact> al = res.getResults( bmd );
-        
+
         assertNotNull( al );
-        
+
         assertFalse( al.isEmpty() );
-        
+
         Artifact a = al.get( 0 );
 
         assertNotNull( a );
@@ -208,17 +212,18 @@ extends PlexusTestCase
 
         assertEquals( "test-pom".length(), a.getFile().length() );
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     public void testDavWrite2()
-    throws Exception
+        throws Exception
     {
-        File jar = new File("./target/test.jar");
+        File jar = new File( "./target/test.jar" );
         FileUtil.writeRawData( jar, "test-jar" );
 
-        File pom = new File("./target/test.pom");
+        File pom = new File( "./target/test.pom" );
         FileUtil.writeRawData( pom, "test-pom" );
 
-        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata("a:test:1.0") );
+        DefaultArtifact da = new DefaultArtifact( new ArtifactMetadata( "a:test:1.0" ) );
         da.setFile( jar );
         da.setPomBlob( FileUtil.readRawData( pom ) );
 
@@ -232,37 +237,38 @@ extends PlexusTestCase
         File davJar = new File( _base2, "a/test/1.0/test-1.0.jar" );
 
         assertTrue( davJar.exists() );
-        
+
         assertEquals( jar.length(), davJar.length() );
     }
-    //---------------------------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------------------------
     public void testDavRead2()
-    throws Exception
+        throws Exception
     {
         testDavWrite2();
-        
-        ArtifactMetadata bmd = new ArtifactMetadata("a:test:1.0");
-        
+
+        ArtifactMetadata bmd = new ArtifactMetadata( "a:test:1.0" );
+
         List<ArtifactMetadata> query = new ArrayList<ArtifactMetadata>( 1 );
 
         query.add( bmd );
-        
+
         RepositoryReader rr = _davRepo2.getReader();
-        
+
         ArtifactResults res = rr.readArtifacts( query );
-        
+
         assertNotNull( res );
-        
+
         assertFalse( res.hasExceptions() );
-        
+
         assertTrue( res.hasResults() );
-        
+
         List<Artifact> al = res.getResults( bmd );
-        
+
         assertNotNull( al );
-        
+
         assertFalse( al.isEmpty() );
-        
+
         Artifact a = al.get( 0 );
 
         assertNotNull( a );
@@ -273,5 +279,5 @@ extends PlexusTestCase
 
         assertEquals( "test-pom".length(), a.getFile().length() );
     }
-    //---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 }

@@ -134,15 +134,10 @@ public class MetadataCacheFs
             if ( inMem != null )
             {
                 // im-memory never expires!
-/*                
-                long lastCheckMillis = inMem.getLastCheckMillis();
-
-                if ( up.timestampExpired( lastCheckMillis, null ) )
-                {
-                    inMem.setExpired( true );
-                    gaCache.put( gaKey, inMem );
-                }
-*/
+                /*
+                 * long lastCheckMillis = inMem.getLastCheckMillis(); if ( up.timestampExpired( lastCheckMillis, null )
+                 * ) { inMem.setExpired( true ); gaCache.put( gaKey, inMem ); }
+                 */
                 if ( _eventManager != null )
                     event.setResult( "found in memory, expired is " + inMem.isExpired() );
 
@@ -218,15 +213,10 @@ public class MetadataCacheFs
 
             if ( inMem != null )
             {
-/*
-                long lastCheckMillis = inMem.getLastCheckMillis();
-
-                if ( up.timestampExpired( lastCheckMillis, null ) )
-                {
-                    inMem.setExpired( true );
-                    gavCache.put( gavKey, inMem );
-                }
-*/                
+                /*
+                 * long lastCheckMillis = inMem.getLastCheckMillis(); if ( up.timestampExpired( lastCheckMillis, null )
+                 * ) { inMem.setExpired( true ); gavCache.put( gavKey, inMem ); }
+                 */
 
                 if ( _eventManager != null )
                     event.setResult( "found in memory, expired is " + inMem.isExpired() );

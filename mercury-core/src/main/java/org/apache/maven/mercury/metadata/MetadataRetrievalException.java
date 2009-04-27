@@ -23,7 +23,7 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 
 /**
  * Error while retrieving repository metadata from the repository.
- *
+ * 
  * @author Jason van Zyl
  * @version $Id$
  */
@@ -43,15 +43,12 @@ public class MetadataRetrievalException
         this( null, cause, null );
     }
 
-    public MetadataRetrievalException( String message,
-                                       Throwable cause )
+    public MetadataRetrievalException( String message, Throwable cause )
     {
         this( message, cause, null );
     }
 
-    public MetadataRetrievalException( String message,
-                                       Throwable cause,
-                                       ArtifactMetadata artifact )
+    public MetadataRetrievalException( String message, Throwable cause, ArtifactMetadata artifact )
     {
         super( message, cause );
 

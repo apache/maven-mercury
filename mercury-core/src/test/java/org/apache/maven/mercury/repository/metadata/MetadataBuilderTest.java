@@ -35,100 +35,100 @@ import org.apache.maven.mercury.util.TimeUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class MetadataBuilderTest
-extends TestCase
+    extends TestCase
 {
-  MetadataBuilder mb;
-  File testBase = new File("./target/test-classes/controlledRepoMd");
+    MetadataBuilder mb;
 
-  //-------------------------------------------------------------------------
-  @Override
-  protected void setUp()
-  throws Exception
-  {
-    File temp = new File( testBase, "group-maven-metadata-write.xml");
-    if( temp.exists() )
-      temp.delete();
-  }
-  //-------------------------------------------------------------------------
-  protected void tearDown()
-  throws Exception
-  {
-  }
-  
-	protected Metadata getMetadata(File file) 
-		throws Exception 
-	{
-		byte[] targetBytes = FileUtil.readRawData(file);
+    File testBase = new File( "./target/test-classes/controlledRepoMd" );
 
-		return MetadataBuilder.getMetadata(targetBytes);
-	}
+    // -------------------------------------------------------------------------
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        File temp = new File( testBase, "group-maven-metadata-write.xml" );
+        if ( temp.exists() )
+            temp.delete();
+    }
 
-	protected Metadata applyOpsAndGetMetadata(Metadata metadata,
-			List<MetadataOperation> ops, File file) 
-		throws Exception 
-	{
-		byte[] resBytes = MetadataBuilder.changeMetadata(metadata, ops);
+    // -------------------------------------------------------------------------
+    protected void tearDown()
+        throws Exception
+    {
+    }
 
-		FileUtil.writeRawData(file, resBytes);
+    protected Metadata getMetadata( File file )
+        throws Exception
+    {
+        byte[] targetBytes = FileUtil.readRawData( file );
 
-		return MetadataBuilder.read(new FileInputStream(file));
-	}
-  
-  //-------------------------------------------------------------------------
-  public void testReadGroupMd()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-     Metadata mmd = MetadataBuilder.read(  new FileInputStream( groupMd ) );
+        return MetadataBuilder.getMetadata( targetBytes );
+    }
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
+    protected Metadata applyOpsAndGetMetadata( Metadata metadata, List<MetadataOperation> ops, File file )
+        throws Exception
+    {
+        byte[] resBytes = MetadataBuilder.changeMetadata( metadata, ops );
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 4, versions.size() );
-  }
-  //-------------------------------------------------------------------------
-  public void testWriteGroupMd()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata-write.xml");
-    Metadata md = new Metadata();
-    md.setGroupId( "a" );
-    md.setArtifactId( "a" );
-    md.setVersion( "1.0.0" );
-    Versioning v = new Versioning();
-    v.addVersion( "1.0.0" );
-    v.addVersion( "2.0.0" );
-    md.setVersioning( v );
-    
-     MetadataBuilder.write(  md, new FileOutputStream( groupMd ) );
-     Metadata mmd = MetadataBuilder.read( new FileInputStream(groupMd) );
+        FileUtil.writeRawData( file, resBytes );
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("1.0.0", mmd.getVersion() );
+        return MetadataBuilder.read( new FileInputStream( file ) );
+    }
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 2, versions.size() );
-  }
-  //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    public void testReadGroupMd()
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
+    {
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
+        Metadata mmd = MetadataBuilder.read( new FileInputStream( groupMd ) );
+
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+
+        assertNotNull( mmd.getVersioning() );
+
+        List<String> versions = mmd.getVersioning().getVersions();
+
+        assertNotNull( versions );
+        assertEquals( 4, versions.size() );
+    }
+
+    // -------------------------------------------------------------------------
+    public void testWriteGroupMd()
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
+    {
+        File groupMd = new File( testBase, "group-maven-metadata-write.xml" );
+        Metadata md = new Metadata();
+        md.setGroupId( "a" );
+        md.setArtifactId( "a" );
+        md.setVersion( "1.0.0" );
+        Versioning v = new Versioning();
+        v.addVersion( "1.0.0" );
+        v.addVersion( "2.0.0" );
+        md.setVersioning( v );
+
+        MetadataBuilder.write( md, new FileOutputStream( groupMd ) );
+        Metadata mmd = MetadataBuilder.read( new FileInputStream( groupMd ) );
+
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "1.0.0", mmd.getVersion() );
+
+        assertNotNull( mmd.getVersioning() );
+
+        List<String> versions = mmd.getVersioning().getVersions();
+
+        assertNotNull( versions );
+        assertEquals( 2, versions.size() );
+    }
+
+    // -------------------------------------------------------------------------
     public void testAddPluginOperation()
         throws Exception
     {
@@ -174,324 +174,330 @@ extends TestCase
 
         assertEquals( 0, mdAfterRemove.getPlugins().size() );
     }
-    
-  //-------------------------------------------------------------------------
-  public void testMergeOperation()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-    byte [] targetBytes = FileUtil.readRawData( groupMd );
 
-    Metadata source = new Metadata();
-    source.setGroupId( "a" );
-    source.setArtifactId( "a" );
-    source.setVersion( "1.0.0" );
-    Versioning v = new Versioning();
-    v.addVersion( "1.0.0" );
-    v.addVersion( "2.0.0" );
-    source.setVersioning( v );
-    
-    byte [] resBytes = MetadataBuilder.changeMetadata( targetBytes, new MergeOperation( new MetadataOperand(source) ) );
-    
-    File resFile = new File( testBase, "group-maven-metadata-write.xml");
+    // -------------------------------------------------------------------------
+    public void testMergeOperation()
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
+    {
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
+        byte[] targetBytes = FileUtil.readRawData( groupMd );
 
-    FileUtil.writeRawData( resFile, resBytes );
-    
-     Metadata mmd = MetadataBuilder.read( new FileInputStream(resFile) );
+        Metadata source = new Metadata();
+        source.setGroupId( "a" );
+        source.setArtifactId( "a" );
+        source.setVersion( "1.0.0" );
+        Versioning v = new Versioning();
+        v.addVersion( "1.0.0" );
+        v.addVersion( "2.0.0" );
+        source.setVersioning( v );
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("4", mmd.getVersion() );
+        byte[] resBytes =
+            MetadataBuilder.changeMetadata( targetBytes, new MergeOperation( new MetadataOperand( source ) ) );
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 6, versions.size() );
-     assertTrue( versions.contains("1") );
-     assertTrue( versions.contains("2") );
-     assertTrue( versions.contains("3") );
-     assertTrue( versions.contains("4") );
-     assertTrue( versions.contains("1.0.0") );
-     assertTrue( versions.contains("2.0.0") );
-  }
-  
-  public void testAddVersionOperationOrdered() throws Exception 
-  {
-    File mdFileBefore = new File(testBase, "group-maven-metadata.xml");
-    Metadata mdBefore = getMetadata( mdFileBefore );
-    
-    List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
-    ops.add(new AddVersionOperation( new StringOperand("1.3.0-SNAPSHOT") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.2.0-SNAPSHOT") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.2.0.5-SNAPSHOT") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.0.1") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.0.3-SNAPSHOT") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.1-M1") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.0.0-alpha-5") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.2.0") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.2.0-beta-1") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.0.0.1") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.0.0-beta-3") ));
-    ops.add(new AddVersionOperation( new StringOperand("4.1.0") ));
-    ops.add(new AddVersionOperation( new StringOperand("1.0.0-beta-6-SNAPSHOT") ));
-    ops.add(new AddVersionOperation( new StringOperand("5.0-SNAPSHOT") ));
+        File resFile = new File( testBase, "group-maven-metadata-write.xml" );
 
-    List<String> orderedVersions = new ArrayList<String>();
-    orderedVersions.add( "1.0.0-alpha-5" );
-    orderedVersions.add( "1.0.0-beta-3" );
-    orderedVersions.add( "1.0.0-beta-6-SNAPSHOT" );
-    orderedVersions.add( "1" );
-    orderedVersions.add( "1.0.0.1" );
-    orderedVersions.add( "1.0.1" );
-    orderedVersions.add( "1.0.3-SNAPSHOT" );
-    orderedVersions.add( "1.1-M1" );
-    orderedVersions.add( "1.2.0-SNAPSHOT" );
-    orderedVersions.add( "1.2.0-beta-1" );
-    orderedVersions.add( "1.2.0" );
-    orderedVersions.add( "1.2.0.5-SNAPSHOT" );
-    orderedVersions.add( "1.3.0-SNAPSHOT" );
-    orderedVersions.add( "2" );
-    orderedVersions.add( "3" );
-    orderedVersions.add( "4" );
-    orderedVersions.add( "4.1.0" );
-    orderedVersions.add( "5.0-SNAPSHOT" );
-    
-    File mdFileAfter = new File( testBase, "group-maven-metadata-write.xml");
-    Metadata mdAfter = applyOpsAndGetMetadata( mdBefore, ops, mdFileAfter );
-    
-    Assert.assertEquals(orderedVersions, mdAfter.getVersioning().getVersions());
-    Assert.assertEquals("5.0-SNAPSHOT", mdAfter.getVersioning().getLatest());
-    Assert.assertEquals("4.1.0", mdAfter.getVersioning().getRelease());
-    
-  }
-  
-  //-------------------------------------------------------------------------
-  public void testAddVersionOperation()
-  throws Exception
-  {
-	 // prepare
-	 File groupMd = new File( testBase, "group-maven-metadata.xml");
-	    
-	 Metadata md = getMetadata(groupMd);
-	    
-	 List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
-	    
-	 ops.add(new AddVersionOperation( new StringOperand("5")));
-   
-     File resFile = new File( testBase, "group-maven-metadata-write.xml");
-    
-     // do
-     Metadata mmd = applyOpsAndGetMetadata( md, ops, resFile);
+        FileUtil.writeRawData( resFile, resBytes );
 
-     // assert
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("4", mmd.getVersion() );
+        Metadata mmd = MetadataBuilder.read( new FileInputStream( resFile ) );
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 5, versions.size() );
-     assertTrue( versions.contains("1") );
-     assertTrue( versions.contains("2") );
-     assertTrue( versions.contains("3") );
-     assertTrue( versions.contains("4") );
-     assertTrue( versions.contains("5") );
-  }
-  //-------------------------------------------------------------------------
-  public void testAddVersionTwiceOperation()
-  throws Exception
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-    
-    Metadata checkMd = getMetadata(groupMd);
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "4", mmd.getVersion() );
 
-    assertNotNull( checkMd );
-    assertEquals("a", checkMd.getGroupId() );
-    assertEquals("a", checkMd.getArtifactId() );
-    assertEquals("4", checkMd.getVersion() );
+        assertNotNull( mmd.getVersioning() );
 
-    assertNotNull( checkMd.getVersioning() );
-    
-    List<String> checkVersions = checkMd.getVersioning().getVersions();
-   
-    assertNotNull( checkVersions );
-    assertEquals( 4, checkVersions.size() );
-    assertTrue( checkVersions.contains("1") );
-    assertTrue( checkVersions.contains("2") );
-    assertTrue( checkVersions.contains("3") );
-    assertTrue( checkVersions.contains("4") );
-    assertFalse( checkVersions.contains("5") );
-    
-    List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
-    ops.add( new AddVersionOperation( new StringOperand("5") ) );
-    ops.add( new AddVersionOperation( new StringOperand("5") ) );
+        List<String> versions = mmd.getVersioning().getVersions();
 
-    
-    File resFile = new File( testBase, "group-maven-metadata-write.xml");
+        assertNotNull( versions );
+        assertEquals( 6, versions.size() );
+        assertTrue( versions.contains( "1" ) );
+        assertTrue( versions.contains( "2" ) );
+        assertTrue( versions.contains( "3" ) );
+        assertTrue( versions.contains( "4" ) );
+        assertTrue( versions.contains( "1.0.0" ) );
+        assertTrue( versions.contains( "2.0.0" ) );
+    }
 
-     Metadata mmd = applyOpsAndGetMetadata(checkMd, ops, resFile);
+    public void testAddVersionOperationOrdered()
+        throws Exception
+    {
+        File mdFileBefore = new File( testBase, "group-maven-metadata.xml" );
+        Metadata mdBefore = getMetadata( mdFileBefore );
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("4", mmd.getVersion() );
+        List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
+        ops.add( new AddVersionOperation( new StringOperand( "1.3.0-SNAPSHOT" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.2.0-SNAPSHOT" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.2.0.5-SNAPSHOT" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.0.1" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.0.3-SNAPSHOT" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.1-M1" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.0.0-alpha-5" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.2.0" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.2.0-beta-1" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.0.0.1" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.0.0-beta-3" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "4.1.0" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "1.0.0-beta-6-SNAPSHOT" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "5.0-SNAPSHOT" ) ) );
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 5, versions.size() );
-     assertTrue( versions.contains("1") );
-     assertTrue( versions.contains("2") );
-     assertTrue( versions.contains("3") );
-     assertTrue( versions.contains("4") );
-     assertTrue( versions.contains("5") );
-  }
-  //-------------------------------------------------------------------------
-  public void testRemoveVersionOperation()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-    byte [] targetBytes = FileUtil.readRawData( groupMd );
+        List<String> orderedVersions = new ArrayList<String>();
+        orderedVersions.add( "1.0.0-alpha-5" );
+        orderedVersions.add( "1.0.0-beta-3" );
+        orderedVersions.add( "1.0.0-beta-6-SNAPSHOT" );
+        orderedVersions.add( "1" );
+        orderedVersions.add( "1.0.0.1" );
+        orderedVersions.add( "1.0.1" );
+        orderedVersions.add( "1.0.3-SNAPSHOT" );
+        orderedVersions.add( "1.1-M1" );
+        orderedVersions.add( "1.2.0-SNAPSHOT" );
+        orderedVersions.add( "1.2.0-beta-1" );
+        orderedVersions.add( "1.2.0" );
+        orderedVersions.add( "1.2.0.5-SNAPSHOT" );
+        orderedVersions.add( "1.3.0-SNAPSHOT" );
+        orderedVersions.add( "2" );
+        orderedVersions.add( "3" );
+        orderedVersions.add( "4" );
+        orderedVersions.add( "4.1.0" );
+        orderedVersions.add( "5.0-SNAPSHOT" );
 
-    byte [] resBytes = MetadataBuilder.changeMetadata( targetBytes, new RemoveVersionOperation( new StringOperand("1") ) );
-    
-    File resFile = new File( testBase, "group-maven-metadata-write.xml");
+        File mdFileAfter = new File( testBase, "group-maven-metadata-write.xml" );
+        Metadata mdAfter = applyOpsAndGetMetadata( mdBefore, ops, mdFileAfter );
 
-    FileUtil.writeRawData( resFile, resBytes );
-    
-     Metadata mmd = MetadataBuilder.read( new FileInputStream(resFile) );
+        Assert.assertEquals( orderedVersions, mdAfter.getVersioning().getVersions() );
+        Assert.assertEquals( "5.0-SNAPSHOT", mdAfter.getVersioning().getLatest() );
+        Assert.assertEquals( "4.1.0", mdAfter.getVersioning().getRelease() );
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("4", mmd.getVersion() );
+    }
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 3, versions.size() );
-     assertTrue( !versions.contains("1") );
-     assertTrue( versions.contains("2") );
-     assertTrue( versions.contains("3") );
-     assertTrue( versions.contains("4") );
-  }
-  
-  public void testSetSnapshotVersionOperation()
-  throws Exception
-  {
-	  File mdFileBefore = new File(testBase, "group-maven-metadata.xml");
-	  Metadata mdBefore = getMetadata( mdFileBefore );
-	  
-	  mdBefore.setVersion("1.3.0-SNAPSHOT");
-	  
-	  List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
-	  ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.041603-374.pom" ) ) );
-	  ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.030701-373.pom" ) ) );
-	  ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.090218-375.pom" ) ) );
-	  ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.095716-376.pom" ) ) );
-	  
-	  File mdFileAfter = new File( testBase, "group-maven-metadata-write.xml");
-	  Metadata mdAfter = applyOpsAndGetMetadata( mdBefore, ops, mdFileAfter );
-	  
-	  Assert.assertEquals("20090210.095716", mdAfter.getVersioning().getSnapshot().getTimestamp());
-	  Assert.assertEquals(376, mdAfter.getVersioning().getSnapshot().getBuildNumber());
-  }
-  
-  
-  //-------------------------------------------------------------------------
-  public void testSetSnapshotOperation()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-    byte [] targetBytes = FileUtil.readRawData( groupMd );
-    
-    Snapshot sn = new Snapshot();
-    sn.setLocalCopy( false );
-    sn.setBuildNumber( 35 );
-    String ts = TimeUtil.getUTCTimestamp();
-    sn.setTimestamp( ts );
+    // -------------------------------------------------------------------------
+    public void testAddVersionOperation()
+        throws Exception
+    {
+        // prepare
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
 
-    byte [] resBytes = MetadataBuilder.changeMetadata( targetBytes, new SetSnapshotOperation( new SnapshotOperand(sn) ) );
-    
-    File resFile = new File( testBase, "group-maven-metadata-write.xml");
+        Metadata md = getMetadata( groupMd );
 
-    FileUtil.writeRawData( resFile, resBytes );
-    
-     Metadata mmd = MetadataBuilder.read( new FileInputStream(resFile) );
+        List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("4", mmd.getVersion() );
+        ops.add( new AddVersionOperation( new StringOperand( "5" ) ) );
 
-     assertNotNull( mmd.getVersioning() );
-     Snapshot snapshot = mmd.getVersioning().getSnapshot();
-     assertNotNull( snapshot );
-     assertEquals( ts, snapshot.getTimestamp() );
-     
-     // now let's drop sn
-     targetBytes = FileUtil.readRawData( resFile );
-     resBytes = MetadataBuilder.changeMetadata( targetBytes, new SetSnapshotOperation( new SnapshotOperand(null) ) );
-     
-     Metadata mmd2 = MetadataBuilder.read( new ByteArrayInputStream(resBytes) );
+        File resFile = new File( testBase, "group-maven-metadata-write.xml" );
 
-     assertNotNull( mmd2 );
-     assertEquals("a", mmd2.getGroupId() );
-     assertEquals("a", mmd2.getArtifactId() );
-     assertEquals("4", mmd2.getVersion() );
+        // do
+        Metadata mmd = applyOpsAndGetMetadata( md, ops, resFile );
 
-     assertNotNull( mmd2.getVersioning() );
-     
-     snapshot = mmd2.getVersioning().getSnapshot();
-     assertNull( snapshot );
-  }
-  //-------------------------------------------------------------------------
-  public void testMultipleOperations()
-  throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
-  {
-    File groupMd = new File( testBase, "group-maven-metadata.xml");
-    byte [] targetBytes = FileUtil.readRawData( groupMd );
+        // assert
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "4", mmd.getVersion() );
 
-    ArrayList<MetadataOperation> ops = new ArrayList<MetadataOperation>(2);
-    ops.add( new RemoveVersionOperation( new StringOperand("1") ) );
-    ops.add( new AddVersionOperation( new StringOperand("8") ) );
-    
-    byte [] resBytes = MetadataBuilder.changeMetadata( targetBytes, ops  );
-    
-    File resFile = new File( testBase, "group-maven-metadata-write.xml");
+        assertNotNull( mmd.getVersioning() );
 
-    FileUtil.writeRawData( resFile, resBytes );
-    
-     Metadata mmd = MetadataBuilder.read( new FileInputStream(resFile) );
+        List<String> versions = mmd.getVersioning().getVersions();
 
-     assertNotNull( mmd );
-     assertEquals("a", mmd.getGroupId() );
-     assertEquals("a", mmd.getArtifactId() );
-     assertEquals("4", mmd.getVersion() );
+        assertNotNull( versions );
+        assertEquals( 5, versions.size() );
+        assertTrue( versions.contains( "1" ) );
+        assertTrue( versions.contains( "2" ) );
+        assertTrue( versions.contains( "3" ) );
+        assertTrue( versions.contains( "4" ) );
+        assertTrue( versions.contains( "5" ) );
+    }
 
-     assertNotNull( mmd.getVersioning() );
-    
-     List<String> versions = mmd.getVersioning().getVersions();
-    
-     assertNotNull( versions );
-     assertEquals( 4, versions.size() );
-     assertTrue( !versions.contains("1") );
-     assertTrue( versions.contains("2") );
-     assertTrue( versions.contains("3") );
-     assertTrue( versions.contains("4") );
-     assertTrue( versions.contains("8") );
-  }
-  //-------------------------------------------------------------------------
-  //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    public void testAddVersionTwiceOperation()
+        throws Exception
+    {
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
+
+        Metadata checkMd = getMetadata( groupMd );
+
+        assertNotNull( checkMd );
+        assertEquals( "a", checkMd.getGroupId() );
+        assertEquals( "a", checkMd.getArtifactId() );
+        assertEquals( "4", checkMd.getVersion() );
+
+        assertNotNull( checkMd.getVersioning() );
+
+        List<String> checkVersions = checkMd.getVersioning().getVersions();
+
+        assertNotNull( checkVersions );
+        assertEquals( 4, checkVersions.size() );
+        assertTrue( checkVersions.contains( "1" ) );
+        assertTrue( checkVersions.contains( "2" ) );
+        assertTrue( checkVersions.contains( "3" ) );
+        assertTrue( checkVersions.contains( "4" ) );
+        assertFalse( checkVersions.contains( "5" ) );
+
+        List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
+        ops.add( new AddVersionOperation( new StringOperand( "5" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "5" ) ) );
+
+        File resFile = new File( testBase, "group-maven-metadata-write.xml" );
+
+        Metadata mmd = applyOpsAndGetMetadata( checkMd, ops, resFile );
+
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "4", mmd.getVersion() );
+
+        assertNotNull( mmd.getVersioning() );
+
+        List<String> versions = mmd.getVersioning().getVersions();
+
+        assertNotNull( versions );
+        assertEquals( 5, versions.size() );
+        assertTrue( versions.contains( "1" ) );
+        assertTrue( versions.contains( "2" ) );
+        assertTrue( versions.contains( "3" ) );
+        assertTrue( versions.contains( "4" ) );
+        assertTrue( versions.contains( "5" ) );
+    }
+
+    // -------------------------------------------------------------------------
+    public void testRemoveVersionOperation()
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
+    {
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
+        byte[] targetBytes = FileUtil.readRawData( groupMd );
+
+        byte[] resBytes =
+            MetadataBuilder.changeMetadata( targetBytes, new RemoveVersionOperation( new StringOperand( "1" ) ) );
+
+        File resFile = new File( testBase, "group-maven-metadata-write.xml" );
+
+        FileUtil.writeRawData( resFile, resBytes );
+
+        Metadata mmd = MetadataBuilder.read( new FileInputStream( resFile ) );
+
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "4", mmd.getVersion() );
+
+        assertNotNull( mmd.getVersioning() );
+
+        List<String> versions = mmd.getVersioning().getVersions();
+
+        assertNotNull( versions );
+        assertEquals( 3, versions.size() );
+        assertTrue( !versions.contains( "1" ) );
+        assertTrue( versions.contains( "2" ) );
+        assertTrue( versions.contains( "3" ) );
+        assertTrue( versions.contains( "4" ) );
+    }
+
+    public void testSetSnapshotVersionOperation()
+        throws Exception
+    {
+        File mdFileBefore = new File( testBase, "group-maven-metadata.xml" );
+        Metadata mdBefore = getMetadata( mdFileBefore );
+
+        mdBefore.setVersion( "1.3.0-SNAPSHOT" );
+
+        List<MetadataOperation> ops = new ArrayList<MetadataOperation>();
+        ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.041603-374.pom" ) ) );
+        ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.030701-373.pom" ) ) );
+        ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.090218-375.pom" ) ) );
+        ops.add( new SetSnapshotOperation( new StringOperand( "a-1.3.0-20090210.095716-376.pom" ) ) );
+
+        File mdFileAfter = new File( testBase, "group-maven-metadata-write.xml" );
+        Metadata mdAfter = applyOpsAndGetMetadata( mdBefore, ops, mdFileAfter );
+
+        Assert.assertEquals( "20090210.095716", mdAfter.getVersioning().getSnapshot().getTimestamp() );
+        Assert.assertEquals( 376, mdAfter.getVersioning().getSnapshot().getBuildNumber() );
+    }
+
+    // -------------------------------------------------------------------------
+    public void testSetSnapshotOperation()
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
+    {
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
+        byte[] targetBytes = FileUtil.readRawData( groupMd );
+
+        Snapshot sn = new Snapshot();
+        sn.setLocalCopy( false );
+        sn.setBuildNumber( 35 );
+        String ts = TimeUtil.getUTCTimestamp();
+        sn.setTimestamp( ts );
+
+        byte[] resBytes =
+            MetadataBuilder.changeMetadata( targetBytes, new SetSnapshotOperation( new SnapshotOperand( sn ) ) );
+
+        File resFile = new File( testBase, "group-maven-metadata-write.xml" );
+
+        FileUtil.writeRawData( resFile, resBytes );
+
+        Metadata mmd = MetadataBuilder.read( new FileInputStream( resFile ) );
+
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "4", mmd.getVersion() );
+
+        assertNotNull( mmd.getVersioning() );
+        Snapshot snapshot = mmd.getVersioning().getSnapshot();
+        assertNotNull( snapshot );
+        assertEquals( ts, snapshot.getTimestamp() );
+
+        // now let's drop sn
+        targetBytes = FileUtil.readRawData( resFile );
+        resBytes =
+            MetadataBuilder.changeMetadata( targetBytes, new SetSnapshotOperation( new SnapshotOperand( null ) ) );
+
+        Metadata mmd2 = MetadataBuilder.read( new ByteArrayInputStream( resBytes ) );
+
+        assertNotNull( mmd2 );
+        assertEquals( "a", mmd2.getGroupId() );
+        assertEquals( "a", mmd2.getArtifactId() );
+        assertEquals( "4", mmd2.getVersion() );
+
+        assertNotNull( mmd2.getVersioning() );
+
+        snapshot = mmd2.getVersioning().getSnapshot();
+        assertNull( snapshot );
+    }
+
+    // -------------------------------------------------------------------------
+    public void testMultipleOperations()
+        throws FileNotFoundException, IOException, XmlPullParserException, MetadataException
+    {
+        File groupMd = new File( testBase, "group-maven-metadata.xml" );
+        byte[] targetBytes = FileUtil.readRawData( groupMd );
+
+        ArrayList<MetadataOperation> ops = new ArrayList<MetadataOperation>( 2 );
+        ops.add( new RemoveVersionOperation( new StringOperand( "1" ) ) );
+        ops.add( new AddVersionOperation( new StringOperand( "8" ) ) );
+
+        byte[] resBytes = MetadataBuilder.changeMetadata( targetBytes, ops );
+
+        File resFile = new File( testBase, "group-maven-metadata-write.xml" );
+
+        FileUtil.writeRawData( resFile, resBytes );
+
+        Metadata mmd = MetadataBuilder.read( new FileInputStream( resFile ) );
+
+        assertNotNull( mmd );
+        assertEquals( "a", mmd.getGroupId() );
+        assertEquals( "a", mmd.getArtifactId() );
+        assertEquals( "4", mmd.getVersion() );
+
+        assertNotNull( mmd.getVersioning() );
+
+        List<String> versions = mmd.getVersioning().getVersions();
+
+        assertNotNull( versions );
+        assertEquals( 4, versions.size() );
+        assertTrue( !versions.contains( "1" ) );
+        assertTrue( versions.contains( "2" ) );
+        assertTrue( versions.contains( "3" ) );
+        assertTrue( versions.contains( "4" ) );
+        assertTrue( versions.contains( "8" ) );
+    }
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 }

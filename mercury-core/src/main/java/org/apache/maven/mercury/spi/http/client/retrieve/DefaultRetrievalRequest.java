@@ -25,13 +25,16 @@ import java.util.Set;
 import org.apache.maven.mercury.spi.http.validate.Validator;
 import org.apache.maven.mercury.transport.api.Binding;
 
-public class DefaultRetrievalRequest implements RetrievalRequest
+public class DefaultRetrievalRequest
+    implements RetrievalRequest
 {
     private boolean _isFailFast;
+
     private Set<Binding> _bindings;
+
     private Set<Validator> _validators;
-    
-    public void setFailFast(boolean failFast)
+
+    public void setFailFast( boolean failFast )
     {
         _isFailFast = failFast;
     }
@@ -40,42 +43,42 @@ public class DefaultRetrievalRequest implements RetrievalRequest
     {
         return _isFailFast;
     }
-    
+
     public RetrievalRequest addBinding( Binding binding )
     {
         if ( _bindings == null )
         {
             _bindings = new HashSet<Binding>();
         }
-        
+
         _bindings.add( binding );
-        
+
         return this;
     }
-    
-    public void setBindings(Set<Binding> bindings)
+
+    public void setBindings( Set<Binding> bindings )
     {
-        _bindings = new HashSet<Binding>(bindings);
+        _bindings = new HashSet<Binding>( bindings );
     }
-    
+
     public Set<Binding> getBindings()
     {
         return _bindings;
     }
 
-    public void setValidators(Set<Validator> validators)
+    public void setValidators( Set<Validator> validators )
     {
-        _validators = new HashSet<Validator>(validators);
+        _validators = new HashSet<Validator>( validators );
     }
-    
+
     public Set<Validator> getValidators()
     {
         return _validators;
     }
-    
+
     public String toString()
     {
-        return _bindings.toString()+"|"+_isFailFast;
+        return _bindings.toString() + "|" + _isFailFast;
     }
 
 }

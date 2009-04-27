@@ -20,16 +20,14 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 /**
- * TODO: Oleg: don't know if this should be interface or class, so there is a little disparate:
- *  ArtifactMetadata is a class, Artifact is an interface. Will clear out  
- *
- *
+ * TODO: Oleg: don't know if this should be interface or class, so there is a little disparate: ArtifactMetadata is a
+ * class, Artifact is an interface. Will clear out
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface Artifact
-extends Comparable<Artifact>
+    extends Comparable<Artifact>
 {
     static final String LATEST_VERSION = "LATEST";
 
@@ -37,7 +35,7 @@ extends Comparable<Artifact>
 
     static final String RELEASE_VERSION = "RELEASE";
 
-    static final String  SNAPSHOT_TS_REGEX = ".+-\\d{8}\\.\\d{6}-\\d+";
+    static final String SNAPSHOT_TS_REGEX = ".+-\\d{8}\\.\\d{6}-\\d+";
 
     static final Pattern VERSION_FILE_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$" );
 
@@ -62,10 +60,10 @@ extends Comparable<Artifact>
     void setVersion( String version );
 
     /**
-     * Get the artifactScope of the artifact. If the artifact is a standalone rather than a dependency, it's artifactScope will be
-     * <code>null</code>. The artifactScope may not be the same as it was declared on the original dependency, as this is the
-     * result of combining it with the main project artifactScope.
-     *
+     * Get the artifactScope of the artifact. If the artifact is a standalone rather than a dependency, it's
+     * artifactScope will be <code>null</code>. The artifactScope may not be the same as it was declared on the original
+     * dependency, as this is the result of combining it with the main project artifactScope.
+     * 
      * @return the artifactScope
      */
     String getScope();
@@ -78,18 +76,18 @@ extends Comparable<Artifact>
     boolean hasClassifier();
 
     File getFile();
-    
+
     // in case binary is supplied as a Stream, not a File
     InputStream getStream();
 
     void setFile( File destination );
-    
-    byte [] getPomBlob();
-    
-    void setPomBlob( byte [] pomBlob );
-    
+
+    byte[] getPomBlob();
+
+    void setPomBlob( byte[] pomBlob );
+
     String getBaseName();
-    
+
     String getBaseName( String classifier );
 
     // ----------------------------------------------------------------------
