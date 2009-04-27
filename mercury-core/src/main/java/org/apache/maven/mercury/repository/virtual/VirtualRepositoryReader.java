@@ -35,7 +35,6 @@ import org.apache.maven.mercury.artifact.Quality;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessor;
 import org.apache.maven.mercury.artifact.api.ArtifactListProcessorException;
 import org.apache.maven.mercury.artifact.version.DefaultArtifactVersion;
-import org.apache.maven.mercury.artifact.version.MetadataVersionComparator;
 import org.apache.maven.mercury.builder.api.DependencyProcessor;
 import org.apache.maven.mercury.builder.api.MetadataReader;
 import org.apache.maven.mercury.builder.api.MetadataReaderException;
@@ -46,9 +45,9 @@ import org.apache.maven.mercury.event.GenericEvent;
 import org.apache.maven.mercury.event.MercuryEventListener;
 import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
-import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.ArtifactResults;
 import org.apache.maven.mercury.repository.api.LocalRepository;
+import org.apache.maven.mercury.repository.api.MetadataResults;
 import org.apache.maven.mercury.repository.api.RemoteRepository;
 import org.apache.maven.mercury.repository.api.Repository;
 import org.apache.maven.mercury.repository.api.RepositoryException;
@@ -56,10 +55,8 @@ import org.apache.maven.mercury.repository.api.RepositoryMetadataCache;
 import org.apache.maven.mercury.repository.api.RepositoryReader;
 import org.apache.maven.mercury.repository.api.RepositoryWriter;
 import org.apache.maven.mercury.repository.cache.fs.MetadataCacheFs;
-import org.apache.maven.mercury.repository.metadata.MetadataException;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryReaderM2;
-import org.apache.maven.mercury.transport.api.Server;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -395,32 +392,15 @@ public class VirtualRepositoryReader
                             {
                                 res.add( key, rorRes );
                             }
-/*
-                            String keyVersion = key.getVersion();
-                            VersionRange keyVersionRange = null;
-                            try
+                            
+                            if ( 
+                                  ( !key.isVirtual() && key.isSingleton() )
+                                  ||
+                                  ( key.isVirtual() && rr.getRepository().isSufficient() )
+                               )
                             {
-                                keyVersionRange = VersionRangeFactory.create( key.getVersion() );
-                            }
-                            catch ( VersionException e )
-                            {
-                                throw new RepositoryException( LANG.getMessage( "query.element.bad.version",
-                                                                                 key.toString(), e.getMessage() ) );
-                            }
-
-                            if ( keyVersionRange.isSingleton() )
-                            {
-                                Quality keyQuality = new Quality( keyVersion );
-                                if ( keyQuality.compareTo( Quality.RELEASE_QUALITY ) == 0 )
-                                {
-                                    // fixed release is found - no more scanning
-                                    qList.remove( key );
-                                }
-                            }
-*/
-                            if ( !key.isVirtual() && key.isSingleton() )
-                            {
-                                // fixed release is found - no more scanning
+                                // fixed release is found or virtual is found 
+                                // in a sufficient repo - no more scanning
                                 qList.remove( key );
                             }
                         }
@@ -689,6 +669,11 @@ public class VirtualRepositoryReader
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
+    // TODO: Oleg: this is a copy of readArtifacts - optimize for the particular 
+    //             purpose - reading non-qualified virtuals, remove
+    //
+    // Now this can also be used to read artifacts without pooling them if there is such 
+    //
     public ArtifactResults readArtifactsNoBatch( Collection<? extends ArtifactMetadata> query )
         throws RepositoryException
     {
@@ -805,6 +790,8 @@ public class VirtualRepositoryReader
 
                 if ( virtuals != null )
                 {
+                    // this makes them qualified because tracker will point to 
+                    // the repository
                     MetadataResults virtRes = readVersions( virtuals );
 
                     leftovers.removeAll( virtuals );
@@ -824,6 +811,7 @@ public class VirtualRepositoryReader
                                 sMap.put( v, md );
                             }
 
+                            // recursive call, this time for qualified artifacts
                             ArtifactResults ares = readArtifacts( virtuals );
 
                             if ( ares != null )

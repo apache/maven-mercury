@@ -73,6 +73,8 @@ public abstract class AbstractRepository
     protected DependencyProcessor dependencyProcessor;
 
     protected Server server;
+    
+    protected boolean isSufficient = false;
 
     private static final byte[] __HEX_DIGITS = "0123456789abcdef".getBytes();
 
@@ -268,6 +270,16 @@ public abstract class AbstractRepository
     public boolean isAcceptedQuality( Quality quality )
     {
         return repositoryQualityRange.isAcceptedQuality( quality );
+    }
+    
+    public boolean isSufficient()
+    {
+        return isSufficient;
+    }
+    
+    public void setSufficient( boolean isSufficient )
+    {
+        this.isSufficient = isSufficient;
     }
 
     // ---------------------------------------------------------------------------

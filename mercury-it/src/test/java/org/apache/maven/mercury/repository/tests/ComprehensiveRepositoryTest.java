@@ -583,6 +583,7 @@ extends PlexusTestCase
         assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
     }
     
+    // 
     public void testWriteTimestampReadSnapshot2ReposReversed()
     throws Exception
     {
@@ -622,6 +623,52 @@ extends PlexusTestCase
         assertTrue( aSN.getFile().exists() );
         
         assertEquals( "2.0.9-20090204.232324-24", aSN.getVersion() );
+    }
+    
+    public void testSufficientRepository()
+    throws Exception
+    {
+        String nameTS1 = "org.apache.maven:maven-core:2.0.9-20090204.232323-23";
+        String nameTS2 = "org.apache.maven:maven-core:2.0.9-20090204.232324-24";
+        String nameSN = "org.apache.maven:maven-core:2.0.9-SNAPSHOT";
+        
+        File af = new File( _resourceBase, "maven-core-2.0.9.jar" );
+        File ap = new File( _resourceBase, "maven-core-2.0.9.pom" );
+        
+        File aJar = new File( _base1, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232323-23.jar");
+        writeArtifact( nameTS1, af, ap, _rr1, aJar );
+        
+        // make this repo sufficient
+        _rr1.setSufficient( true );
+
+        aJar = new File( _base2, "org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20090204.232324-24.jar");
+        writeArtifact( nameTS2, af, ap, _rr2, aJar );
+        
+        List<ArtifactMetadata> vl = readVersions( nameSN, _rrs );
+        
+        System.out.println(vl);
+        
+        assertNotNull( vl );
+        
+        assertEquals( 1, vl.size() );
+        
+        List<Artifact> al = readArtifact( nameSN, _rrs );
+        
+        System.out.println(al);
+        
+        assertNotNull( al );
+        
+        assertEquals( 1, al.size() );
+        
+        Artifact aSN = al.get( 0 );
+        
+        assertNotNull( aSN.getFile() );
+        
+        assertTrue( aSN.getFile().exists() );
+        
+        // the first one should be selected because 
+        // it resides in the "sufficient" repository
+        assertEquals( "2.0.9-20090204.232323-23", aSN.getVersion() );
     }
     
     public void testLatest()

@@ -991,12 +991,13 @@ public class RemoteRepositoryReaderM2
         // if( _log.isDebugEnabled() )
         // _log.debug( "reading "+bmd+" from " + _repo.getId() );
 
+        mod = new ArtifactMetadata( md );
+        mod.setClassifier( classifier );
+        mod.setType( type );
+        
         // only cache poms at the moment
         if ( _mdCache != null && "pom".equals( type ) )
         {
-            mod = new ArtifactMetadata( md );
-            mod.setClassifier( classifier );
-            mod.setType( type );
 
             try
             {
@@ -1015,9 +1016,11 @@ public class RemoteRepositoryReaderM2
             }
         }
 
-        mod =
-            new ArtifactMetadata( md.getGroupId() + ":" + md.getArtifactId() + ":" + md.getVersion() + ":"
-                + ( classifier == null ? "" : classifier ) + ":" + ( type == null ? md.getType() : type ) );
+//        mod =
+//            new ArtifactMetadata( md );
+//        new ArtifactMetadata( md.getGroupId() + ":" + md.getArtifactId() + ":" + md.getVersion() + ":"
+//                              + ( classifier == null ? "" : classifier ) + ":" + ( type == null ? md.getType() : type ) 
+//                              );
 
         // ArtifactLocation loc = new ArtifactLocation( "", mod );
 

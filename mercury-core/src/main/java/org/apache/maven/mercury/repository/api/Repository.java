@@ -65,6 +65,14 @@ public interface Repository
     public boolean isSnapshots();
 
     /**
+     * indicates that any version or artifact, found in the repository
+     * is sufficient and VirtualRepositoryReader should look no further  
+     * 
+     */
+    boolean isSufficient();
+    void setSufficient( boolean isSufficient );
+    
+    /**
      * indicates if the supplied code quality is served by this repository
      */
     public boolean isAcceptedQuality( Quality quality );

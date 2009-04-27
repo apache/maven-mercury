@@ -59,7 +59,7 @@ public class LocalRepositoryReaderMap
             throw new IllegalArgumentException( "localRepo cannot be null" );
 
         if ( dp == null )
-            throw new IllegalArgumentException( "localRepo cannot be null" );
+            throw new IllegalArgumentException( "dependecny processor cannot be null" );
 
         _mdProcessor = dp;
 
