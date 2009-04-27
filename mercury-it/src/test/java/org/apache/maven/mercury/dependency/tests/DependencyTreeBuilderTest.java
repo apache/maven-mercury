@@ -21,6 +21,7 @@ package org.apache.maven.mercury.dependency.tests;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -312,6 +313,63 @@ extends TestCase
 
     MetadataTreeNode.showNode( res, 0 );
 
+  }
+  //----------------------------------------------------------------------------------------------
+  // modify the resolution by demanding plexus-util:1.5.8, by default clean plugin 2.2 depends on plexus-util:1.1 
+  public void testManagedVersionMap()
+  throws Exception
+  {
+      String centralUrl = "http://repo1.maven.org/maven2";
+
+      String artifactId = "org.apache.maven.plugins:maven-clean-plugin:2.2";
+      
+      reps.clear();
+      
+      File versionMapRepo = new File( "./target/repoVersionMap" );
+      localRepo = new LocalRepositoryM2( "testVersionMap", versionMapRepo, new MavenDependencyProcessor() );
+      reps.add(  localRepo );
+
+      Server server = new Server( "id", new URL(centralUrl) );
+      remoteRepo = new RemoteRepositoryM2(server, new MavenDependencyProcessor());
+      remoteRepo.setUpdatePolicy( RepositoryUpdateIntervalPolicy.UPDATE_POLICY_NEVER );
+      reps.add( remoteRepo );
+      
+      ArtifactMetadata modifiedDep = new ArtifactMetadata("org.codehaus.plexus:plexus-utils:1.5.8");
+      Map<String, ArtifactMetadata> versionMap = new HashMap<String, ArtifactMetadata>(1);
+      String key = modifiedDep.toManagementString();
+      versionMap.put( key, modifiedDep );
+      
+      Map<String,Object> config = new HashMap<String, Object>(1);
+      config.put( DependencyBuilder.CONFIGURATION_PROPERTY_VERSION_MAP, versionMap );
+      
+      depBuilder = DependencyBuilderFactory.create( DependencyBuilderFactory.JAVA_DEPENDENCY_MODEL, reps, null, null, null, config );
+//      depBuilder.register( new DumbListener() );
+      
+      ArtifactMetadata md = new ArtifactMetadata( artifactId );
+
+      MetadataTreeNode root = depBuilder.buildTree( md, ArtifactScopeEnum.compile );
+
+      assertNotNull( "null tree built", root );
+      
+//      assertTrue( "wrong tree size, expected gte 4", 4 <= root.countNodes() );
+
+      List<ArtifactMetadata> res = depBuilder.resolveConflicts( root );
+      
+      assertNotNull( res );
+      
+      assertTrue( res.size() > 1 );
+
+      showClasspath( res );
+      
+      for( ArtifactMetadata am : res )
+      {
+          if( 
+              "org.codehaus.plexus".equals( am.getGroupId() )
+              &&
+              "plexus-utils".equals( am.getArtifactId() )
+            )
+              assertEquals( "1.5.8", am.getVersion() );
+      }
   }
   //----------------------------------------------------------------------------------------------
   //----------------------------------------------------------------------------------------------

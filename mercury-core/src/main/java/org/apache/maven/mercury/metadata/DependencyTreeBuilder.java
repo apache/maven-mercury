@@ -90,7 +90,7 @@ class DependencyTreeBuilder
     
     private boolean _allowCircularDependencies = Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
     
-    /** mandated versions in the format G:A -> V */
+    /** mandated versions in the format G:A:T[:C] -> V */
     private Map<String, ArtifactMetadata> _versionMap;
     
     class TruckLoad
