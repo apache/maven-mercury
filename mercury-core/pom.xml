@@ -42,10 +42,12 @@
       <artifactId>jetty-client</artifactId>
       <classifier>assembly</classifier>
       <exclusions>
+<!-- Oleg 2009.04.30 - have to add jetty back because authentication needs org.mortbay.jetty.servlet.PathMap
         <exclusion>
          <groupId>org.mortbay.jetty</groupId>
          <artifactId>jetty</artifactId>
         </exclusion>
+ -->
         <exclusion>
          <groupId>org.mortbay.jetty</groupId>
          <artifactId>jetty-sslengine</artifactId>

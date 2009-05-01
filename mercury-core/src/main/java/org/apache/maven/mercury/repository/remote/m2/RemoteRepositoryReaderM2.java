@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.maven.mercury.artifact.Artifact;
@@ -83,7 +84,7 @@ import org.codehaus.plexus.lang.Language;
 /**
  * implementation of M2 remote repository reader. Actual Transport (protocol, URL) [should] come from RemoteRepository
  * Server URL Current implementation does not do the check and uses jetty-client directly. TODO - re-implements after
- * jetty-client implements ReaderTransport
+ * Retriever implements ReaderTransport
  * 
  * @author Oleg Gusakov
  * @version $Id$
@@ -99,7 +100,7 @@ public class RemoteRepositoryReaderM2
     // TODO - replace with known Transport's protocols. Should be similar to RepositoryReader/Writer registration
     private static final String[] _protocols = new String[] { "http", "https", "dav", "webdav" };
 
-    private HashSet<Server> _servers;
+    private Set<Server> _servers;
 
     // ---------------------------------------------------------------------------------------------------------------
     RemoteRepository _repo;
@@ -159,7 +160,7 @@ public class RemoteRepositoryReaderM2
         else
             _localRepos = localRepos;
 
-        // TODO 2008-07-29 og: here I should analyze Server protocol
+        // TODO 2008-07-29 Oleg: here I should analyze Server protocol
         // and come with appropriate Transport implementation
         _servers = new HashSet<Server>( 1 );
         _servers.add( repo.getServer() );
@@ -414,18 +415,23 @@ public class RemoteRepositoryReaderM2
             drr.addBinding( pomBinding );
         }
 
-        DefaultRetriever transport;
+        DefaultRetriever transport = null ;
+        RetrievalResponse resp;
         try
         {
             transport = new DefaultRetriever();
+            transport.setServers( _servers );
+            resp = transport.retrieve( drr );
         }
         catch ( HttpClientException e )
         {
             throw new RepositoryException( e );
         }
-        transport.setServers( _servers );
-        RetrievalResponse resp = transport.retrieve( drr );
-        transport.stop();
+        finally
+        {
+            if( transport != null )
+                transport.stop();
+        }
 
         if ( resp.hasExceptions() )
         {
@@ -522,21 +528,23 @@ public class RemoteRepositoryReaderM2
             servers.add( ( (RemoteRepositoryReaderM2) tracker ).getRepository().getServer() );
         }
 
-        DefaultRetriever retriever;
+        DefaultRetriever transport = null;
+        RetrievalResponse response;
         try
         {
-            retriever = new DefaultRetriever();
+            transport = new DefaultRetriever();
+            transport.setServers( servers );
+            response = transport.retrieve( request );
         }
         catch ( HttpClientException e )
         {
             throw new RepositoryException( e );
         }
-
-        retriever.setServers( servers );
-
-        RetrievalResponse response = retriever.retrieve( request );
-
-        retriever.stop();
+        finally
+        {
+            if( transport != null )
+                transport.stop();
+        }
 
         if ( response.hasExceptions() )
         {
@@ -1069,6 +1077,7 @@ public class RemoteRepositoryReaderM2
             return null;
 
         FileInputStream fis = null;
+        DefaultRetriever transport = null;
         try
         {
             ByteArrayOutputStream baos = new ByteArrayOutputStream( 10240 );
@@ -1083,10 +1092,9 @@ public class RemoteRepositoryReaderM2
             DefaultRetrievalRequest request = new DefaultRetrievalRequest();
             request.addBinding( binding );
 
-            DefaultRetriever transport = new DefaultRetriever();
+            transport = new DefaultRetriever();
             transport.setServers( _servers );
             RetrievalResponse response = transport.retrieve( request );
-            transport.stop();
 
             if ( response.hasExceptions() )
             {
@@ -1119,6 +1127,9 @@ public class RemoteRepositoryReaderM2
                 catch ( Exception any )
                 {
                 }
+
+            if ( transport != null )
+                    transport.stop();
         }
     }
 

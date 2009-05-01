@@ -107,7 +107,7 @@ public class DefaultArtifact
             }
         }
 
-        this.scope = desiredScope;
+        this.artifactScope = ArtifactScopeEnum.valueOf( desiredScope );
 
         validateIdentity();
     }
@@ -230,10 +230,10 @@ public class DefaultArtifact
             sb.append( getVersion() );
         }
 
-        if ( scope != null )
+        if ( artifactScope != null )
         {
             sb.append( ":" );
-            sb.append( scope );
+            sb.append( artifactScope.toString() );
         }
         return sb.toString();
     }

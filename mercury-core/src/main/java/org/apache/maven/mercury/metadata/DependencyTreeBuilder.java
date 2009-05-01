@@ -18,8 +18,10 @@
  */
 package org.apache.maven.mercury.metadata;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +89,7 @@ class DependencyTreeBuilder
 
     private EventManager _eventManager;
 
-    private boolean _buildIndividualTrees = true;
+    private boolean _buildIndividualTrees = false;
 
     private boolean _allowCircularDependencies =
         Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
@@ -179,6 +181,15 @@ class DependencyTreeBuilder
             treeBuildEvent = new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_BUILD_EVENT, startMD.getGAV() );
 
         MetadataTreeNode root = createNode( startMD, null, startMD, treeScope );
+//
+//try
+//{
+//    MetadataTreeNode.showNode( root, 0 );
+//}
+//catch ( IOException e )
+//{
+//    e.printStackTrace();
+//}        
 
         if ( _eventManager != null )
             treeBuildEvent.stop();
@@ -254,32 +265,30 @@ class DependencyTreeBuilder
             return tl;
         }
 
-        DUMMY_ROOT.setDependencies( startMDs );
-        DUMMY_ROOT.setInclusions( inclusions == null ? null : inclusions.getMetadataList() );
-        DUMMY_ROOT.setExclusions( exclusions == null ? null : exclusions.getMetadataList() );
+        DUMMY_ROOT.setInclusions( Util.isEmpty(inclusions) ? null : inclusions.getMetadataList() );
+        DUMMY_ROOT.setExclusions( Util.isEmpty(exclusions) ? null : exclusions.getMetadataList() );
 
         MetadataTreeNode root = null;
 
+        // dependencyManagement
+        applyVersionManagement( startMDs, _versionMap );
+
+        // apply scoping & inclusions/exclusions
+        List<ArtifactMetadata> filteredMDs = filterScopeAndLusions( startMDs, scope, new MetadataTreeNode( DUMMY_ROOT, null, null  ));
+        
+        if( Util.isEmpty( filteredMDs ) )
+            return null;
+        
+        nodeCount = filteredMDs.size();
+        
         if ( _buildIndividualTrees )
         {
             List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
-
-            for ( ArtifactMetadata bmd : startMDs )
+            
+            for ( ArtifactMetadata bmd : filteredMDs )
             {
-                if ( scope != null && !scope.encloses( bmd.getArtifactScope() ) )
-                    continue;
-
-                try
-                {
-                    if ( !DUMMY_ROOT.allowDependency( bmd ) )
-                        continue;
-                }
-                catch ( VersionException e )
-                {
-                    throw new MetadataTreeException( e );
-                }
-
-                if ( inclusions != null )
+                // inject global into local
+                if ( ! Util.isEmpty( inclusions ) )
                 {
                     List<ArtifactMetadata> inc = inclusions.getMetadataList();
 
@@ -289,7 +298,8 @@ class DependencyTreeBuilder
                         bmd.setInclusions( inc );
                 }
 
-                if ( exclusions != null )
+                // inject global into local
+                if ( ! Util.isEmpty( exclusions ) )
                 {
                     List<ArtifactMetadata> excl = exclusions.getMetadataList();
 
@@ -316,7 +326,7 @@ class DependencyTreeBuilder
         }
         else
         {
-            DUMMY_ROOT.setDependencies( startMDs );
+            DUMMY_ROOT.setDependencies( filteredMDs );
             root = buildTree( DUMMY_ROOT, scope );
         }
 
@@ -342,6 +352,88 @@ class DependencyTreeBuilder
         }
 
         return tl;
+    }
+
+    /**
+     * @param startMDs
+     * @param scope
+     * @param dummyRoot
+     * @return
+     * @throws MetadataTreeException 
+     */
+    private List<ArtifactMetadata> filterScopeAndLusions( List<ArtifactMetadata> startMDs
+                                                          , ArtifactScopeEnum scope
+                                                          , MetadataTreeNode node
+                                                        )
+    throws MetadataTreeException
+    {
+        List<ArtifactMetadata> res = new ArrayList<ArtifactMetadata>( startMDs.size() );
+        
+        int depth = node.getDepth() + 1;
+        
+        ArtifactMetadata [] parents = new ArtifactMetadata[ depth ];
+
+        int i=0;
+        
+        for( MetadataTreeNode n = node; n != null; n = n.getParent() )
+            parents[i++] = n.getMd();
+        
+        for( ArtifactMetadata md : startMDs )
+        {
+            // scoping
+            if ( scope != null && !scope.encloses( md.getArtifactScope() ) )
+                continue;
+
+            try
+            {
+                // inclusions / exclusions to the top
+                for( ArtifactMetadata nMd : parents)
+                    if ( !nMd.allowDependency( md ) )
+                        continue;
+            }
+            catch ( VersionException e )
+            {
+                throw new MetadataTreeException( e );
+            }
+            
+            res.add( md );
+        }
+        return res;
+    }
+
+    /**
+     * @param startMDs
+     * @param map
+     */
+    private void applyVersionManagement( List<ArtifactMetadata> dependencies, Map<String, ArtifactMetadata> versionMap )
+    {
+        if ( Util.isEmpty( versionMap ) || Util.isEmpty( dependencies ) )
+            return;
+        
+        for ( ArtifactMetadata am : dependencies )
+        {
+            String key = am.toManagementString();
+            ArtifactMetadata ver = versionMap.get( key );
+            if ( ver != null )
+            {
+                if ( LOG.isDebugEnabled() )
+                    LOG.debug( "managed replacement: " + am + " -> " + ver );
+
+                if ( _eventManager != null )
+                {
+                    GenericEvent replaceEvent =
+                        new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_NODE_VERSION_REPLACE_EVENT,
+                                          "managed replacement: " + am + " -> " + ver );
+                    replaceEvent.stop();
+                    _eventManager.fireEvent( replaceEvent );
+                }
+
+                am.setVersion( ver.getVersion() );
+                am.setInclusions( ver.getInclusions() );
+                am.setExclusions( ver.getExclusions() );
+                am.setOptional( ver.isOptional() );
+            }
+        }
     }
 
     // -----------------------------------------------------
@@ -394,42 +486,23 @@ class DependencyTreeBuilder
             if ( allDependencies == null || allDependencies.size() < 1 )
                 return node;
 
-            if ( !Util.isEmpty( _versionMap ) )
-                for ( ArtifactMetadata am : allDependencies )
-                {
-                    String key = am.toManagementString();
-                    ArtifactMetadata ver = _versionMap.get( key );
-                    if ( ver != null )
-                    {
-                        if ( LOG.isDebugEnabled() )
-                            LOG.debug( "managed replacement: " + am + " -> " + ver );
+            // first time filtering, ranges will pass 
+            // through here, unless map is a GA entry
+            applyVersionManagement( allDependencies, _versionMap );
 
-                        if ( _eventManager != null )
-                        {
-                            GenericEvent replaceEvent =
-                                new GenericEvent( EventTypeEnum.dependencyBuilder, TREE_NODE_VERSION_REPLACE_EVENT,
-                                                  "managed replacement: " + am + " -> " + ver );
-                            replaceEvent.stop();
-                            _eventManager.fireEvent( replaceEvent );
-                        }
-
-                        am.setVersion( ver.getVersion() );
-                        am.setInclusions( ver.getInclusions() );
-                        am.setExclusions( ver.getExclusions() );
-                        am.setOptional( ver.isOptional() );
-                    }
-                }
-
-            List<ArtifactMetadata> dependencies = new ArrayList<ArtifactMetadata>( allDependencies.size() );
-            if ( globalScope != null )
-                for ( ArtifactMetadata md : allDependencies )
-                {
-                    ArtifactScopeEnum mdScope = md.getArtifactScope();
-                    if ( globalScope.encloses( mdScope ) )
-                        dependencies.add( md );
-                }
-            else
-                dependencies.addAll( allDependencies );
+            List<ArtifactMetadata> dependencies = filterScopeAndLusions( allDependencies, globalScope, node );
+            
+//                new ArrayList<ArtifactMetadata>( allDependencies.size() );
+//            
+//            if ( globalScope != null )
+//                for ( ArtifactMetadata md : allDependencies )
+//                {
+//                    ArtifactScopeEnum mdScope = md.getArtifactScope();
+//                    if ( globalScope.encloses( mdScope ) )
+//                        dependencies.add( md );
+//                }
+//            else
+//                dependencies.addAll( allDependencies );
 
             if ( Util.isEmpty( dependencies ) )
                 return node;
@@ -439,6 +512,8 @@ class DependencyTreeBuilder
             if ( res == null )
                 throw new MetadataTreeException( LANG.getMessage( "no.versions", dependencies.toString() ) );
 
+            // all virtuals/ranges are gone at this point
+            
             Map<ArtifactMetadata, List<ArtifactMetadata>> expandedDeps = res.getResults();
 
             for ( ArtifactMetadata md : dependencies )
@@ -448,6 +523,11 @@ class DependencyTreeBuilder
                     LOG.debug( "node " + nodeQuery + ", dep " + md );
 
                 List<ArtifactMetadata> versions = expandedDeps.get( md );
+
+                // filter actual versions now
+                if( ! Util.isEmpty( versions ) )
+                    versions = filterScopeAndLusions( versions, globalScope, node );
+                
                 if ( versions == null || versions.size() < 1 )
                 {
                     if ( md.isOptional() || checkOptional( node ) )
@@ -468,6 +548,8 @@ class DependencyTreeBuilder
                         noGoodVersions = false;
                         continue;
                     }
+                    
+                    ver.setArtifactScope( md.getArtifactScope() );
 
                     MetadataTreeNode kid = createNode( ver, node, md, globalScope );
                     if ( kid != null )

@@ -1154,6 +1154,8 @@ public class VirtualRepositoryReader
                     }
                 }
             }
+            
+            res.reOrderResults( query );
 
             return res;
         }
@@ -1166,6 +1168,7 @@ public class VirtualRepositoryReader
             }
         }
     }
+    
 
     // ----------------------------------------------------------------------------------------------------------------------------
     // MetadataReader implementation

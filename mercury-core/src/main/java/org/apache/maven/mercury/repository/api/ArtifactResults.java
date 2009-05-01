@@ -19,7 +19,9 @@
 package org.apache.maven.mercury.repository.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +35,7 @@ import org.apache.maven.mercury.artifact.ArtifactMetadata;
 public class ArtifactResults
     extends AbstractRepOpResult
 {
-    Map<ArtifactMetadata, List<Artifact>> _result = new HashMap<ArtifactMetadata, List<Artifact>>( 8 );
+    Map<ArtifactMetadata, List<Artifact>> _result = new LinkedHashMap<ArtifactMetadata, List<Artifact>>( 8 );
 
     public ArtifactResults()
     {
@@ -76,6 +78,25 @@ public class ArtifactResults
     public List<Artifact> getResults( ArtifactMetadata query )
     {
         return _result.get( query );
+    }
+    
+    public void reOrderResults( Collection<? extends ArtifactMetadata> query )
+    {
+        if ( _result.isEmpty() )
+            return;
+        
+        LinkedHashMap<ArtifactMetadata, List<Artifact>> resMap
+                   = new LinkedHashMap<ArtifactMetadata, List<Artifact>>( _result.size() );
+        
+        for( ArtifactMetadata md : query )
+        {
+            List<Artifact> qRes = _result.get( md );
+            
+            resMap.put( md, qRes );
+        }
+        
+        _result = resMap;
+        
     }
 
     @Override

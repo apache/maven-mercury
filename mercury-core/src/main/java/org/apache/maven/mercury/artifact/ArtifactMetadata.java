@@ -72,7 +72,7 @@ public class ArtifactMetadata
 
     protected ArtifactScopeEnum artifactScope;
 
-    protected String scope;
+//    protected String scope;
 
     protected boolean optional;
 
@@ -228,7 +228,7 @@ public class ArtifactMetadata
 
         if ( count > 5 )
         {
-            this.scope = nullify( tokens[5] );
+            this.artifactScope = ArtifactScopeEnum.valueOf( nullify( tokens[5] ) );
         }
 
         if ( count > 6 )

@@ -418,8 +418,20 @@ public class DefaultPlexusMercuryTest
         // "asm:asm-tree:3.0" ) ) );
         // assertTrue( res.getChildren().get( 0 ).getChildren().get( 0 ).getChildren().get( 0 ).getMd().equals( new
         // ArtifactMetadata( "asm:asm:3.0" ) ) );
+        
         List<ArtifactMetadata> res2 =
             pm.resolve( repos, ArtifactScopeEnum.test, new ArtifactQueryList( artifactId, artifactId2 ), null, null );
+        
+        assertTrue( res2.contains( new ArtifactMetadata( "asm:asm-xml:3.0" ) ) );
+        
+        assertTrue( res2.contains( new ArtifactMetadata( "asm:asm-util:3.0" ) ) );
+        
+        // 2.2.1 wins over 3.0 because it's closer to the root
+        assertTrue( res2.contains( new ArtifactMetadata( "asm:asm:2.2.1" ) ) );
+        
+        assertTrue( res2.contains( new ArtifactMetadata( "oro:oro:2.0.8" ) ) );
+        
+        assertTrue( res2.contains( new ArtifactMetadata( "cobertura:cobertura:1.8" ) ) );
 
         System.out.println( "\n============== as List =========" );
         if ( res2 != null )
