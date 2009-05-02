@@ -88,9 +88,9 @@ under the License.
     <sat4j.version>2.0.4</sat4j.version>
     <ant.version>1.7.1</ant.version>
 
-    <!-- 
+    <!--
            maven version: non-modules only !!
-           Never use in Mercury modules because Mercury does not depend on Maven 
+           Never use in Mercury modules because Mercury does not depend on Maven
     -->
     <maven.version>3.0-SNAPSHOT</maven.version>
     <modello.version>1.0.1</modello.version>
@@ -162,7 +162,7 @@ under the License.
         <artifactId>org.sat4j.pb</artifactId>
         <version>${sat4j.version}</version>
       </dependency>
-<!-- 
+<!--
       <dependency>
         <groupId>org.sonatype.appbooter</groupId>
         <artifactId>plexus-forked-app-booter</artifactId>
@@ -263,7 +263,7 @@ under the License.
         <artifactId>plexus-component-metadata</artifactId>
         <version>${plexus.component.metadata.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.sonatype.spice</groupId>
         <artifactId>model-builder</artifactId>
@@ -403,6 +403,9 @@ under the License.
           <groupId>org.codehaus.modello</groupId>
           <artifactId>modello-maven-plugin</artifactId>
           <version>1.0.1</version>
+          <configuration>
+            <useJava5>true</useJava5>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -600,10 +603,10 @@ under the License.
     </profile>
 
     <profile>
-    	<id>run-its</id>
-    	<modules>
-    		<module>mercury-it</module>
-    	</modules>
+      <id>run-its</id>
+      <modules>
+        <module>mercury-it</module>
+      </modules>
     </profile>
   </profiles>
 </project>
