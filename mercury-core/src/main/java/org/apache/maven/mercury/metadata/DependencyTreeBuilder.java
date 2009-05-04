@@ -89,8 +89,6 @@ class DependencyTreeBuilder
 
     private EventManager _eventManager;
 
-    private boolean _buildIndividualTrees = false;
-
     private boolean _allowCircularDependencies =
         Boolean.parseBoolean( System.getProperty( SYSTEM_PROPERTY_ALLOW_CIRCULAR_DEPENDENCIES, "false" ) );
 
@@ -281,54 +279,8 @@ class DependencyTreeBuilder
         
         nodeCount = filteredMDs.size();
         
-        if ( _buildIndividualTrees )
-        {
-            List<MetadataTreeNode> deps = new ArrayList<MetadataTreeNode>( nodeCount );
-            
-            for ( ArtifactMetadata bmd : filteredMDs )
-            {
-                // inject global into local
-                if ( ! Util.isEmpty( inclusions ) )
-                {
-                    List<ArtifactMetadata> inc = inclusions.getMetadataList();
-
-                    if ( bmd.hasInclusions() )
-                        bmd.getInclusions().addAll( inc );
-                    else
-                        bmd.setInclusions( inc );
-                }
-
-                // inject global into local
-                if ( ! Util.isEmpty( exclusions ) )
-                {
-                    List<ArtifactMetadata> excl = exclusions.getMetadataList();
-
-                    if ( bmd.hasExclusions() )
-                        bmd.getExclusions().addAll( excl );
-                    else
-                        bmd.setExclusions( excl );
-                }
-
-                MetadataTreeNode rooty = buildTree( bmd, scope );
-
-                deps.add( rooty );
-            }
-
-            if ( Util.isEmpty( deps ) ) // all dependencies are filtered out
-                return null;
-
-            // combine into one tree
-            root = new MetadataTreeNode( DUMMY_ROOT, null, null );
-
-            for ( MetadataTreeNode kid : deps )
-                root.addChild( kid );
-
-        }
-        else
-        {
-            DUMMY_ROOT.setDependencies( filteredMDs );
-            root = buildTree( DUMMY_ROOT, scope );
-        }
+        DUMMY_ROOT.setDependencies( filteredMDs );
+        root = buildTree( DUMMY_ROOT, scope );
 
         TruckLoad tl = null;
 
