@@ -15,27 +15,25 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.spi.http.client;
 
-import org.apache.maven.mercury.artifact.api.Configurable;
 import org.mortbay.jetty.client.HttpClient;
 
 /**
- * an abstraction to use instead actual HttpClient 
- *
+ * an abstraction to use instead actual HttpClient
+ * 
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public interface HttpClientPool
 {
     public static final int DEFAULT_POOL_SIZE = 3;
-    
+
     HttpClient getHttpClient()
-    throws HttpClientPoolException;
-    
+        throws HttpClientPoolException;
+
     void returnHttpClient( HttpClient client )
-    throws HttpClientPoolException;
+        throws HttpClientPoolException;
 }

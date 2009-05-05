@@ -15,56 +15,46 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/
+ */
 
 package org.apache.maven.mercury.spi.http.client;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
 
-import org.apache.maven.mercury.artifact.api.ConfigurationException;
-import org.apache.maven.mercury.crypto.pgp.PgpStreamVerifier;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
 import org.mortbay.jetty.client.HttpClient;
 
 /**
- *
- *
  * @author Oleg Gusakov
  * @version $Id$
- *
  */
 public class DefaultHttpClientPool
     implements HttpClientPool
 {
     private static final Language LANG = new DefaultLanguage( DefaultHttpClientPool.class );
 
-    private static int _poolSize = DEFAULT_POOL_SIZE; 
-    
-    private static ConcurrentLinkedQueue<HttpClient> _pool = new ConcurrentLinkedQueue<HttpClient>(); 
-    
+    private static int _poolSize = DEFAULT_POOL_SIZE;
+
+    private static ConcurrentLinkedQueue<HttpClient> _pool = new ConcurrentLinkedQueue<HttpClient>();
+
     public DefaultHttpClientPool()
     {
-        this( DEFAULT_POOL_SIZE);
+        this( DEFAULT_POOL_SIZE );
     }
-    
+
     public DefaultHttpClientPool( int sz )
     {
-        for( int i=0; i<sz; i++ )
+        for ( int i = 0; i < sz; i++ )
             _pool.offer( new HttpClient() );
     }
 
     public HttpClient getHttpClient()
         throws HttpClientPoolException
     {
-        if( _pool.isEmpty() )
+        if ( _pool.isEmpty() )
             throw new HttpClientPoolException( LANG.getMessage( "pool.empty" ) );
-        
+
         return _pool.poll();
     }
 
