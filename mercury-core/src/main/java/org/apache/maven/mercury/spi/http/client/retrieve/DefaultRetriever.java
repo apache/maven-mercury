@@ -37,6 +37,7 @@ import org.apache.maven.mercury.logging.IMercuryLogger;
 import org.apache.maven.mercury.logging.MercuryLoggerManager;
 import org.apache.maven.mercury.spi.http.client.DestinationRealmResolver;
 import org.apache.maven.mercury.spi.http.client.HttpClientException;
+import org.apache.maven.mercury.spi.http.client.HttpClientPool;
 import org.apache.maven.mercury.transport.api.Binding;
 import org.apache.maven.mercury.transport.api.Server;
 import org.mortbay.jetty.client.HttpClient;
@@ -54,20 +55,20 @@ public class DefaultRetriever
         throws HttpClientException
     {
         // TODO take the default settings for now
-        _httpClient = new HttpClient();
-        _httpClient.setConnectorType( HttpClient.CONNECTOR_SELECT_CHANNEL );
-        try
-        {
-            // TODO: What are all the reasons that the httpclient couldn't start up correctly?
-            _httpClient.start();
-        }
-        catch ( Exception e )
-        {
-            throw new HttpClientException( null, "Unable to start http client.", e );
-        }
+//      _httpClient = new HttpClient();
+//        _httpClient.setConnectorType( HttpClient.CONNECTOR_SELECT_CHANNEL );
+//        try
+//        {
+//            // TODO: What are all the reasons that the httpclient couldn't start up correctly?
+//            _httpClient.start();
+//        }
+//        catch ( Exception e )
+//        {
+//            throw new HttpClientException( null, "Unable to start http client.", e );
+//        }
     }
 
-    public DefaultRetriever( HttpClient client )
+    private DefaultRetriever( HttpClient client )
         throws HttpClientException
     {
         // TODO take the default settings for now
@@ -89,7 +90,7 @@ public class DefaultRetriever
     {
         _servers.clear();
         _servers.addAll( servers );
-        _httpClient.setRealmResolver( new DestinationRealmResolver( _servers ) );
+//        _httpClient.setRealmResolver( new DestinationRealmResolver( _servers ) );
     }
 
     public Set<Server> getServers()
@@ -166,6 +167,17 @@ public class DefaultRetriever
         Binding[] bindings = new Binding[request.getBindings().size()];
         request.getBindings().toArray( bindings );
 
+        if( _httpClient == null )
+            try
+            {
+                _httpClient = HttpClientPool.getHttpClient(false);
+                _httpClient.setRealmResolver( new DestinationRealmResolver( _servers ) );
+            }
+            catch ( HttpClientException e1 )
+            {
+                response.add( new HttpClientException( bindings[0], e1 ) );
+            }
+
         for ( int i = 0; i < bindings.length && count.get() > 0; i++ )
         {
             final Binding binding = bindings[i];
@@ -212,6 +224,7 @@ public class DefaultRetriever
                             if ( DefaultRetriever.this.isComplete( count, request, response, targets ) )
                             {
                                 callback.onComplete( response );
+                                stop();
                             }
                         }
 
@@ -221,6 +234,7 @@ public class DefaultRetriever
                             if ( DefaultRetriever.this.isComplete( count, request, response, targets ) )
                             {
                                 callback.onComplete( response );
+                                stop();
                             }
                         }
                     };
@@ -233,6 +247,7 @@ public class DefaultRetriever
                 if ( isComplete( count, request, response, targets ) )
                 {
                     callback.onComplete( response );
+                    stop();
                 }
             }
         }
@@ -339,20 +354,22 @@ public class DefaultRetriever
 
     public void stop()
     {
-        if ( _httpClient == null )
-            return;
-
-        if ( _httpClient.isStopped() || _httpClient.isStopping() )
-            return;
-
-        try
-        {
-            _httpClient.stop();
-        }
-        catch ( Exception e )
-        {
-            LOG.error( e.getMessage() );
-        }
+        HttpClientPool.returnHttpClient( _httpClient, false );
+        _httpClient = null;
+//        if ( _httpClient == null )
+//            return;
+//
+//        if ( _httpClient.isStopped() || _httpClient.isStopping() )
+//            return;
+//
+//        try
+//        {
+//            _httpClient.stop();
+//        }
+//        catch ( Exception e )
+//        {
+//            LOG.error( e.getMessage() );
+//        }
 
     }
 
