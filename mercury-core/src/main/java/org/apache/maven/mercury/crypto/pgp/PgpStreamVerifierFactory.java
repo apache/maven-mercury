@@ -52,7 +52,7 @@ public class PgpStreamVerifierFactory
 
     private int algorithm = 0;
 
-    private int digestAlgorithm = PGPUtil.SHA1;
+    private int digestAlgorithm = PGPUtil.SHA512;
 
     // --------------------------------------------------------------------------------------------
     public PgpStreamVerifierFactory( StreamVerifierAttributes attributes, InputStream trustedPublicKeyRingStream )
