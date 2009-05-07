@@ -19,19 +19,35 @@
 
 package org.apache.maven.mercury.crypto.sha;
 
+import org.apache.maven.mercury.crypto.api.AbstractStreamVerifierFactory;
 import org.apache.maven.mercury.crypto.api.StreamVerifier;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
+import org.apache.maven.mercury.crypto.api.StreamVerifierFactory;
 
-/**
- * SHA1Verifier
- */
-public class SHA1Verifier
-    extends AbstractSHAVerifier
-    implements StreamVerifier
+public class SHA512VerifierFactory
+    extends AbstractStreamVerifierFactory
+    implements StreamVerifierFactory
 {
+    public static final String DEFAULT_EXTENSION = "sha512";
 
-    public SHA1Verifier( StreamVerifierAttributes attributes )
+    public SHA512VerifierFactory( StreamVerifierAttributes attrs )
     {
-        super( "SHA-1", attributes );
+        super( attrs );
     }
+
+    public SHA512VerifierFactory( boolean lenient, boolean satisfactory )
+    {
+        super( new StreamVerifierAttributes( DEFAULT_EXTENSION, lenient, satisfactory ) );
+    }
+
+    public StreamVerifier newInstance()
+    {
+        return new SHA512Verifier( attributes );
+    }
+
+    public String getDefaultExtension()
+    {
+        return DEFAULT_EXTENSION;
+    }
+
 }

@@ -25,13 +25,13 @@ import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 /**
  * SHA1Verifier
  */
-public class SHA1Verifier
+public class SHA512Verifier
     extends AbstractSHAVerifier
     implements StreamVerifier
 {
 
-    public SHA1Verifier( StreamVerifierAttributes attributes )
+    public SHA512Verifier( StreamVerifierAttributes attributes )
     {
-        super( "SHA-1", attributes );
+        super( "SHA-512", attributes );
     }
 }
