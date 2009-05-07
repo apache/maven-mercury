@@ -23,7 +23,7 @@ import org.apache.maven.mercury.crypto.api.StreamVerifier;
 import org.apache.maven.mercury.crypto.api.StreamVerifierAttributes;
 
 /**
- * SHA1Verifier
+ * SHA512Verifier
  */
 public class SHA512Verifier
     extends AbstractSHAVerifier
