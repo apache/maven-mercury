@@ -57,6 +57,8 @@ import org.apache.maven.mercury.repository.api.RepositoryWriter;
 import org.apache.maven.mercury.repository.cache.fs.MetadataCacheFs;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryM2;
 import org.apache.maven.mercury.repository.remote.m2.RemoteRepositoryReaderM2;
+import org.apache.maven.mercury.util.LruMemCache;
+import org.apache.maven.mercury.util.MemCache;
 import org.apache.maven.mercury.util.Util;
 import org.codehaus.plexus.lang.DefaultLanguage;
 import org.codehaus.plexus.lang.Language;
@@ -119,6 +121,15 @@ public class VirtualRepositoryReader
     private boolean _initialized = false;
 
     private EventManager _eventManager;
+    
+    public static final String SYSTEM_PROPERTY_VERSION_CACHE_SIZE = "mercury.version.cache.size";
+    
+    private static final int _versionCacheSize = Integer.valueOf( System.getProperty( SYSTEM_PROPERTY_VERSION_CACHE_SIZE, "1024" ) ); 
+    
+    private static final MemCache<ArtifactMetadata, List<ArtifactMetadata> > _cachedVersions =
+        _versionCacheSize == 0 ? null
+        : new LruMemCache<ArtifactMetadata, List<ArtifactMetadata>>( _versionCacheSize )
+        ;
 
     // ----------------------------------------------------------------------------------------------------------------------------
     public VirtualRepositoryReader( Collection<Repository> repositories )
@@ -301,6 +312,59 @@ public class VirtualRepositoryReader
         }
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------
+    private MetadataResults readCachedVersions( Collection<ArtifactMetadata> query, List<ArtifactMetadata> leftOvers )
+    {
+        if( _cachedVersions == null )
+        {
+            leftOvers.addAll( query );
+            return null;
+        }
+        
+        MetadataResults res = null;
+        
+        for( ArtifactMetadata key : query )
+        {
+            List<ArtifactMetadata> vl = _cachedVersions.get( key );
+            if( Util.isEmpty( vl ) )
+                leftOvers.add( key );
+            else
+            {
+                if( res == null )
+                    res = new MetadataResults( key, vl );
+                else
+                    res.add( key, vl );
+            }
+        }
+        
+        return res;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------
+    private MetadataResults cacheVersions( MetadataResults res )
+    {
+        if(true)
+            return res;
+        
+        if( _cachedVersions == null || res == null || res.hasExceptions() || ! res.hasResults() )
+        {
+            return res;
+        }
+        
+        for( ArtifactMetadata key :res.getResults().keySet() )
+        {
+            List<ArtifactMetadata> vl = res.getResult( key );
+            
+            if( Util.isEmpty( vl ) )
+                continue;
+            
+            for( ArtifactMetadata md : vl )
+                md.setTracker( null );
+            
+            _cachedVersions.put( key, vl );
+        }
+        
+        return res;
+    }
     // ----------------------------------------------------------------------------------------------------------------------------
     public MetadataResults readVersions( Collection<ArtifactMetadata> query )
         throws IllegalArgumentException, RepositoryException
@@ -321,13 +385,16 @@ public class VirtualRepositoryReader
                 event = new GenericEvent( EventTypeEnum.virtualRepositoryReader, EVENT_READ_VERSIONS );
             }
 
-            MetadataResults res = null;
             ArtifactListProcessor tp = _processors == null ? null : _processors.get( ArtifactListProcessor.FUNCTION_TP );
 
             GenericEvent eventRead = null;
 
             List<ArtifactMetadata> qList = new ArrayList<ArtifactMetadata>( query.size() );
-            qList.addAll( query );
+//            qList.addAll( query );
+            MetadataResults res = readCachedVersions( query, qList );
+            
+            if( Util.isEmpty( qList ) )
+                return res;
 
             for ( RepositoryReader rr : _repositoryReaders )
             {
@@ -425,7 +492,7 @@ public class VirtualRepositoryReader
                 processSingletons( res );
             }
 
-            return res;
+            return cacheVersions( res );
         }
         finally
         {

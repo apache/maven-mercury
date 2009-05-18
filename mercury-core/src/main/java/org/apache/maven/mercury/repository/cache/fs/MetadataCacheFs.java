@@ -62,6 +62,16 @@ public class MetadataCacheFs
 
     public static final String EVENT_SAVE_RAW = "save.raw";
 
+//    public static final String SYSTEM_PROPERTY_CACHE_METADATA = "mercury.cache.metadata";
+//    
+//    /** by default - cache metadata in memory */
+//    private static final boolean cacheMetadata = Boolean.valueOf( System.getProperty( SYSTEM_PROPERTY_CACHE_METADATA, "true" ) );
+
+    public static final String SYSTEM_PROPERTY_CACHE_RAW = "mercury.cache.raw";
+    
+    /** by default - do not cache  raw data in memory to preserve RAM */
+    private static final boolean cacheRaw = Boolean.valueOf( System.getProperty( SYSTEM_PROPERTY_CACHE_RAW, "false" ) );
+
     private static final Language LANG = new DefaultLanguage( RepositoryGAVMetadata.class );
 
     static volatile Map<String, MetadataCacheFs> fsCaches =
@@ -72,11 +82,12 @@ public class MetadataCacheFs
         (Map<String, RepositoryGAMetadata>) Collections.synchronizedMap( new HashMap<String, RepositoryGAMetadata>( 512 ) );
 
     private volatile Map<String, RepositoryGAVMetadata> gavCache =
-        (Map<String, RepositoryGAVMetadata>) Collections.synchronizedMap( new HashMap<String, RepositoryGAVMetadata>(
-                                                                                                                      1024 ) );
+        (Map<String, RepositoryGAVMetadata>) Collections.synchronizedMap( new HashMap<String, RepositoryGAVMetadata>( 1024 ) );
 
-    private volatile Map<String, byte[]> rawCache =
-        (Map<String, byte[]>) Collections.synchronizedMap( new HashMap<String, byte[]>( 1024 ) );
+    private volatile Map<String, byte[]> rawCache = cacheRaw
+        ? (Map<String, byte[]>) Collections.synchronizedMap( new HashMap<String, byte[]>( 1024 ) )
+        : null
+        ;
 
     private File root;
 
@@ -374,7 +385,10 @@ public class MetadataCacheFs
             if ( _eventManager != null )
                 event = new GenericEvent( EventTypeEnum.fsCache, EVENT_FIND_RAW, rawKey );
 
-            byte[] res = rawCache.get( rawKey );
+            byte[] res = cacheRaw
+                ? rawCache.get( rawKey )
+                : null
+                ;
 
             if ( res != null )
             {
@@ -394,7 +408,8 @@ public class MetadataCacheFs
 
             res = FileUtil.readRawData( f );
 
-            rawCache.put( rawKey, res );
+            if( cacheRaw)
+                rawCache.put( rawKey, res );
 
             if ( _eventManager != null )
                 event.setResult( "found on disk" );
@@ -428,7 +443,8 @@ public class MetadataCacheFs
             if ( _eventManager != null )
                 event = new GenericEvent( EventTypeEnum.fsCache, EVENT_SAVE_RAW, rawKey );
 
-            rawCache.put( rawKey, rawBytes );
+            if( cacheRaw )
+                rawCache.put( rawKey, rawBytes );
 
             File f =
                 new File( getGAVDir( md.getEffectiveCoordinates() ), md.getArtifactId() + FileUtil.DASH
@@ -519,7 +535,9 @@ public class MetadataCacheFs
     public void clearSession()
         throws MetadataCacheException
     {
-        rawCache.clear();
+        if( cacheRaw )
+            rawCache.clear();
+        
         gaCache.clear();
         gavCache.clear();
     }
