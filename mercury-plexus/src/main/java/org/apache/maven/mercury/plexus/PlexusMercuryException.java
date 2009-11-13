@@ -24,6 +24,7 @@ public class PlexusMercuryException
 
     public PlexusMercuryException()
     {
+        // nothing
     }
 
     public PlexusMercuryException( String message )

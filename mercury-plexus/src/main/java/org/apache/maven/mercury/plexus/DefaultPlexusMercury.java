@@ -96,11 +96,13 @@ public class DefaultPlexusMercury
         DependencyProcessor dp = null;
 
         if ( _dependencyProcessors != null )
+        {
             dp = _dependencyProcessors.get( hint );
-
+        }
         if ( dp == null )
+        {
             throw new RepositoryException( LANG.getMessage( "no.dep.processor.injected", hint ) );
-
+        }
         return dp;
     }
 
@@ -201,8 +203,9 @@ public class DefaultPlexusMercury
         throws RepositoryException
     {
         if ( repo == null )
+        {
             throw new RepositoryException( LANG.getMessage( "null.repo" ) );
-
+        }
         RepositoryWriter wr = repo.getWriter();
 
         wr.writeArtifacts( artifacts );
@@ -215,27 +218,36 @@ public class DefaultPlexusMercury
         throws RepositoryException
     {
         if ( Util.isEmpty( repos ) )
+        {
             throw new RepositoryException( LANG.getMessage( "null.repo" ) );
-
+        }
         VirtualRepositoryReader vr = new VirtualRepositoryReader( repos );
 
         ArtifactResults ar = vr.readArtifacts( artifacts );
 
         if ( ar == null || !ar.hasResults() )
+        {
             return null;
-
+        }
+        
         if ( ar.hasExceptions() && LOG.isWarnEnabled() )
+        {
             LOG.info( ar.getExceptions().toString() );
-
+        }
+        
         if ( !ar.hasResults() )
+        {
             return null;
-
+        }
+        
         Map<ArtifactMetadata, List<Artifact>> am = ar.getResults();
 
         List<Artifact> al = new ArrayList<Artifact>();
         for ( Map.Entry<ArtifactMetadata, List<Artifact>> e : am.entrySet() )
+        {
             al.addAll( e.getValue() );
-
+        }
+        
         return al;
 
     }
@@ -285,8 +297,10 @@ public class DefaultPlexusMercury
         throws RepositoryException
     {
         if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
+        {
             throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
-
+        }
+        
         try
         {
             DependencyBuilder depBuilder =
@@ -319,8 +333,10 @@ public class DefaultPlexusMercury
         throws RepositoryException
     {
         if ( Util.isEmpty( artifacts ) || artifacts.isEmpty() )
+        {
             throw new IllegalArgumentException( LANG.getMessage( "no.artifacts" ) );
-
+        }
+        
         try
         {
             DependencyBuilder depBuilder =
@@ -375,11 +391,15 @@ public class DefaultPlexusMercury
         MetadataResults res = vr.readVersions( q );
 
         if ( res == null )
+        {
             return null;
-
+        }
+        
         if ( res.hasExceptions() && LOG.isWarnEnabled() )
+        {
             LOG.warn( res.getExceptions().toString() );
-
+        }
+        
         return res.getResult( query );
     }
 
@@ -400,13 +420,15 @@ public class DefaultPlexusMercury
             repos.add( lr );
 
             if ( nRemote > 0 )
+            {
                 for ( String url : urls )
                 {
                     RemoteRepositoryM2 rr = new RemoteRepositoryM2( url, dp );
 
                     repos.add( rr );
                 }
-
+            }
+            
             return repos;
 
         }

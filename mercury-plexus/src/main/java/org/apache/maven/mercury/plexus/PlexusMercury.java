@@ -54,7 +54,7 @@ public interface PlexusMercury
      * @return the dependency processor
      * @throws RepositoryException
      */
-    public DependencyProcessor findDependencyProcessor()
+    DependencyProcessor findDependencyProcessor()
         throws RepositoryException;
 
     /**
@@ -64,7 +64,7 @@ public interface PlexusMercury
      * @return the dependency processor
      * @throws RepositoryException
      */
-    public DependencyProcessor findDependencyProcessor( String hint )
+    DependencyProcessor findDependencyProcessor( String hint )
         throws RepositoryException;
 
     /**
@@ -76,7 +76,7 @@ public interface PlexusMercury
      * @return pgp verifier factory to be sent to Repository
      * @throws PlexusMercuryException
      */
-    public PgpStreamVerifierFactory createPgpReaderFactory( boolean lenient, boolean sufficient, InputStream pubRing )
+    PgpStreamVerifierFactory createPgpReaderFactory( boolean lenient, boolean sufficient, InputStream pubRing )
         throws StreamVerifierException;
 
     /**
@@ -90,7 +90,7 @@ public interface PlexusMercury
      * @return pgp verifier factory to be sent to Repository
      * @throws PlexusMercuryException
      */
-    public PgpStreamVerifierFactory createPgpWriterFactory( boolean lenient, boolean sufficient, InputStream secRing,
+    PgpStreamVerifierFactory createPgpWriterFactory( boolean lenient, boolean sufficient, InputStream secRing,
                                                             String keyId, String keyPass )
         throws StreamVerifierException;
 
@@ -111,7 +111,7 @@ public interface PlexusMercury
      * @return repository instance
      * @throws PlexusMercuryException
      */
-    public RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
+    RemoteRepositoryM2 constructRemoteRepositoryM2( String id, URL serverUrl, String serverUser,
                                                            String serverPass, URL proxyUrl, String proxyUser,
                                                            String proxyPass,
                                                            Set<StreamObserverFactory> readerStreamObservers,
@@ -132,7 +132,7 @@ public interface PlexusMercury
      * @return repository instance
      * @throws PlexusMercuryException
      */
-    public LocalRepositoryM2 constructLocalRepositoryM2( String id, File rootDir,
+    LocalRepositoryM2 constructLocalRepositoryM2( String id, File rootDir,
                                                          Set<StreamObserverFactory> readerStreamObservers,
                                                          Set<StreamVerifierFactory> readerStreamVerifiers,
                                                          Set<StreamObserverFactory> writerStreamObservers,
@@ -147,7 +147,7 @@ public interface PlexusMercury
      * @return repository list
      * @throws PlexusMercuryException
      */
-    public List<Repository> constructRepositories( String localDir, String... urls )
+    List<Repository> constructRepositories( String localDir, String... urls )
         throws RepositoryException;
 
     /**
@@ -158,10 +158,10 @@ public interface PlexusMercury
      * @return
      * @throws PlexusMercuryException
      */
-    public void write( Repository repo, Artifact... artifacts )
+    void write( Repository repo, Artifact... artifacts )
         throws RepositoryException;
 
-    public void write( Repository repo, Collection<Artifact> artifacts )
+    void write( Repository repo, Collection<Artifact> artifacts )
         throws RepositoryException;
 
     /**
@@ -172,10 +172,10 @@ public interface PlexusMercury
      * @return
      * @throws PlexusMercuryException
      */
-    public List<Artifact> read( List<Repository> repo, List<? extends ArtifactMetadata> artifacts )
+    List<Artifact> read( List<Repository> repo, List<? extends ArtifactMetadata> artifacts )
         throws RepositoryException;
 
-    public List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
+    List<Artifact> read( List<Repository> repo, ArtifactMetadata... artifacts )
         throws RepositoryException;
 
     /**
@@ -189,27 +189,27 @@ public interface PlexusMercury
      * @return
      * @throws PlexusMercuryException
      */
-    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+    List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
                                            ArtifactExclusionList exclusions )
         throws RepositoryException;
 
-    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
+    List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
                                            ArtifactExclusionList exclusions, Map<String, ?> config )
         throws RepositoryException;
 
-    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
+    MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
                                            ArtifactExclusionList exclusions )
         throws RepositoryException;
 
-    public MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
+    MetadataTreeNode resolveAsTree( List<Repository> repos, ArtifactScopeEnum scope,
                                            ArtifactQueryList artifacts, ArtifactInclusionList inclusions,
                                            ArtifactExclusionList exclusions, Map<String, ?> config )
         throws RepositoryException;
 
-    public List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
+    List<ArtifactMetadata> resolve( List<Repository> repos, ArtifactScopeEnum scope, ArtifactMetadata metadata )
         throws RepositoryException;
 
     /**
@@ -220,6 +220,6 @@ public interface PlexusMercury
      * @return list of found version metadatas
      * @throws PlexusMercuryException
      */
-    public List<ArtifactMetadata> readVersions( List<Repository> repos, ArtifactMetadata query )
+    List<ArtifactMetadata> readVersions( List<Repository> repos, ArtifactMetadata query )
         throws RepositoryException;
 }
