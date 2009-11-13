@@ -40,23 +40,24 @@ public interface MetadataReader
      * @throws MetadataReaderException
      * @throws RepositoryException
      */
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
+    byte[] readRawData( ArtifactMetadata bmd, String classifier, String type, boolean exempt )
         throws MetadataReaderException;
 
-    public byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
+    byte[] readRawData( ArtifactMetadata bmd, String classifier, String type )
         throws MetadataReaderException;
 
     /**
-     * read metadata for the artifact, pointed by bmd. It will return POM bytes regardless of actual bmd type
+     * read metadata for the artifact, pointed by bmd. It will return POM bytes regardless of actual
+     * bmd type
      * 
      * @param bmd metadata to read
      * @param exempt - if this read should be exempt from stream verification, default - false
      * @return
      * @throws MetadataReaderException
      */
-    public byte[] readMetadata( ArtifactMetadata bmd, boolean exempt )
+    byte[] readMetadata( ArtifactMetadata bmd, boolean exempt )
         throws MetadataReaderException;
 
-    public byte[] readMetadata( ArtifactMetadata bmd )
+    byte[] readMetadata( ArtifactMetadata bmd )
         throws MetadataReaderException;
 }

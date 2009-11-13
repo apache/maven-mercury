@@ -32,6 +32,7 @@ public class DependencyProcessorException
      */
     public DependencyProcessorException()
     {
+        // nothing
     }
 
     /**

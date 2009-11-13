@@ -31,7 +31,7 @@ public class AttributeQueryException
    */
     public AttributeQueryException()
     {
-        // TODO Auto-generated constructor stub
+        // nothing
     }
 
     /**
@@ -40,7 +40,6 @@ public class AttributeQueryException
     public AttributeQueryException( String message )
     {
         super( message );
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -49,7 +48,6 @@ public class AttributeQueryException
     public AttributeQueryException( Throwable cause )
     {
         super( cause );
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -59,7 +57,6 @@ public class AttributeQueryException
     public AttributeQueryException( String message, Throwable cause )
     {
         super( message, cause );
-        // TODO Auto-generated constructor stub
     }
 
 }

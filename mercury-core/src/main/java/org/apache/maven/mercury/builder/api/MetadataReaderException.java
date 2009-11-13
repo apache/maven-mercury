@@ -32,6 +32,7 @@ public class MetadataReaderException
      */
     public MetadataReaderException()
     {
+        // nothing
     }
 
     /**

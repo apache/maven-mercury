@@ -35,10 +35,10 @@ public interface VersionRange
      * @param version to test
      * @return
      */
-    public boolean includes( String version );
+    boolean includes( String version );
 
     /**
      * @return true if the range is good old single version, not a true range
      */
-    public boolean isSingleton();
+    boolean isSingleton();
 }

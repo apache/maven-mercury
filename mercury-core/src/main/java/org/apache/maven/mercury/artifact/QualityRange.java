@@ -70,12 +70,17 @@ public class QualityRange
     public static QualityRange create( boolean releases, boolean snapshots )
     {
         if ( releases && snapshots )
+        {
             return ALL;
+        }
         else if ( releases )
+        {
             return new QualityRange( Quality.ALPHA_QUALITY, true, Quality.RELEASE_QUALITY, true );
+        }
         else if ( snapshots )
+        {
             return new QualityRange( Quality.SNAPSHOT_QUALITY, true, Quality.SNAPSHOT_TS_QUALITY, true );
-
+        }
         throw new IllegalArgumentException( LANG.getMessage( "quality.no.sn.no.rel" ) );
     }
 

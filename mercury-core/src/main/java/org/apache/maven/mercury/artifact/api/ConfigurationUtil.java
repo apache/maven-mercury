@@ -31,9 +31,12 @@ public class ConfigurationUtil
         throws ConfigurationException
     {
         if ( impl == null || config == null )
+        {
             return;
-
+        }
         for ( Map.Entry<String, Object> e : config.entrySet() )
+        {
             impl.setOption( e.getKey(), e.getValue() );
+        }
     }
 }

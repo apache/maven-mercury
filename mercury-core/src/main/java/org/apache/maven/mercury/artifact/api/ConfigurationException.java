@@ -6,6 +6,7 @@ public class ConfigurationException
 
     public ConfigurationException()
     {
+        // nothing
     }
 
     public ConfigurationException( String message )

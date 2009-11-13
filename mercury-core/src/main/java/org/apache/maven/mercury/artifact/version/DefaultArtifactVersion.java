@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 import org.apache.maven.mercury.artifact.Artifact;
 import org.apache.maven.mercury.artifact.Quality;
 
-/*
+/**
  * Default implementation of artifact versioning.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
