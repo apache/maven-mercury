@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.mercury</groupId>
     <artifactId>mercury</artifactId>
-    <version>1.0-alpha-5-SNAPSHOT</version>
+    <version>1.0-alpha-8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.sonatype.maven.plugins</groupId>
@@ -65,7 +65,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.mercury</groupId>
       <artifactId>mercury-compare-mdo</artifactId>
-      <version>${project.parent.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
