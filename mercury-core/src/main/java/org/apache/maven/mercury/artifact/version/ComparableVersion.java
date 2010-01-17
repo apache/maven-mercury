@@ -123,7 +123,7 @@ public class ComparableVersion
     private static class StringItem
         implements Item
     {
-        private final static String[] QUALIFIERS = { "snapshot", "alpha", "beta", "milestone", "rc", "", "sp" };
+        private final static String[] QUALIFIERS = { "alpha", "beta", "milestone", "rc", "snapshot", "", "sp" };
 
         private final static List _QUALIFIERS = Arrays.asList( QUALIFIERS );
 
@@ -180,7 +180,7 @@ public class ComparableVersion
          * requires a lot of if/then/else to check for -1 or QUALIFIERS.size and then resort to lexical ordering. Most
          * comparisons are decided by the first character, so this is still fast. If more characters are needed then it
          * requires a lexical sort anyway.
-         * 
+         *
          * @param qualifier
          * @return
          */
