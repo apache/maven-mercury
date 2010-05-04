@@ -31,6 +31,7 @@
     <section name="Maven Mercury">
 
       <p>Maven Mercury is a replacement for the Maven Artifact subsystem, and a complete replacement for the HTTP/HTTPS/DAV/DAVS portions of the existing transport.</p>
+      <p><b>Note it's not currently used in maven core</b></p>
 
       <p>
         <!-- workaround for DOXIA-227: usemap attribute is stripped (fixed in Doxia 1.1, was 1.0-beta-1) -->
